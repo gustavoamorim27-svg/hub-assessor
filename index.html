@@ -207,7 +207,7 @@ html, body {
 
 <style>:root{ --orange:#FF4E00; }
 [data-tool="construtor"] *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
-[data-tool="construtor"]{ margin:0; min-height:100vh; background:linear-gradient(160deg,#0A0F38,#070B2E 60%,#05081F); color:#fff;
+[data-tool="construtor"]{ margin:0; min-height:100vh; background:linear-gradient(160deg,#0A0F38,#070B2E 60%,#05081F); background-attachment:fixed; color:#fff;
     font-family:'Manrope',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; }
 [data-tool="construtor"] .topbar{ height:6px; background:linear-gradient(90deg,var(--orange),#FF6B2C); }
 [data-tool="construtor"] .wrap{ max-width:1180px; margin:0 auto; padding:28px 20px 60px; }
@@ -262,6 +262,8 @@ html, body {
 [data-tool="construtor"] .tag-add:hover{ color:#FF8B52; border-color:rgba(255,78,0,.5); background:rgba(255,78,0,.08); }
 [data-tool="construtor"] .tag-menu{ display:flex; }
 [data-tool="construtor"] .tag-menu-chip{ cursor:pointer; font-weight:700; }
+[data-tool="construtor"] .op-how-btn{ margin-top:8px; cursor:pointer; font-family:inherit; font-size:12px; font-weight:700; color:#FF8B52; background:rgba(255,78,0,.10); border:1px solid rgba(255,78,0,.35); border-radius:9px; padding:7px 12px; }
+[data-tool="construtor"] .op-how-body{ margin-top:8px; }
 [data-tool="construtor"] .tag-drag.dragging{ opacity:.4; }
 [data-tool="construtor"] .tag-zone{ border-radius:8px; transition:background .12s, box-shadow .12s; }
 [data-tool="construtor"] .tag-zone.drop-target{ background:rgba(255,78,0,.10); box-shadow:inset 0 0 0 1px rgba(255,78,0,.4); }
@@ -1152,13 +1154,13 @@ button, .g-tab, [onclick]{ touch-action:manipulation; }
   #opcat .ocbadge{ display:inline-block; background:rgba(255,176,32,.14); border:1px solid rgba(255,176,32,.45); color:#FFB020; border-radius:7px; padding:3px 9px; font-weight:800; font-size:11.5px; }
   #opcat .ocbadge.prot{ background:rgba(255,78,0,.13); border-color:rgba(255,78,0,.4); color:#FF8B52; }
   #opcat .ocbadge.cup{ background:rgba(224,69,123,.16); border-color:rgba(224,69,123,.5); color:#F178A8; }
-  #opcat .cen-table{ width:100%; border:1px solid rgba(120,130,210,.18); border-radius:10px; overflow:hidden; background:rgba(0,0,0,.18); }
-  #opcat .cen-head{ display:grid; grid-template-columns:1fr 1fr; padding:7px 10px; border-bottom:1px solid rgba(120,130,210,.22); }
-  #opcat .cen-head span{ font-size:9.5px; font-weight:700; letter-spacing:.4px; text-transform:uppercase; color:#9AA2D0; }
-  #opcat .cen-row{ display:grid; grid-template-columns:1fr 1fr; padding:5px 10px; }
-  #opcat .cen-row.alt{ background:rgba(125,138,180,.06); }
-  #opcat .cen-cell{ display:inline-flex; align-items:center; gap:6px; font-size:11.5px; }
-  #opcat .cen-dot{ width:9px; height:9px; border-radius:50%; flex-shrink:0; }
+  .cen-table{ width:100%; border:1px solid rgba(120,130,210,.18); border-radius:10px; overflow:hidden; background:rgba(0,0,0,.18); }
+  .cen-head{ display:grid; grid-template-columns:1fr 1fr; padding:7px 10px; border-bottom:1px solid rgba(120,130,210,.22); }
+  .cen-head span{ font-size:9.5px; font-weight:700; letter-spacing:.4px; text-transform:uppercase; color:#9AA2D0; }
+  .cen-row{ display:grid; grid-template-columns:1fr 1fr; padding:5px 10px; }
+  .cen-row.alt{ background:rgba(125,138,180,.06); }
+  .cen-cell{ display:inline-flex; align-items:center; gap:6px; font-size:11.5px; }
+  .cen-dot{ width:9px; height:9px; border-radius:50%; flex-shrink:0; }
   #opcat .oc-empty{ color:#6F77A8; font-size:13px; padding:10px 0; }
   #opcat .oc-form{ background:rgba(10,14,50,.6); border:1px solid rgba(120,130,210,.25); border-radius:14px; padding:16px; margin-bottom:16px; }
   #opcat .oc-form .oc-row{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px; }
@@ -1236,6 +1238,7 @@ button, .g-tab, [onclick]{ touch-action:manipulation; }
       });
       return h+'</div>';
     }
+    window.__opPayoffHTML=function(op){ if(!op||!op.cen) return ""; return '<div class="opcat-payoff" style="margin-top:4px">'+payoffTable(op)+'</div><div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:8px;font-size:11px;color:#cfd4ef"><span style="display:inline-flex;align-items:center;gap:6px"><span style="width:10px;height:10px;border-radius:3px;background:#2BD9A6"></span>Ganho</span><span style="display:inline-flex;align-items:center;gap:6px"><span style="width:10px;height:10px;border-radius:3px;background:#F5B63E"></span>Estável</span><span style="display:inline-flex;align-items:center;gap:6px"><span style="width:10px;height:10px;border-radius:3px;background:#FF5566"></span>Perda</span></div>'; };
     function opDetalhe(op){
       var prot=op.protegeAte<=-100?"Capital protegido (0% de perda no vencimento)":"Proteção parcial até "+fmtPct(op.protegeAte)+"% de queda";
       return prot+" · participa 1:1 na alta até "+fmtPct(op.teto)+"% (ou "+fmtPct(op.tetoBarreira)+"% se a barreira de "+fmtPct(op.barreira)+"% for atingida)";
@@ -1345,9 +1348,9 @@ button, .g-tab, [onclick]{ touch-action:manipulation; }
     }
     function addToCarteira(key){
       var e=REG[key]; if(!e || !window.__ctorAddAtivo) return; var op=e.op;
-      if(e.cat==="quanto") window.__ctorAddAtivo("Internacional", op.nome, opDetalheQuanto(op), "No fixing "+op.fixing, true);
-      else if(e.cat==="cupom") window.__ctorAddAtivo("Renda Variável", op.nome, cupomDetalhe(op), "No vencimento", false);
-      else window.__ctorAddAtivo("Renda Variável", op.nome, (op.descricao||opDetalhe(op)), "No vencimento", true);
+      if(e.cat==="quanto") window.__ctorAddAtivo("Internacional", op.nome, opDetalheQuanto(op), "No fixing "+op.fixing, true, op);
+      else if(e.cat==="cupom") window.__ctorAddAtivo("Renda Variável", op.nome, cupomDetalhe(op), "No vencimento", false, op);
+      else window.__ctorAddAtivo("Renda Variável", op.nome, (op.descricao||opDetalhe(op)), "No vencimento", true, op);
     }
     function tabs(){
       var box=document.getElementById("ocTabs");
@@ -2502,6 +2505,7 @@ function renderEditor(D){
         ${optsHtml}
         ${tagsHtml}
         <input class="det-input" value="${esc(i.detalhe)}" placeholder="Detalhe (estrutura, prazo, taxa…)" data-f="detalhe" data-id="${i.id}">
+        ${i.catalogOp?`<button type="button" class="op-how-btn" data-howtoggle="${i.id}">${i._howOpen?"▴":"▾"} Como funciona a operação</button><div class="op-how-body" data-howbody="${i.id}" style="display:${i._howOpen?"block":"none"}">${i._howOpen&&window.__opPayoffHTML?window.__opPayoffHTML(i.catalogOp):""}</div>`:""}
         <div style="font-size:12px; color:#6F77A8; margin-top:4px;">≈ R$ ${fmtBRL(S.patrimonio*(Number(i.pct)||0)/100)}</div>
       </div>`;
     });
@@ -2536,6 +2540,9 @@ function renderEditor(D){
   });
   el.querySelectorAll("[data-addchip]").forEach(b=>{
     b.onclick=()=>{ addTag(b.dataset.addchip, b.dataset.label); };
+  });
+  el.querySelectorAll("[data-howtoggle]").forEach(b=>{
+    b.onclick=()=>{ const it=S.items.find(x=>x.id===b.dataset.howtoggle); if(!it) return; it._howOpen=!it._howOpen; const body=el.querySelector('[data-howbody="'+b.dataset.howtoggle+'"]'); if(!body) return; if(it._howOpen){ body.innerHTML=window.__opPayoffHTML?window.__opPayoffHTML(it.catalogOp):""; body.style.display="block"; b.textContent="▴ Como funciona a operação"; } else { body.style.display="none"; body.innerHTML=""; b.textContent="▾ Como funciona a operação"; } };
   });
 
   // ===== TAGS ARRASTÁVEIS =====
@@ -2615,8 +2622,8 @@ function addTag(toId,label){
   if(it.tags.indexOf(label)===-1) it.tags.push(label);
   render();
 }
-window.__ctorAddAtivo = function(classe,nome,detalhe,liquidez,protecaoFlag){
-  try{ var o = mk(classe||"Renda Variável", nome||"Operação", 0, detalhe||"", liquidez||"No vencimento", null, !!protecaoFlag); S.items.push(o); render();
+window.__ctorAddAtivo = function(classe,nome,detalhe,liquidez,protecaoFlag,op){
+  try{ var o = mk(classe||"Renda Variável", nome||"Operação", 0, detalhe||"", liquidez||"No vencimento", null, !!protecaoFlag); if(op){ o.catalogOp=op; o._howOpen=true; } S.items.push(o); render();
     try{ var ed=document.getElementById("editor"); if(ed) ed.scrollIntoView({behavior:"smooth",block:"start"}); }catch(_e){}
     return true; }catch(e){ return false; }
 };
@@ -2697,11 +2704,9 @@ function renderAlfa(D){
     </div>`;
   if(D.temCliente){
     inner+=`<div style="margin-top:14px;">
-      <div style="display:flex; align-items:baseline; gap:8px;">
-        <span style="font-weight:800; font-size:30px; color:${D.alphaCDI>=0?"#2BD9A6":ORANGE};">${D.alphaCDI>=0?"+":""}${fmtPct(D.alphaCDI)} p.p.</span>
-        <span style="color:#A9B0D6; font-size:13px; font-weight:700;">do CDI a mais</span>
-      </div>
-      <div style="font-size:13px; color:#cfd4ef; margin-top:6px;">${fmtPct(S.clienteCDI)}% do CDI hoje → <strong style="color:#fff;">${fmtPct(S.cdiMult)}% do CDI</strong> na proposta</div>
+      <div style="font-weight:800; font-size:25px; color:${D.alphaCDI>=0?"#2BD9A6":ORANGE}; line-height:1.25;">${(()=>{var m=S.clienteCDI>0?(S.cdiMult-S.clienteCDI)/S.clienteCDI*100:0;return m>=0?"Melhora de "+fmtPct(m)+"%":"Queda de "+fmtPct(Math.abs(m))+"%";})()}</div>
+      <div style="color:#A9B0D6; font-size:13px; font-weight:700; margin-top:2px;">em relação à carteira atual!</div>
+      <div style="font-size:12.5px; color:#9AA2D0; margin-top:6px;">${fmtPct(S.clienteCDI)}% → <strong style="color:#fff;">${fmtPct(S.cdiMult)}% do CDI</strong> · ${D.alphaCDI>=0?"+":""}${fmtPct(D.alphaCDI)} p.p.</div>
       <div style="display:flex; gap:10px; margin-top:14px;">
         <div style="flex:1; background:rgba(43,217,166,.08); border:1px solid rgba(43,217,166,.3); border-radius:10px; padding:10px 12px;">
           <div style="font-size:11px; color:#A9B0D6; font-weight:700;">Ganho extra · 12 meses</div>
@@ -3006,8 +3011,9 @@ function buildCarteiraPNG(){
     ctx.fillStyle="rgba(43,217,166,.08)"; rr(60,y-22,W-120,_ah,14); ctx.fill();
     ctx.strokeStyle="rgba(43,217,166,.3)"; ctx.lineWidth=1; rr(60,y-22,W-120,_ah,14); ctx.stroke();
     T("ALFA DA ASSESSORIA",84,y,14,"#2BD9A6","700","left");
-    T((D.alphaCDI>=0?"+":"")+fmtPct(D.alphaCDI)+" p.p. do CDI",84,y+36,26,(D.alphaCDI>=0?"#2BD9A6":ORANGE),"800","left");
-    T(fmtPct(S.clienteCDI)+"% do CDI hoje  →  "+fmtPct(S.cdiMult)+"% do CDI na proposta",84,y+60,13.5,"#A9B0D6","500","left");
+    var _melh=(Number(S.clienteCDI)>0?(Number(S.cdiMult)-Number(S.clienteCDI))/Number(S.clienteCDI)*100:0);
+    T((_melh>=0?"Melhora de "+fmtPct(_melh)+"%":"Queda de "+fmtPct(Math.abs(_melh))+"%")+" em relação à carteira atual",84,y+36,23,(_melh>=0?"#2BD9A6":ORANGE),"800","left");
+    T(fmtPct(S.clienteCDI)+"% → "+fmtPct(S.cdiMult)+"% do CDI ("+(D.alphaCDI>=0?"+":"")+fmtPct(D.alphaCDI)+" p.p.)",84,y+60,12.5,"#A9B0D6","500","left");
     T("Ganho extra · 12 meses",W-60,y+30,12,"#A9B0D6","600","right");
     T((D.alpha12>=0?"+":"")+"R$ "+fmtBRL(D.alpha12),W-60,y+52,18,(D.alpha12>=0?"#2BD9A6":ORANGE),"800","right");
     T("· "+S.projAnos+" anos: "+(D.alphaProj>=0?"+":"")+"R$ "+fmtBRL(D.alphaProj),W-60,y+72,12.5,"#cfd4ef","600","right");
