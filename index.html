@@ -230,6 +230,8 @@ html, body {
 [data-tool="construtor"] .tab.active{ background:var(--orange); color:#fff; border-color:var(--orange); }
 [data-tool="construtor"] .tab.tab-atual{ border-color:rgba(54,197,240,.5); color:#7FD8F5; background:rgba(54,197,240,.08); }
 [data-tool="construtor"] .tab.tab-atual.active{ background:#36C5F0; color:#06203a; border-color:#36C5F0; }
+[data-tool="construtor"] .tab.tab-nova{ border-color:rgba(61,214,140,.5); color:#3DD68C; background:rgba(61,214,140,.08); }
+[data-tool="construtor"] .tab.tab-nova.active{ background:#3DD68C; color:#06203a; border-color:#3DD68C; }
 [data-tool="construtor"] .proj-btn{ background:rgba(0,0,0,.25); border:1px solid rgba(120,130,210,.2); color:#A9B0D6; padding:7px 14px;
     border-radius:100px; font-weight:700; font-size:13px; cursor:pointer; }
 [data-tool="construtor"] .proj-btn.active{ background:rgba(43,217,166,.18); border-color:#2BD9A6; color:#2BD9A6; }
@@ -258,6 +260,7 @@ html, body {
 [data-tool="construtor"] .tag-drag:active{ cursor:grabbing; }
 [data-tool="construtor"] .tag-tesouro{ background:rgba(91,141,239,.16); border:1px solid rgba(91,141,239,.45); color:#7BA4F2; }
 [data-tool="construtor"] .tag-protecao_parcial{ background:rgba(255,138,80,.12); border:1px solid rgba(255,138,80,.42); color:#FFB089; }
+[data-tool="construtor"] .tag-global{ background:rgba(54,197,240,.14); border:1px solid rgba(54,197,240,.45); color:#36C5F0; }
 [data-tool="construtor"] .tag-add{ cursor:pointer; user-select:none; display:inline-flex; align-items:center; justify-content:center; width:24px; height:24px; border-radius:7px; font-weight:800; font-size:15px; line-height:1; color:#9AA2D0; background:rgba(255,255,255,.05); border:1px dashed rgba(120,130,210,.45); }
 [data-tool="construtor"] .tag-add:hover{ color:#FF8B52; border-color:rgba(255,78,0,.5); background:rgba(255,78,0,.08); }
 [data-tool="construtor"] .tag-menu{ display:flex; }
@@ -459,66 +462,6 @@ html, body {
 [data-tool="comparador"] .orange{color:var(--orange)}
 [data-tool="comparador"] .x{cursor:pointer;color:var(--muted);background:var(--navy3);border:none;border-radius:9px;padding:7px 9px;font-family:inherit}
 
-/* ===== Modal "Adicionar ativo" (compartilhado construtor + RV) ===== */
-.rico-add-modal{position:fixed;inset:0;z-index:9999;display:none;align-items:flex-start;justify-content:center;padding:40px 16px;background:rgba(4,6,22,.74);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);overflow:auto;font-family:'Inter','Segoe UI',system-ui,sans-serif;}
-.rico-add-modal .ram-card{max-width:780px;width:100%;background:linear-gradient(160deg,#10173f,#0a0f30);border:1px solid rgba(120,130,210,.28);border-radius:20px;box-shadow:0 28px 90px rgba(0,0,0,.55);overflow:hidden;display:flex;flex-direction:column;max-height:88vh;}
-.rico-add-modal .ram-head{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid rgba(120,130,210,.18);flex-shrink:0;}
-.rico-add-modal .ram-title{font-weight:800;font-size:19px;color:#fff;letter-spacing:-.3px;}
-.rico-add-modal .ram-title small{display:block;font-weight:600;font-size:12px;color:#8A93D8;letter-spacing:0;margin-top:3px;}
-.rico-add-modal .ram-close{background:rgba(255,255,255,.04);border:1px solid rgba(120,130,210,.2);color:#A9B0D6;width:34px;height:34px;border-radius:10px;font-size:18px;cursor:pointer;line-height:1;display:flex;align-items:center;justify-content:center;transition:.15s;}
-.rico-add-modal .ram-close:hover{background:rgba(255,78,0,.14);border-color:rgba(255,78,0,.4);color:#FF8B6B;}
-.rico-add-modal .ram-tabs{display:flex;gap:8px;padding:16px 24px 0;flex-shrink:0;}
-.rico-add-modal .ram-tab{flex:0 0 auto;background:rgba(255,255,255,.04);border:1px solid rgba(120,130,210,.22);color:#A9B0D6;border-radius:999px;padding:9px 18px;font-weight:700;font-size:13px;cursor:pointer;font-family:inherit;transition:.15s;}
-.rico-add-modal .ram-tab:hover{border-color:rgba(255,78,0,.4);color:#cfd4ef;}
-.rico-add-modal .ram-tab.active{background:rgba(255,78,0,.16);border-color:rgba(255,78,0,.55);color:#FF6B2C;box-shadow:0 0 0 1px rgba(255,78,0,.18) inset;}
-.rico-add-modal .ram-body{padding:18px 24px 24px;overflow:auto;}
-.rico-add-modal .ram-grp{margin-bottom:18px;border-radius:14px;padding:4px;transition:background .25s,box-shadow .25s;}
-.rico-add-modal .ram-grp.flash{background:rgba(255,78,0,.07);box-shadow:0 0 0 1px rgba(255,78,0,.35) inset;}
-.rico-add-modal .ram-grp-head{display:flex;align-items:center;gap:9px;margin-bottom:10px;padding:4px 6px;}
-.rico-add-modal .ram-grp-head .dot{width:11px;height:11px;border-radius:3px;flex-shrink:0;}
-.rico-add-modal .ram-grp-head .nm{font-weight:800;font-size:14px;}
-.rico-add-modal .ram-grp-head .ct{margin-left:auto;color:#6F77A8;font-size:11px;font-weight:700;background:rgba(255,255,255,.05);border-radius:999px;padding:2px 9px;}
-.rico-add-modal .ram-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(224px,1fr));gap:10px;}
-.rico-add-modal .ram-libcard{background:rgba(0,0,0,.26);border:1px solid rgba(120,130,210,.18);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:7px;transition:.16s;}
-.rico-add-modal .ram-libcard:hover{border-color:rgba(255,78,0,.45);background:rgba(0,0,0,.34);transform:translateY(-1px);box-shadow:0 8px 22px rgba(0,0,0,.3);}
-.rico-add-modal .ram-libcard .nm{font-weight:700;font-size:13px;color:#fff;line-height:1.3;}
-.rico-add-modal .ram-libcard .dt{font-size:11px;color:#9AA2D0;line-height:1.4;}
-.rico-add-modal .ram-libcard .act{display:flex;gap:6px;align-items:center;margin-top:auto;}
-.rico-add-modal .ram-add{flex:1;display:inline-flex;align-items:center;justify-content:center;gap:5px;background:rgba(255,78,0,.15);border:1px solid rgba(255,78,0,.42);color:#FF6B2C;border-radius:9px;padding:7px 10px;font-weight:700;font-size:12.5px;cursor:pointer;font-family:inherit;transition:.15s;}
-.rico-add-modal .ram-add:hover{background:rgba(255,78,0,.26);color:#fff;}
-.rico-add-modal .ram-del{background:rgba(255,78,0,.08);border:1px solid rgba(255,78,0,.3);color:#FF8B6B;border-radius:9px;padding:7px 9px;cursor:pointer;font-size:12px;line-height:1;transition:.15s;}
-.rico-add-modal .ram-del:hover{background:rgba(255,78,0,.2);}
-.rico-add-modal .ram-empty{color:#6F77A8;font-size:13px;padding:10px 4px;}
-.rico-add-modal .ram-form{display:flex;flex-direction:column;gap:14px;}
-.rico-add-modal .ram-field{display:flex;flex-direction:column;gap:7px;}
-.rico-add-modal .ram-field .lab{font-size:11px;color:#8A93D8;font-weight:700;letter-spacing:.4px;text-transform:uppercase;}
-.rico-add-modal .ram-input,.rico-add-modal .ram-select{width:100%;background:rgba(0,0,0,.3);border:1px solid rgba(120,130,210,.22);border-radius:11px;color:#fff;font-size:14px;padding:12px 14px;outline:none;font-family:inherit;transition:.15s;-webkit-appearance:none;appearance:none;}
-.rico-add-modal .ram-input::placeholder{color:#5b6390;}
-.rico-add-modal .ram-input:focus,.rico-add-modal .ram-select:focus{border-color:rgba(255,78,0,.55);box-shadow:0 0 0 3px rgba(255,78,0,.12);}
-.rico-add-modal .ram-select{background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'><path d='M1 1l5 5 5-5' stroke='%238A93D8' stroke-width='2' fill='none' stroke-linecap='round'/></svg>");background-repeat:no-repeat;background-position:right 14px center;padding-right:38px;cursor:pointer;}
-.rico-add-modal .ram-select option{background:#0E1450;color:#fff;}
-.rico-add-modal .ram-save{display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--laranja,#FF4E00);color:#fff;border:none;border-radius:12px;padding:14px 18px;font-weight:800;font-size:14px;cursor:pointer;font-family:inherit;margin-top:4px;transition:.15s;}
-.rico-add-modal .ram-save:hover{background:var(--laranja-2,#FF6B2C);transform:translateY(-1px);box-shadow:0 8px 24px rgba(255,78,0,.32);}
-/* botão "+" por classe nos editores */
-.cls-add-btn{margin-left:auto;display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:8px;background:rgba(255,78,0,.12);border:1px solid rgba(255,78,0,.4);color:#FF6B2C;font-size:16px;font-weight:700;line-height:1;cursor:pointer;font-family:inherit;transition:.15s;flex-shrink:0;}
-.cls-add-btn:hover{background:rgba(255,78,0,.26);color:#fff;transform:scale(1.08);}
-/* === barra de busca no modal Adicionar ativo === */
-.rico-add-modal .ram-search{position:relative;padding:14px 24px 0;flex-shrink:0;}
-.rico-add-modal .ram-search svg{position:absolute;left:38px;top:50%;transform:translateY(calc(-50% + 7px));width:16px;height:16px;color:#6F77A8;pointer-events:none;}
-.rico-add-modal .ram-search input{width:100%;background:rgba(0,0,0,.3);border:1px solid rgba(120,130,210,.22);border-radius:11px;color:#fff;font-size:14px;padding:11px 14px 11px 40px;outline:none;font-family:inherit;transition:.15s;}
-.rico-add-modal .ram-search input::placeholder{color:#5b6390;}
-.rico-add-modal .ram-search input:focus{border-color:rgba(255,78,0,.55);box-shadow:0 0 0 3px rgba(255,78,0,.12);}
-.rico-add-modal .ram-search input:focus + svg,.rico-add-modal .ram-search.has svg{color:#FF6B2C;}
-.rico-add-modal .ram-noresult{color:#6F77A8;font-size:13px;padding:14px 4px;}
-/* ícone de classe (cabeçalhos) */
-.cls-ico{display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;}
-.cls-ico svg{display:block;}
-/* === badges Atual x Novo na aba "Atual" === */
-.item.it-atual{border-left:3px solid #36C5F0;padding-left:11px;}
-.item.it-novo{border-left:3px solid #2BD9A6;padding-left:11px;}
-.it-badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;border-radius:999px;padding:2px 8px;line-height:1.4;flex-shrink:0;}
-.it-badge.atual{background:rgba(54,197,240,.14);border:1px solid rgba(54,197,240,.45);color:#7FD8F5;}
-.it-badge.novo{background:rgba(43,217,166,.14);border:1px solid rgba(43,217,166,.5);color:#5BE3BE;}
 </style>
 <style>:root{
   --azul-1:#070B2E; --azul-2:#0C1142; --azul-3:#141A57; --azul-4:#1C2470;
@@ -1067,6 +1010,12 @@ button, .g-tab, [onclick]{ touch-action:manipulation; }
         });
         render("all");
         try{ fetch("news.json?cb="+Date.now()).then(function(r){return r.ok?r.json():null;}).then(function(j){ if(j&&j.items&&j.items.length){ DATA=j; render(CURRENT); } }).catch(function(){}); }catch(e){}
+        var FEEDS={ nacional:["https://g1.globo.com/rss/g1/economia/","https://www.infomoney.com.br/feed/"], internacional:["https://www.cnbc.com/id/100003114/device/rss/rss.html","https://feeds.content.dowjones.io/public/rss/mw_topstories"] };
+        function _strip(h){ try{ var d=document.createElement("div"); d.innerHTML=h||""; var t=(d.textContent||"").replace(/\s+/g," ").trim(); return t.length>150?t.slice(0,148)+"…":t; }catch(e){ return ""; } }
+        function _fdate(pd){ try{ var dt=new Date(pd); if(isNaN(dt.getTime())) return ""; var m=["jan","fev","mar","abr","mai","jun","jul","ago","set","out","nov","dez"]; return dt.getDate()+" "+m[dt.getMonth()]+" "+dt.getFullYear(); }catch(e){ return ""; } }
+        function _feed(url,region){ return fetch("https://api.rss2json.com/v1/api.json?rss_url="+encodeURIComponent(url)).then(function(r){return r.ok?r.json():null;}).then(function(j){ if(!j||j.status!=="ok"||!j.items) return []; var src=(j.feed&&j.feed.title)||""; return j.items.slice(0,4).map(function(it){ return {region:region,title:it.title,resumo:_strip(it.description||it.content),source:src,date:_fdate(it.pubDate),url:it.link}; }); }).catch(function(){ return []; }); }
+        function loadLive(){ var ps=[]; FEEDS.nacional.forEach(function(u){ps.push(_feed(u,"nacional"));}); FEEDS.internacional.forEach(function(u){ps.push(_feed(u,"internacional"));}); Promise.all(ps).then(function(res){ var items=[].concat.apply([],res); var nac=items.filter(function(x){return x.region==="nacional"&&x.title;}).slice(0,6); var intl=items.filter(function(x){return x.region==="internacional"&&x.title;}).slice(0,6); var merged=nac.concat(intl); if(merged.length>=4){ DATA={updated:new Date().toLocaleString("pt-BR",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"})+" (ao vivo)", items:merged}; render(CURRENT); } }).catch(function(){}); }
+        try{ loadLive(); }catch(e){}
       })();
       </script>
     </div>
@@ -1088,10 +1037,6 @@ button, .g-tab, [onclick]{ touch-action:manipulation; }
       <button class="btn-solid" id="btnPng">
         <svg class="icon" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
         Gerar PNG
-      </button>
-      <button class="btn-ghost" id="btnPngComp" style="display:none; border-color:rgba(54,197,240,.5); color:#7FD8F5;">
-        <svg class="icon" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-        PNG comparativo
       </button>
     </div>
   </div>
@@ -1274,13 +1219,9 @@ button, .g-tab, [onclick]{ touch-action:manipulation; }
       var up=Math.max(Math.round(Math.abs(b)),Math.round(taxa))+15;
       return [[b-15,b-15],[b,b],[mid,taxa],[0,taxa],[up,taxa]];
     }
-    function fixingPrazo(fix){
-      var m={"29/nov/27":"1 ano","29/mai/28":"2 anos","25/jun/29":"3 anos","30/mai/29":"3 anos"};
-      return m[fix]||fix;
-    }
     function buildQuanto(o){
       var isP1=o.payoff===1;
-      var nome=o.ativo+" · "+(isP1?fmtMult(o.mult)+"x":fmtTaxa(o.taxa)+"%")+" · "+fixingPrazo(o.fixing);
+      var nome=o.ativo+" · "+(isP1?fmtMult(o.mult)+"x":fmtTaxa(o.taxa)+"%")+" · "+o.fixing;
       var tipo=isP1?"Capital protegido · alta ilimitada":"Taxa fixa ou alta ilimitada";
       var cen; if(isP1){ cen=[[-30,0],[-10,0],[0,0],[20,r1(20*o.mult)],[40,r1(40*o.mult)]]; }
       else { var t=o.taxa,tr=Math.round(t); cen=[[-25,t],[-10,t],[0,t],[tr+15,tr+15],[tr+35,tr+35]]; }
@@ -1342,8 +1283,8 @@ button, .g-tab, [onclick]{ touch-action:manipulation; }
       return prot+" · participa 1:1 na alta até "+fmtPct(op.teto)+"% (ou "+fmtPct(op.tetoBarreira)+"% se a barreira de "+fmtPct(op.barreira)+"% for atingida)";
     }
     function opDetalheQuanto(op){
-      if(op.payoff===1) return "Capital protegido — devolve 100% do capital se o "+op.ativo+" cair. Na alta, paga a variação × "+fmtMult(op.mult)+" (sem teto). Quanto: moeda local, sem risco cambial. Prazo de "+fixingPrazo(op.fixing)+".";
-      return "Recebe o maior entre a taxa fixa de "+fmtTaxa(op.taxa)+"% e a alta do "+op.ativo+" (1:1, ilimitada). Quanto: moeda local, sem risco cambial. Prazo de "+fixingPrazo(op.fixing)+".";
+      if(op.payoff===1) return "Capital protegido — devolve 100% do capital se o "+op.ativo+" cair. Na alta, paga a variação × "+fmtMult(op.mult)+" (sem teto). Quanto: moeda local, sem risco cambial. Fixing em "+op.fixing+".";
+      return "Recebe o maior entre a taxa fixa de "+fmtTaxa(op.taxa)+"% e a alta do "+op.ativo+" (1:1, ilimitada). Quanto: moeda local, sem risco cambial. Fixing em "+op.fixing+".";
     }
     function cupomDetalhe(op){ return "SmartCupom · cupom pré-fixado de "+fmtPct(op.taxa)+"% · barreira de desarme "+fmtPct(op.barreira)+"%"+(op.cdi!=null?" · ≈ "+fmtPct(op.cdi)+"% do CDI":""); }
 
@@ -1371,14 +1312,16 @@ button, .g-tab, [onclick]{ touch-action:manipulation; }
     var CUPOM=RUBI_RAW.map(function(r){ return { id:r.id, ativo:r.ativo, setor:r.setor, taxa:r.taxa, barreira:r.barreira, cdi:r.cdi, nome:r.ativo+" · SmartCupom "+fmtTaxa(r.taxa)+"%", tipo:"Cupom pré-fixado", cupom:true, cen:cupomCen(r.taxa, r.barreira) }; });
     var QUANTO=[
       { id:"q-sp-1", payoff:1, ativo:"S&P 500", fixing:"29/nov/27", mult:1.04 },
-      { id:"q-sp-2", payoff:1, ativo:"S&P 500", fixing:"29/mai/28", mult:1.20 },
-      { id:"q-sp-3", payoff:1, ativo:"S&P 500", fixing:"25/jun/29", mult:1.46 },
+      { id:"q-sp-2", payoff:1, ativo:"S&P 500", fixing:"29/mai/28", mult:1.15 },
+      { id:"q-sp-3", payoff:1, ativo:"S&P 500", fixing:"30/mai/29", mult:1.41 },
       { id:"q-nq-1", payoff:1, ativo:"Nasdaq", fixing:"29/nov/27", mult:1.00 },
       { id:"q-nq-2", payoff:1, ativo:"Nasdaq", fixing:"29/mai/28", mult:1.00 },
-      { id:"q-nq-3", payoff:1, ativo:"Nasdaq", fixing:"25/jun/29", mult:1.13 },
+      { id:"q-nq-3", payoff:1, ativo:"Nasdaq", fixing:"30/mai/29", mult:1.17 },
       { id:"q-sp-fx1", payoff:2, ativo:"S&P 500", fixing:"29/nov/27", taxa:6.30 },
-      { id:"q-sp-fx2", payoff:2, ativo:"S&P 500", fixing:"29/mai/28", taxa:14.86 },
-      { id:"q-sp-fx3", payoff:2, ativo:"S&P 500", fixing:"25/jun/29", taxa:30.91 }
+      { id:"q-sp-fx2", payoff:2, ativo:"S&P 500", fixing:"29/mai/28", taxa:11.97 },
+      { id:"q-sp-fx3", payoff:2, ativo:"S&P 500", fixing:"30/mai/29", taxa:26.44 },
+      { id:"q-nq-fx2", payoff:2, ativo:"Nasdaq", fixing:"29/mai/28", taxa:9.00 },
+      { id:"q-nq-fx3", payoff:2, ativo:"Nasdaq", fixing:"30/mai/29", taxa:14.33 }
     ].map(buildQuanto);
 
     var customSeq=0; var CUSTOM=[]; var REG={};
@@ -1393,7 +1336,7 @@ button, .g-tab, [onclick]{ touch-action:manipulation; }
       else if(cat==="cupom") badge='<span class="ocbadge cup">Cupom '+fmtPct(op.taxa)+'%</span>'+(op.cdi!=null?' <span class="ocbadge">≈ '+fmtPct(op.cdi)+'% CDI</span>':'');
       else badge='<span class="ocbadge prot">'+esc(op.tipo||"Proteção")+'</span>';
       var meta;
-      if(cat==="quanto") meta="Prazo "+esc(fixingPrazo(op.fixing));
+      if(cat==="quanto") meta="Fixing "+esc(op.fixing);
       else meta=esc(op.ativo)+(op.setor?" · "+esc(op.setor):"");
       var h='<div class="opcard"><div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start">'
         +'<div><div style="font-weight:800;font-size:14.5px;color:#fff">'+esc(op.nome)+'</div>'
@@ -1444,7 +1387,7 @@ button, .g-tab, [onclick]{ touch-action:manipulation; }
     }
     function addToCarteira(key){
       var e=REG[key]; if(!e || !window.__ctorAddAtivo) return; var op=e.op;
-      if(e.cat==="quanto") window.__ctorAddAtivo("Internacional", op.nome, opDetalheQuanto(op), "Prazo "+fixingPrazo(op.fixing), true, op);
+      if(e.cat==="quanto") window.__ctorAddAtivo("Internacional", op.nome, opDetalheQuanto(op), "No fixing "+op.fixing, true, op);
       else if(e.cat==="cupom") window.__ctorAddAtivo("Renda Variável", op.nome, cupomDetalhe(op), "No vencimento", false, op);
       else window.__ctorAddAtivo("Renda Variável", op.nome, (op.descricao||opDetalhe(op)), "No vencimento", true, op);
     }
@@ -2133,81 +2076,6 @@ button, .g-tab, [onclick]{ touch-action:manipulation; }
 </script>
 
 <script>
-/* ============================================================
-   BIBLIOTECA DE ATIVOS — persistente em localStorage
-   Acumula todos os ativos já adicionados às carteiras (ambos
-   construtores). Deduplica por nome+classe. Mesmo padrão
-   defensivo (try/catch) usado em rico-simulador-v1.
-   ============================================================ */
-(function(){
-  if(window.RICO_LIB) return;
-  var KEY = "rico-biblioteca-v1";
-  function _norm(s){ return (s==null?"":String(s)).trim().toLowerCase().replace(/\s+/g," "); }
-  function _key(it){ return _norm(it.nome)+"||"+_norm(it.classe); }
-  function load(){
-    try{
-      var raw = localStorage.getItem(KEY);
-      if(!raw) return [];
-      var arr = JSON.parse(raw);
-      return Array.isArray(arr) ? arr.filter(function(x){ return x && x.nome; }) : [];
-    }catch(e){ return []; }
-  }
-  function save(arr){
-    try{ localStorage.setItem(KEY, JSON.stringify(Array.isArray(arr)?arr:[])); }catch(e){}
-  }
-  function all(){ return load(); }
-  function byClass(){
-    var out = {};
-    load().forEach(function(it){
-      var c = it.classe || "Outros";
-      if(!out[c]) out[c] = [];
-      out[c].push(it);
-    });
-    return out;
-  }
-  function upsert(it){
-    if(!it || !it.nome) return load();
-    var arr = load();
-    var k = _key(it);
-    var found = false;
-    for(var i=0;i<arr.length;i++){
-      if(_key(arr[i])===k){
-        // Atualiza campos relevantes mantendo o registro existente
-        arr[i].detalhe = (it.detalhe!=null && it.detalhe!=="") ? it.detalhe : arr[i].detalhe;
-        if(it.liquidez!=null && it.liquidez!=="") arr[i].liquidez = it.liquidez;
-        if(it.retorno!=null) arr[i].retorno = it.retorno;
-        if(it.setor!=null) arr[i].setor = it.setor;
-        arr[i].atualizadoEm = Date.now();
-        found = true;
-        break;
-      }
-    }
-    if(!found){
-      arr.push({
-        nome: String(it.nome),
-        classe: it.classe || "Outros",
-        detalhe: it.detalhe || "",
-        liquidez: it.liquidez || "",
-        retorno: (it.retorno!=null ? it.retorno : null),
-        setor: (it.setor!=null ? it.setor : null),
-        origem: it.origem || "",
-        criadoEm: Date.now(),
-        atualizadoEm: Date.now()
-      });
-    }
-    save(arr);
-    return arr;
-  }
-  function remove(it){
-    var k = (typeof it==="string") ? it : _key(it);
-    var arr = load().filter(function(x){ return _key(x)!==k; });
-    save(arr);
-    return arr;
-  }
-  window.RICO_LIB = { KEY:KEY, load:load, save:save, all:all, byClass:byClass, upsert:upsert, remove:remove, keyOf:_key };
-})();
-</script>
-<script>
 (function() {
   var _done = false;
   window._toolInit['construtor'] = function() {
@@ -2231,66 +2099,12 @@ const CLASS_COLORS = {
   "Fundos Listados":"#FFB020","Alternativos":"#C77DFF","Internacional":"#36C5F0"
 };
 const CLASSES = Object.keys(CLASS_COLORS);
-
-/* ===== Ícones por classe de ativo (SVG inline, estilo Lucide stroke) ===== */
-const CLASS_ICON_PATHS = {
-  "Renda Fixa":'<path d="M12 2 3 7v2h18V7z"/><line x1="5" y1="11" x2="5" y2="18"/><line x1="10" y1="11" x2="10" y2="18"/><line x1="14" y1="11" x2="14" y2="18"/><line x1="19" y1="11" x2="19" y2="18"/><line x1="3" y1="21" x2="21" y2="21"/>',
-  "Renda Variável":'<path d="M3 3v18h18"/><path d="M7 14l3-4 3 3 5-7"/><path d="M18 6h3v3"/>',
-  "Multimercados":'<polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/>',
-  "Fundos Listados":'<rect x="4" y="3" width="16" height="18" rx="1.5"/><line x1="9" y1="7" x2="9" y2="7.01"/><line x1="15" y1="7" x2="15" y2="7.01"/><line x1="9" y1="11" x2="9" y2="11.01"/><line x1="15" y1="11" x2="15" y2="11.01"/><line x1="9" y1="15" x2="9" y2="15.01"/><line x1="15" y1="15" x2="15" y2="15.01"/><path d="M10 21v-3h4v3"/>',
-  "Alternativos":'<path d="M6 3h12l4 6-10 13L2 9z"/><path d="M11 3 8 9l4 13 4-13-3-6"/><path d="M2 9h20"/>',
-  "Internacional":'<circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>'
-};
-function classIconSVG(classe, color, size){
-  const p = CLASS_ICON_PATHS[classe]; if(!p) return "";
-  const s = size||15, col = color||"currentColor";
-  return '<span class="cls-ico"><svg width="'+s+'" height="'+s+'" viewBox="0 0 24 24" fill="none" stroke="'+col+'" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+p+'</svg></span>';
-}
-/* desenha um ícone simplificado da classe no canvas do PNG (centro x,y) */
-function drawClassIcon(ctx, classe, cx, cy, size, color){
-  try{
-    var s=size||20, h=s/2; ctx.save();
-    ctx.strokeStyle=color; ctx.fillStyle=color; ctx.lineWidth=Math.max(1.6,s/11);
-    ctx.lineCap="round"; ctx.lineJoin="round";
-    var L=cx-h, T=cy-h, R=cx+h, B=cy+h;
-    if(classe==="Renda Fixa"){
-      ctx.beginPath(); ctx.moveTo(cx,T); ctx.lineTo(L,T+s*0.28); ctx.lineTo(R,T+s*0.28); ctx.closePath(); ctx.stroke();
-      [0.28,0.5,0.72].forEach(function(fx){ var x=L+s*fx+s*0.07; ctx.beginPath(); ctx.moveTo(x,T+s*0.38); ctx.lineTo(x,B-s*0.16); ctx.stroke(); });
-      var x4=R-s*0.13; ctx.beginPath(); ctx.moveTo(x4,T+s*0.38); ctx.lineTo(x4,B-s*0.16); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(L,B); ctx.lineTo(R,B); ctx.stroke();
-    } else if(classe==="Renda Variável"){
-      ctx.beginPath(); ctx.moveTo(L,T); ctx.lineTo(L,B); ctx.lineTo(R,B); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(L+s*0.12,B-s*0.22); ctx.lineTo(cx-s*0.06,cy-s*0.04); ctx.lineTo(cx+s*0.12,cy+s*0.06); ctx.lineTo(R-s*0.04,T+s*0.16); ctx.stroke();
-    } else if(classe==="Multimercados"){
-      ctx.beginPath(); ctx.moveTo(cx,T); ctx.lineTo(R,cy-s*0.18); ctx.lineTo(cx,cy); ctx.lineTo(L,cy-s*0.18); ctx.closePath(); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(L,cy+s*0.02); ctx.lineTo(cx,cy+s*0.2); ctx.lineTo(R,cy+s*0.02); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(L,cy+s*0.22); ctx.lineTo(cx,cy+s*0.4); ctx.lineTo(R,cy+s*0.22); ctx.stroke();
-    } else if(classe==="Fundos Listados"){
-      ctx.strokeRect(L+s*0.06,T,s*0.88,s);
-      [0.28,0.5,0.72].forEach(function(fy){ [0.3,0.6].forEach(function(fx){ ctx.fillRect(L+s*fx,T+s*fy,s*0.1,s*0.1); }); });
-      ctx.strokeRect(cx-s*0.12,B-s*0.22,s*0.24,s*0.22);
-    } else if(classe==="Alternativos"){
-      ctx.beginPath(); ctx.moveTo(cx,T); ctx.lineTo(R,cy-s*0.08); ctx.lineTo(cx,B); ctx.lineTo(L,cy-s*0.08); ctx.closePath(); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(L,cy-s*0.08); ctx.lineTo(R,cy-s*0.08); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(cx-s*0.18,T); ctx.lineTo(L,cy-s*0.08); ctx.moveTo(cx+s*0.18,T); ctx.lineTo(R,cy-s*0.08); ctx.stroke();
-    } else if(classe==="Internacional"){
-      ctx.beginPath(); ctx.arc(cx,cy,h-1,0,2*Math.PI); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(L+1,cy); ctx.lineTo(R-1,cy); ctx.stroke();
-      ctx.beginPath(); ctx.ellipse(cx,cy,h*0.45,h-1,0,0,2*Math.PI); ctx.stroke();
-    }
-    ctx.restore();
-  }catch(_ic){}
-}
-/* normaliza texto p/ busca: minúsculo e sem acentos (defensivo) */
-function normTxt(s){
-  try{ return (s==null?"":String(s)).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,""); }
-  catch(_n){ return (s==null?"":String(s)).toLowerCase(); }
-}
 const CDI_MULT = { Conservadora:108, Moderada:113, Sofisticada:120 };
 const CDI_DEFAULT = 14.25;
 
 const isIsento = (n)=>/(LCI|LCA|LCD)/i.test(n||"");
 const isTesouro = (n)=>/tesouro|\bNTN-?B\b|xp\s*brasil/i.test(n||"");
+const isGlobal = (it)=> !!it && (it.classe==="Internacional" || /\bglobal\b|nasdaq|s&p|msci|\bworld\b|wellington|exterior|internacional|s&p\s*500/i.test(it.nome||""));
 const hasFGC = (n)=>/(LCI|LCA|LCD|CDB)/i.test(n||"");
 const isFII = (it)=> it && it.classe==="Fundos Listados";
 function structureTag(it){
@@ -2303,9 +2117,9 @@ function structureTag(it){
 /* Catálogo de tags possíveis com sua classe visual */
 const TAG_KIND = {
   "CETIPADO":"cetip", "Proteção":"protecao", "Cupom Pré-Fixado":"cupom",
-  "Resgate trabalhado":"resgate", "Isento de IR":"isento", "FGC":"fgc", "Tesouro Direto":"tesouro", "Proteção":"protecao", "Proteção Parcial":"protecao_parcial"
+  "Resgate trabalhado":"resgate", "Isento de IR":"isento", "FGC":"fgc", "Tesouro Direto":"tesouro", "Global":"global", "Proteção":"protecao", "Proteção Parcial":"protecao_parcial"
 };
-const ALL_TAGS=["Resgate trabalhado","Isento de IR","FGC","Proteção","Proteção Parcial","Cupom Pré-Fixado","CETIPADO","Tesouro Direto","Liquidez · No vencimento","Liquidez · D+0","Liquidez · D+1"];
+const ALL_TAGS=["Resgate trabalhado","Isento de IR","FGC","Proteção","Proteção Parcial","Cupom Pré-Fixado","CETIPADO","Tesouro Direto","Global","Liquidez · No vencimento","Liquidez · D+0","Liquidez · D+1"];
 function tagKind(label){
   if(TAG_KIND[label]) return TAG_KIND[label];
   if(/^Liquidez/.test(label)) return "liq";
@@ -2321,6 +2135,7 @@ function defaultTags(it){
   if(isIsento(it.nome)){ t.push("Resgate trabalhado"); t.push("Isento de IR"); }
   if(hasFGC(it.nome) && t.indexOf("FGC")===-1) t.push("FGC");
   if(isTesouro(it.nome) && t.indexOf("Tesouro Direto")===-1) t.push("Tesouro Direto");
+  if(isGlobal(it) && t.indexOf("Global")===-1) t.push("Global");
   return t;
 }
 let _id=0; const uid=()=>"a"+(++_id);
@@ -2427,14 +2242,8 @@ const S = {
   clienteCDI:0,
   projAnos:5,
   posicaoAtual:null,      // posição consolidada importada (categoria -> %)
-  recomendadaTemplate:"Moderada",  // template ideal de referência p/ aderência da aba Atual
-  baselineAtual:null,     // snapshot {keys:Set, itens:[{nome,classe,pct}]} da carteira do cliente ao entrar na aba "Atual"
-  baselineKey:null        // identifica de qual cliente/posição o baseline foi tirado (evita baseline "vazado" entre clientes)
+  recomendadaTemplate:"Moderada"  // template ideal de referência p/ aderência da aba Atual
 };
-/* chave estável de um ativo p/ diff de baseline (nome+classe, normalizado) */
-function _ativoKey(it){ return normTxt((it&&it.nome)||"")+"||"+normTxt((it&&it.classe)||""); }
-/* identidade da posição atual (p/ saber se o baseline ainda vale) */
-function _posIdent(pos){ try{ return (pos&&(pos.conta||pos.cliente))||"" ; }catch(_e){ return ""; } }
 
 /* Categorias do construtor para montar a carteira "Atual" a partir da posição importada */
 const CAT_ATUAL_NOMES = {
@@ -2537,8 +2346,6 @@ function calc(){
 
 /* ---------- render ---------- */
 function render(){
-  // Preserva a posição de rolagem: o rebuild total (innerHTML) zera o scroll.
-  const _scrollY = (typeof window!=="undefined") ? (window.scrollY||window.pageYOffset||0) : 0;
   const D = calc();
   renderTabs();
   renderEditor(D);
@@ -2551,9 +2358,6 @@ function render(){
   renderAderencia(D);
   document.getElementById("projTitle").textContent = "PROJEÇÃO DE RENTABILIDADE · "+S.template.toUpperCase();
   publicarCarteira(D);
-  try{ atualizarBtnComparativo(); }catch(_bc){}
-  // Restaura a rolagem após o reflow (evita o "pulo para o topo" ao adicionar/editar ativos).
-  try{ requestAnimationFrame(function(){ window.scrollTo(0, _scrollY); }); }catch(_e){ try{ window.scrollTo(0,_scrollY); }catch(__e){} }
 }
 
 // Ponte com o Simulador: publica a carteira montada num objeto global
@@ -2577,16 +2381,6 @@ function publicarCarteira(D){
     };
     if(typeof window.RICO_onCarteiraUpdate==="function"){ window.RICO_onCarteiraUpdate(); }
   }catch(e){ /* silencioso */ }
-  // UPSERT na biblioteca: acumula todos os ativos com nome definido (deduplica por nome+classe)
-  try{
-    if(window.RICO_LIB){
-      S.items.forEach(function(it){
-        if(it && it.nome && it.nome!=="Novo ativo"){
-          window.RICO_LIB.upsert({ nome:it.nome, classe:it.classe, detalhe:it.detalhe, liquidez:it.liquidez, origem:"construtor" });
-        }
-      });
-    }
-  }catch(_lb){}
 }
 
 function renderTabs(){
@@ -2595,6 +2389,7 @@ function renderTabs(){
   Object.keys(TEMPLATES).forEach(t=>{
     h+=`<button class="tab ${S.template===t?"active":""}" data-tpl="${t}">${t}</button>`;
   });
+  h+=`<button class="tab tab-nova ${S.template==="Nova"?"active":""}" data-nova="1"><svg class="icon" viewBox="0 0 24 24" style="margin-right:6px; vertical-align:-3px; width:14px; height:14px;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Montar do zero</button>`;
   // Aba "Atual" — só aparece quando há posição consolidada importada
   if(S.posicaoAtual && S.posicaoAtual.comp){
     h+=`<button class="tab tab-atual ${S.template==="Atual"?"active":""}" data-atual="1">
@@ -2606,11 +2401,16 @@ function renderTabs(){
   el.querySelectorAll("[data-tpl]").forEach(b=>b.onclick=()=>loadTemplate(b.dataset.tpl));
   const atualBtn = el.querySelector("[data-atual]");
   if(atualBtn) atualBtn.onclick=()=>loadAtual();
-  el.querySelector("[data-restore]").onclick=()=>loadTemplate(S.template==="Atual"?S.recomendadaTemplate:S.template);
+  const novaBtn = el.querySelector("[data-nova]");
+  if(novaBtn) novaBtn.onclick=()=>loadNova();
+  el.querySelector("[data-restore]").onclick=()=>{ if(S.template==="Nova") loadNova(); else loadTemplate(S.template==="Atual"?S.recomendadaTemplate:S.template); };
 }
 
 function loadTemplate(t){
   S.template=t; S.recomendadaTemplate=t; S.items=TEMPLATES[t](); S.cdiMult=CDI_MULT[t]; render();
+}
+function loadNova(){
+  S.template="Nova"; S.recomendadaTemplate="Moderada"; S.items=[]; S.cdiMult=CDI_MULT.Moderada; render();
 }
 
 /* Carrega a carteira ATUAL do cliente (posição importada) na tela do construtor */
@@ -2620,50 +2420,8 @@ function loadAtual(){
   S.items = itensDaPosicao(S.posicaoAtual);
   if(S.posicaoAtual.patrimonio) S.patrimonio = S.posicaoAtual.patrimonio;
   if(S.posicaoAtual.conta && (!S.cliente || /^Conta /.test(S.cliente))) S.cliente = "Conta "+S.posicaoAtual.conta;
-  // === BASELINE: fixa a "foto" da carteira atual do cliente ao entrar na aba "Atual" ===
-  // (capturado a partir dos ativos efetivamente puxados da posição importada)
-  try{ S.baselineAtual = snapshotBaseline(S.items); S.baselineKey = _posIdent(S.posicaoAtual); }catch(_b){ S.baselineAtual = null; }
   // mantém o cdiMult do template recomendado como referência (a carteira atual não tem retorno projetado próprio)
   render();
-}
-/* cria o snapshot do baseline a partir de uma lista de itens */
-function snapshotBaseline(items){
-  var keys = {}; var snap = [];
-  (items||[]).forEach(function(it){
-    if(!it || (Number(it.pct)||0) <= 0) return;
-    var k = _ativoKey(it);
-    if(keys[k]) return;
-    keys[k] = true;
-    snap.push({ nome:it.nome, classe:it.classe, pct:Number(it.pct)||0 });
-  });
-  return { keys:keys, itens:snap };
-}
-/* baseline ativo só vale na aba "Atual" e para a posição correspondente */
-function baselineAtivo(){
-  if(S.template!=="Atual") return null;
-  if(!S.baselineAtual || !S.baselineAtual.keys) return null;
-  return S.baselineAtual;
-}
-/* status de um item vs baseline: "atual" (já existia), "novo" (adicionado depois) ou "" (sem baseline) */
-function statusVsBaseline(it){
-  var bl = baselineAtivo(); if(!bl) return "";
-  return bl.keys[_ativoKey(it)] ? "atual" : "novo";
-}
-/* diff completo: o que ENTROU e o que SAIU em relação ao baseline */
-function diffBaseline(){
-  var bl = baselineAtivo(); if(!bl) return null;
-  var atuaisKeys = {}; var entrou = [];
-  S.items.forEach(function(it){
-    if((Number(it.pct)||0) <= 0) return;
-    var k = _ativoKey(it); atuaisKeys[k] = true;
-    if(!bl.keys[k]) entrou.push({ nome:it.nome, classe:it.classe, pct:Number(it.pct)||0 });
-  });
-  var saiu = [];
-  bl.itens.forEach(function(b){
-    var k = _ativoKey(b);
-    if(!atuaisKeys[k]) saiu.push({ nome:b.nome, classe:b.classe, pct:b.pct });
-  });
-  return { entrou:entrou, saiu:saiu };
 }
 
 /* Composição (categoria -> %) dos itens de um template */
@@ -2762,15 +2520,15 @@ function renderAderencia(D){
 function renderEditor(D){
   const el=document.getElementById("editor");
   let h="";
+  if(!S.items.length){ h+='<div style="padding:24px 18px;text-align:center;color:#9AA2D0;font-size:13.5px;line-height:1.6;border:1px dashed rgba(120,130,210,.3);border-radius:14px;margin-bottom:10px">Carteira em branco. Monte do zero adicionando ativos da <b style="color:#FF8B52">biblioteca</b>: use o <b style="color:#FF8B52">Catálogo de operações</b> abaixo (botão “+ Add”), o “Adicionar ativo” ou os atalhos de “Adicionar rápido”.</div>'; }
   CLASSES.forEach(c=>{
     const list=D.grouped[c];
     if(!list||list.length===0) return;
     h+=`<div style="margin-bottom:18px;">
       <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
-        ${classIconSVG(c, CLASS_COLORS[c], 17)}
+        <span style="width:12px; height:12px; border-radius:4px; background:${CLASS_COLORS[c]};"></span>
         <span style="font-weight:700; font-size:15px;">${c}</span>
         <span style="color:#A9B0D6; font-weight:700; font-size:13px;">${fmtPct(D.byClass[c])}%</span>
-        <button type="button" class="cls-add-btn" data-clsadd="${esc(c)}" title="Adicionar ativo em ${esc(c)}">+</button>
       </div>`;
     list.forEach(i=>{
       if(!Array.isArray(i.tags)) i.tags = defaultTags(i);
@@ -2790,13 +2548,8 @@ function renderEditor(D){
       ALL_TAGS.forEach(lbl=>{ if(i.tags.indexOf(lbl)===-1){ menuChips+=`<button class="tag tag-${tagKind(lbl)} tag-menu-chip" data-addchip="${i.id}" data-label="${esc(lbl)}">+ ${esc(lbl)}</button>`; } });
       const tagsHtml=`<div class="tag-zone" data-tagzone="${i.id}" style="display:flex; gap:6px; margin-top:9px; flex-wrap:wrap; min-height:26px; align-items:center;">${tags}<span class="tag-add" data-addtag="${i.id}" title="Adicionar tag">+</span></div><div class="tag-menu" data-tagmenu="${i.id}" style="display:none; gap:6px; flex-wrap:wrap; margin-top:8px; padding:8px; border-radius:10px; background:rgba(10,14,50,.6); border:1px solid rgba(120,130,210,.18);">${menuChips || '<span style="color:#6F77A8;font-size:12px">Todas as tags já adicionadas</span>'}</div>`;
       let selOpts=""; CLASSES.forEach(cl=>selOpts+=`<option value="${cl}" ${i.classe===cl?"selected":""}>${cl}</option>`);
-      const _st = statusVsBaseline(i);
-      const _itemCls = _st==="atual" ? " it-atual" : (_st==="novo" ? " it-novo" : "");
-      const _badge = _st==="atual" ? `<span class="it-badge atual" title="Já estava na carteira do cliente">Atual</span>`
-                   : _st==="novo" ? `<span class="it-badge novo" title="Adicionado depois da carteira atual">Novo</span>` : "";
-      h+=`<div class="item${_itemCls}">
+      h+=`<div class="item">
         <div style="display:flex; gap:8px; align-items:center;">
-          ${_badge}
           <div class="pct-wrap">
             <input class="pct-input num" type="number" step="0.5" value="${i.pct}" data-f="pct" data-id="${i.id}">
             <span class="pct-suffix">%</span>
@@ -2809,7 +2562,7 @@ function renderEditor(D){
         ${tagsHtml}
         <input class="det-input" value="${esc(i.detalhe)}" placeholder="Detalhe (estrutura, prazo, taxa…)" data-f="detalhe" data-id="${i.id}">
         ${i.catalogOp?`<button type="button" class="op-how-btn" data-howtoggle="${i.id}">${i._howOpen?"▴":"▾"} Como funciona a operação</button><div class="op-how-body" data-howbody="${i.id}" style="display:${i._howOpen?"block":"none"}">${i._howOpen&&window.__opPayoffHTML?window.__opPayoffHTML(i.catalogOp):""}</div>`:""}
-        <div class="ctor-rs" data-rsid="${i.id}" style="font-size:12px; color:#6F77A8; margin-top:4px;">≈ R$ ${fmtBRL(S.patrimonio*(Number(i.pct)||0)/100)}</div>
+        <div style="font-size:12px; color:#6F77A8; margin-top:4px;">≈ R$ ${fmtBRL(S.patrimonio*(Number(i.pct)||0)/100)}</div>
       </div>`;
     });
     h+=`</div>`;
@@ -2822,14 +2575,10 @@ function renderEditor(D){
     inp.addEventListener(ev,()=>{
       const it=S.items.find(x=>x.id===id); if(!it) return;
       it[f] = (f==="pct")?Number(inp.value):inp.value;
-      if(f==="pct"){ softValMain(id); updateLight(); }
+      if(f==="pct"){ updateLight(); }
       else if(f==="classe"){ render(); }
       else { /* nome/detalhe: só atualiza derivados leves sem reconstruir o input em foco */ updateLight(); }
     });
-  });
-  // botão "+" por classe: abre o modal pré-selecionado naquela classe
-  el.querySelectorAll("[data-clsadd]").forEach(b=>{
-    b.onclick=(e)=>{ e.stopPropagation(); abrirAddModal(b.getAttribute("data-clsadd")); };
   });
   el.querySelectorAll("[data-opt]").forEach(b=>{
     b.onclick=()=>{
@@ -2930,10 +2679,8 @@ function addTag(toId,label){
   render();
 }
 window.__ctorAddAtivo = function(classe,nome,detalhe,liquidez,protecaoFlag,op){
-  try{ var o = mk(classe||"Renda Variável", nome||"Operação", 0, detalhe||"", liquidez||"No vencimento", null, !!protecaoFlag); if(op){ o.catalogOp=op; o._howOpen=true; } S.items.push(o);
-    try{ if(window.RICO_LIB) window.RICO_LIB.upsert({nome:o.nome, classe:o.classe, detalhe:o.detalhe, liquidez:o.liquidez, origem:"construtor"}); }catch(_lb){}
-    render();
-    // scrollIntoView removido: causava o "pulo" para o topo. A posição é preservada em render().
+  try{ var o = mk(classe||"Renda Variável", nome||"Operação", 0, detalhe||"", liquidez||"No vencimento", null, !!protecaoFlag); if(op){ o.catalogOp=op; o._howOpen=true; } S.items.push(o); render();
+    try{ var ed=document.getElementById("editor"); if(ed) ed.scrollIntoView({behavior:"smooth",block:"start"}); }catch(_e){}
     return true; }catch(e){ return false; }
 };
 
@@ -2942,15 +2689,6 @@ function updateLight(){
   const D=calc();
   renderTotal(D); renderRetorno(D); renderAlfa(D); renderDonut(D); renderGloss(D); renderProj(D);
   publicarCarteira(D);
-}
-// Atualiza o "≈ R$" do item editado sem reconstruir o input (mantém o foco).
-// O R$ por ativo = patrimônio total × pct/100, então só o item alterado muda.
-function softValMain(id){
-  try{
-    const it=S.items.find(x=>x.id===id); if(!it) return;
-    const lbl=document.querySelector('.ctor-rs[data-rsid="'+id+'"]');
-    if(lbl) lbl.textContent="≈ R$ "+fmtBRL(S.patrimonio*(Number(it.pct)||0)/100);
-  }catch(_e){}
 }
 
 function renderTotal(D){
@@ -3176,180 +2914,7 @@ document.getElementById("patrimonio").addEventListener("input",e=>{
   const v=e.target.value; e.target.setSelectionRange(v.length,v.length);
   updateLight();
 });
-document.getElementById("btnAdd").onclick=()=>{ abrirAddModal(); };
-
-/* ===== Modal "+" dinâmico: escolher da biblioteca/catálogo ou cadastrar novo ===== */
-function _ctorCatalogItens(){
-  // Ativos dos templates existentes + da aba "Atual", agrupados por classe (deduplicados por nome+classe)
-  var seen = {}; var out = [];
-  function push(it, origem){
-    if(!it || !it.nome) return;
-    var k = (it.nome+"").trim().toLowerCase()+"||"+(it.classe+"").trim().toLowerCase();
-    if(seen[k]) return; seen[k]=1;
-    out.push({ nome:it.nome, classe:it.classe||"Outros", detalhe:it.detalhe||"", liquidez:it.liquidez||"", origem:origem });
-  }
-  try{ Object.keys(TEMPLATES).forEach(function(t){ TEMPLATES[t]().forEach(function(it){ push(it, "Template "+t); }); }); }catch(_e){}
-  return out;
-}
-function _ctorBibliotecaPorClasse(){
-  // Combina a BIBLIOTECA persistida + catálogo dos templates, agrupado por classe
-  var map = {};
-  function add(it){
-    var c = it.classe || "Outros";
-    if(!map[c]) map[c] = {};
-    var k = (it.nome+"").trim().toLowerCase();
-    if(!map[c][k]) map[c][k] = it;
-  }
-  try{ if(window.RICO_LIB) window.RICO_LIB.all().forEach(add); }catch(_e){}
-  _ctorCatalogItens().forEach(add);
-  // converte em arrays ordenados, respeitando a ordem de CLASSES
-  var out = [];
-  CLASSES.forEach(function(c){
-    if(map[c]){ var arr = Object.keys(map[c]).map(function(k){ return map[c][k]; }); out.push({classe:c, itens:arr}); }
-  });
-  Object.keys(map).forEach(function(c){ if(CLASSES.indexOf(c)===-1){ var arr=Object.keys(map[c]).map(function(k){return map[c][k];}); out.push({classe:c, itens:arr}); } });
-  return out;
-}
-function _ctorModalEl(){
-  var m = document.getElementById("ctorAddModal");
-  if(m) return m;
-  m = document.createElement("div");
-  m.id = "ctorAddModal";
-  m.className = "rico-add-modal";
-  document.body.appendChild(m);
-  m.addEventListener("click", function(e){ if(e.target===m) fecharAddModal(); });
-  return m;
-}
-function fecharAddModal(){ var m=document.getElementById("ctorAddModal"); if(m) m.style.display="none"; }
-function abrirAddModal(preClasse){
-  var m = _ctorModalEl();
-  var grupos = _ctorBibliotecaPorClasse();
-  var classeOpts = CLASSES.map(function(c){ var sel=(preClasse && c===preClasse)?' selected':''; return '<option value="'+esc(c)+'"'+sel+'>'+esc(c)+'</option>'; }).join("");
-  var libHtml = "";
-  if(grupos.length===0){
-    libHtml = '<div class="ram-empty">Nenhum ativo na biblioteca ainda. Adicione ativos às carteiras ou cadastre um novo abaixo.</div>';
-  } else {
-    grupos.forEach(function(g){
-      var cc = CLASS_COLORS[g.classe]||"#8A93D8";
-      libHtml += '<div class="ram-grp" data-grpcls="'+esc(g.classe)+'"><div class="ram-grp-head">'+
-        classIconSVG(g.classe, cc, 16)+
-        '<span class="nm" style="color:'+cc+';">'+esc(g.classe)+'</span>'+
-        '<span class="ct">'+g.itens.length+'</span></div>'+
-        '<div class="ram-grid">';
-      g.itens.forEach(function(it){
-        var key = esc((it.nome+"").trim().toLowerCase()+"||"+(it.classe+"").trim().toLowerCase());
-        var hay = esc(normTxt((it.nome||"")+" "+(it.detalhe||"")));
-        libHtml += '<div class="ram-libcard" data-search="'+hay+'">'+
-          '<div class="nm">'+esc(it.nome)+'</div>'+
-          (it.detalhe?'<div class="dt">'+esc(it.detalhe)+'</div>':'')+
-          '<div class="act">'+
-            '<button class="ram-add" data-libadd="'+key+'">+ Adicionar</button>'+
-            '<button class="ram-del" data-libdel="'+key+'" title="Remover da biblioteca">✕</button>'+
-          '</div></div>';
-      });
-      libHtml += '</div></div>';
-    });
-  }
-  // guarda lookup para re-adicionar
-  var lookup = {};
-  grupos.forEach(function(g){ g.itens.forEach(function(it){ lookup[(it.nome+"").trim().toLowerCase()+"||"+(it.classe+"").trim().toLowerCase()] = it; }); });
-  m._lookup = lookup;
-  m.innerHTML =
-    '<div class="ram-card">'+
-      '<div class="ram-head">'+
-        '<div class="ram-title">Adicionar ativo'+(preClasse?'<small>em '+esc(preClasse)+'</small>':'')+'</div>'+
-        '<button id="ctorAddClose" class="ram-close">✕</button>'+
-      '</div>'+
-      '<div class="ram-tabs">'+
-        '<button class="ram-tab ctab-btn active" data-ctab="lib">Biblioteca / catálogo</button>'+
-        '<button class="ram-tab ctab-btn" data-ctab="novo">Cadastrar novo</button>'+
-      '</div>'+
-      '<div id="ctorSearchWrap" class="ram-search"><input id="ctorSearch" type="text" placeholder="Buscar ativo por nome ou descrição…" autocomplete="off"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>'+
-      '<div id="ctorTabLib" class="ram-body">'+libHtml+'<div id="ctorNoResult" class="ram-noresult" style="display:none;">Nenhum ativo encontrado para a busca.</div></div>'+
-      '<div id="ctorTabNovo" class="ram-body" style="display:none;">'+
-        '<div class="ram-form">'+
-          '<div class="ram-field"><span class="lab">Nome do ativo</span><input id="naNome" class="ram-input" placeholder="Ex.: CDB Banco XYZ 110% CDI"></div>'+
-          '<div class="ram-field"><span class="lab">Classe</span><select id="naClasse" class="ram-select">'+classeOpts+'</select></div>'+
-          '<div class="ram-field"><span class="lab">Detalhe / retorno (% a.a., prazo, estrutura…)</span><input id="naDetalhe" class="ram-input" placeholder="Ex.: 110% CDI · 2 anos"></div>'+
-          '<div class="ram-field"><span class="lab">Liquidez (opcional)</span><input id="naLiq" class="ram-input" placeholder="Ex.: D+1, No vencimento"></div>'+
-          '<button id="naSalvar" class="ram-save">Salvar e adicionar à carteira</button>'+
-        '</div>'+
-      '</div>'+
-    '</div>';
-  m.style.display = "flex";
-  // wiring
-  document.getElementById("ctorAddClose").onclick = fecharAddModal;
-  // ---- busca em tempo real na aba Biblioteca ----
-  function ctorFiltrarBusca(){
-    var inp = document.getElementById("ctorSearch"); if(!inp) return;
-    var q = normTxt(inp.value.trim());
-    var wrap = document.getElementById("ctorSearchWrap"); if(wrap) wrap.classList.toggle("has", q.length>0);
-    var any = false;
-    m.querySelectorAll(".ram-grp").forEach(function(grp){
-      var vis = 0;
-      grp.querySelectorAll(".ram-libcard").forEach(function(card){
-        var hay = card.getAttribute("data-search")||"";
-        var ok = (q==="") || hay.indexOf(q)!==-1;
-        card.style.display = ok ? "" : "none";
-        if(ok) vis++;
-      });
-      grp.style.display = vis>0 ? "" : "none";
-      if(vis>0) any = true;
-    });
-    var nr = document.getElementById("ctorNoResult");
-    if(nr) nr.style.display = (!any && q!=="") ? "block" : "none";
-  }
-  var ctorSearchInp = document.getElementById("ctorSearch");
-  if(ctorSearchInp){ ctorSearchInp.addEventListener("input", ctorFiltrarBusca); }
-  m.querySelectorAll("[data-ctab]").forEach(function(b){
-    b.onclick = function(){
-      var t = b.getAttribute("data-ctab");
-      document.getElementById("ctorTabLib").style.display = (t==="lib")?"block":"none";
-      document.getElementById("ctorTabNovo").style.display = (t==="novo")?"block":"none";
-      var sw = document.getElementById("ctorSearchWrap"); if(sw) sw.style.display = (t==="lib")?"block":"none";
-      m.querySelectorAll(".ctab-btn").forEach(function(x){ x.classList.remove("active"); });
-      b.classList.add("active");
-      if(t==="lib" && ctorSearchInp){ try{ ctorSearchInp.focus(); }catch(_f){} }
-    };
-  });
-  // pré-seleção por classe: destaca/rola o grupo na biblioteca
-  if(preClasse){
-    try{
-      var grp = m.querySelector('.ram-grp[data-grpcls="'+preClasse.replace(/"/g,'')+'"]');
-      if(grp){ grp.classList.add("flash"); setTimeout(function(){ try{ grp.scrollIntoView({block:"nearest"}); }catch(_s){} }, 30); }
-    }catch(_p){}
-  }
-  m.querySelectorAll("[data-libadd]").forEach(function(b){
-    b.onclick = function(){
-      var it = m._lookup[b.getAttribute("data-libadd")];
-      if(!it) return;
-      var o = mk(it.classe||"Renda Fixa", it.nome, 0, it.detalhe||"", it.liquidez||"");
-      S.items.push(o);
-      try{ if(window.RICO_LIB) window.RICO_LIB.upsert({nome:o.nome, classe:o.classe, detalhe:o.detalhe, liquidez:o.liquidez, origem:"construtor"}); }catch(_e){}
-      fecharAddModal(); render();
-    };
-  });
-  m.querySelectorAll("[data-libdel]").forEach(function(b){
-    b.onclick = function(){
-      var it = m._lookup[b.getAttribute("data-libdel")];
-      if(!it){ return; }
-      try{ if(window.RICO_LIB) window.RICO_LIB.remove({nome:it.nome, classe:it.classe}); }catch(_e){}
-      abrirAddModal(); // re-render do modal
-    };
-  });
-  var salvar = document.getElementById("naSalvar");
-  if(salvar) salvar.onclick = function(){
-    var nome = (document.getElementById("naNome").value||"").trim();
-    if(!nome){ document.getElementById("naNome").focus(); return; }
-    var classe = document.getElementById("naClasse").value || "Renda Fixa";
-    var det = (document.getElementById("naDetalhe").value||"").trim();
-    var liq = (document.getElementById("naLiq").value||"").trim();
-    var o = mk(classe, nome, 0, det, liq);
-    S.items.push(o);
-    try{ if(window.RICO_LIB) window.RICO_LIB.upsert({nome:nome, classe:classe, detalhe:det, liquidez:liq, origem:"construtor"}); }catch(_e){}
-    fecharAddModal(); render();
-  };
-}
+document.getElementById("btnAdd").onclick=()=>{ S.items.push(mk("Renda Fixa","Novo ativo",0,"","")); render(); };
 
 /* ---------- copiar resumo ---------- */
 document.getElementById("btnCopy").onclick=()=>{
@@ -3403,14 +2968,10 @@ function wrapText(ctx,text,x,y,maxW,lineH,color,size,FF){
   if(line){ ctx.fillText(line,x,yy); lines++; }
   return lines;
 }
-function buildCarteiraPNG(opts){
-  opts = opts || {};
+function buildCarteiraPNG(){
   const D=calc();
   const {template}=S, cliente=S.cliente, patrimonio=S.patrimonio;
   const {byClass,total,grouped,retAA,glossTerms,projData,endCarteira,endCDI}=D;
-  // Diff de baseline (Atual): só quando solicitado e disponível
-  const _diff = opts.comparativo ? diffBaseline() : null;
-  const _temDiff = !!(_diff && (_diff.entrou.length || _diff.saiu.length));
   const cdiMult=S.cdiMult, projAnos=S.projAnos, cdi=S.cdi;
   const FF="Arial, Helvetica, sans-serif";
   const nome=(cliente||"").trim();
@@ -3422,9 +2983,7 @@ function buildCarteiraPNG(opts){
   const glossH=(glossTerms&&glossTerms.length)?(50+glossTerms.length*78):0;
   const chartBlockH=560;
   const alfaH=(D&&D.temCliente?120:0);
-  const _diffRows=_temDiff?(_diff.entrou.length+_diff.saiu.length):0;
-  const alterH=_temDiff?(64+_diffRows*30+24):0;
-  const H=Math.max(1180, headH+bodyH+glossH+chartBlockH+alfaH+alterH+220);
+  const H=Math.max(1180, headH+bodyH+glossH+chartBlockH+alfaH+220);
   const scale=2;
   const cv=document.createElement("canvas"); cv.width=W*scale; cv.height=H*scale;
   const ctx=cv.getContext("2d"); ctx.scale(scale,scale);
@@ -3474,8 +3033,7 @@ function buildCarteiraPNG(opts){
   CLASSES.forEach(c=>{
     const list=grouped[c]; if(!list||list.length===0) return;
     ctx.fillStyle=CLASS_COLORS[c]; rr(60,y-16,6,22,3); ctx.fill();
-    drawClassIcon(ctx, c, 88, y-6, 20, CLASS_COLORS[c]);
-    T(c,108,y,19,"#fff","800","left");
+    T(c,80,y,19,"#fff","800","left");
     T(fmtPct(byClass[c])+"%",W-60,y,18,CLASS_COLORS[c],"800","right");
     y+=classGap+18;
     list.forEach(i=>{
@@ -3497,32 +3055,6 @@ function buildCarteiraPNG(opts){
     });
     y+=10;
   });
-
-  // ===== ALTERAÇÕES NA CARTEIRA (saiu / entrou vs baseline) =====
-  if(_temDiff){
-    y+=14;
-    const _bh=44+_diffRows*30+20;
-    ctx.fillStyle="rgba(54,197,240,.07)"; rr(60,y-22,W-120,_bh,14); ctx.fill();
-    ctx.strokeStyle="rgba(54,197,240,.28)"; ctx.lineWidth=1; rr(60,y-22,W-120,_bh,14); ctx.stroke();
-    T("ALTERAÇÕES NA CARTEIRA",84,y,14,"#7FD8F5","700","left");
-    T("vs. carteira atual do cliente",W-84,y,12,"#6F77A8","600","right");
-    y+=30;
-    _diff.saiu.forEach(d=>{
-      ctx.fillStyle="#FF5566"; ctx.beginPath(); ctx.arc(92,y-4,3.5,0,2*Math.PI); ctx.fill();
-      T("Saiu",104,y,13,"#FF8B6B","800","left");
-      T(d.nome,164,y,14,"#cfd4ef","600","left");
-      T(fmtPct(d.pct)+"%  ·  "+d.classe,W-84,y,12.5,"#8A93D8","600","right");
-      y+=30;
-    });
-    _diff.entrou.forEach(d=>{
-      ctx.fillStyle="#2BD9A6"; ctx.beginPath(); ctx.arc(92,y-4,3.5,0,2*Math.PI); ctx.fill();
-      T("Entrou",104,y,13,"#2BD9A6","800","left");
-      T(d.nome,176,y,14,"#fff","700","left");
-      T(fmtPct(d.pct)+"%  ·  "+d.classe,W-84,y,12.5,"#8A93D8","600","right");
-      y+=30;
-    });
-    y+=8;
-  }
 
   if(glossTerms&&glossTerms.length){
     y+=8;
@@ -3606,31 +3138,6 @@ document.getElementById("btnPng").onclick=()=>{
     window.mostrarPngModal(url, fname, { accent:"#F26522" });
   }catch(e){ console.error(e); alert("Não foi possível gerar a imagem: "+(e&&e.message?e.message:e)); }
 };
-(function(){
-  var bc = document.getElementById("btnPngComp");
-  if(!bc) return;
-  bc.onclick = function(){
-    try{
-      var diff = diffBaseline();
-      if(!diff || (!diff.entrou.length && !diff.saiu.length)){
-        alert("Sem comparação disponível: a carteira não tem alterações em relação à carteira atual do cliente (ou o baseline não foi definido). Abra a aba \"Atual\" para fixar a carteira do cliente.");
-        return;
-      }
-      var url=buildCarteiraPNG({ comparativo:true });
-      var fname="Carteira_comparativo_"+S.template+(S.cliente?"_"+S.cliente.replace(/[^a-zA-Z0-9]+/g,"_"):"")+".png";
-      window.mostrarPngModal(url, fname, { accent:"#36C5F0" });
-    }catch(e){ console.error(e); alert("Não foi possível gerar a imagem: "+(e&&e.message?e.message:e)); }
-  };
-})();
-/* mostra/esconde o botão "PNG comparativo" conforme exista diff de baseline */
-function atualizarBtnComparativo(){
-  try{
-    var bc = document.getElementById("btnPngComp"); if(!bc) return;
-    var diff = diffBaseline();
-    var tem = !!(diff && (diff.entrou.length || diff.saiu.length));
-    bc.style.display = tem ? "" : "none";
-  }catch(_e){}
-}
 
 /* ---------- init ---------- */
 fmtPatInput();
@@ -3729,6 +3236,7 @@ function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").repl
 function irRate(years){var d=years*365;if(d<=180)return .225;if(d<=360)return .20;if(d<=720)return .175;return .15;}
 function grossAnnual(a,cdi,ipca){
   if(a.indexador==="cdi")return (cdi/100)*(a.taxa/100);
+  if(a.indexador==="cdimais")return cdi/100 + a.taxa/100;
   if(a.indexador==="pre")return a.taxa/100;
   if(a.indexador==="ipca")return (1+ipca/100)*(1+a.taxa/100)-1;
   if(a.indexador==="poupanca")return cdi>8.5?(Math.pow(1.005,12)-1):0.7*(cdi/100);
@@ -3741,6 +3249,7 @@ function netFV(a,t,aporte,cdi,ipca){
 }
 function taxaLabel(a){
   if(a.indexador==="cdi")return n(a.taxa).toLocaleString("pt-BR")+"% do CDI";
+  if(a.indexador==="cdimais")return "CDI + "+n(a.taxa).toLocaleString("pt-BR")+"%";
   if(a.indexador==="pre")return n(a.taxa).toLocaleString("pt-BR")+"% pré a.a.";
   if(a.indexador==="ipca")return "IPCA + "+n(a.taxa).toLocaleString("pt-BR")+"%";
   if(a.indexador==="poupanca")return "Poupança";
@@ -3970,10 +3479,10 @@ function assetsHTML(){
       +'<button class="x" data-del="'+a.id+'">✕</button></div>'
       +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">'
         +'<select data-id="'+a.id+'" data-k="indexador">'
-          +opt("cdi","% do CDI",a.indexador)+opt("pre","Prefixado",a.indexador)+opt("ipca","IPCA +",a.indexador)+opt("poupanca","Poupança",a.indexador)
+          +opt("cdi","% do CDI",a.indexador)+opt("cdimais","CDI + x%",a.indexador)+opt("pre","Prefixado",a.indexador)+opt("ipca","IPCA +",a.indexador)+opt("poupanca","Poupança",a.indexador)
         +'</select>';
     if(a.indexador!=="poupanca"){
-      var suf=a.indexador==="cdi"?"% CDI":(a.indexador==="pre"?"% a.a.":"% real");
+      var suf=a.indexador==="cdi"?"% CDI":(a.indexador==="cdimais"?"% + CDI":(a.indexador==="pre"?"% a.a.":"% real"));
       h+='<div style="display:flex;align-items:center;gap:6px;background:var(--input);border:1px solid var(--border);border-radius:10px;padding:0 9px">'
         +'<input data-id="'+a.id+'" data-k="taxa" value="'+a.taxa+'" style="background:transparent;border:none;padding:9px 0" inputmode="decimal"/>'
         +'<span class="muted" style="font-size:12px;white-space:nowrap">'+suf+'</span></div>';
@@ -6199,59 +5708,6 @@ var CLASS_COLORS = {
 };
 var CLASSES = Object.keys(CLASS_COLORS);
 
-/* ===== Ícones por classe de ativo (SVG inline, estilo Lucide) — construtor RV ===== */
-var CLASS_ICON_PATHS = {
-  "Renda Fixa":'<path d="M12 2 3 7v2h18V7z"/><line x1="5" y1="11" x2="5" y2="18"/><line x1="10" y1="11" x2="10" y2="18"/><line x1="14" y1="11" x2="14" y2="18"/><line x1="19" y1="11" x2="19" y2="18"/><line x1="3" y1="21" x2="21" y2="21"/>',
-  "Renda Variável":'<path d="M3 3v18h18"/><path d="M7 14l3-4 3 3 5-7"/><path d="M18 6h3v3"/>',
-  "Multimercados":'<polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/>',
-  "Fundos Listados":'<rect x="4" y="3" width="16" height="18" rx="1.5"/><line x1="9" y1="7" x2="9" y2="7.01"/><line x1="15" y1="7" x2="15" y2="7.01"/><line x1="9" y1="11" x2="9" y2="11.01"/><line x1="15" y1="11" x2="15" y2="11.01"/><line x1="9" y1="15" x2="9" y2="15.01"/><line x1="15" y1="15" x2="15" y2="15.01"/><path d="M10 21v-3h4v3"/>',
-  "Alternativos":'<path d="M6 3h12l4 6-10 13L2 9z"/><path d="M11 3 8 9l4 13 4-13-3-6"/><path d="M2 9h20"/>',
-  "Internacional":'<circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>'
-};
-function classIconSVG(classe, color, size){
-  var p = CLASS_ICON_PATHS[classe]; if(!p) return "";
-  var s = size||15, col = color||"currentColor";
-  return '<span class="cls-ico"><svg width="'+s+'" height="'+s+'" viewBox="0 0 24 24" fill="none" stroke="'+col+'" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+p+'</svg></span>';
-}
-function drawClassIcon(ctx, classe, cx, cy, size, color){
-  try{
-    var s=size||20, h=s/2; ctx.save();
-    ctx.strokeStyle=color; ctx.fillStyle=color; ctx.lineWidth=Math.max(1.6,s/11);
-    ctx.lineCap="round"; ctx.lineJoin="round";
-    var L=cx-h, T=cy-h, R=cx+h, B=cy+h;
-    if(classe==="Renda Fixa"){
-      ctx.beginPath(); ctx.moveTo(cx,T); ctx.lineTo(L,T+s*0.28); ctx.lineTo(R,T+s*0.28); ctx.closePath(); ctx.stroke();
-      [0.28,0.5,0.72].forEach(function(fx){ var x=L+s*fx+s*0.07; ctx.beginPath(); ctx.moveTo(x,T+s*0.38); ctx.lineTo(x,B-s*0.16); ctx.stroke(); });
-      var x4=R-s*0.13; ctx.beginPath(); ctx.moveTo(x4,T+s*0.38); ctx.lineTo(x4,B-s*0.16); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(L,B); ctx.lineTo(R,B); ctx.stroke();
-    } else if(classe==="Renda Variável"){
-      ctx.beginPath(); ctx.moveTo(L,T); ctx.lineTo(L,B); ctx.lineTo(R,B); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(L+s*0.12,B-s*0.22); ctx.lineTo(cx-s*0.06,cy-s*0.04); ctx.lineTo(cx+s*0.12,cy+s*0.06); ctx.lineTo(R-s*0.04,T+s*0.16); ctx.stroke();
-    } else if(classe==="Multimercados"){
-      ctx.beginPath(); ctx.moveTo(cx,T); ctx.lineTo(R,cy-s*0.18); ctx.lineTo(cx,cy); ctx.lineTo(L,cy-s*0.18); ctx.closePath(); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(L,cy+s*0.02); ctx.lineTo(cx,cy+s*0.2); ctx.lineTo(R,cy+s*0.02); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(L,cy+s*0.22); ctx.lineTo(cx,cy+s*0.4); ctx.lineTo(R,cy+s*0.22); ctx.stroke();
-    } else if(classe==="Fundos Listados"){
-      ctx.strokeRect(L+s*0.06,T,s*0.88,s);
-      [0.28,0.5,0.72].forEach(function(fy){ [0.3,0.6].forEach(function(fx){ ctx.fillRect(L+s*fx,T+s*fy,s*0.1,s*0.1); }); });
-      ctx.strokeRect(cx-s*0.12,B-s*0.22,s*0.24,s*0.22);
-    } else if(classe==="Alternativos"){
-      ctx.beginPath(); ctx.moveTo(cx,T); ctx.lineTo(R,cy-s*0.08); ctx.lineTo(cx,B); ctx.lineTo(L,cy-s*0.08); ctx.closePath(); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(L,cy-s*0.08); ctx.lineTo(R,cy-s*0.08); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(cx-s*0.18,T); ctx.lineTo(L,cy-s*0.08); ctx.moveTo(cx+s*0.18,T); ctx.lineTo(R,cy-s*0.08); ctx.stroke();
-    } else if(classe==="Internacional"){
-      ctx.beginPath(); ctx.arc(cx,cy,h-1,0,2*Math.PI); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(L+1,cy); ctx.lineTo(R-1,cy); ctx.stroke();
-      ctx.beginPath(); ctx.ellipse(cx,cy,h*0.45,h-1,0,0,2*Math.PI); ctx.stroke();
-    }
-    ctx.restore();
-  }catch(_ic){}
-}
-function normTxt(s){
-  try{ return (s==null?"":String(s)).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,""); }
-  catch(_n){ return (s==null?"":String(s)).toLowerCase(); }
-}
-
 var SETOR_COLORS = {
   "Bancos":"#FF4E00","Financeiro":"#FF8B52","Seguros":"#FFB020","Energia Elétrica":"#2BD9A6",
   "Saneamento":"#36C5F0","Petróleo & Gás":"#7C8CFF","Mineração & Siderurgia":"#C77DFF",
@@ -6332,14 +5788,10 @@ function opDetalhe(op){
 function fmtMult(n){ return n.toFixed(2).replace(".",","); }
 function fmtTaxa(n){ return n.toFixed(2).replace(".",","); }
 function r1(n){ return Math.round(n*10)/10; }
-function fixingPrazo(fix){
-  var m={"29/nov/27":"1 ano","29/mai/28":"2 anos","25/jun/29":"3 anos","30/mai/29":"3 anos"};
-  return m[fix]||fix;
-}
 
 function buildQuanto(o){
   var isP1 = o.payoff === 1;
-  var nome = o.ativo+" · "+(isP1? fmtMult(o.mult)+"x": fmtTaxa(o.taxa)+"%")+" · "+fixingPrazo(o.fixing);
+  var nome = o.ativo+" · "+(isP1? fmtMult(o.mult)+"x": fmtTaxa(o.taxa)+"%")+" · "+o.fixing;
   var tipo = isP1? "Capital protegido · alta ilimitada": "Taxa fixa ou alta ilimitada";
   var cen;
   if(isP1){ cen = [[-30,0],[-10,0],[0,0],[20,r1(20*o.mult)],[40,r1(40*o.mult)]]; }
@@ -6349,24 +5801,26 @@ function buildQuanto(o){
 
 var QUANTO_OPS = [
   { id:"q-sp-1", payoff:1, ativo:"S&P 500", fixing:"29/nov/27", mult:1.04 },
-  { id:"q-sp-2", payoff:1, ativo:"S&P 500", fixing:"29/mai/28", mult:1.20 },
-  { id:"q-sp-3", payoff:1, ativo:"S&P 500", fixing:"25/jun/29", mult:1.46 },
+  { id:"q-sp-2", payoff:1, ativo:"S&P 500", fixing:"29/mai/28", mult:1.15 },
+  { id:"q-sp-3", payoff:1, ativo:"S&P 500", fixing:"30/mai/29", mult:1.41 },
   { id:"q-nq-1", payoff:1, ativo:"Nasdaq", fixing:"29/nov/27", mult:1.00 },
   { id:"q-nq-2", payoff:1, ativo:"Nasdaq", fixing:"29/mai/28", mult:1.00 },
-  { id:"q-nq-3", payoff:1, ativo:"Nasdaq", fixing:"25/jun/29", mult:1.13 },
+  { id:"q-nq-3", payoff:1, ativo:"Nasdaq", fixing:"30/mai/29", mult:1.17 },
   { id:"q-sp-fx1", payoff:2, ativo:"S&P 500", fixing:"29/nov/27", taxa:6.30 },
-  { id:"q-sp-fx2", payoff:2, ativo:"S&P 500", fixing:"29/mai/28", taxa:14.86 },
-  { id:"q-sp-fx3", payoff:2, ativo:"S&P 500", fixing:"25/jun/29", taxa:30.91 }
+  { id:"q-sp-fx2", payoff:2, ativo:"S&P 500", fixing:"29/mai/28", taxa:11.97 },
+  { id:"q-sp-fx3", payoff:2, ativo:"S&P 500", fixing:"30/mai/29", taxa:26.44 },
+  { id:"q-nq-fx2", payoff:2, ativo:"Nasdaq", fixing:"29/mai/28", taxa:9.00 },
+  { id:"q-nq-fx3", payoff:2, ativo:"Nasdaq", fixing:"30/mai/29", taxa:14.33 }
 ].map(buildQuanto);
 
 function opDetalheQuanto(op){
   if(op.payoff===1)
-    return "Capital protegido — devolve 100% do capital se o "+op.ativo+" cair. Na alta, paga a variação × "+fmtMult(op.mult)+" (sem teto). Quanto: resultado em moeda local, sem risco cambial. Prazo de "+fixingPrazo(op.fixing)+".";
-  return "Recebe o maior entre a taxa fixa de "+fmtTaxa(op.taxa)+"% e a alta do "+op.ativo+" (1:1, ilimitada). Quanto: moeda local, sem risco cambial. Prazo de "+fixingPrazo(op.fixing)+".";
+    return "Capital protegido — devolve 100% do capital se o "+op.ativo+" cair. Na alta, paga a variação × "+fmtMult(op.mult)+" (sem teto). Quanto: resultado em moeda local, sem risco cambial. Fixing em "+op.fixing+".";
+  return "Recebe o maior entre a taxa fixa de "+fmtTaxa(op.taxa)+"% e a alta do "+op.ativo+" (1:1, ilimitada). Quanto: moeda local, sem risco cambial. Fixing em "+op.fixing+".";
 }
 function mkQuanto(id, pct){
   var op = QUANTO_OPS.filter(function(o){return o.id===id;})[0];
-  var it = mk("Internacional", op.nome, pct, opDetalheQuanto(op), "Prazo "+fixingPrazo(op.fixing), "protecao", null, "Internacional");
+  var it = mk("Internacional", op.nome, pct, opDetalheQuanto(op), "No fixing "+op.fixing, "protecao", null, "Internacional");
   it.op = op; return it;
 }
 
@@ -6387,7 +5841,7 @@ var TEMPLATES = {
       mkRubi("ITUB4","Bancos",15.0,-15,null)
     ].map(function(it,idx){ it.pct = [30,25,25,20][idx]; return it; });
   },
-  "Quanto Internacional": function(){ return [ mkQuanto("q-sp-3",30), mkQuanto("q-sp-fx3",45), mkQuanto("q-nq-3",25) ]; },
+  "Quanto Internacional": function(){ return [ mkQuanto("q-sp-3",30), mkQuanto("q-sp-fx3",25), mkQuanto("q-nq-3",25), mkQuanto("q-nq-fx2",20) ]; },
   "Montar do zero": function(){ return []; }
 };
 
@@ -6675,7 +6129,7 @@ function howBoxHTML(i){
     h += '<span class="chip-orange">'+op.tipo+'</span>';
     if(op.payoff===1) h += '<span class="chip">Multiplicador '+fmtMult(op.mult)+'x</span><span class="chip">Capital protegido</span><span class="chip">Sem teto</span>';
     else h += '<span class="chip">Taxa fixa '+fmtTaxa(op.taxa)+'%</span><span class="chip">Alta 1:1 · sem teto</span>';
-    h += '<span class="chip">Prazo '+fixingPrazo(op.fixing)+'</span><span class="chip">Quanto · moeda local</span></div>';
+    h += '<span class="chip">Fixing '+op.fixing+'</span><span class="chip">Quanto · moeda local</span></div>';
   } else {
     h += '<div style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:12px">';
     h += '<span class="chip-orange">'+op.tipo+'</span>';
@@ -6694,8 +6148,8 @@ function howBoxHTML(i){
   h += '<div class="cmpgrid">'+cmp("Se "+op.ativo+" cair "+fmtPct(Math.abs(low[0]))+"%",low[0],low[1])+cmp("Se "+op.ativo+" subir "+fmtPct(high[0])+"%",high[0],high[1])+'</div>';
   var nota;
   if(op.quanto){
-    if(op.payoff===1) nota = "Cada cenário mostra o "+op.ativo+" sozinho (barra cinza) e a operação Quanto (barra colorida). Na queda, o capital é devolvido integralmente (retorno 0%). Na alta, você recebe a variação do índice × "+fmtMult(op.mult)+", sem teto. Quanto: resultado em moeda local, sem risco cambial. Prazo de "+fixingPrazo(op.fixing)+".";
-    else nota = "Cada cenário mostra o "+op.ativo+" sozinho (barra cinza) e a operação Quanto (barra colorida). Você recebe sempre o maior entre a taxa fixa de "+fmtTaxa(op.taxa)+"% e a alta do índice (1:1, sem teto). Quanto: moeda local, sem risco cambial. Prazo de "+fixingPrazo(op.fixing)+". Confirme as condições de proteção de capital na lâmina antes de apresentar ao cliente.";
+    if(op.payoff===1) nota = "Cada cenário mostra o "+op.ativo+" sozinho (barra cinza) e a operação Quanto (barra colorida). Na queda, o capital é devolvido integralmente (retorno 0%). Na alta, você recebe a variação do índice × "+fmtMult(op.mult)+", sem teto. Quanto: resultado em moeda local, sem risco cambial. Fixing em "+op.fixing+".";
+    else nota = "Cada cenário mostra o "+op.ativo+" sozinho (barra cinza) e a operação Quanto (barra colorida). Você recebe sempre o maior entre a taxa fixa de "+fmtTaxa(op.taxa)+"% e a alta do índice (1:1, sem teto). Quanto: moeda local, sem risco cambial. Fixing em "+op.fixing+". Confirme as condições de proteção de capital na lâmina antes de apresentar ao cliente.";
   } else {
     nota = "Cada cenário tem duas barras: comprar "+op.ativo+" sozinho (barra cinza) e com a estrutura (barra colorida). Na queda, a estrutura segura a perda; na alta, ela acompanha o ativo até o teto. Se "+op.ativo+" tocar a barreira de "+fmtPct(op.barreira)+"%, o teto cai para "+fmtPct(op.tetoBarreira)+"% (knock-out).";
   }
@@ -6802,20 +6256,7 @@ var ICON_PLUS = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" str
 
 /* ===== Render principal ===== */
 function render(){
-  // Preserva a posição de rolagem (o rebuild via app.innerHTML zera o scroll).
-  var _scrollY = (typeof window!=="undefined") ? (window.scrollY||window.pageYOffset||0) : 0;
-  window.__rvScrollY = _scrollY;
   var d = calc();
-  // UPSERT na biblioteca: acumula ativos da carteira RV (deduplica por nome+classe)
-  try{
-    if(window.RICO_LIB){
-      state.items.forEach(function(it){
-        if(it && it.nome && it.nome!=="Nova ação" && it.nome!=="Nova ação protegida"){
-          window.RICO_LIB.upsert({ nome:it.nome, classe:it.classe, detalhe:it.detalhe, liquidez:it.liquidez, setor:it.setor, origem:"rv" });
-        }
-      });
-    }
-  }catch(_lb){}
   var app = document.getElementById("rv-app");
   var h = "";
 
@@ -6847,10 +6288,9 @@ function render(){
   CLASSES.forEach(function(c){
     var list = d.grouped[c];
     if(!list || list.length===0) return;
-    h += '<div style="margin-bottom:18px"><div class="classhead">'+classIconSVG(c, CLASS_COLORS[c], 17)+
+    h += '<div style="margin-bottom:18px"><div class="classhead"><span class="dot" style="background:'+CLASS_COLORS[c]+'"></span>'+
       '<span style="font-weight:700;font-size:15px">'+c+'</span>'+
-      '<span style="color:#A9B0D6;font-weight:700;font-size:13px">'+fmtPct(d.byClass[c])+'%</span>'+
-      '<button type="button" class="cls-add-btn" data-rvclsadd="'+esc(c)+'" title="Adicionar ativo em '+esc(c)+'">+</button></div>';
+      '<span style="color:#A9B0D6;font-weight:700;font-size:13px">'+fmtPct(d.byClass[c])+'%</span></div>';
     list.forEach(function(i){ h += itemRowHTML(i); });
     h += '</div>';
   });
@@ -6904,7 +6344,7 @@ function render(){
       QUANTO_OPS.filter(function(op){return op.payoff===pf;}).forEach(function(op){
         h += '<div class="opcard"><div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px"><div>'+
           '<div style="font-weight:800;font-size:15px">'+op.ativo+'</div>'+
-          '<div style="font-size:11.5px;color:#A9B0D6;margin-top:2px">Prazo '+fixingPrazo(op.fixing)+'</div>'+
+          '<div style="font-size:11.5px;color:#A9B0D6;margin-top:2px">Fixing '+op.fixing+'</div>'+
           '<div style="margin-top:6px;display:inline-block;background:rgba(255,176,32,.14);border:1px solid rgba(255,176,32,.45);color:#FFB020;border-radius:7px;padding:3px 9px;font-weight:800;font-size:12px">'+(pf===1?"Multiplicador "+fmtMult(op.mult)+"x":"Taxa fixa "+fmtTaxa(op.taxa)+"%")+'</div>'+
           '</div><button class="minibtn" data-addq="'+op.id+'" style="white-space:nowrap">+ Add</button></div>'+
           '<div style="margin-top:8px">'+payoffBarsSVG(op,true)+'</div></div>';
@@ -6979,8 +6419,6 @@ function render(){
 
   app.innerHTML = h;
   bind(d);
-  // Restaura a rolagem após o reflow (evita o "pulo para o topo" ao adicionar/editar ativos).
-  try{ var _y = window.__rvScrollY||0; requestAnimationFrame(function(){ window.scrollTo(0, _y); }); }catch(_e){}
 }
 
 /* ===== Eventos ===== */
@@ -6996,7 +6434,7 @@ function bind(d){
   var pat = document.getElementById("inpPatrimonio");
   pat.oninput = function(e){ var digits = e.target.value.replace(/\D/g,""); state.patrimonio = digits? parseInt(digits,10):0; e.target.value = fmtBRL(state.patrimonio); render(); };
   // add buttons
-  document.getElementById("rvBtnAdd").onclick = function(){ rvAbrirAddModal(); };
+  document.getElementById("rvBtnAdd").onclick = function(){ state.items.push(mk("Renda Variável","Nova ação",0,"","B3",null,null,"Outros")); render(); };
   document.getElementById("btnRubi").onclick = function(){ state.showRubi = !state.showRubi; render(); };
   document.getElementById("btnProtCriar").onclick = function(){
     var it = mkProtecao("Nova ação protegida","Outros",-20,34.99,135);
@@ -7005,9 +6443,6 @@ function bind(d){
   document.getElementById("rvBtnOps").onclick = function(){ state.showOps = !state.showOps; render(); };
   document.getElementById("rvBtnQuanto").onclick = function(){ state.showQuanto = !state.showQuanto; render(); };
   var bd = document.getElementById("btnDistrib"); if(bd) bd.onclick = distribuirRestante;
-
-  // botão "+" por classe (RV): abre o modal pré-selecionado naquela classe
-  document.querySelectorAll("[data-rvclsadd]").forEach(function(b){ b.onclick = function(e){ e.stopPropagation(); rvAbrirAddModal(b.getAttribute("data-rvclsadd")); }; });
 
   // catálogo add
   document.querySelectorAll("[data-addop]").forEach(function(b){ b.onclick = function(){ addOperacao(b.getAttribute("data-addop")); }; });
@@ -7065,180 +6500,6 @@ function update(id, field, val){ var i = state.items.filter(function(x){return x
 function setEscolha(id, idx){ var i = state.items.filter(function(x){return x.id===id;})[0]; if(i && i.opcoes){ i.escolha=idx; i.nome=i.opcoes[idx].nome; i.detalhe=i.opcoes[idx].detalhe; i.liquidez=i.opcoes[idx].liquidez||""; } }
 function remove(id){ state.items = state.items.filter(function(x){return x.id!==id;}); render(); }
 function loadTemplate(t){ state.template = t; state.items = TEMPLATES[t](); state.abertos = {}; render(); }
-
-/* ===== Modal "+" dinâmico (RV): biblioteca/catálogo ou cadastrar novo ===== */
-function _rvCatalogItens(){
-  // Operações dos catálogos existentes (estruturadas, quanto, cupom) como itens de biblioteca
-  var seen = {}; var out = [];
-  function push(it){
-    if(!it || !it.nome) return;
-    var k = (it.nome+"").trim().toLowerCase()+"||"+(it.classe+"").trim().toLowerCase();
-    if(seen[k]) return; seen[k]=1; out.push(it);
-  }
-  try{ OPERACOES.forEach(function(op){ push({nome:op.ativo, classe:"Renda Variável", detalhe:opDetalhe(op), liquidez:"No vencimento", setor:op.setor, _op:op, _kind:"op"}); }); }catch(_e){}
-  try{ QUANTO_OPS.forEach(function(op){ push({nome:op.nome, classe:"Internacional", detalhe:opDetalheQuanto(op), liquidez:"Prazo "+fixingPrazo(op.fixing), setor:"Internacional", _op:op, _kind:"quanto"}); }); }catch(_e){}
-  try{ RUBI_CATALOG.forEach(function(r){ push({nome:r.ativo+" · Cupom "+fmtPct(r.taxa)+"%", classe:"Renda Variável", detalhe:"Cupom pré-fixado · barreira "+fmtPct(r.barreira)+"%", liquidez:"No vencimento", setor:r.setor, _rubi:r, _kind:"rubi"}); }); }catch(_e){}
-  return out;
-}
-function _rvBibliotecaPorClasse(){
-  var map = {};
-  function add(it){
-    var c = it.classe || "Outros";
-    if(!map[c]) map[c] = {};
-    var k = (it.nome+"").trim().toLowerCase();
-    if(!map[c][k]) map[c][k] = it;
-  }
-  // catálogo primeiro (carrega payload _op/_rubi); depois biblioteca persistida (não sobrescreve)
-  _rvCatalogItens().forEach(add);
-  try{ if(window.RICO_LIB) window.RICO_LIB.all().forEach(add); }catch(_e){}
-  var out = [];
-  CLASSES.forEach(function(c){ if(map[c]){ out.push({classe:c, itens:Object.keys(map[c]).map(function(k){return map[c][k];})}); } });
-  Object.keys(map).forEach(function(c){ if(CLASSES.indexOf(c)===-1){ out.push({classe:c, itens:Object.keys(map[c]).map(function(k){return map[c][k];})}); } });
-  return out;
-}
-function _rvModalEl(){
-  var m = document.getElementById("rvAddModal");
-  if(m) return m;
-  m = document.createElement("div");
-  m.id = "rvAddModal";
-  m.className = "rico-add-modal";
-  document.body.appendChild(m);
-  m.addEventListener("click", function(e){ if(e.target===m) rvFecharAddModal(); });
-  return m;
-}
-function rvFecharAddModal(){ var m=document.getElementById("rvAddModal"); if(m) m.style.display="none"; }
-function rvAbrirAddModal(preClasse){
-  var m = _rvModalEl();
-  var grupos = _rvBibliotecaPorClasse();
-  var classeOpts = CLASSES.map(function(c){ var sel=(preClasse && c===preClasse)?' selected':''; return '<option value="'+esc(c)+'"'+sel+'>'+esc(c)+'</option>'; }).join("");
-  var setorOpts = SETORES.map(function(s){ return '<option value="'+esc(s)+'">'+esc(s)+'</option>'; }).join("");
-  var libHtml = "";
-  var lookup = {};
-  if(grupos.length===0){
-    libHtml = '<div class="ram-empty">Nenhum ativo na biblioteca ainda.</div>';
-  } else {
-    grupos.forEach(function(g){
-      var cc = CLASS_COLORS[g.classe]||"#8A93D8";
-      libHtml += '<div class="ram-grp" data-grpcls="'+esc(g.classe)+'"><div class="ram-grp-head">'+
-        classIconSVG(g.classe, cc, 16)+
-        '<span class="nm" style="color:'+cc+';">'+esc(g.classe)+'</span>'+
-        '<span class="ct">'+g.itens.length+'</span></div>'+
-        '<div class="ram-grid">';
-      g.itens.forEach(function(it){
-        var key = (it.nome+"").trim().toLowerCase()+"||"+(it.classe+"").trim().toLowerCase();
-        lookup[key] = it;
-        var hay = esc(normTxt((it.nome||"")+" "+(it.detalhe||"")));
-        libHtml += '<div class="ram-libcard" data-search="'+hay+'">'+
-          '<div class="nm">'+esc(it.nome)+'</div>'+
-          (it.detalhe?'<div class="dt">'+esc(it.detalhe)+'</div>':'')+
-          '<div class="act">'+
-            '<button class="ram-add" data-rvlibadd="'+esc(key)+'">+ Adicionar</button>'+
-            (it._kind?'':'<button class="ram-del" data-rvlibdel="'+esc(key)+'" title="Remover da biblioteca">✕</button>')+
-          '</div></div>';
-      });
-      libHtml += '</div></div>';
-    });
-  }
-  m._lookup = lookup;
-  m.innerHTML =
-    '<div class="ram-card">'+
-      '<div class="ram-head">'+
-        '<div class="ram-title">Adicionar ativo'+(preClasse?'<small>em '+esc(preClasse)+'</small>':'')+'</div>'+
-        '<button id="rvAddClose" class="ram-close">✕</button>'+
-      '</div>'+
-      '<div class="ram-tabs">'+
-        '<button class="ram-tab rvtab-btn active" data-rvtab="lib">Biblioteca / catálogo</button>'+
-        '<button class="ram-tab rvtab-btn" data-rvtab="novo">Cadastrar novo</button>'+
-      '</div>'+
-      '<div id="rvSearchWrap" class="ram-search"><input id="rvSearch" type="text" placeholder="Buscar ativo por nome ou descrição…" autocomplete="off"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>'+
-      '<div id="rvTabLib" class="ram-body">'+libHtml+'<div id="rvNoResult" class="ram-noresult" style="display:none;">Nenhum ativo encontrado para a busca.</div></div>'+
-      '<div id="rvTabNovo" class="ram-body" style="display:none;">'+
-        '<div class="ram-form">'+
-          '<div class="ram-field"><span class="lab">Nome do ativo</span><input id="rvnaNome" class="ram-input" placeholder="Ex.: PETR4"></div>'+
-          '<div class="ram-field"><span class="lab">Classe</span><select id="rvnaClasse" class="ram-select">'+classeOpts+'</select></div>'+
-          '<div class="ram-field"><span class="lab">Setor</span><select id="rvnaSetor" class="ram-select">'+setorOpts+'</select></div>'+
-          '<div class="ram-field"><span class="lab">Detalhe / retorno</span><input id="rvnaDetalhe" class="ram-input" placeholder="Ex.: ação avulsa · B3"></div>'+
-          '<div class="ram-field"><span class="lab">Liquidez (opcional)</span><input id="rvnaLiq" class="ram-input" placeholder="Ex.: B3, No vencimento"></div>'+
-          '<button id="rvnaSalvar" class="ram-save">Salvar e adicionar à carteira</button>'+
-        '</div>'+
-      '</div>'+
-    '</div>';
-  m.style.display = "flex";
-  document.getElementById("rvAddClose").onclick = rvFecharAddModal;
-  // ---- busca em tempo real na aba Biblioteca (RV) ----
-  function rvFiltrarBusca(){
-    var inp = document.getElementById("rvSearch"); if(!inp) return;
-    var q = normTxt(inp.value.trim());
-    var wrap = document.getElementById("rvSearchWrap"); if(wrap) wrap.classList.toggle("has", q.length>0);
-    var any = false;
-    m.querySelectorAll(".ram-grp").forEach(function(grp){
-      var vis = 0;
-      grp.querySelectorAll(".ram-libcard").forEach(function(card){
-        var hay = card.getAttribute("data-search")||"";
-        var ok = (q==="") || hay.indexOf(q)!==-1;
-        card.style.display = ok ? "" : "none";
-        if(ok) vis++;
-      });
-      grp.style.display = vis>0 ? "" : "none";
-      if(vis>0) any = true;
-    });
-    var nr = document.getElementById("rvNoResult");
-    if(nr) nr.style.display = (!any && q!=="") ? "block" : "none";
-  }
-  var rvSearchInp = document.getElementById("rvSearch");
-  if(rvSearchInp){ rvSearchInp.addEventListener("input", rvFiltrarBusca); }
-  m.querySelectorAll("[data-rvtab]").forEach(function(b){
-    b.onclick = function(){
-      var t = b.getAttribute("data-rvtab");
-      document.getElementById("rvTabLib").style.display = (t==="lib")?"block":"none";
-      document.getElementById("rvTabNovo").style.display = (t==="novo")?"block":"none";
-      var sw = document.getElementById("rvSearchWrap"); if(sw) sw.style.display = (t==="lib")?"block":"none";
-      m.querySelectorAll(".rvtab-btn").forEach(function(x){ x.classList.remove("active"); });
-      b.classList.add("active");
-      if(t==="lib" && rvSearchInp){ try{ rvSearchInp.focus(); }catch(_f){} }
-    };
-  });
-  if(preClasse){
-    try{
-      var grp = m.querySelector('.ram-grp[data-grpcls="'+preClasse.replace(/"/g,'')+'"]');
-      if(grp){ grp.classList.add("flash"); setTimeout(function(){ try{ grp.scrollIntoView({block:"nearest"}); }catch(_s){} }, 30); }
-    }catch(_p){}
-  }
-  m.querySelectorAll("[data-rvlibadd]").forEach(function(b){
-    b.onclick = function(){
-      var it = m._lookup[b.getAttribute("data-rvlibadd")];
-      if(!it) return;
-      // catálogos especiais reutilizam os helpers existentes
-      if(it._kind==="op" && it._op){ var n=mk("Renda Variável", it._op.ativo, 0, opDetalhe(it._op), "No vencimento","protecao",null,it._op.setor); n.op=it._op; state.items.push(n); state.abertos[n.id]=true; }
-      else if(it._kind==="quanto" && it._op){ var q=mk("Internacional", it._op.nome, 0, opDetalheQuanto(it._op), "Prazo "+fixingPrazo(it._op.fixing),"protecao",null,"Internacional"); q.op=it._op; state.items.push(q); state.abertos[q.id]=true; }
-      else if(it._kind==="rubi" && it._rubi){ var r=mkRubi(it._rubi.ativo, it._rubi.setor, it._rubi.taxa, it._rubi.barreira, it._rubi.cdi); state.items.push(r); state.abertos[r.id]=true; }
-      else { var o=mk(it.classe||"Renda Variável", it.nome, 0, it.detalhe||"", it.liquidez||"", null, null, it.setor||"Outros"); state.items.push(o); state.abertos[o.id]=true;
-        try{ if(window.RICO_LIB) window.RICO_LIB.upsert({nome:o.nome, classe:o.classe, detalhe:o.detalhe, liquidez:o.liquidez, setor:o.setor, origem:"rv"}); }catch(_e){} }
-      rvFecharAddModal(); render();
-    };
-  });
-  m.querySelectorAll("[data-rvlibdel]").forEach(function(b){
-    b.onclick = function(){
-      var it = m._lookup[b.getAttribute("data-rvlibdel")];
-      if(!it) return;
-      try{ if(window.RICO_LIB) window.RICO_LIB.remove({nome:it.nome, classe:it.classe}); }catch(_e){}
-      rvAbrirAddModal();
-    };
-  });
-  var salvar = document.getElementById("rvnaSalvar");
-  if(salvar) salvar.onclick = function(){
-    var nome = (document.getElementById("rvnaNome").value||"").trim();
-    if(!nome){ document.getElementById("rvnaNome").focus(); return; }
-    var classe = document.getElementById("rvnaClasse").value || "Renda Variável";
-    var setor = document.getElementById("rvnaSetor").value || "Outros";
-    var det = (document.getElementById("rvnaDetalhe").value||"").trim();
-    var liq = (document.getElementById("rvnaLiq").value||"").trim();
-    var o = mk(classe, nome, 0, det, liq, null, null, setor);
-    state.items.push(o); state.abertos[o.id]=true;
-    try{ if(window.RICO_LIB) window.RICO_LIB.upsert({nome:nome, classe:classe, detalhe:det, liquidez:liq, setor:setor, origem:"rv"}); }catch(_e){}
-    rvFecharAddModal(); render();
-  };
-}
 function distribuirRestante(){
   if(state.items.length===0) return;
   var d = calc();
@@ -7253,7 +6514,7 @@ function addOperacao(opId){
 }
 function addQuantoOp(opId){
   var op = QUANTO_OPS.filter(function(o){return o.id===opId;})[0];
-  var novo = mk("Internacional", op.nome, 0, opDetalheQuanto(op), "Prazo "+fixingPrazo(op.fixing), "protecao", null, "Internacional");
+  var novo = mk("Internacional", op.nome, 0, opDetalheQuanto(op), "No fixing "+op.fixing, "protecao", null, "Internacional");
   novo.op = op; state.items.push(novo); state.abertos[novo.id]=true; render();
 }
 
@@ -7384,8 +6645,7 @@ function buildCarteiraPNG(p){
   CLASSES.forEach(function(c){
     var list = grouped[c]; if(!list || list.length===0) return;
     ctx.fillStyle=CLASS_COLORS[c]; rr(60,y-16,6,22,3); ctx.fill();
-    drawClassIcon(ctx, c, 88, y-6, 20, CLASS_COLORS[c]);
-    T(c,108,y,19,"#fff","800","left");
+    T(c,80,y,19,"#fff","800","left");
     T(fmtPct(byClass[c])+"%",W-60,y,18,CLASS_COLORS[c],"800","right");
     y += 34;
     list.forEach(function(i){
