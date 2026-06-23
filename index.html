@@ -2069,6 +2069,81 @@ button, .g-tab, [onclick]{ touch-action:manipulation; }
 </script>
 
 <script>
+/* ============================================================
+   BIBLIOTECA DE ATIVOS — persistente em localStorage
+   Acumula todos os ativos já adicionados às carteiras (ambos
+   construtores). Deduplica por nome+classe. Mesmo padrão
+   defensivo (try/catch) usado em rico-simulador-v1.
+   ============================================================ */
+(function(){
+  if(window.RICO_LIB) return;
+  var KEY = "rico-biblioteca-v1";
+  function _norm(s){ return (s==null?"":String(s)).trim().toLowerCase().replace(/\s+/g," "); }
+  function _key(it){ return _norm(it.nome)+"||"+_norm(it.classe); }
+  function load(){
+    try{
+      var raw = localStorage.getItem(KEY);
+      if(!raw) return [];
+      var arr = JSON.parse(raw);
+      return Array.isArray(arr) ? arr.filter(function(x){ return x && x.nome; }) : [];
+    }catch(e){ return []; }
+  }
+  function save(arr){
+    try{ localStorage.setItem(KEY, JSON.stringify(Array.isArray(arr)?arr:[])); }catch(e){}
+  }
+  function all(){ return load(); }
+  function byClass(){
+    var out = {};
+    load().forEach(function(it){
+      var c = it.classe || "Outros";
+      if(!out[c]) out[c] = [];
+      out[c].push(it);
+    });
+    return out;
+  }
+  function upsert(it){
+    if(!it || !it.nome) return load();
+    var arr = load();
+    var k = _key(it);
+    var found = false;
+    for(var i=0;i<arr.length;i++){
+      if(_key(arr[i])===k){
+        // Atualiza campos relevantes mantendo o registro existente
+        arr[i].detalhe = (it.detalhe!=null && it.detalhe!=="") ? it.detalhe : arr[i].detalhe;
+        if(it.liquidez!=null && it.liquidez!=="") arr[i].liquidez = it.liquidez;
+        if(it.retorno!=null) arr[i].retorno = it.retorno;
+        if(it.setor!=null) arr[i].setor = it.setor;
+        arr[i].atualizadoEm = Date.now();
+        found = true;
+        break;
+      }
+    }
+    if(!found){
+      arr.push({
+        nome: String(it.nome),
+        classe: it.classe || "Outros",
+        detalhe: it.detalhe || "",
+        liquidez: it.liquidez || "",
+        retorno: (it.retorno!=null ? it.retorno : null),
+        setor: (it.setor!=null ? it.setor : null),
+        origem: it.origem || "",
+        criadoEm: Date.now(),
+        atualizadoEm: Date.now()
+      });
+    }
+    save(arr);
+    return arr;
+  }
+  function remove(it){
+    var k = (typeof it==="string") ? it : _key(it);
+    var arr = load().filter(function(x){ return _key(x)!==k; });
+    save(arr);
+    return arr;
+  }
+  window.RICO_LIB = { KEY:KEY, load:load, save:save, all:all, byClass:byClass, upsert:upsert, remove:remove, keyOf:_key };
+})();
+</script>
+<script>
 (function() {
   var _done = false;
   window._toolInit['construtor'] = function() {
@@ -2337,6 +2412,8 @@ function calc(){
 
 /* ---------- render ---------- */
 function render(){
+  // Preserva a posição de rolagem: o rebuild total (innerHTML) zera o scroll.
+  const _scrollY = (typeof window!=="undefined") ? (window.scrollY||window.pageYOffset||0) : 0;
   const D = calc();
   renderTabs();
   renderEditor(D);
@@ -2349,6 +2426,8 @@ function render(){
   renderAderencia(D);
   document.getElementById("projTitle").textContent = "PROJEÇÃO DE RENTABILIDADE · "+S.template.toUpperCase();
   publicarCarteira(D);
+  // Restaura a rolagem após o reflow (evita o "pulo para o topo" ao adicionar/editar ativos).
+  try{ requestAnimationFrame(function(){ window.scrollTo(0, _scrollY); }); }catch(_e){ try{ window.scrollTo(0,_scrollY); }catch(__e){} }
 }
 
 // Ponte com o Simulador: publica a carteira montada num objeto global
@@ -2372,6 +2451,16 @@ function publicarCarteira(D){
     };
     if(typeof window.RICO_onCarteiraUpdate==="function"){ window.RICO_onCarteiraUpdate(); }
   }catch(e){ /* silencioso */ }
+  // UPSERT na biblioteca: acumula todos os ativos com nome definido (deduplica por nome+classe)
+  try{
+    if(window.RICO_LIB){
+      S.items.forEach(function(it){
+        if(it && it.nome && it.nome!=="Novo ativo"){
+          window.RICO_LIB.upsert({ nome:it.nome, classe:it.classe, detalhe:it.detalhe, liquidez:it.liquidez, origem:"construtor" });
+        }
+      });
+    }
+  }catch(_lb){}
 }
 
 function renderTabs(){
@@ -2663,8 +2752,10 @@ function addTag(toId,label){
   render();
 }
 window.__ctorAddAtivo = function(classe,nome,detalhe,liquidez,protecaoFlag,op){
-  try{ var o = mk(classe||"Renda Variável", nome||"Operação", 0, detalhe||"", liquidez||"No vencimento", null, !!protecaoFlag); if(op){ o.catalogOp=op; o._howOpen=true; } S.items.push(o); render();
-    try{ var ed=document.getElementById("editor"); if(ed) ed.scrollIntoView({behavior:"smooth",block:"start"}); }catch(_e){}
+  try{ var o = mk(classe||"Renda Variável", nome||"Operação", 0, detalhe||"", liquidez||"No vencimento", null, !!protecaoFlag); if(op){ o.catalogOp=op; o._howOpen=true; } S.items.push(o);
+    try{ if(window.RICO_LIB) window.RICO_LIB.upsert({nome:o.nome, classe:o.classe, detalhe:o.detalhe, liquidez:o.liquidez, origem:"construtor"}); }catch(_lb){}
+    render();
+    // scrollIntoView removido: causava o "pulo" para o topo. A posição é preservada em render().
     return true; }catch(e){ return false; }
 };
 
@@ -2898,7 +2989,147 @@ document.getElementById("patrimonio").addEventListener("input",e=>{
   const v=e.target.value; e.target.setSelectionRange(v.length,v.length);
   updateLight();
 });
-document.getElementById("btnAdd").onclick=()=>{ S.items.push(mk("Renda Fixa","Novo ativo",0,"","")); render(); };
+document.getElementById("btnAdd").onclick=()=>{ abrirAddModal(); };
+
+/* ===== Modal "+" dinâmico: escolher da biblioteca/catálogo ou cadastrar novo ===== */
+function _ctorCatalogItens(){
+  // Ativos dos templates existentes + da aba "Atual", agrupados por classe (deduplicados por nome+classe)
+  var seen = {}; var out = [];
+  function push(it, origem){
+    if(!it || !it.nome) return;
+    var k = (it.nome+"").trim().toLowerCase()+"||"+(it.classe+"").trim().toLowerCase();
+    if(seen[k]) return; seen[k]=1;
+    out.push({ nome:it.nome, classe:it.classe||"Outros", detalhe:it.detalhe||"", liquidez:it.liquidez||"", origem:origem });
+  }
+  try{ Object.keys(TEMPLATES).forEach(function(t){ TEMPLATES[t]().forEach(function(it){ push(it, "Template "+t); }); }); }catch(_e){}
+  return out;
+}
+function _ctorBibliotecaPorClasse(){
+  // Combina a BIBLIOTECA persistida + catálogo dos templates, agrupado por classe
+  var map = {};
+  function add(it){
+    var c = it.classe || "Outros";
+    if(!map[c]) map[c] = {};
+    var k = (it.nome+"").trim().toLowerCase();
+    if(!map[c][k]) map[c][k] = it;
+  }
+  try{ if(window.RICO_LIB) window.RICO_LIB.all().forEach(add); }catch(_e){}
+  _ctorCatalogItens().forEach(add);
+  // converte em arrays ordenados, respeitando a ordem de CLASSES
+  var out = [];
+  CLASSES.forEach(function(c){
+    if(map[c]){ var arr = Object.keys(map[c]).map(function(k){ return map[c][k]; }); out.push({classe:c, itens:arr}); }
+  });
+  Object.keys(map).forEach(function(c){ if(CLASSES.indexOf(c)===-1){ var arr=Object.keys(map[c]).map(function(k){return map[c][k];}); out.push({classe:c, itens:arr}); } });
+  return out;
+}
+function _ctorModalEl(){
+  var m = document.getElementById("ctorAddModal");
+  if(m) return m;
+  m = document.createElement("div");
+  m.id = "ctorAddModal";
+  m.style.cssText = "position:fixed; inset:0; z-index:9999; display:none; align-items:flex-start; justify-content:center; padding:40px 16px; background:rgba(4,6,22,.72); backdrop-filter:blur(3px); overflow:auto;";
+  document.body.appendChild(m);
+  m.addEventListener("click", function(e){ if(e.target===m) fecharAddModal(); });
+  return m;
+}
+function fecharAddModal(){ var m=document.getElementById("ctorAddModal"); if(m) m.style.display="none"; }
+function abrirAddModal(){
+  var m = _ctorModalEl();
+  var grupos = _ctorBibliotecaPorClasse();
+  var classeOpts = CLASSES.map(function(c){ return '<option value="'+esc(c)+'">'+esc(c)+'</option>'; }).join("");
+  var libHtml = "";
+  if(grupos.length===0){
+    libHtml = '<div style="color:#6F77A8; font-size:13px; padding:8px 0;">Nenhum ativo na biblioteca ainda. Adicione ativos às carteiras ou cadastre um novo abaixo.</div>';
+  } else {
+    grupos.forEach(function(g){
+      var cc = CLASS_COLORS[g.classe]||"#8A93D8";
+      libHtml += '<div style="margin-bottom:14px;"><div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">'+
+        '<span style="width:11px;height:11px;border-radius:3px;background:'+cc+';"></span>'+
+        '<span style="font-weight:700; font-size:13px; color:#cfd4ef;">'+esc(g.classe)+'</span>'+
+        '<span style="color:#6F77A8; font-size:11px;">'+g.itens.length+'</span></div>'+
+        '<div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:8px;">';
+      g.itens.forEach(function(it){
+        var key = esc((it.nome+"").trim().toLowerCase()+"||"+(it.classe+"").trim().toLowerCase());
+        libHtml += '<div class="lib-card" style="background:rgba(0,0,0,.22); border:1px solid rgba(120,130,210,.18); border-radius:10px; padding:9px 10px; display:flex; flex-direction:column; gap:6px;">'+
+          '<div style="font-weight:700; font-size:13px; color:#fff; line-height:1.25;">'+esc(it.nome)+'</div>'+
+          (it.detalhe?'<div style="font-size:11px; color:#9AA2D0; line-height:1.35;">'+esc(it.detalhe)+'</div>':'')+
+          '<div style="display:flex; gap:6px; align-items:center; margin-top:2px;">'+
+            '<button class="mini-btn" data-libadd="'+key+'" style="flex:1;">+ Adicionar</button>'+
+            '<button class="lib-del" data-libdel="'+key+'" title="Remover da biblioteca" style="background:rgba(255,78,0,.1); border:1px solid rgba(255,78,0,.35); color:#FF8B6B; border-radius:8px; padding:5px 8px; cursor:pointer; font-size:12px; line-height:1;">✕</button>'+
+          '</div></div>';
+      });
+      libHtml += '</div></div>';
+    });
+  }
+  // guarda lookup para re-adicionar
+  var lookup = {};
+  grupos.forEach(function(g){ g.itens.forEach(function(it){ lookup[(it.nome+"").trim().toLowerCase()+"||"+(it.classe+"").trim().toLowerCase()] = it; }); });
+  m._lookup = lookup;
+  m.innerHTML =
+    '<div style="max-width:760px; width:100%; background:linear-gradient(160deg,#10173f,#0a0f30); border:1px solid rgba(120,130,210,.28); border-radius:18px; box-shadow:0 24px 80px rgba(0,0,0,.5); overflow:hidden;">'+
+      '<div style="display:flex; align-items:center; justify-content:space-between; padding:18px 22px; border-bottom:1px solid rgba(120,130,210,.18);">'+
+        '<div style="font-weight:800; font-size:18px; color:#fff;">Adicionar ativo</div>'+
+        '<button id="ctorAddClose" style="background:none; border:none; color:#A9B0D6; font-size:22px; cursor:pointer; line-height:1;">✕</button>'+
+      '</div>'+
+      '<div style="display:flex; gap:8px; padding:14px 22px 0;">'+
+        '<button class="mini-btn ctab-btn" data-ctab="lib" style="background:rgba(255,78,0,.18);">Biblioteca / catálogo</button>'+
+        '<button class="mini-btn ctab-btn" data-ctab="novo">Cadastrar novo</button>'+
+      '</div>'+
+      '<div id="ctorTabLib" style="padding:16px 22px 22px; max-height:60vh; overflow:auto;">'+libHtml+'</div>'+
+      '<div id="ctorTabNovo" style="display:none; padding:16px 22px 22px;">'+
+        '<div style="display:flex; flex-direction:column; gap:12px;">'+
+          '<label style="font-size:12px; color:#A9B0D6; font-weight:700;">Nome do ativo<br><input id="naNome" class="name-input" style="margin-top:6px; width:100%;" placeholder="Ex.: CDB Banco XYZ 110% CDI"></label>'+
+          '<label style="font-size:12px; color:#A9B0D6; font-weight:700;">Classe<br><select id="naClasse" class="sel" style="margin-top:6px; width:100%;">'+classeOpts+'</select></label>'+
+          '<label style="font-size:12px; color:#A9B0D6; font-weight:700;">Detalhe / retorno (% a.a., prazo, estrutura…)<br><input id="naDetalhe" class="det-input" style="margin-top:6px; width:100%;" placeholder="Ex.: 110% CDI · 2 anos"></label>'+
+          '<label style="font-size:12px; color:#A9B0D6; font-weight:700;">Liquidez (opcional)<br><input id="naLiq" class="det-input" style="margin-top:6px; width:100%;" placeholder="Ex.: D+1, No vencimento"></label>'+
+          '<button id="naSalvar" class="add-btn" style="justify-content:center; margin-top:4px;">Salvar e adicionar à carteira</button>'+
+        '</div>'+
+      '</div>'+
+    '</div>';
+  m.style.display = "flex";
+  // wiring
+  document.getElementById("ctorAddClose").onclick = fecharAddModal;
+  m.querySelectorAll("[data-ctab]").forEach(function(b){
+    b.onclick = function(){
+      var t = b.getAttribute("data-ctab");
+      document.getElementById("ctorTabLib").style.display = (t==="lib")?"block":"none";
+      document.getElementById("ctorTabNovo").style.display = (t==="novo")?"block":"none";
+      m.querySelectorAll(".ctab-btn").forEach(function(x){ x.style.background = ""; });
+      b.style.background = "rgba(255,78,0,.18)";
+    };
+  });
+  m.querySelectorAll("[data-libadd]").forEach(function(b){
+    b.onclick = function(){
+      var it = m._lookup[b.getAttribute("data-libadd")];
+      if(!it) return;
+      var o = mk(it.classe||"Renda Fixa", it.nome, 0, it.detalhe||"", it.liquidez||"");
+      S.items.push(o);
+      try{ if(window.RICO_LIB) window.RICO_LIB.upsert({nome:o.nome, classe:o.classe, detalhe:o.detalhe, liquidez:o.liquidez, origem:"construtor"}); }catch(_e){}
+      fecharAddModal(); render();
+    };
+  });
+  m.querySelectorAll("[data-libdel]").forEach(function(b){
+    b.onclick = function(){
+      var it = m._lookup[b.getAttribute("data-libdel")];
+      if(!it){ return; }
+      try{ if(window.RICO_LIB) window.RICO_LIB.remove({nome:it.nome, classe:it.classe}); }catch(_e){}
+      abrirAddModal(); // re-render do modal
+    };
+  });
+  var salvar = document.getElementById("naSalvar");
+  if(salvar) salvar.onclick = function(){
+    var nome = (document.getElementById("naNome").value||"").trim();
+    if(!nome){ document.getElementById("naNome").focus(); return; }
+    var classe = document.getElementById("naClasse").value || "Renda Fixa";
+    var det = (document.getElementById("naDetalhe").value||"").trim();
+    var liq = (document.getElementById("naLiq").value||"").trim();
+    var o = mk(classe, nome, 0, det, liq);
+    S.items.push(o);
+    try{ if(window.RICO_LIB) window.RICO_LIB.upsert({nome:nome, classe:classe, detalhe:det, liquidez:liq, origem:"construtor"}); }catch(_e){}
+    fecharAddModal(); render();
+  };
+}
 
 /* ---------- copiar resumo ---------- */
 document.getElementById("btnCopy").onclick=()=>{
@@ -6240,7 +6471,20 @@ var ICON_PLUS = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" str
 
 /* ===== Render principal ===== */
 function render(){
+  // Preserva a posição de rolagem (o rebuild via app.innerHTML zera o scroll).
+  var _scrollY = (typeof window!=="undefined") ? (window.scrollY||window.pageYOffset||0) : 0;
+  window.__rvScrollY = _scrollY;
   var d = calc();
+  // UPSERT na biblioteca: acumula ativos da carteira RV (deduplica por nome+classe)
+  try{
+    if(window.RICO_LIB){
+      state.items.forEach(function(it){
+        if(it && it.nome && it.nome!=="Nova ação" && it.nome!=="Nova ação protegida"){
+          window.RICO_LIB.upsert({ nome:it.nome, classe:it.classe, detalhe:it.detalhe, liquidez:it.liquidez, setor:it.setor, origem:"rv" });
+        }
+      });
+    }
+  }catch(_lb){}
   var app = document.getElementById("rv-app");
   var h = "";
 
@@ -6403,6 +6647,8 @@ function render(){
 
   app.innerHTML = h;
   bind(d);
+  // Restaura a rolagem após o reflow (evita o "pulo para o topo" ao adicionar/editar ativos).
+  try{ var _y = window.__rvScrollY||0; requestAnimationFrame(function(){ window.scrollTo(0, _y); }); }catch(_e){}
 }
 
 /* ===== Eventos ===== */
@@ -6418,7 +6664,7 @@ function bind(d){
   var pat = document.getElementById("inpPatrimonio");
   pat.oninput = function(e){ var digits = e.target.value.replace(/\D/g,""); state.patrimonio = digits? parseInt(digits,10):0; e.target.value = fmtBRL(state.patrimonio); render(); };
   // add buttons
-  document.getElementById("rvBtnAdd").onclick = function(){ state.items.push(mk("Renda Variável","Nova ação",0,"","B3",null,null,"Outros")); render(); };
+  document.getElementById("rvBtnAdd").onclick = function(){ rvAbrirAddModal(); };
   document.getElementById("btnRubi").onclick = function(){ state.showRubi = !state.showRubi; render(); };
   document.getElementById("btnProtCriar").onclick = function(){
     var it = mkProtecao("Nova ação protegida","Outros",-20,34.99,135);
@@ -6484,6 +6730,148 @@ function update(id, field, val){ var i = state.items.filter(function(x){return x
 function setEscolha(id, idx){ var i = state.items.filter(function(x){return x.id===id;})[0]; if(i && i.opcoes){ i.escolha=idx; i.nome=i.opcoes[idx].nome; i.detalhe=i.opcoes[idx].detalhe; i.liquidez=i.opcoes[idx].liquidez||""; } }
 function remove(id){ state.items = state.items.filter(function(x){return x.id!==id;}); render(); }
 function loadTemplate(t){ state.template = t; state.items = TEMPLATES[t](); state.abertos = {}; render(); }
+
+/* ===== Modal "+" dinâmico (RV): biblioteca/catálogo ou cadastrar novo ===== */
+function _rvCatalogItens(){
+  // Operações dos catálogos existentes (estruturadas, quanto, cupom) como itens de biblioteca
+  var seen = {}; var out = [];
+  function push(it){
+    if(!it || !it.nome) return;
+    var k = (it.nome+"").trim().toLowerCase()+"||"+(it.classe+"").trim().toLowerCase();
+    if(seen[k]) return; seen[k]=1; out.push(it);
+  }
+  try{ OPERACOES.forEach(function(op){ push({nome:op.ativo, classe:"Renda Variável", detalhe:opDetalhe(op), liquidez:"No vencimento", setor:op.setor, _op:op, _kind:"op"}); }); }catch(_e){}
+  try{ QUANTO_OPS.forEach(function(op){ push({nome:op.nome, classe:"Internacional", detalhe:opDetalheQuanto(op), liquidez:"Prazo "+fixingPrazo(op.fixing), setor:"Internacional", _op:op, _kind:"quanto"}); }); }catch(_e){}
+  try{ RUBI_CATALOG.forEach(function(r){ push({nome:r.ativo+" · Cupom "+fmtPct(r.taxa)+"%", classe:"Renda Variável", detalhe:"Cupom pré-fixado · barreira "+fmtPct(r.barreira)+"%", liquidez:"No vencimento", setor:r.setor, _rubi:r, _kind:"rubi"}); }); }catch(_e){}
+  return out;
+}
+function _rvBibliotecaPorClasse(){
+  var map = {};
+  function add(it){
+    var c = it.classe || "Outros";
+    if(!map[c]) map[c] = {};
+    var k = (it.nome+"").trim().toLowerCase();
+    if(!map[c][k]) map[c][k] = it;
+  }
+  // catálogo primeiro (carrega payload _op/_rubi); depois biblioteca persistida (não sobrescreve)
+  _rvCatalogItens().forEach(add);
+  try{ if(window.RICO_LIB) window.RICO_LIB.all().forEach(add); }catch(_e){}
+  var out = [];
+  CLASSES.forEach(function(c){ if(map[c]){ out.push({classe:c, itens:Object.keys(map[c]).map(function(k){return map[c][k];})}); } });
+  Object.keys(map).forEach(function(c){ if(CLASSES.indexOf(c)===-1){ out.push({classe:c, itens:Object.keys(map[c]).map(function(k){return map[c][k];})}); } });
+  return out;
+}
+function _rvModalEl(){
+  var m = document.getElementById("rvAddModal");
+  if(m) return m;
+  m = document.createElement("div");
+  m.id = "rvAddModal";
+  m.style.cssText = "position:fixed; inset:0; z-index:9999; display:none; align-items:flex-start; justify-content:center; padding:40px 16px; background:rgba(4,6,22,.72); overflow:auto;";
+  document.body.appendChild(m);
+  m.addEventListener("click", function(e){ if(e.target===m) rvFecharAddModal(); });
+  return m;
+}
+function rvFecharAddModal(){ var m=document.getElementById("rvAddModal"); if(m) m.style.display="none"; }
+function rvAbrirAddModal(){
+  var m = _rvModalEl();
+  var grupos = _rvBibliotecaPorClasse();
+  var classeOpts = CLASSES.map(function(c){ return '<option value="'+esc(c)+'">'+esc(c)+'</option>'; }).join("");
+  var setorOpts = SETORES.map(function(s){ return '<option value="'+esc(s)+'">'+esc(s)+'</option>'; }).join("");
+  var libHtml = "";
+  var lookup = {};
+  if(grupos.length===0){
+    libHtml = '<div style="color:#6F77A8; font-size:13px; padding:8px 0;">Nenhum ativo na biblioteca ainda.</div>';
+  } else {
+    grupos.forEach(function(g){
+      var cc = CLASS_COLORS[g.classe]||"#8A93D8";
+      libHtml += '<div style="margin-bottom:14px;"><div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">'+
+        '<span style="width:11px;height:11px;border-radius:3px;background:'+cc+';"></span>'+
+        '<span style="font-weight:700; font-size:13px; color:#cfd4ef;">'+esc(g.classe)+'</span>'+
+        '<span style="color:#6F77A8; font-size:11px;">'+g.itens.length+'</span></div>'+
+        '<div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:8px;">';
+      g.itens.forEach(function(it){
+        var key = (it.nome+"").trim().toLowerCase()+"||"+(it.classe+"").trim().toLowerCase();
+        lookup[key] = it;
+        libHtml += '<div style="background:rgba(0,0,0,.22); border:1px solid rgba(120,130,210,.18); border-radius:10px; padding:9px 10px; display:flex; flex-direction:column; gap:6px;">'+
+          '<div style="font-weight:700; font-size:13px; color:#fff; line-height:1.25;">'+esc(it.nome)+'</div>'+
+          (it.detalhe?'<div style="font-size:11px; color:#9AA2D0; line-height:1.35;">'+esc(it.detalhe)+'</div>':'')+
+          '<div style="display:flex; gap:6px; align-items:center; margin-top:2px;">'+
+            '<button class="minibtn" data-rvlibadd="'+esc(key)+'" style="flex:1;">+ Adicionar</button>'+
+            (it._kind?'':'<button data-rvlibdel="'+esc(key)+'" title="Remover da biblioteca" style="background:rgba(255,78,0,.1); border:1px solid rgba(255,78,0,.35); color:#FF8B6B; border-radius:8px; padding:5px 8px; cursor:pointer; font-size:12px; line-height:1;">✕</button>')+
+          '</div></div>';
+      });
+      libHtml += '</div></div>';
+    });
+  }
+  m._lookup = lookup;
+  m.innerHTML =
+    '<div style="max-width:760px; width:100%; background:linear-gradient(160deg,#10173f,#0a0f30); border:1px solid rgba(120,130,210,.28); border-radius:18px; box-shadow:0 24px 80px rgba(0,0,0,.5); overflow:hidden;">'+
+      '<div style="display:flex; align-items:center; justify-content:space-between; padding:18px 22px; border-bottom:1px solid rgba(120,130,210,.18);">'+
+        '<div style="font-weight:800; font-size:18px; color:#fff;">Adicionar ativo</div>'+
+        '<button id="rvAddClose" style="background:none; border:none; color:#A9B0D6; font-size:22px; cursor:pointer; line-height:1;">✕</button>'+
+      '</div>'+
+      '<div style="display:flex; gap:8px; padding:14px 22px 0;">'+
+        '<button class="minibtn rvtab-btn" data-rvtab="lib" style="background:rgba(255,78,0,.18);">Biblioteca / catálogo</button>'+
+        '<button class="minibtn rvtab-btn" data-rvtab="novo">Cadastrar novo</button>'+
+      '</div>'+
+      '<div id="rvTabLib" style="padding:16px 22px 22px; max-height:60vh; overflow:auto;">'+libHtml+'</div>'+
+      '<div id="rvTabNovo" style="display:none; padding:16px 22px 22px;">'+
+        '<div style="display:flex; flex-direction:column; gap:12px;">'+
+          '<label style="font-size:12px; color:#A9B0D6; font-weight:700;">Nome do ativo<br><input id="rvnaNome" class="inp" style="margin-top:6px; width:100%;" placeholder="Ex.: PETR4"></label>'+
+          '<label style="font-size:12px; color:#A9B0D6; font-weight:700;">Classe<br><select id="rvnaClasse" class="inp" style="margin-top:6px; width:100%;">'+classeOpts+'</select></label>'+
+          '<label style="font-size:12px; color:#A9B0D6; font-weight:700;">Setor<br><select id="rvnaSetor" class="inp" style="margin-top:6px; width:100%;">'+setorOpts+'</select></label>'+
+          '<label style="font-size:12px; color:#A9B0D6; font-weight:700;">Detalhe / retorno<br><input id="rvnaDetalhe" class="inp" style="margin-top:6px; width:100%;" placeholder="Ex.: ação avulsa · B3"></label>'+
+          '<label style="font-size:12px; color:#A9B0D6; font-weight:700;">Liquidez (opcional)<br><input id="rvnaLiq" class="inp" style="margin-top:6px; width:100%;" placeholder="Ex.: B3, No vencimento"></label>'+
+          '<button id="rvnaSalvar" class="addbtn" style="justify-content:center; margin-top:4px;">Salvar e adicionar à carteira</button>'+
+        '</div>'+
+      '</div>'+
+    '</div>';
+  m.style.display = "flex";
+  document.getElementById("rvAddClose").onclick = rvFecharAddModal;
+  m.querySelectorAll("[data-rvtab]").forEach(function(b){
+    b.onclick = function(){
+      var t = b.getAttribute("data-rvtab");
+      document.getElementById("rvTabLib").style.display = (t==="lib")?"block":"none";
+      document.getElementById("rvTabNovo").style.display = (t==="novo")?"block":"none";
+      m.querySelectorAll(".rvtab-btn").forEach(function(x){ x.style.background=""; });
+      b.style.background = "rgba(255,78,0,.18)";
+    };
+  });
+  m.querySelectorAll("[data-rvlibadd]").forEach(function(b){
+    b.onclick = function(){
+      var it = m._lookup[b.getAttribute("data-rvlibadd")];
+      if(!it) return;
+      // catálogos especiais reutilizam os helpers existentes
+      if(it._kind==="op" && it._op){ var n=mk("Renda Variável", it._op.ativo, 0, opDetalhe(it._op), "No vencimento","protecao",null,it._op.setor); n.op=it._op; state.items.push(n); state.abertos[n.id]=true; }
+      else if(it._kind==="quanto" && it._op){ var q=mk("Internacional", it._op.nome, 0, opDetalheQuanto(it._op), "Prazo "+fixingPrazo(it._op.fixing),"protecao",null,"Internacional"); q.op=it._op; state.items.push(q); state.abertos[q.id]=true; }
+      else if(it._kind==="rubi" && it._rubi){ var r=mkRubi(it._rubi.ativo, it._rubi.setor, it._rubi.taxa, it._rubi.barreira, it._rubi.cdi); state.items.push(r); state.abertos[r.id]=true; }
+      else { var o=mk(it.classe||"Renda Variável", it.nome, 0, it.detalhe||"", it.liquidez||"", null, null, it.setor||"Outros"); state.items.push(o); state.abertos[o.id]=true;
+        try{ if(window.RICO_LIB) window.RICO_LIB.upsert({nome:o.nome, classe:o.classe, detalhe:o.detalhe, liquidez:o.liquidez, setor:o.setor, origem:"rv"}); }catch(_e){} }
+      rvFecharAddModal(); render();
+    };
+  });
+  m.querySelectorAll("[data-rvlibdel]").forEach(function(b){
+    b.onclick = function(){
+      var it = m._lookup[b.getAttribute("data-rvlibdel")];
+      if(!it) return;
+      try{ if(window.RICO_LIB) window.RICO_LIB.remove({nome:it.nome, classe:it.classe}); }catch(_e){}
+      rvAbrirAddModal();
+    };
+  });
+  var salvar = document.getElementById("rvnaSalvar");
+  if(salvar) salvar.onclick = function(){
+    var nome = (document.getElementById("rvnaNome").value||"").trim();
+    if(!nome){ document.getElementById("rvnaNome").focus(); return; }
+    var classe = document.getElementById("rvnaClasse").value || "Renda Variável";
+    var setor = document.getElementById("rvnaSetor").value || "Outros";
+    var det = (document.getElementById("rvnaDetalhe").value||"").trim();
+    var liq = (document.getElementById("rvnaLiq").value||"").trim();
+    var o = mk(classe, nome, 0, det, liq, null, null, setor);
+    state.items.push(o); state.abertos[o.id]=true;
+    try{ if(window.RICO_LIB) window.RICO_LIB.upsert({nome:nome, classe:classe, detalhe:det, liquidez:liq, setor:setor, origem:"rv"}); }catch(_e){}
+    rvFecharAddModal(); render();
+  };
+}
 function distribuirRestante(){
   if(state.items.length===0) return;
   var d = calc();
