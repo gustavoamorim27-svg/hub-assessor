@@ -534,7 +534,12 @@ html, body {
   color:var(--cinza);font-size:11px;font-weight:700;padding:6px 12px;border-radius:100px;
   cursor:pointer;font-family:inherit;letter-spacing:1px;transition:all .15s;}
 [data-tool="simulador"] .control .quick button:hover{background:rgba(255,78,0,.15);color:var(--laranja);border-color:rgba(255,78,0,.4);}
-[data-tool="simulador"] .goal-grid{display:grid;grid-template-columns:1.4fr 1fr;gap:18px;margin-bottom:28px;align-items:start;}
+[data-tool="simulador"] .goal-grid{display:grid;grid-template-columns:1.4fr 1fr;gap:18px;margin-bottom:28px;align-items:stretch;}
+[data-tool="simulador"] .goal-card{display:flex;flex-direction:column;}
+[data-tool="simulador"] .goal-income{margin-top:auto;}
+[data-tool="simulador"] .fp-drag{position:absolute;top:10px;right:12px;cursor:grab;color:#6F77A8;font-size:15px;line-height:1;padding:2px 5px;border-radius:6px;user-select:none;z-index:4;}
+[data-tool="simulador"] .fp-drag:hover{color:#FF8B52;background:rgba(255,78,0,.1);}
+[data-tool="simulador"] .card.dragging{opacity:.5;}
 [data-tool="simulador"] .goal-card .label-row label{color:var(--amarelo);}
 [data-tool="simulador"] .goal-card input[type="number"]{color:var(--amarelo);}
 [data-tool="simulador"] .goal-card input[type="range"]::-webkit-slider-thumb{background:var(--amarelo);box-shadow:0 0 0 4px rgba(245,185,66,.2);}
@@ -883,6 +888,7 @@ button, .g-tab, [onclick]{ touch-action:manipulation; }
   input, select, textarea{ font-size:16px; }
 }
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
 
@@ -989,7 +995,7 @@ button, .g-tab, [onclick]{ touch-action:manipulation; }
       };
       (function(){
         function esc(t){ return (""+t).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
-        var DATA=NEWS_FALLBACK, CURRENT="all";
+        var DATA=NEWS_FALLBACK, CURRENT="all", gotLive=false;
         function render(region){
           CURRENT=region||CURRENT;
           var grid=document.getElementById("newsGrid"); if(!grid||!DATA) return;
@@ -1009,12 +1015,12 @@ button, .g-tab, [onclick]{ touch-action:manipulation; }
           });
         });
         render("all");
-        try{ fetch("news.json?cb="+Date.now()).then(function(r){return r.ok?r.json():null;}).then(function(j){ if(j&&j.items&&j.items.length){ DATA=j; render(CURRENT); } }).catch(function(){}); }catch(e){}
-        var FEEDS={ nacional:["https://g1.globo.com/rss/g1/economia/","https://www.infomoney.com.br/feed/"], internacional:["https://www.cnbc.com/id/100003114/device/rss/rss.html","https://feeds.content.dowjones.io/public/rss/mw_topstories"] };
+        try{ fetch("news.json?cb="+Date.now()).then(function(r){return r.ok?r.json():null;}).then(function(j){ if(!gotLive && j&&j.items&&j.items.length){ DATA=j; render(CURRENT); } }).catch(function(){}); }catch(e){}
+        var FEEDS={ nacional:["https://g1.globo.com/rss/g1/economia/"], internacional:["https://www.cnbc.com/id/100003114/device/rss/rss.html"] };
         function _strip(h){ try{ var d=document.createElement("div"); d.innerHTML=h||""; var t=(d.textContent||"").replace(/\s+/g," ").trim(); return t.length>150?t.slice(0,148)+"…":t; }catch(e){ return ""; } }
         function _fdate(pd){ try{ var dt=new Date(pd); if(isNaN(dt.getTime())) return ""; var m=["jan","fev","mar","abr","mai","jun","jul","ago","set","out","nov","dez"]; return dt.getDate()+" "+m[dt.getMonth()]+" "+dt.getFullYear(); }catch(e){ return ""; } }
         function _feed(url,region){ return fetch("https://api.rss2json.com/v1/api.json?rss_url="+encodeURIComponent(url)).then(function(r){return r.ok?r.json():null;}).then(function(j){ if(!j||j.status!=="ok"||!j.items) return []; var src=(j.feed&&j.feed.title)||""; return j.items.slice(0,4).map(function(it){ return {region:region,title:it.title,resumo:_strip(it.description||it.content),source:src,date:_fdate(it.pubDate),url:it.link}; }); }).catch(function(){ return []; }); }
-        function loadLive(){ var ps=[]; FEEDS.nacional.forEach(function(u){ps.push(_feed(u,"nacional"));}); FEEDS.internacional.forEach(function(u){ps.push(_feed(u,"internacional"));}); Promise.all(ps).then(function(res){ var items=[].concat.apply([],res); var nac=items.filter(function(x){return x.region==="nacional"&&x.title;}).slice(0,6); var intl=items.filter(function(x){return x.region==="internacional"&&x.title;}).slice(0,6); var merged=nac.concat(intl); if(merged.length>=4){ DATA={updated:new Date().toLocaleString("pt-BR",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"})+" (ao vivo)", items:merged}; render(CURRENT); } }).catch(function(){}); }
+        function loadLive(){ var ps=[]; FEEDS.nacional.forEach(function(u){ps.push(_feed(u,"nacional"));}); FEEDS.internacional.forEach(function(u){ps.push(_feed(u,"internacional"));}); Promise.all(ps).then(function(res){ var items=[].concat.apply([],res); var nac=items.filter(function(x){return x.region==="nacional"&&x.title;}).slice(0,6); var intl=items.filter(function(x){return x.region==="internacional"&&x.title;}).slice(0,6); if(nac.length+intl.length>=2){ if(!nac.length) nac=(DATA.items||[]).filter(function(x){return x.region==="nacional";}); if(!intl.length) intl=(DATA.items||[]).filter(function(x){return x.region==="internacional";}); gotLive=true; DATA={updated:new Date().toLocaleString("pt-BR",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"})+" (ao vivo)", items:nac.concat(intl)}; render(CURRENT); } }).catch(function(){}); }
         try{ loadLive(); }catch(e){}
       })();
       </script>
@@ -1085,6 +1091,41 @@ button, .g-tab, [onclick]{ touch-action:manipulation; }
         <svg class="icon" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         Adicionar ativo
       </button>
+      <div id="assetlib" style="margin-top:14px;background:rgba(0,0,0,.18);border:1px solid rgba(120,130,210,.18);border-radius:14px;padding:14px;">
+        <div style="font-family:'Sora',sans-serif;font-weight:700;font-size:14px;color:#fff;margin-bottom:2px;">Biblioteca de ativos</div>
+        <div style="font-size:12px;color:#9AA2D0;margin-bottom:10px;">Clique para adicionar à carteira. Operações estruturadas ficam no catálogo, mais abaixo.</div>
+        <div id="assetlibChips" style="display:flex;flex-wrap:wrap;gap:7px;"></div>
+      </div>
+      <script>
+      (function(){
+        var LIB=[
+          {classe:"Renda Fixa",nome:"Pós-Fixado — LCA/LCD",detalhe:"93/94% do CDI · 1–5 anos · isento de IR",liq:"No vencimento"},
+          {classe:"Renda Fixa",nome:"Inflação — LCI",detalhe:"IPCA + 6% a.a. · 1 a 3 anos · isento",liq:""},
+          {classe:"Renda Fixa",nome:"Pré-Fixado — CDB",detalhe:"14,7% a.a. · 3 a 5 anos",liq:"No vencimento"},
+          {classe:"Renda Fixa",nome:"Pré-Fixado — XP Brasil",detalhe:"15% a.a. · 5 anos",liq:"No vencimento"},
+          {classe:"Renda Fixa",nome:"Tesouro Selic",detalhe:"Pós-fixado · liquidez diária",liq:"D+0"},
+          {classe:"Renda Fixa",nome:"Tesouro IPCA+ (NTN-B)",detalhe:"IPCA + juro real · longo prazo",liq:"D+1"},
+          {classe:"Multimercados",nome:"ACE Multicenários",detalhe:"Multimercado global · ~230% do CDI",liq:"D+17"},
+          {classe:"Multimercados",nome:"XP Forças Armadas",detalhe:"Defesa EUA (Palantir e afins) · 5 anos",liq:"No vencimento"},
+          {classe:"Renda Variável",nome:"BOVA11 Protegida",detalhe:"ETF Ibovespa · Collar UI de 2 anos",liq:"No vencimento"},
+          {classe:"Fundos Listados",nome:"JHSF Capital Malls",detalhe:"Shoppings premium · trophy assets",liq:""},
+          {classe:"Fundos Listados",nome:"XPAG (Fiagro)",detalhe:"Crédito do agro · renda mensal isenta",liq:""},
+          {classe:"Fundos Listados",nome:"XP Logístico Prime",detalhe:"Galpões logísticos AAA",liq:""},
+          {classe:"Alternativos",nome:"Ouro — Retorno Otimizado",detalhe:"Ouro com estrutura otimizada · 3–5 anos",liq:"No vencimento"},
+          {classe:"Alternativos",nome:"XP Tecnologia (QQQ)",detalhe:"Tecnologia EUA com proteção · 1 ano",liq:"No vencimento"},
+          {classe:"Internacional",nome:"Wellington Global Quality",detalhe:"Ações EUA/Europa/RU · +75% em 3 anos",liq:"D+5"},
+          {classe:"Internacional",nome:"CD de 1 ano (dólar)",detalhe:"Certificate of Deposit · pré em dólar",liq:"No vencimento"}
+        ];
+        var COL={"Renda Fixa":"#2BD9A6","Multimercados":"#7C8CFF","Renda Variável":"#FF8B52","Fundos Listados":"#FFB020","Alternativos":"#C77DFF","Internacional":"#36C5F0"};
+        function esc(t){return (""+t).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
+        function render(){
+          var box=document.getElementById("assetlibChips"); if(!box) return;
+          box.innerHTML=LIB.map(function(a,i){ var c=COL[a.classe]||"#9AA2D0"; return '<button data-lib="'+i+'" title="'+esc(a.detalhe)+'" style="cursor:pointer;font-family:inherit;font-size:12px;font-weight:700;color:#cfd4ef;background:rgba(255,255,255,.04);border:1px solid '+c+'55;border-left:3px solid '+c+';border-radius:9px;padding:6px 11px;"><span style="color:'+c+'">●</span> '+esc(a.nome)+'</button>'; }).join("");
+          box.querySelectorAll("[data-lib]").forEach(function(b){ b.onclick=function(){ var a=LIB[+b.getAttribute("data-lib")]; if(window.__ctorAddAtivo) window.__ctorAddAtivo(a.classe,a.nome,a.detalhe,a.liq,false); }; });
+        }
+        if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",render);}else{render();}
+      })();
+      </script>
     </div>
 
     <div style="flex:1 1 360px; min-width:300px;">
@@ -1910,6 +1951,10 @@ button, .g-tab, [onclick]{ touch-action:manipulation; }
     <button class="btn" id="btnExport" type="button">
       <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
       Gerar plano do cliente
+    </button>
+    <button class="btn secondary" id="btnExportPdf" type="button" title="Plano detalhado em PDF, com explicação de cada bloco">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M9 13h6M9 17h6"/></svg>
+      Plano detalhado (PDF)
     </button>
   </div>
   <div class="autosave-note"><span class="dot"></span><span id="autosaveText">Salvo automaticamente neste navegador</span></div>
@@ -5670,6 +5715,71 @@ document.getElementById('btnExport').addEventListener('click', async () => {
   }
 });
 
+document.getElementById('btnExportPdf').addEventListener('click', function(){
+  var ns = window.jspdf; if(!ns || !ns.jsPDF){ showToast('PDF ainda carregando — tente novamente em instantes'); return; }
+  var doc = new ns.jsPDF({unit:'pt', format:'a4'});
+  var W=doc.internal.pageSize.getWidth(), H=doc.internal.pageSize.getHeight();
+  var M=48, x=M, y=M, cw=W-2*M;
+  function bg(){ doc.setFillColor(8,11,40); doc.rect(0,0,W,H,'F'); }
+  bg();
+  function ensure(h){ if(y+h>H-M){ doc.addPage(); bg(); y=M; } }
+  function heading(t){ ensure(38); doc.setFont('helvetica','bold'); doc.setFontSize(14); doc.setTextColor(255,255,255); doc.text(t, x, y); y+=9; doc.setDrawColor(60,70,120); doc.line(x,y,x+cw,y); y+=18; }
+  function para(t, o){ o=o||{}; doc.setFont('helvetica', o.bold?'bold':'normal'); doc.setFontSize(o.size||10.5); var c=o.color||[205,212,235]; doc.setTextColor(c[0],c[1],c[2]); var ls=doc.splitTextToSize(t, cw); for(var i=0;i<ls.length;i++){ ensure(o.lh||14.5); doc.text(ls[i], x, y); y+=(o.lh||14.5); } y+=(o.gap!=null?o.gap:5); }
+  function kv(k,v){ ensure(16); doc.setFont('helvetica','normal'); doc.setFontSize(10.5); doc.setTextColor(150,160,190); doc.text(k, x, y); doc.setFont('helvetica','bold'); doc.setTextColor(255,255,255); doc.text(String(v), x+cw, y, {align:'right'}); y+=16; }
+  function brl(n){ return 'R$ '+fmtMoney(n); }
+  var d=calcular(); var fim=d.totalMeses; var cartFim=d.cart[fim], cdiFim=d.cdi[fim]; var objetivo=objetivoNoMesIndex(d.totalMeses);
+  var aportado=d.totalAportado; var ganhoCDI=cartFim-cdiFim; var atinge=cartFim>=objetivo;
+  var mesAtinge=-1; for(var i=24;i<=fim;i++){ if(d.cart[i]>=objetivoNoMesIndex(i)){ mesAtinge=i-24; break; } }
+  var anos=state.prazoAnos; var nomeCli=state.nomeCliente||'Cliente';
+  doc.setFont('helvetica','bold'); doc.setFontSize(26); doc.setTextColor(242,101,34); doc.text('rico', x, y+8);
+  doc.setFont('helvetica','bold'); doc.setFontSize(11); doc.setTextColor(242,101,34); doc.text('PLANEJAMENTO FINANCEIRO', x+cw, y, {align:'right'});
+  doc.setFont('helvetica','normal'); doc.setFontSize(9); doc.setTextColor(150,160,190); doc.text('Projeção de '+anos+' anos · '+new Date().toLocaleDateString('pt-BR'), x+cw, y+14, {align:'right'});
+  y+=34; doc.setDrawColor(60,70,120); doc.line(x,y,x+cw,y); y+=22;
+  doc.setFont('helvetica','bold'); doc.setFontSize(18); doc.setTextColor(255,255,255); doc.text('Plano de '+nomeCli, x, y); y+=26;
+  heading('1. Resumo do plano');
+  kv('Valor inicial', brl(state.valor));
+  kv('Aporte mensal', state.aporteMensal>0?brl(state.aporteMensal):'sem aporte');
+  kv('Rentabilidade estimada da carteira', rentLabel());
+  kv('Prazo da projeção', anos+' anos');
+  kv('Renda mensal desejada (hoje)', brl(state.rendaMensal));
+  kv('Patrimônio necessário hoje (100x a renda)', brl(state.rendaMensal*100));
+  kv('Patrimônio-alvo corrigido pelo IPCA', brl(objetivo));
+  y+=6;
+  heading('2. Evolução da carteira x objetivo do cliente');
+  kv('Montante da carteira em '+anos+' anos', brl(cartFim));
+  kv('Se aplicado a 100% do CDI', brl(cdiFim));
+  kv('Ganho da carteira sobre o CDI', (ganhoCDI>=0?'+':'')+brl(ganhoCDI));
+  kv('Total aportado no período', brl(aportado));
+  y+=4;
+  if(atinge){ para('Nas premissas atuais, a carteira ALCANCA o patrimonio-alvo de '+brl(objetivo)+(mesAtinge>=0?' em aproximadamente '+(mesAtinge<12?mesAtinge+' meses':(Math.round(mesAtinge/12*10)/10)+' anos'):'')+', preservando uma renda de '+brl(state.rendaMensal)+'/mes em poder de compra de hoje. A combinacao de aporte, prazo e rentabilidade esta adequada ao objetivo do cliente.', {color:[43,217,166]}); }
+  else { para('Nas premissas atuais, a carteira ainda NAO alcanca o patrimonio-alvo de '+brl(objetivo)+' no prazo definido. Para fechar a diferenca, vale considerar aumentar o aporte mensal, estender o prazo ou elevar a rentabilidade-alvo (maior exposicao a classes de maior retorno), sempre respeitando o perfil de risco do cliente.', {color:[255,176,32]}); }
+  heading('3. A importancia de cada classe de ativos');
+  para('Uma carteira bem construida combina classes com papeis diferentes: uma protege, outra gera renda, outra busca crescimento. A diversificacao reduz o risco sem abrir mao do retorno.', {});
+  para('Renda Fixa - a base da carteira. Preserva o capital e da previsibilidade (LCA/LCD isentas, inflacao via IPCA+, pre-fixados). E a ancora de seguranca e liquidez.', {});
+  para('Multimercados - flexibilidade. Fundos que operam juros, moedas, acoes e commodities buscando superar o CDI com risco controlado e descorrelacao.', {});
+  para('Renda Variavel - motor de crescimento de longo prazo. Acoes e ETFs, idealmente com estruturas de protecao (Collar/Fence) para limitar a queda.', {});
+  para('Fundos Listados (FIIs/Fiagro) - renda recorrente, muitas vezes isenta de IR, com exposicao a imoveis e credito.', {});
+  para('Alternativos - descorrelacao e protecao (ouro, temas especificos), uteis em cenarios de stress de mercado.', {});
+  para('Internacional - diversificacao geografica e cambial; reduz a dependencia do Brasil e da acesso as maiores empresas globais.', {});
+  heading('4. Protecao patrimonial - por que importa');
+  para('Acumular patrimonio sem proteger deixa o plano vulneravel a imprevistos (morte, invalidez, processos, sucessao). A protecao garante que o objetivo do cliente e da familia se mantenha mesmo diante do inesperado.', {});
+  para('Whole Life (seguro vitalicio) - a linha mais completa: protege a familia, cria liquidez imediata para a sucessao e funciona como reserva de valor de longo prazo.', {});
+  para('Seguro de Vida - protecao familiar e sucessoria a custo acessivel, garantindo renda ou capital aos beneficiarios.', {});
+  para('Previdencia (PGBL/VGBL) - planejamento de longo prazo com beneficios tributarios e sucessorios (nao entra em inventario).', {});
+  para('Holding patrimonial - organiza bens e sucessao, reduzindo custos e conflitos na transferencia do patrimonio.', {});
+  var temProt=(state.protecao||[]).filter(function(p){return p.on;});
+  if(temProt.length){ para('Hoje o cliente ja possui: '+temProt.map(function(p){return p.name;}).join(', ')+'.', {color:[43,217,166]}); }
+  else { para('Atencao: o cliente ainda NAO possui protecao patrimonial - uma oportunidade clara de protecao e de fortalecer a relacao com o assessor.', {color:[255,140,80]}); }
+  heading('5. Visao 360 e Open Finance');
+  para('Para uma gestao de riscos e de alocacao realmente completa, e essencial enxergar TODO o patrimonio do cliente - inclusive o que esta em outras instituicoes. O Open Finance permite que o cliente compartilhe, com seguranca e mediante autorizacao, suas posicoes e movimentacoes de outros bancos e corretoras.', {});
+  para('Com essa visao 360, o assessor consegue: (1) evitar concentracao e sobreposicao de riscos entre instituicoes; (2) identificar ativos caros, ociosos ou inadequados ao perfil; (3) propor uma alocacao consolidada e mais eficiente; e (4) acompanhar a aderencia da carteira total ao objetivo. Em vez de aconselhar apenas sobre uma fatia, o assessor passa a cuidar do patrimonio completo - gerando mais valor e confianca.', {});
+  y+=8; doc.setDrawColor(60,70,120); doc.line(x,y,x+cw,y); y+=14;
+  para('Material de apoio comercial. Valores e projecoes ilustrativos (estimativa bruta, sem IR/IOF), baseados em premissas editaveis. Rentabilidade passada nao garante resultados futuros. Nao constitui recomendacao ou oferta. Rico - Grupo XP.', {size:8, color:[120,127,168], lh:11});
+  var slug = state.nomeCliente ? '-'+state.nomeCliente.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'') : '';
+  doc.save('plano-detalhado-rico'+slug+'.pdf');
+  showToast('✓ Plano detalhado (PDF) gerado!');
+});
+
 // ============ INICIALIZAÇÃO ============
 popularSelectEstados();
 popularInstituicoes();
@@ -7239,5 +7349,33 @@ window.__rvRender = render;
 })();
 </script>
 
+<script>
+(function(){
+  function cardKey(c){ var l=c.querySelector("label,h3,.k,.ph h3"); return ((l?l.textContent:c.textContent)||"").replace(/\s+/g," ").trim().slice(0,40); }
+  var LS="rico-fp-order-v1";
+  function load(){ try{ return JSON.parse(localStorage.getItem(LS))||{}; }catch(e){ return {}; } }
+  function save(o){ try{ localStorage.setItem(LS, JSON.stringify(o)); }catch(e){} }
+  function cards(cont){ return Array.prototype.filter.call(cont.children,function(c){return c.classList&&c.classList.contains("card");}); }
+  function saveOrder(cont,id){ var all=load(); all[id]=cards(cont).map(cardKey); save(all); }
+  function applyOrder(cont,id){ var ord=load()[id]; if(!ord) return; var map={}; cards(cont).forEach(function(c){map[cardKey(c)]=c;}); ord.forEach(function(k){ if(map[k]) cont.appendChild(map[k]); }); }
+  function getAfter(cont,xp){ var els=cards(cont).filter(function(c){return !c.classList.contains("dragging");}); var best={d:-Infinity,el:null}; els.forEach(function(c){ var b=c.getBoundingClientRect(); var off=xp-(b.left+b.width/2); if(off<0 && off>best.d){ best={d:off,el:c}; } }); return best.el; }
+  function initCont(cont,id){
+    cards(cont).forEach(function(card){
+      if(card.querySelector(".fp-drag")) return;
+      card.style.position="relative";
+      var h=document.createElement("span"); h.className="fp-drag"; h.textContent="⠿"; h.title="Arraste para reordenar"; h.setAttribute("draggable","true");
+      h.addEventListener("dragstart",function(e){ card.classList.add("dragging"); try{e.dataTransfer.setData("text/plain","x");e.dataTransfer.effectAllowed="move";}catch(_){} });
+      h.addEventListener("dragend",function(){ card.classList.remove("dragging"); saveOrder(cont,id); });
+      card.appendChild(h);
+    });
+    if(!cont.__sortBound){ cont.__sortBound=true; cont.addEventListener("dragover",function(e){ e.preventDefault(); var dr=cont.querySelector(".dragging"); if(!dr) return; var after=getAfter(cont,e.clientX); if(after==null){ cont.appendChild(dr); } else { cont.insertBefore(dr,after); } }); }
+    applyOrder(cont,id);
+  }
+  function init(){
+    var c1=document.querySelector('[data-tool="simulador"] .controls'); if(c1) initCont(c1,"controls");
+    var c2=document.querySelector('[data-tool="simulador"] .goal-grid'); if(c2) initCont(c2,"goal");
+  }
+  if(document.readyState==="loading"){ document.addEventListener("DOMContentLoaded",function(){setTimeout(init,150);}); } else { setTimeout(init,150); }
+})();
+</script>
 </body>
-</html>
