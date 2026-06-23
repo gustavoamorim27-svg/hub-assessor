@@ -257,6 +257,7 @@ html, body {
 [data-tool="construtor"] .tag-drag{ cursor:grab; user-select:none; transition:transform .1s, opacity .1s; }
 [data-tool="construtor"] .tag-drag:active{ cursor:grabbing; }
 [data-tool="construtor"] .tag-tesouro{ background:rgba(91,141,239,.16); border:1px solid rgba(91,141,239,.45); color:#7BA4F2; }
+[data-tool="construtor"] .tag-protecao_parcial{ background:rgba(255,138,80,.12); border:1px solid rgba(255,138,80,.42); color:#FFB089; }
 [data-tool="construtor"] .tag-add{ cursor:pointer; user-select:none; display:inline-flex; align-items:center; justify-content:center; width:24px; height:24px; border-radius:7px; font-weight:800; font-size:15px; line-height:1; color:#9AA2D0; background:rgba(255,255,255,.05); border:1px dashed rgba(120,130,210,.45); }
 [data-tool="construtor"] .tag-add:hover{ color:#FF8B52; border-color:rgba(255,78,0,.5); background:rgba(255,78,0,.08); }
 [data-tool="construtor"] .tag-menu{ display:flex; }
@@ -1132,29 +1133,43 @@ button, .g-tab, [onclick]{ touch-action:manipulation; }
   #opcat .oc-head{ display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px; margin-bottom:4px; }
   #opcat .oc-title{ font-family:'Sora',sans-serif; font-weight:700; font-size:20px; color:#fff; margin:0; }
   #opcat .oc-new{ cursor:pointer; font-family:inherit; font-weight:700; font-size:13px; color:#fff; background:#FF4E00; border:none; border-radius:10px; padding:9px 15px; }
-  #opcat .oc-sub{ font-size:13px; color:#9AA2D0; margin-bottom:14px; }
+  #opcat .oc-sub{ font-size:13px; color:#9AA2D0; margin-bottom:14px; max-width:760px; }
+  #opcat .oc-tabs{ display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px; }
+  #opcat .oc-tab{ cursor:pointer; font-family:inherit; font-size:12.5px; font-weight:700; color:#9AA2D0; background:rgba(255,255,255,.05); border:1px solid rgba(120,130,210,.25); border-radius:9px; padding:7px 13px; }
+  #opcat .oc-tab.on{ color:#fff; background:rgba(255,78,0,.16); border-color:rgba(255,78,0,.5); }
   #opcat .oc-search{ width:100%; box-sizing:border-box; background:rgba(255,255,255,.05); border:1px solid rgba(120,130,210,.25); border-radius:10px; padding:11px 14px; color:#fff; font-family:inherit; font-size:14px; outline:none; margin-bottom:16px; }
   #opcat .oc-search::placeholder{ color:#6F77A8; }
-  #opcat .oc-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:14px; }
-  #opcat .oc-card{ background:rgba(20,28,87,.45); border:1px solid rgba(120,130,210,.18); border-radius:14px; padding:15px; }
-  #opcat .oc-badge{ display:inline-block; font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:.5px; padding:2px 8px; border-radius:6px; margin-bottom:8px; }
-  #opcat .oc-badge.protecao{ background:rgba(255,78,0,.13); color:#FF8B52; border:1px solid rgba(255,78,0,.4); }
-  #opcat .oc-badge.cupom{ background:rgba(54,197,240,.14); color:#7FD8F5; border:1px solid rgba(54,197,240,.4); }
-  #opcat .oc-card h4{ font-size:15px; font-weight:700; color:#fff; margin:0 0 4px; }
-  #opcat .oc-meta{ font-size:12px; color:#9AA2D0; margin-bottom:8px; }
-  #opcat .oc-desc{ font-size:12.5px; color:#cfd4ef; line-height:1.45; margin-bottom:12px; }
-  #opcat .oc-acts{ display:flex; gap:8px; }
-  #opcat .oc-btn{ cursor:pointer; font-family:inherit; font-size:12px; font-weight:700; border-radius:8px; padding:6px 12px; border:1px solid rgba(120,130,210,.3); background:rgba(255,255,255,.04); color:#cfd4ef; }
-  #opcat .oc-btn.del{ color:#FF8080; border-color:rgba(255,80,80,.35); }
-  #opcat .oc-empty{ color:#6F77A8; font-size:13px; padding:14px 0; grid-column:1/-1; }
+  #opcat .oc-sec{ margin-bottom:22px; }
+  #opcat .oc-sec-h{ display:flex; align-items:center; gap:10px; margin-bottom:4px; }
+  #opcat .oc-sec-t{ font-family:'Sora',sans-serif; font-weight:700; font-size:15.5px; color:#fff; }
+  #opcat .oc-sec-d{ font-size:12px; color:#9AA2D0; margin-bottom:12px; max-width:760px; }
+  #opcat .oc-payoffhdr{ display:flex; gap:10px; align-items:center; margin:14px 0 10px; }
+  #opcat .oc-payoffhdr .pf{ background:#FF4E00; color:#fff; border-radius:6px; padding:3px 10px; font-weight:800; font-size:12px; }
+  #opcat .oc-payoffhdr .pft{ font-weight:700; font-size:13px; color:#cfd4ef; }
+  #opcat .opgrid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:12px; }
+  #opcat .opcard{ background:rgba(0,0,0,.22); border:1px solid rgba(120,130,210,.18); border-radius:12px; padding:13px; }
+  #opcat .minibtn{ background:rgba(255,78,0,.15); border:1px solid rgba(255,78,0,.4); color:#FF6B2C; border-radius:8px; padding:6px 12px; font-weight:700; font-size:12px; cursor:pointer; font-family:inherit; white-space:nowrap; }
+  #opcat .ocbadge{ display:inline-block; background:rgba(255,176,32,.14); border:1px solid rgba(255,176,32,.45); color:#FFB020; border-radius:7px; padding:3px 9px; font-weight:800; font-size:11.5px; }
+  #opcat .ocbadge.prot{ background:rgba(255,78,0,.13); border-color:rgba(255,78,0,.4); color:#FF8B52; }
+  #opcat .ocbadge.cup{ background:rgba(224,69,123,.16); border-color:rgba(224,69,123,.5); color:#F178A8; }
+  #opcat .cen-table{ width:100%; border:1px solid rgba(120,130,210,.18); border-radius:10px; overflow:hidden; background:rgba(0,0,0,.18); }
+  #opcat .cen-head{ display:grid; grid-template-columns:1fr 1fr; padding:7px 10px; border-bottom:1px solid rgba(120,130,210,.22); }
+  #opcat .cen-head span{ font-size:9.5px; font-weight:700; letter-spacing:.4px; text-transform:uppercase; color:#9AA2D0; }
+  #opcat .cen-row{ display:grid; grid-template-columns:1fr 1fr; padding:5px 10px; }
+  #opcat .cen-row.alt{ background:rgba(125,138,180,.06); }
+  #opcat .cen-cell{ display:inline-flex; align-items:center; gap:6px; font-size:11.5px; }
+  #opcat .cen-dot{ width:9px; height:9px; border-radius:50%; flex-shrink:0; }
+  #opcat .oc-empty{ color:#6F77A8; font-size:13px; padding:10px 0; }
   #opcat .oc-form{ background:rgba(10,14,50,.6); border:1px solid rgba(120,130,210,.25); border-radius:14px; padding:16px; margin-bottom:16px; }
   #opcat .oc-form .oc-row{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px; }
   #opcat .oc-form label{ display:flex; flex-direction:column; gap:4px; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.4px; color:#9AA2D0; }
   #opcat .oc-form input,#opcat .oc-form select,#opcat .oc-form textarea{ background:rgba(255,255,255,.05); border:1px solid rgba(120,130,210,.25); border-radius:9px; padding:9px 11px; color:#fff; font-family:inherit; font-size:13.5px; outline:none; }
-  #opcat .oc-form textarea{ resize:vertical; min-height:54px; }
+  #opcat .oc-form textarea{ resize:vertical; min-height:48px; }
   #opcat .oc-form .oc-formacts{ display:flex; gap:10px; margin-top:4px; }
   #opcat .oc-form .oc-save{ background:#FF4E00; color:#fff; border:none; font-weight:700; border-radius:9px; padding:9px 16px; cursor:pointer; font-family:inherit; }
   #opcat .oc-form .oc-cancel{ background:transparent; color:#9AA2D0; border:1px solid rgba(120,130,210,.3); border-radius:9px; padding:9px 16px; cursor:pointer; font-family:inherit; }
+  #opcat .oc-btn{ cursor:pointer; font-family:inherit; font-size:12px; font-weight:700; border-radius:8px; padding:6px 12px; border:1px solid rgba(120,130,210,.3); background:rgba(255,255,255,.04); color:#cfd4ef; }
+  #opcat .oc-btn.del{ color:#FF8080; border-color:rgba(255,80,80,.35); }
   @media(max-width:560px){ #opcat .oc-form .oc-row{ grid-template-columns:1fr; } }
   </style>
   <div id="opcat">
@@ -1162,97 +1177,224 @@ button, .g-tab, [onclick]{ touch-action:manipulation; }
       <h3 class="oc-title">Catálogo de operações</h3>
       <button class="oc-new" id="ocNew">+ Nova operação</button>
     </div>
-    <div class="oc-sub">Operações estruturadas de proteção e cupom. Pesquise, crie, edite ou remova.</div>
-    <input class="oc-search" id="ocSearch" placeholder="Pesquisar por ativo, tipo, setor ou nome...">
+    <div class="oc-sub">Operações estruturadas como na mesa XP: proteção, cupom pré-fixado e Quanto internacional. Veja o payoff de cada cenário e toque em "+ Add" para incluir o ativo na carteira (entra com 0% — defina a alocação depois).</div>
+    <div class="oc-tabs" id="ocTabs"></div>
+    <input class="oc-search" id="ocSearch" placeholder="Pesquisar por ativo, tipo ou setor...">
     <div id="ocForm"></div>
-    <div class="oc-grid" id="ocGrid"></div>
+    <div id="ocBody"></div>
   </div>
   <script>
   (function(){
     function esc(t){ return (""+(t==null?"":t)).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
-    var seq=0;
-    function nid(){ return "op"+(++seq); }
-    var OPS=[
-      {id:nid(),nome:"PETR4 · Fence 35%",ativo:"PETR4",tipo:"Proteção",setor:"Petróleo & Gás",prazo:"2 anos",descricao:"Proteção parcial: protege até -20% da queda, com alta limitada ao teto de 35% (barreira 135%)."},
-      {id:nid(),nome:"EQTL3 · Fence 60%",ativo:"EQTL3",tipo:"Proteção",setor:"Energia Elétrica",prazo:"2 anos",descricao:"Fence: protege parte da queda e participa da alta até o teto de 60%, com barreira de knock-out."},
-      {id:nid(),nome:"SMAL11 · Collar UI",ativo:"SMAL11",tipo:"Proteção",setor:"Índice Small Caps",prazo:"2 anos",descricao:"Collar de proteção total: piso próximo ao preço atual e teto que limita o ganho no período."},
-      {id:nid(),nome:"NASD11 · Collar UI",ativo:"NASD11",tipo:"Proteção",setor:"Bolsa Americana",prazo:"2 anos",descricao:"Exposição à Nasdaq com proteção total (Collar UI) e alta limitada ao teto."},
-      {id:nid(),nome:"BPAC11 · Fence 80%",ativo:"BPAC11",tipo:"Proteção",setor:"Bancos",prazo:"1,5 ano",descricao:"BTG Pactual com Fence: proteção parcial e participação na alta até o teto."},
-      {id:nid(),nome:"ITUB4 · Fence 35%",ativo:"ITUB4",tipo:"Proteção",setor:"Bancos",prazo:"1 ano",descricao:"Itaú com Fence de proteção parcial e alta limitada por teto."},
-      {id:nid(),nome:"BBAS3 · SmartCupom 21,5%",ativo:"BBAS3",tipo:"Cupom",setor:"Bancos",prazo:"12 meses",descricao:"Cupom pré-fixado de 21,5% a.a. condicionado a barreira de -20% (equivalente a ~148% do CDI)."},
-      {id:nid(),nome:"PETR4 · SmartCupom 18%",ativo:"PETR4",tipo:"Cupom",setor:"Petróleo & Gás",prazo:"12 meses",descricao:"Cupom pré-fixado de 18% a.a. com barreira de -25% no ativo de referência."},
-      {id:nid(),nome:"VALE3 · SmartCupom 16,5%",ativo:"VALE3",tipo:"Cupom",setor:"Mineração & Siderurgia",prazo:"12 meses",descricao:"Cupom pré-fixado de 16,5% a.a. com barreira de -20%."},
-      {id:nid(),nome:"S&P 500 · Quanto",ativo:"S&P 500",tipo:"Proteção",setor:"Internacional",prazo:"2 anos",descricao:"Derivativo Quanto sobre o S&P 500 (sem risco cambial) com estrutura de proteção."}
-    ];
-    var editingId=null, formOpen=false;
+    function fmtPct(n){ var v=Math.round(n*10)/10; return (Number.isInteger(v)?v.toFixed(0):v.toFixed(1)).replace(".",","); }
+    function fmtMult(n){ return n.toFixed(2).replace(".",","); }
+    function fmtTaxa(n){ return n.toFixed(2).replace(".",","); }
+    function r1(n){ return Math.round(n*10)/10; }
 
-    function badge(tipo){ var c = (tipo==="Cupom")?"cupom":"protecao"; return '<span class="oc-badge '+c+'">'+esc(tipo)+'</span>'; }
-
-    function renderGrid(){
-      var grid=document.getElementById("ocGrid"); if(!grid) return;
-      var term=(document.getElementById("ocSearch").value||"").toLowerCase().trim();
-      var list=OPS.filter(function(o){
-        if(!term) return true;
-        return (o.nome+" "+o.ativo+" "+o.tipo+" "+o.setor).toLowerCase().indexOf(term)>=0;
-      });
-      if(!list.length){ grid.innerHTML='<div class="oc-empty">Nenhuma operação encontrada.</div>'; return; }
-      grid.innerHTML=list.map(function(o){
-        return '<div class="oc-card">'
-          + badge(o.tipo)
-          + '<h4>'+esc(o.nome)+'</h4>'
-          + '<div class="oc-meta">'+esc(o.ativo)+(o.setor?' · '+esc(o.setor):'')+(o.prazo?' · '+esc(o.prazo):'')+'</div>'
-          + '<div class="oc-desc">'+esc(o.descricao)+'</div>'
-          + '<div class="oc-acts">'
-          +   '<button class="oc-btn" data-edit="'+o.id+'">Editar</button>'
-          +   '<button class="oc-btn del" data-del="'+o.id+'">Excluir</button>'
-          + '</div>'
-          + '</div>';
-      }).join("");
-      grid.querySelectorAll("[data-edit]").forEach(function(b){ b.onclick=function(){ openForm(b.getAttribute("data-edit")); }; });
-      grid.querySelectorAll("[data-del]").forEach(function(b){ b.onclick=function(){ var id=b.getAttribute("data-del"); OPS=OPS.filter(function(x){return x.id!==id;}); renderGrid(); }; });
+    function protCen(protegeAte, teto, tetoBarreira){
+      var cen=[];
+      if(protegeAte<=-100){ cen=[[-30,0],[-15,0],[-5,0],[0,0],[Math.round(teto/2*100)/100,Math.round(teto/2*100)/100],[teto,teto],[teto+0.01,tetoBarreira],[teto+10,tetoBarreira]]; }
+      else { var pp=Math.abs(protegeAte); cen=[[-(pp+20),protegeAte],[-(pp+10),Math.round((protegeAte/2)*10)/10],[protegeAte,0],[Math.round(protegeAte/2),0],[0,0],[Math.round(teto/2*100)/100,Math.round(teto/2*100)/100],[teto,teto],[teto+0.01,tetoBarreira],[teto+10,tetoBarreira]]; }
+      return cen;
     }
+    function cupomCen(taxa, barreira){
+      var b=barreira, mid=Math.round(b/2); if(mid===b) mid=b+1;
+      var up=Math.max(Math.round(Math.abs(b)),Math.round(taxa))+15;
+      return [[b-15,b-15],[b,b],[mid,taxa],[0,taxa],[up,taxa]];
+    }
+    function buildQuanto(o){
+      var isP1=o.payoff===1;
+      var nome=o.ativo+" · "+(isP1?fmtMult(o.mult)+"x":fmtTaxa(o.taxa)+"%")+" · "+o.fixing;
+      var tipo=isP1?"Capital protegido · alta ilimitada":"Taxa fixa ou alta ilimitada";
+      var cen; if(isP1){ cen=[[-30,0],[-10,0],[0,0],[20,r1(20*o.mult)],[40,r1(40*o.mult)]]; }
+      else { var t=o.taxa,tr=Math.round(t); cen=[[-25,t],[-10,t],[0,t],[tr+15,tr+15],[tr+35,tr+35]]; }
+      return { id:o.id, payoff:o.payoff, ativo:o.ativo, fixing:o.fixing, mult:o.mult, taxa:o.taxa, setor:o.setor||"Internacional", nome:nome, tipo:tipo, cen:cen, quanto:true };
+    }
+    function keyScenarios(op){
+      if(op.quanto || op.cupom) return op.cen.slice().sort(function(a,b){return a[0]-b[0];});
+      var pts=op.cen.slice().sort(function(a,b){return a[0]-b[0];});
+      var lo=pts[0], hi=pts[pts.length-1];
+      var zero=pts.filter(function(p){return p[0]===0;})[0];
+      if(!zero) zero=pts.reduce(function(a,b){return Math.abs(b[0])<Math.abs(a[0])?b:a;});
+      var edge=pts.filter(function(p){return p[1]===0;}).reduce(function(a,b){return a==null?b:(b[0]<a[0]?b:a);},null);
+      var cap=pts.reduce(function(a,b){return b[1]>a[1]?b:a;});
+      var out=[]; function push(p){ if(p && !out.some(function(s){return s[0]===p[0];})) out.push(p); }
+      push(lo);push(edge);push(zero);push(cap);push(hi);
+      return out.sort(function(a,b){return a[0]-b[0];});
+    }
+    function payoffTable(op){
+      var ativoNome=(op.ativo||"o ativo");
+      var scen=keyScenarios(op).slice().sort(function(a,b){return b[0]-a[0];});
+      function fmtSigned(v){ if(v===0) return "0%"; return (v>0?"+":"−")+fmtPct(Math.abs(v))+"%"; }
+      function valCol(v){ return v>0?"#2BD9A6":(v<0?"#FF5566":"#F5B63E"); }
+      function dot(v){ return '<span class="cen-dot" style="background:'+valCol(v)+'"></span>'; }
+      var h='<div class="cen-table"><div class="cen-head"><span>Variação % de '+esc(ativoNome)+'</span><span>Variação % da estratégia</span></div>';
+      scen.forEach(function(pr,i){
+        h+='<div class="cen-row'+(i%2?" alt":"")+'">'
+          +'<span class="cen-cell">'+dot(pr[0])+'<b style="color:'+valCol(pr[0])+'">'+fmtSigned(pr[0])+'</b></span>'
+          +'<span class="cen-cell">'+dot(pr[1])+'<b style="color:'+valCol(pr[1])+'">'+fmtSigned(pr[1])+'</b></span></div>';
+      });
+      return h+'</div>';
+    }
+    function opDetalhe(op){
+      var prot=op.protegeAte<=-100?"Capital protegido (0% de perda no vencimento)":"Proteção parcial até "+fmtPct(op.protegeAte)+"% de queda";
+      return prot+" · participa 1:1 na alta até "+fmtPct(op.teto)+"% (ou "+fmtPct(op.tetoBarreira)+"% se a barreira de "+fmtPct(op.barreira)+"% for atingida)";
+    }
+    function opDetalheQuanto(op){
+      if(op.payoff===1) return "Capital protegido — devolve 100% do capital se o "+op.ativo+" cair. Na alta, paga a variação × "+fmtMult(op.mult)+" (sem teto). Quanto: moeda local, sem risco cambial. Fixing em "+op.fixing+".";
+      return "Recebe o maior entre a taxa fixa de "+fmtTaxa(op.taxa)+"% e a alta do "+op.ativo+" (1:1, ilimitada). Quanto: moeda local, sem risco cambial. Fixing em "+op.fixing+".";
+    }
+    function cupomDetalhe(op){ return "SmartCupom · cupom pré-fixado de "+fmtPct(op.taxa)+"% · barreira de desarme "+fmtPct(op.barreira)+"%"+(op.cdi!=null?" · ≈ "+fmtPct(op.cdi)+"% do CDI":""); }
 
+    var OPERACOES=[
+      { id:"op-petr4-fence", ativo:"PETR4", nome:"PETR4 · Fence 35%", setor:"Petróleo & Gás", tipo:"Proteção parcial", protegeAte:-20, teto:34.99, tetoBarreira:15.70, barreira:135, cen:[[-40,-20],[-30,-10],[-25,-5],[-20,0],[-10,0],[0,0],[7.85,7.85],[15.70,15.70],[34.99,34.99],[35,15.70],[45,15.70]] },
+      { id:"op-eqtl3-60", ativo:"EQTL3", nome:"EQTL3 · Fence 60%", setor:"Energia Elétrica", tipo:"Proteção parcial", protegeAte:-20, teto:59.99, tetoBarreira:35, barreira:160, cen:[[-40,-20],[-30,-10],[-25,-5],[-20,0],[-10,0],[0,0],[17.5,17.5],[35,35],[59.99,59.99],[60,35],[70,35]] },
+      { id:"op-smal11-cp", ativo:"SMAL11", nome:"SMAL11 · Collar UI", setor:"Índice / ETF", tipo:"Proteção total", protegeAte:-100, teto:114.99, tetoBarreira:56, barreira:215, cen:[[-30,0],[-25,0],[-10,0],[-5,0],[0,0],[28.75,28.75],[57.5,57.5],[114.99,114.99],[115,56],[125,56]] },
+      { id:"op-nasd11-cp", ativo:"NASD11", nome:"NASD11 · Collar UI", setor:"Internacional", tipo:"Proteção total", protegeAte:-100, teto:49.99, tetoBarreira:35, barreira:150, cen:[[-30,0],[-25,0],[-10,0],[-5,0],[0,0],[12.5,12.5],[25,25],[49.99,49.99],[50,35],[60,35]] },
+      { id:"op-bpac11-80", ativo:"BPAC11", nome:"BPAC11 · Fence 80%", setor:"Bancos", tipo:"Proteção parcial", protegeAte:-25, teto:79.99, tetoBarreira:35, barreira:180, cen:[[-45,-20],[-35,-10],[-30,-5],[-25,0],[-12.5,0],[0,0],[17.5,17.5],[35,35],[79.98,79.98],[80,35],[90,35]] },
+      { id:"op-wege3-58", ativo:"WEGE3", nome:"WEGE3 · Fence 58%", setor:"Industrial", tipo:"Proteção parcial", protegeAte:-22, teto:57.99, tetoBarreira:35, barreira:158, cen:[[-42,-20],[-32,-10],[-27,-5],[-22,0],[-11,0],[0,0],[17.5,17.5],[35,35],[57.99,57.99],[58,35],[68,35]] },
+      { id:"op-sapr11-62", ativo:"SAPR11", nome:"SAPR11 · Fence 62%", setor:"Saneamento", tipo:"Proteção parcial", protegeAte:-20, teto:61.99, tetoBarreira:35, barreira:162, cen:[[-40,-20],[-30,-10],[-25,-5],[-20,0],[-10,0],[0,0],[17.5,17.5],[35,35],[61.99,61.99],[62,35],[72,35]] },
+      { id:"op-axia3-20", ativo:"AXIA3", nome:"AXIA3 · Fence 20%", setor:"Energia Elétrica", tipo:"Proteção parcial", protegeAte:-15, teto:19.99, tetoBarreira:6.5, barreira:120, cen:[[-35,-20],[-25,-10],[-20,-5],[-15,0],[-7.5,0],[0,0],[3.25,3.25],[6.5,6.5],[19.98,19.98],[20,6.5],[30,6.5]] },
+      { id:"op-eqtl3-53", ativo:"EQTL3", nome:"EQTL3 · Fence 53%", setor:"Energia Elétrica", tipo:"Proteção parcial", protegeAte:-20, teto:52.99, tetoBarreira:35, barreira:153, cen:[[-40,-20],[-30,-10],[-25,-5],[-20,0],[-10,0],[0,0],[17.5,17.5],[35,35],[52.99,52.99],[53,35],[63,35]] },
+      { id:"op-smal11-80", ativo:"SMAL11", nome:"SMAL11 · Fence 80%", setor:"Índice / ETF", tipo:"Proteção parcial", protegeAte:-25, teto:79.99, tetoBarreira:35, barreira:180, cen:[[-45,-20],[-35,-10],[-30,-5],[-25,0],[-12.5,0],[0,0],[17.5,17.5],[35,35],[79.98,79.98],[80,35],[90,35]] },
+      { id:"op-itub4-35", ativo:"ITUB4", nome:"ITUB4 · Fence 35%", setor:"Bancos", tipo:"Proteção parcial", protegeAte:-15, teto:34.99, tetoBarreira:16.2, barreira:135, cen:[[-35,-20],[-25,-10],[-20,-5],[-15,0],[-7.5,0],[0,0],[8.1,8.1],[16.2,16.2],[34.99,34.99],[35,16.2],[45,16.2]] }
+    ];
+    var RUBI_RAW=[
+      { id:"r-bbas3", ativo:"BBAS3", setor:"Bancos", taxa:21.5, barreira:-20, cdi:147.71 },
+      { id:"r-petr4", ativo:"PETR4", setor:"Petróleo & Gás", taxa:18.0, barreira:-25, cdi:null },
+      { id:"r-vale3", ativo:"VALE3", setor:"Mineração & Siderurgia", taxa:16.5, barreira:-20, cdi:null },
+      { id:"r-itub4", ativo:"ITUB4", setor:"Bancos", taxa:15.0, barreira:-15, cdi:null },
+      { id:"r-bpac11", ativo:"BPAC11", setor:"Bancos", taxa:19.0, barreira:-20, cdi:null },
+      { id:"r-sbsp3", ativo:"SBSP3", setor:"Saneamento", taxa:14.0, barreira:-15, cdi:null }
+    ];
+    var CUPOM=RUBI_RAW.map(function(r){ return { id:r.id, ativo:r.ativo, setor:r.setor, taxa:r.taxa, barreira:r.barreira, cdi:r.cdi, nome:r.ativo+" · SmartCupom "+fmtTaxa(r.taxa)+"%", tipo:"Cupom pré-fixado", cupom:true, cen:cupomCen(r.taxa, r.barreira) }; });
+    var QUANTO=[
+      { id:"q-sp-1", payoff:1, ativo:"S&P 500", fixing:"29/nov/27", mult:1.04 },
+      { id:"q-sp-2", payoff:1, ativo:"S&P 500", fixing:"29/mai/28", mult:1.15 },
+      { id:"q-sp-3", payoff:1, ativo:"S&P 500", fixing:"30/mai/29", mult:1.41 },
+      { id:"q-nq-1", payoff:1, ativo:"Nasdaq", fixing:"29/nov/27", mult:1.00 },
+      { id:"q-nq-2", payoff:1, ativo:"Nasdaq", fixing:"29/mai/28", mult:1.00 },
+      { id:"q-nq-3", payoff:1, ativo:"Nasdaq", fixing:"30/mai/29", mult:1.17 },
+      { id:"q-sp-fx1", payoff:2, ativo:"S&P 500", fixing:"29/nov/27", taxa:6.30 },
+      { id:"q-sp-fx2", payoff:2, ativo:"S&P 500", fixing:"29/mai/28", taxa:11.97 },
+      { id:"q-sp-fx3", payoff:2, ativo:"S&P 500", fixing:"30/mai/29", taxa:26.44 },
+      { id:"q-nq-fx2", payoff:2, ativo:"Nasdaq", fixing:"29/mai/28", taxa:9.00 },
+      { id:"q-nq-fx3", payoff:2, ativo:"Nasdaq", fixing:"30/mai/29", taxa:14.33 }
+    ].map(buildQuanto);
+
+    var customSeq=0; var CUSTOM=[]; var REG={};
+    var currentTab="todos", editingId=null;
+
+    function matches(op, term){ if(!term) return true; return ((op.nome||"")+" "+(op.ativo||"")+" "+(op.setor||"")+" "+(op.tipo||"")).toLowerCase().indexOf(term)>=0; }
+
+    function card(op, cat){
+      var key=cat+":"+op.id; REG[key]={op:op,cat:cat};
+      var badge;
+      if(cat==="quanto") badge='<span class="ocbadge">'+(op.payoff===1?"Multiplicador "+fmtMult(op.mult)+"x":"Taxa fixa "+fmtTaxa(op.taxa)+"%")+'</span>';
+      else if(cat==="cupom") badge='<span class="ocbadge cup">Cupom '+fmtPct(op.taxa)+'%</span>'+(op.cdi!=null?' <span class="ocbadge">≈ '+fmtPct(op.cdi)+'% CDI</span>':'');
+      else badge='<span class="ocbadge prot">'+esc(op.tipo||"Proteção")+'</span>';
+      var meta;
+      if(cat==="quanto") meta="Fixing "+esc(op.fixing);
+      else meta=esc(op.ativo)+(op.setor?" · "+esc(op.setor):"");
+      var h='<div class="opcard"><div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start">'
+        +'<div><div style="font-weight:800;font-size:14.5px;color:#fff">'+esc(op.nome)+'</div>'
+        +'<div style="font-size:11.5px;color:#9AA2D0;margin-top:2px">'+meta+'</div>'
+        +'<div style="margin-top:6px">'+badge+'</div></div>'
+        +'<button class="minibtn" data-add="'+key+'">+ Add</button></div>'
+        +'<div style="margin-top:9px">'+payoffTable(op)+'</div>';
+      if(cat==="custom") h+='<div style="display:flex;gap:8px;margin-top:9px"><button class="oc-btn" data-edit="'+op.id+'">Editar</button><button class="oc-btn del" data-del="'+op.id+'">Excluir</button></div>';
+      return h+'</div>';
+    }
+    function section(title,desc,ops,cat,term){
+      var list=ops.filter(function(o){return matches(o,term);});
+      if(!list.length) return "";
+      return '<div class="oc-sec"><div class="oc-sec-h"><span class="oc-sec-t">'+title+'</span></div>'
+        +(desc?'<div class="oc-sec-d">'+desc+'</div>':'')
+        +'<div class="opgrid">'+list.map(function(o){return card(o,cat);}).join("")+'</div></div>';
+    }
+    function quantoSection(term){
+      var list=QUANTO.filter(function(o){return matches(o,term);});
+      if(!list.length) return "";
+      var h='<div class="oc-sec"><div class="oc-sec-h"><span class="oc-sec-t">Derivativos Quanto · Internacional</span></div>'
+        +'<div class="oc-sec-d">S&amp;P 500 e Nasdaq em moeda local (sem risco cambial). Payoff 2 (taxa fixa) modelado como piso garantido + alta 1:1 ilimitada — confirme as condições na lâmina.</div>';
+      [1,2].forEach(function(pf){
+        var g=list.filter(function(o){return o.payoff===pf;});
+        if(!g.length) return;
+        h+='<div class="oc-payoffhdr"><span class="pf">PAYOFF '+pf+'</span><span class="pft">'+(pf===1?"Capital Protegido + Alta Ilimitada":"Taxa Fixa ou Alta Ilimitada")+'</span></div>';
+        h+='<div class="opgrid">'+g.map(function(o){return card(o,"quanto");}).join("")+'</div>';
+      });
+      return h+'</div>';
+    }
+    function render(){
+      REG={};
+      var term=(document.getElementById("ocSearch").value||"").toLowerCase().trim();
+      var body=document.getElementById("ocBody");
+      var html="";
+      if(currentTab==="todos"||currentTab==="protecao") html+=section("Catálogo de proteção XP","Operações de proteção (Collar e Fence) sobre ações e índices.",OPERACOES,"protecao",term);
+      if(currentTab==="todos"||currentTab==="cupom") html+=section("Operação Cupom · pré-fixado","Cupom pré-fixado condicionado a uma barreira de desarme.",CUPOM,"cupom",term);
+      if(currentTab==="todos"||currentTab==="quanto") html+=quantoSection(term);
+      if(currentTab==="todos"||currentTab==="custom"){
+        if(CUSTOM.length) html+=section("Minhas operações","Operações que você criou. Editáveis e removíveis.",CUSTOM,"custom",term);
+        else if(currentTab==="custom") html+='<div class="oc-empty">Nenhuma operação criada ainda. Use “+ Nova operação”.</div>';
+      }
+      if(!html) html='<div class="oc-empty">Nenhuma operação encontrada para a busca.</div>';
+      body.innerHTML=html;
+      body.querySelectorAll("[data-add]").forEach(function(b){ b.onclick=function(){ addToCarteira(b.getAttribute("data-add")); }; });
+      body.querySelectorAll("[data-edit]").forEach(function(b){ b.onclick=function(){ openForm(b.getAttribute("data-edit")); }; });
+      body.querySelectorAll("[data-del]").forEach(function(b){ b.onclick=function(){ var id=b.getAttribute("data-del"); CUSTOM=CUSTOM.filter(function(x){return x.id!==id;}); render(); }; });
+    }
+    function addToCarteira(key){
+      var e=REG[key]; if(!e || !window.__ctorAddAtivo) return; var op=e.op;
+      if(e.cat==="quanto") window.__ctorAddAtivo("Internacional", op.nome, opDetalheQuanto(op), "No fixing "+op.fixing, true);
+      else if(e.cat==="cupom") window.__ctorAddAtivo("Renda Variável", op.nome, cupomDetalhe(op), "No vencimento", false);
+      else window.__ctorAddAtivo("Renda Variável", op.nome, (op.descricao||opDetalhe(op)), "No vencimento", true);
+    }
+    function tabs(){
+      var box=document.getElementById("ocTabs");
+      var defs=[["todos","Todos"],["protecao","Proteção XP"],["cupom","Cupom"],["quanto","Quanto Internacional"],["custom","Minhas operações"]];
+      box.innerHTML=defs.map(function(d){ return '<button class="oc-tab'+(currentTab===d[0]?" on":"")+'" data-tab="'+d[0]+'">'+d[1]+'</button>'; }).join("");
+      box.querySelectorAll("[data-tab]").forEach(function(b){ b.onclick=function(){ currentTab=b.getAttribute("data-tab"); tabs(); render(); }; });
+    }
     function openForm(id){
-      editingId=id||null; formOpen=true;
-      var o = id ? OPS.filter(function(x){return x.id===id;})[0] : {nome:"",ativo:"",tipo:"Proteção",setor:"",prazo:"",descricao:""};
-      if(!o) o={nome:"",ativo:"",tipo:"Proteção",setor:"",prazo:"",descricao:""};
+      editingId=id||null;
+      var o=id?CUSTOM.filter(function(x){return x.id===id;})[0]:{nome:"",ativo:"",tipo:"Proteção parcial",setor:"",protegeAte:-20,teto:35,tetoBarreira:16,barreira:135,descricao:""};
+      if(!o) return;
       var box=document.getElementById("ocForm");
       box.innerHTML='<div class="oc-form">'
-        + '<div class="oc-row">'
-        +   '<label>Nome da operação<input id="ocfNome" value="'+esc(o.nome)+'" placeholder="Ex.: PETR4 · Fence 40%"></label>'
-        +   '<label>Ativo<input id="ocfAtivo" value="'+esc(o.ativo)+'" placeholder="Ex.: PETR4"></label>'
-        + '</div>'
-        + '<div class="oc-row">'
-        +   '<label>Tipo<select id="ocfTipo"><option value="Proteção"'+(o.tipo==="Proteção"?" selected":"")+'>Proteção</option><option value="Cupom"'+(o.tipo==="Cupom"?" selected":"")+'>Cupom</option></select></label>'
-        +   '<label>Setor<input id="ocfSetor" value="'+esc(o.setor)+'" placeholder="Ex.: Bancos"></label>'
-        + '</div>'
-        + '<div class="oc-row">'
-        +   '<label>Prazo<input id="ocfPrazo" value="'+esc(o.prazo)+'" placeholder="Ex.: 2 anos"></label>'
-        +   '<label>&nbsp;</label>'
-        + '</div>'
-        + '<label style="margin-bottom:12px">Descrição<textarea id="ocfDesc" placeholder="Como a operação funciona...">'+esc(o.descricao)+'</textarea></label>'
-        + '<div class="oc-formacts"><button class="oc-save" id="ocSave">Salvar</button><button class="oc-cancel" id="ocCancel">Cancelar</button></div>'
-        + '</div>';
+        +'<div class="oc-row"><label>Nome da operação<input id="ocfNome" value="'+esc(o.nome)+'" placeholder="Ex.: VALE3 · Fence 40%"></label>'
+        +'<label>Ativo<input id="ocfAtivo" value="'+esc(o.ativo)+'" placeholder="Ex.: VALE3"></label></div>'
+        +'<div class="oc-row"><label>Tipo<select id="ocfTipo"><option'+(o.tipo==="Proteção parcial"?" selected":"")+'>Proteção parcial</option><option'+(o.tipo==="Proteção total"?" selected":"")+'>Proteção total</option></select></label>'
+        +'<label>Setor<input id="ocfSetor" value="'+esc(o.setor)+'" placeholder="Ex.: Mineração"></label></div>'
+        +'<div class="oc-row"><label>Protege até (% queda, -100 = total)<input id="ocfProt" type="number" value="'+o.protegeAte+'"></label>'
+        +'<label>Teto de alta (%)<input id="ocfTeto" type="number" value="'+o.teto+'"></label></div>'
+        +'<div class="oc-row"><label>Teto se tocar barreira (%)<input id="ocfTetoB" type="number" value="'+o.tetoBarreira+'"></label>'
+        +'<label>Barreira de alta (%)<input id="ocfBarr" type="number" value="'+o.barreira+'"></label></div>'
+        +'<label style="margin-bottom:12px">Descrição (opcional)<textarea id="ocfDesc" placeholder="Observações da operação...">'+esc(o.descricao||"")+'</textarea></label>'
+        +'<div class="oc-formacts"><button class="oc-save" id="ocSave">Salvar</button><button class="oc-cancel" id="ocCancel">Cancelar</button></div></div>';
+      if(currentTab!=="custom"&&currentTab!=="todos"){ currentTab="custom"; tabs(); render(); box=document.getElementById("ocForm"); }
       document.getElementById("ocSave").onclick=saveForm;
-      document.getElementById("ocCancel").onclick=closeForm;
+      document.getElementById("ocCancel").onclick=function(){ editingId=null; document.getElementById("ocForm").innerHTML=""; };
       document.getElementById("ocfNome").focus();
     }
-    function closeForm(){ formOpen=false; editingId=null; document.getElementById("ocForm").innerHTML=""; }
     function saveForm(){
-      var nome=document.getElementById("ocfNome").value.trim();
-      if(!nome){ document.getElementById("ocfNome").focus(); return; }
-      var data={ nome:nome, ativo:document.getElementById("ocfAtivo").value.trim(), tipo:document.getElementById("ocfTipo").value,
-        setor:document.getElementById("ocfSetor").value.trim(), prazo:document.getElementById("ocfPrazo").value.trim(), descricao:document.getElementById("ocfDesc").value.trim() };
-      if(editingId){ OPS=OPS.map(function(x){ return x.id===editingId ? Object.assign({},x,data) : x; }); }
-      else { data.id=nid(); OPS.unshift(data); }
-      closeForm(); renderGrid();
+      var nome=document.getElementById("ocfNome").value.trim(); if(!nome){ document.getElementById("ocfNome").focus(); return; }
+      var protegeAte=Number(document.getElementById("ocfProt").value)||-20;
+      var teto=Number(document.getElementById("ocfTeto").value)||35;
+      var tetoB=Number(document.getElementById("ocfTetoB").value)||Math.round(teto*0.45);
+      var barreira=Number(document.getElementById("ocfBarr").value)||135;
+      var data={ nome:nome, ativo:document.getElementById("ocfAtivo").value.trim(), tipo:document.getElementById("ocfTipo").value, setor:document.getElementById("ocfSetor").value.trim(),
+        protegeAte:protegeAte, teto:teto, tetoBarreira:tetoB, barreira:barreira, descricao:document.getElementById("ocfDesc").value.trim() };
+      data.cen=protCen(protegeAte,teto,tetoB);
+      if(editingId){ CUSTOM=CUSTOM.map(function(x){ return x.id===editingId?Object.assign({},x,data):x; }); }
+      else { data.id="cust"+(++customSeq); CUSTOM.unshift(data); }
+      editingId=null; document.getElementById("ocForm").innerHTML=""; currentTab="custom"; tabs(); render();
     }
-
     function init(){
       var sb=document.getElementById("ocSearch"); if(!sb) return;
-      sb.addEventListener("input", renderGrid);
+      tabs();
+      sb.addEventListener("input", render);
       document.getElementById("ocNew").addEventListener("click", function(){ openForm(null); });
-      renderGrid();
+      render();
     }
     if(document.readyState==="loading"){ document.addEventListener("DOMContentLoaded", init); } else { init(); }
   })();
@@ -1925,15 +2067,16 @@ const isFII = (it)=> it && it.classe==="Fundos Listados";
 function structureTag(it){
   const blob = ((it.nome||"")+" "+(it.detalhe||"")).toLowerCase();
   if(/smart\s?cupom|smartcoupon/.test(blob)) return {label:"Cupom Pré-Fixado",kind:"cupom"};
-  if(it.protecao || /collar|fence/.test(blob)) return {label:"Proteção",kind:"protecao"};
+  if(/fence/.test(blob)) return {label:"Proteção Parcial",kind:"protecao_parcial"};
+  if(it.protecao || /collar/.test(blob)) return {label:"Proteção",kind:"protecao"};
   return null;
 }
 /* Catálogo de tags possíveis com sua classe visual */
 const TAG_KIND = {
   "CETIPADO":"cetip", "Proteção":"protecao", "Cupom Pré-Fixado":"cupom",
-  "Resgate trabalhado":"resgate", "Isento de IR":"isento", "FGC":"fgc", "Tesouro Direto":"tesouro"
+  "Resgate trabalhado":"resgate", "Isento de IR":"isento", "FGC":"fgc", "Tesouro Direto":"tesouro", "Proteção":"protecao", "Proteção Parcial":"protecao_parcial"
 };
-const ALL_TAGS=["Resgate trabalhado","Isento de IR","FGC","Proteção","Cupom Pré-Fixado","CETIPADO","Tesouro Direto","Liquidez · No vencimento","Liquidez · D+0","Liquidez · D+1"];
+const ALL_TAGS=["Resgate trabalhado","Isento de IR","FGC","Proteção","Proteção Parcial","Cupom Pré-Fixado","CETIPADO","Tesouro Direto","Liquidez · No vencimento","Liquidez · D+0","Liquidez · D+1"];
 function tagKind(label){
   if(TAG_KIND[label]) return TAG_KIND[label];
   if(/^Liquidez/.test(label)) return "liq";
@@ -2187,7 +2330,8 @@ function publicarCarteira(D){
         classe: it.classe,
         nome: it.nome,
         pct: Number(it.pct)||0,
-        detalhe: it.detalhe||""
+        detalhe: it.detalhe||"",
+        tags: Array.isArray(it.tags)?it.tags.slice():defaultTags(it)
       })).filter(it=>it.pct>0),
       atualizadoEm: Date.now()
     };
@@ -2471,6 +2615,11 @@ function addTag(toId,label){
   if(it.tags.indexOf(label)===-1) it.tags.push(label);
   render();
 }
+window.__ctorAddAtivo = function(classe,nome,detalhe,liquidez,protecaoFlag){
+  try{ var o = mk(classe||"Renda Variável", nome||"Operação", 0, detalhe||"", liquidez||"No vencimento", null, !!protecaoFlag); S.items.push(o); render();
+    try{ var ed=document.getElementById("editor"); if(ed) ed.scrollIntoView({behavior:"smooth",block:"start"}); }catch(_e){}
+    return true; }catch(e){ return false; }
+};
 
 /* atualiza apenas os cards derivados sem reconstruir o editor (mantém foco nos inputs) */
 function updateLight(){
@@ -4200,9 +4349,11 @@ function renderAlocacao() {
     const valorAtivo = state.valor * (a.pct / 100);
     const tagsAtivo = [...new Set((a.tags || []).concat(a.options && a.options[a.optIndex] ? (a.options[a.optIndex].tags || []) : []))];
     const tagsHtml = tagsAtivo.map(t => {
-      const cls = t === 'FGC' ? 'fgc' : (t === 'FGC parcial' ? 'fgc-parcial' : 'prot');
-      const lbl = t === 'proteção' ? '🛡️ Proteção' : (t === 'FGC' ? '🔒 FGC' : '🔒 FGC parcial');
-      return `<span class="atag ${cls}">${lbl}</span>`;
+      const tl = (''+t).toLowerCase(); let cls='prot', lbl=t;
+      if(tl==='fgc'){ cls='fgc'; lbl='🔒 FGC'; }
+      else if(tl.indexOf('fgc')>=0){ cls='fgc-parcial'; lbl='🔒 '+t; }
+      else if(tl.indexOf('proteç')>=0||tl.indexOf('protec')>=0){ cls='prot'; lbl='🛡️ '+t; }
+      return `<span class="atag ${cls}">${escapeHtml(lbl)}</span>`;
     }).join('');
     const info = infoAtivo(a);
     const infoBtn = info ? ` <button type="button" class="info-btn" data-i="${i}" title="Mais informações sobre o ativo">▾</button>` : '';
@@ -4336,7 +4487,7 @@ function importarDoConstrutor(){
     descr: it.detalhe || '',
     pct: Number(it.pct) || 0,
     color: corCat(it.classe),
-    tags: []
+    tags: Array.isArray(it.tags) ? it.tags.slice() : []
   }));
   state.alocacao = nova;
   state.template = 'construtor';
