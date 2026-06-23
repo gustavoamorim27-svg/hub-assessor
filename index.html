@@ -1161,6 +1161,12 @@ button, .g-tab, [onclick]{ touch-action:manipulation; }
   .cen-row.alt{ background:rgba(125,138,180,.06); }
   .cen-cell{ display:inline-flex; align-items:center; gap:6px; font-size:11.5px; }
   .cen-dot{ width:9px; height:9px; border-radius:50%; flex-shrink:0; }
+  .cen-table.big{ max-width:600px; }
+  .cen-table.big .cen-cell{ font-size:13.5px; gap:8px; }
+  .cen-table.big .cen-row{ padding:8px 14px; }
+  .cen-table.big .cen-head{ padding:9px 14px; }
+  .cen-table.big .cen-head span{ font-size:11px; }
+  .cen-table.big .cen-dot{ width:11px; height:11px; }
   #opcat .oc-empty{ color:#6F77A8; font-size:13px; padding:10px 0; }
   #opcat .oc-form{ background:rgba(10,14,50,.6); border:1px solid rgba(120,130,210,.25); border-radius:14px; padding:16px; margin-bottom:16px; }
   #opcat .oc-form .oc-row{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px; }
@@ -1224,13 +1230,37 @@ button, .g-tab, [onclick]{ touch-action:manipulation; }
       push(lo);push(edge);push(zero);push(cap);push(hi);
       return out.sort(function(a,b){return a[0]-b[0];});
     }
-    function payoffTable(op){
+    function payoffAt(op,v){
+      var pa=Number(op.protegeAte), teto=Number(op.teto), tetoB=Number(op.tetoBarreira);
+      var barr=(Number(op.barreira)>100?Number(op.barreira)-100:teto);
+      if(v>barr) return tetoB;
+      if(v>teto) return teto;
+      if(v>=0) return v;
+      if(v>=pa) return 0;
+      return v-pa;
+    }
+    function payoffSeries(op){
+      var pa=Number(op.protegeAte), teto=Number(op.teto);
+      var barr=(Number(op.barreira)>100?Number(op.barreira)-100:Math.round(teto));
+      var vars=[Math.round(barr+Math.max(10,teto*0.25)), Math.round(teto)];
+      var step=teto<=20?2.5:(teto<=45?5:(teto<=90?10:20));
+      for(var v=Math.floor((Math.round(teto)-1)/step)*step; v>0.01; v-=step){ vars.push(Math.round(v*10)/10); }
+      vars.push(0);
+      if(pa>-100){ vars.push(Math.round(pa/2)); vars.push(pa); vars.push(pa-20); }
+      else { vars.push(-10); vars.push(-25); vars.push(-40); }
+      var seen={}, out=[];
+      vars.forEach(function(x){ var k=Math.round(x*10)/10; if(!(k in seen)){ seen[k]=1; out.push(k); } });
+      out.sort(function(a,b){return b-a;});
+      return out.map(function(x){ return [x, Math.round(payoffAt(op,x)*100)/100]; });
+    }
+    function isProt(op){ return op && op.protegeAte!=null && op.teto!=null && !op.quanto && !op.cupom; }
+    function payoffTable(op, big){
       var ativoNome=(op.ativo||"o ativo");
-      var scen=keyScenarios(op).slice().sort(function(a,b){return b[0]-a[0];});
+      var scen=(isProt(op)?payoffSeries(op):keyScenarios(op).slice()).sort(function(a,b){return b[0]-a[0];});
       function fmtSigned(v){ if(v===0) return "0%"; return (v>0?"+":"−")+fmtPct(Math.abs(v))+"%"; }
       function valCol(v){ return v>0?"#2BD9A6":(v<0?"#FF5566":"#F5B63E"); }
       function dot(v){ return '<span class="cen-dot" style="background:'+valCol(v)+'"></span>'; }
-      var h='<div class="cen-table"><div class="cen-head"><span>Variação % de '+esc(ativoNome)+'</span><span>Variação % da estratégia</span></div>';
+      var h='<div class="cen-table'+(big?" big":"")+'"><div class="cen-head"><span>Variação % de '+esc(ativoNome)+'</span><span>Variação % da estratégia</span></div>';
       scen.forEach(function(pr,i){
         h+='<div class="cen-row'+(i%2?" alt":"")+'">'
           +'<span class="cen-cell">'+dot(pr[0])+'<b style="color:'+valCol(pr[0])+'">'+fmtSigned(pr[0])+'</b></span>'
@@ -1238,7 +1268,7 @@ button, .g-tab, [onclick]{ touch-action:manipulation; }
       });
       return h+'</div>';
     }
-    window.__opPayoffHTML=function(op){ if(!op||!op.cen) return ""; return '<div class="opcat-payoff" style="margin-top:4px">'+payoffTable(op)+'</div><div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:8px;font-size:11px;color:#cfd4ef"><span style="display:inline-flex;align-items:center;gap:6px"><span style="width:10px;height:10px;border-radius:3px;background:#2BD9A6"></span>Ganho</span><span style="display:inline-flex;align-items:center;gap:6px"><span style="width:10px;height:10px;border-radius:3px;background:#F5B63E"></span>Estável</span><span style="display:inline-flex;align-items:center;gap:6px"><span style="width:10px;height:10px;border-radius:3px;background:#FF5566"></span>Perda</span></div>'; };
+    window.__opPayoffHTML=function(op){ if(!op||!op.cen) return ""; return '<div class="opcat-payoff" style="margin-top:4px">'+payoffTable(op,true)+'</div><div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:8px;font-size:11px;color:#cfd4ef"><span style="display:inline-flex;align-items:center;gap:6px"><span style="width:10px;height:10px;border-radius:3px;background:#2BD9A6"></span>Ganho</span><span style="display:inline-flex;align-items:center;gap:6px"><span style="width:10px;height:10px;border-radius:3px;background:#F5B63E"></span>Estável</span><span style="display:inline-flex;align-items:center;gap:6px"><span style="width:10px;height:10px;border-radius:3px;background:#FF5566"></span>Perda</span></div>'; };
     function opDetalhe(op){
       var prot=op.protegeAte<=-100?"Capital protegido (0% de perda no vencimento)":"Proteção parcial até "+fmtPct(op.protegeAte)+"% de queda";
       return prot+" · participa 1:1 na alta até "+fmtPct(op.teto)+"% (ou "+fmtPct(op.tetoBarreira)+"% se a barreira de "+fmtPct(op.barreira)+"% for atingida)";
