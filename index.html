@@ -502,7 +502,23 @@ html, body {
 /* botão "+" por classe nos editores */
 .cls-add-btn{margin-left:auto;display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:8px;background:rgba(255,78,0,.12);border:1px solid rgba(255,78,0,.4);color:#FF6B2C;font-size:16px;font-weight:700;line-height:1;cursor:pointer;font-family:inherit;transition:.15s;flex-shrink:0;}
 .cls-add-btn:hover{background:rgba(255,78,0,.26);color:#fff;transform:scale(1.08);}
-
+/* === barra de busca no modal Adicionar ativo === */
+.rico-add-modal .ram-search{position:relative;padding:14px 24px 0;flex-shrink:0;}
+.rico-add-modal .ram-search svg{position:absolute;left:38px;top:50%;transform:translateY(calc(-50% + 7px));width:16px;height:16px;color:#6F77A8;pointer-events:none;}
+.rico-add-modal .ram-search input{width:100%;background:rgba(0,0,0,.3);border:1px solid rgba(120,130,210,.22);border-radius:11px;color:#fff;font-size:14px;padding:11px 14px 11px 40px;outline:none;font-family:inherit;transition:.15s;}
+.rico-add-modal .ram-search input::placeholder{color:#5b6390;}
+.rico-add-modal .ram-search input:focus{border-color:rgba(255,78,0,.55);box-shadow:0 0 0 3px rgba(255,78,0,.12);}
+.rico-add-modal .ram-search input:focus + svg,.rico-add-modal .ram-search.has svg{color:#FF6B2C;}
+.rico-add-modal .ram-noresult{color:#6F77A8;font-size:13px;padding:14px 4px;}
+/* ícone de classe (cabeçalhos) */
+.cls-ico{display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;}
+.cls-ico svg{display:block;}
+/* === badges Atual x Novo na aba "Atual" === */
+.item.it-atual{border-left:3px solid #36C5F0;padding-left:11px;}
+.item.it-novo{border-left:3px solid #2BD9A6;padding-left:11px;}
+.it-badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;border-radius:999px;padding:2px 8px;line-height:1.4;flex-shrink:0;}
+.it-badge.atual{background:rgba(54,197,240,.14);border:1px solid rgba(54,197,240,.45);color:#7FD8F5;}
+.it-badge.novo{background:rgba(43,217,166,.14);border:1px solid rgba(43,217,166,.5);color:#5BE3BE;}
 </style>
 <style>:root{
   --azul-1:#070B2E; --azul-2:#0C1142; --azul-3:#141A57; --azul-4:#1C2470;
@@ -1072,6 +1088,10 @@ button, .g-tab, [onclick]{ touch-action:manipulation; }
       <button class="btn-solid" id="btnPng">
         <svg class="icon" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
         Gerar PNG
+      </button>
+      <button class="btn-ghost" id="btnPngComp" style="display:none; border-color:rgba(54,197,240,.5); color:#7FD8F5;">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        PNG comparativo
       </button>
     </div>
   </div>
@@ -2211,6 +2231,61 @@ const CLASS_COLORS = {
   "Fundos Listados":"#FFB020","Alternativos":"#C77DFF","Internacional":"#36C5F0"
 };
 const CLASSES = Object.keys(CLASS_COLORS);
+
+/* ===== Ícones por classe de ativo (SVG inline, estilo Lucide stroke) ===== */
+const CLASS_ICON_PATHS = {
+  "Renda Fixa":'<path d="M12 2 3 7v2h18V7z"/><line x1="5" y1="11" x2="5" y2="18"/><line x1="10" y1="11" x2="10" y2="18"/><line x1="14" y1="11" x2="14" y2="18"/><line x1="19" y1="11" x2="19" y2="18"/><line x1="3" y1="21" x2="21" y2="21"/>',
+  "Renda Variável":'<path d="M3 3v18h18"/><path d="M7 14l3-4 3 3 5-7"/><path d="M18 6h3v3"/>',
+  "Multimercados":'<polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/>',
+  "Fundos Listados":'<rect x="4" y="3" width="16" height="18" rx="1.5"/><line x1="9" y1="7" x2="9" y2="7.01"/><line x1="15" y1="7" x2="15" y2="7.01"/><line x1="9" y1="11" x2="9" y2="11.01"/><line x1="15" y1="11" x2="15" y2="11.01"/><line x1="9" y1="15" x2="9" y2="15.01"/><line x1="15" y1="15" x2="15" y2="15.01"/><path d="M10 21v-3h4v3"/>',
+  "Alternativos":'<path d="M6 3h12l4 6-10 13L2 9z"/><path d="M11 3 8 9l4 13 4-13-3-6"/><path d="M2 9h20"/>',
+  "Internacional":'<circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>'
+};
+function classIconSVG(classe, color, size){
+  const p = CLASS_ICON_PATHS[classe]; if(!p) return "";
+  const s = size||15, col = color||"currentColor";
+  return '<span class="cls-ico"><svg width="'+s+'" height="'+s+'" viewBox="0 0 24 24" fill="none" stroke="'+col+'" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+p+'</svg></span>';
+}
+/* desenha um ícone simplificado da classe no canvas do PNG (centro x,y) */
+function drawClassIcon(ctx, classe, cx, cy, size, color){
+  try{
+    var s=size||20, h=s/2; ctx.save();
+    ctx.strokeStyle=color; ctx.fillStyle=color; ctx.lineWidth=Math.max(1.6,s/11);
+    ctx.lineCap="round"; ctx.lineJoin="round";
+    var L=cx-h, T=cy-h, R=cx+h, B=cy+h;
+    if(classe==="Renda Fixa"){
+      ctx.beginPath(); ctx.moveTo(cx,T); ctx.lineTo(L,T+s*0.28); ctx.lineTo(R,T+s*0.28); ctx.closePath(); ctx.stroke();
+      [0.28,0.5,0.72].forEach(function(fx){ var x=L+s*fx+s*0.07; ctx.beginPath(); ctx.moveTo(x,T+s*0.38); ctx.lineTo(x,B-s*0.16); ctx.stroke(); });
+      var x4=R-s*0.13; ctx.beginPath(); ctx.moveTo(x4,T+s*0.38); ctx.lineTo(x4,B-s*0.16); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(L,B); ctx.lineTo(R,B); ctx.stroke();
+    } else if(classe==="Renda Variável"){
+      ctx.beginPath(); ctx.moveTo(L,T); ctx.lineTo(L,B); ctx.lineTo(R,B); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(L+s*0.12,B-s*0.22); ctx.lineTo(cx-s*0.06,cy-s*0.04); ctx.lineTo(cx+s*0.12,cy+s*0.06); ctx.lineTo(R-s*0.04,T+s*0.16); ctx.stroke();
+    } else if(classe==="Multimercados"){
+      ctx.beginPath(); ctx.moveTo(cx,T); ctx.lineTo(R,cy-s*0.18); ctx.lineTo(cx,cy); ctx.lineTo(L,cy-s*0.18); ctx.closePath(); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(L,cy+s*0.02); ctx.lineTo(cx,cy+s*0.2); ctx.lineTo(R,cy+s*0.02); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(L,cy+s*0.22); ctx.lineTo(cx,cy+s*0.4); ctx.lineTo(R,cy+s*0.22); ctx.stroke();
+    } else if(classe==="Fundos Listados"){
+      ctx.strokeRect(L+s*0.06,T,s*0.88,s);
+      [0.28,0.5,0.72].forEach(function(fy){ [0.3,0.6].forEach(function(fx){ ctx.fillRect(L+s*fx,T+s*fy,s*0.1,s*0.1); }); });
+      ctx.strokeRect(cx-s*0.12,B-s*0.22,s*0.24,s*0.22);
+    } else if(classe==="Alternativos"){
+      ctx.beginPath(); ctx.moveTo(cx,T); ctx.lineTo(R,cy-s*0.08); ctx.lineTo(cx,B); ctx.lineTo(L,cy-s*0.08); ctx.closePath(); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(L,cy-s*0.08); ctx.lineTo(R,cy-s*0.08); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(cx-s*0.18,T); ctx.lineTo(L,cy-s*0.08); ctx.moveTo(cx+s*0.18,T); ctx.lineTo(R,cy-s*0.08); ctx.stroke();
+    } else if(classe==="Internacional"){
+      ctx.beginPath(); ctx.arc(cx,cy,h-1,0,2*Math.PI); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(L+1,cy); ctx.lineTo(R-1,cy); ctx.stroke();
+      ctx.beginPath(); ctx.ellipse(cx,cy,h*0.45,h-1,0,0,2*Math.PI); ctx.stroke();
+    }
+    ctx.restore();
+  }catch(_ic){}
+}
+/* normaliza texto p/ busca: minúsculo e sem acentos (defensivo) */
+function normTxt(s){
+  try{ return (s==null?"":String(s)).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,""); }
+  catch(_n){ return (s==null?"":String(s)).toLowerCase(); }
+}
 const CDI_MULT = { Conservadora:108, Moderada:113, Sofisticada:120 };
 const CDI_DEFAULT = 14.25;
 
@@ -2352,8 +2427,14 @@ const S = {
   clienteCDI:0,
   projAnos:5,
   posicaoAtual:null,      // posição consolidada importada (categoria -> %)
-  recomendadaTemplate:"Moderada"  // template ideal de referência p/ aderência da aba Atual
+  recomendadaTemplate:"Moderada",  // template ideal de referência p/ aderência da aba Atual
+  baselineAtual:null,     // snapshot {keys:Set, itens:[{nome,classe,pct}]} da carteira do cliente ao entrar na aba "Atual"
+  baselineKey:null        // identifica de qual cliente/posição o baseline foi tirado (evita baseline "vazado" entre clientes)
 };
+/* chave estável de um ativo p/ diff de baseline (nome+classe, normalizado) */
+function _ativoKey(it){ return normTxt((it&&it.nome)||"")+"||"+normTxt((it&&it.classe)||""); }
+/* identidade da posição atual (p/ saber se o baseline ainda vale) */
+function _posIdent(pos){ try{ return (pos&&(pos.conta||pos.cliente))||"" ; }catch(_e){ return ""; } }
 
 /* Categorias do construtor para montar a carteira "Atual" a partir da posição importada */
 const CAT_ATUAL_NOMES = {
@@ -2470,6 +2551,7 @@ function render(){
   renderAderencia(D);
   document.getElementById("projTitle").textContent = "PROJEÇÃO DE RENTABILIDADE · "+S.template.toUpperCase();
   publicarCarteira(D);
+  try{ atualizarBtnComparativo(); }catch(_bc){}
   // Restaura a rolagem após o reflow (evita o "pulo para o topo" ao adicionar/editar ativos).
   try{ requestAnimationFrame(function(){ window.scrollTo(0, _scrollY); }); }catch(_e){ try{ window.scrollTo(0,_scrollY); }catch(__e){} }
 }
@@ -2538,8 +2620,50 @@ function loadAtual(){
   S.items = itensDaPosicao(S.posicaoAtual);
   if(S.posicaoAtual.patrimonio) S.patrimonio = S.posicaoAtual.patrimonio;
   if(S.posicaoAtual.conta && (!S.cliente || /^Conta /.test(S.cliente))) S.cliente = "Conta "+S.posicaoAtual.conta;
+  // === BASELINE: fixa a "foto" da carteira atual do cliente ao entrar na aba "Atual" ===
+  // (capturado a partir dos ativos efetivamente puxados da posição importada)
+  try{ S.baselineAtual = snapshotBaseline(S.items); S.baselineKey = _posIdent(S.posicaoAtual); }catch(_b){ S.baselineAtual = null; }
   // mantém o cdiMult do template recomendado como referência (a carteira atual não tem retorno projetado próprio)
   render();
+}
+/* cria o snapshot do baseline a partir de uma lista de itens */
+function snapshotBaseline(items){
+  var keys = {}; var snap = [];
+  (items||[]).forEach(function(it){
+    if(!it || (Number(it.pct)||0) <= 0) return;
+    var k = _ativoKey(it);
+    if(keys[k]) return;
+    keys[k] = true;
+    snap.push({ nome:it.nome, classe:it.classe, pct:Number(it.pct)||0 });
+  });
+  return { keys:keys, itens:snap };
+}
+/* baseline ativo só vale na aba "Atual" e para a posição correspondente */
+function baselineAtivo(){
+  if(S.template!=="Atual") return null;
+  if(!S.baselineAtual || !S.baselineAtual.keys) return null;
+  return S.baselineAtual;
+}
+/* status de um item vs baseline: "atual" (já existia), "novo" (adicionado depois) ou "" (sem baseline) */
+function statusVsBaseline(it){
+  var bl = baselineAtivo(); if(!bl) return "";
+  return bl.keys[_ativoKey(it)] ? "atual" : "novo";
+}
+/* diff completo: o que ENTROU e o que SAIU em relação ao baseline */
+function diffBaseline(){
+  var bl = baselineAtivo(); if(!bl) return null;
+  var atuaisKeys = {}; var entrou = [];
+  S.items.forEach(function(it){
+    if((Number(it.pct)||0) <= 0) return;
+    var k = _ativoKey(it); atuaisKeys[k] = true;
+    if(!bl.keys[k]) entrou.push({ nome:it.nome, classe:it.classe, pct:Number(it.pct)||0 });
+  });
+  var saiu = [];
+  bl.itens.forEach(function(b){
+    var k = _ativoKey(b);
+    if(!atuaisKeys[k]) saiu.push({ nome:b.nome, classe:b.classe, pct:b.pct });
+  });
+  return { entrou:entrou, saiu:saiu };
 }
 
 /* Composição (categoria -> %) dos itens de um template */
@@ -2643,7 +2767,7 @@ function renderEditor(D){
     if(!list||list.length===0) return;
     h+=`<div style="margin-bottom:18px;">
       <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
-        <span style="width:12px; height:12px; border-radius:4px; background:${CLASS_COLORS[c]};"></span>
+        ${classIconSVG(c, CLASS_COLORS[c], 17)}
         <span style="font-weight:700; font-size:15px;">${c}</span>
         <span style="color:#A9B0D6; font-weight:700; font-size:13px;">${fmtPct(D.byClass[c])}%</span>
         <button type="button" class="cls-add-btn" data-clsadd="${esc(c)}" title="Adicionar ativo em ${esc(c)}">+</button>
@@ -2666,8 +2790,13 @@ function renderEditor(D){
       ALL_TAGS.forEach(lbl=>{ if(i.tags.indexOf(lbl)===-1){ menuChips+=`<button class="tag tag-${tagKind(lbl)} tag-menu-chip" data-addchip="${i.id}" data-label="${esc(lbl)}">+ ${esc(lbl)}</button>`; } });
       const tagsHtml=`<div class="tag-zone" data-tagzone="${i.id}" style="display:flex; gap:6px; margin-top:9px; flex-wrap:wrap; min-height:26px; align-items:center;">${tags}<span class="tag-add" data-addtag="${i.id}" title="Adicionar tag">+</span></div><div class="tag-menu" data-tagmenu="${i.id}" style="display:none; gap:6px; flex-wrap:wrap; margin-top:8px; padding:8px; border-radius:10px; background:rgba(10,14,50,.6); border:1px solid rgba(120,130,210,.18);">${menuChips || '<span style="color:#6F77A8;font-size:12px">Todas as tags já adicionadas</span>'}</div>`;
       let selOpts=""; CLASSES.forEach(cl=>selOpts+=`<option value="${cl}" ${i.classe===cl?"selected":""}>${cl}</option>`);
-      h+=`<div class="item">
+      const _st = statusVsBaseline(i);
+      const _itemCls = _st==="atual" ? " it-atual" : (_st==="novo" ? " it-novo" : "");
+      const _badge = _st==="atual" ? `<span class="it-badge atual" title="Já estava na carteira do cliente">Atual</span>`
+                   : _st==="novo" ? `<span class="it-badge novo" title="Adicionado depois da carteira atual">Novo</span>` : "";
+      h+=`<div class="item${_itemCls}">
         <div style="display:flex; gap:8px; align-items:center;">
+          ${_badge}
           <div class="pct-wrap">
             <input class="pct-input num" type="number" step="0.5" value="${i.pct}" data-f="pct" data-id="${i.id}">
             <span class="pct-suffix">%</span>
@@ -3103,13 +3232,14 @@ function abrirAddModal(preClasse){
     grupos.forEach(function(g){
       var cc = CLASS_COLORS[g.classe]||"#8A93D8";
       libHtml += '<div class="ram-grp" data-grpcls="'+esc(g.classe)+'"><div class="ram-grp-head">'+
-        '<span class="dot" style="background:'+cc+';"></span>'+
+        classIconSVG(g.classe, cc, 16)+
         '<span class="nm" style="color:'+cc+';">'+esc(g.classe)+'</span>'+
         '<span class="ct">'+g.itens.length+'</span></div>'+
         '<div class="ram-grid">';
       g.itens.forEach(function(it){
         var key = esc((it.nome+"").trim().toLowerCase()+"||"+(it.classe+"").trim().toLowerCase());
-        libHtml += '<div class="ram-libcard">'+
+        var hay = esc(normTxt((it.nome||"")+" "+(it.detalhe||"")));
+        libHtml += '<div class="ram-libcard" data-search="'+hay+'">'+
           '<div class="nm">'+esc(it.nome)+'</div>'+
           (it.detalhe?'<div class="dt">'+esc(it.detalhe)+'</div>':'')+
           '<div class="act">'+
@@ -3134,7 +3264,8 @@ function abrirAddModal(preClasse){
         '<button class="ram-tab ctab-btn active" data-ctab="lib">Biblioteca / catálogo</button>'+
         '<button class="ram-tab ctab-btn" data-ctab="novo">Cadastrar novo</button>'+
       '</div>'+
-      '<div id="ctorTabLib" class="ram-body">'+libHtml+'</div>'+
+      '<div id="ctorSearchWrap" class="ram-search"><input id="ctorSearch" type="text" placeholder="Buscar ativo por nome ou descrição…" autocomplete="off"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>'+
+      '<div id="ctorTabLib" class="ram-body">'+libHtml+'<div id="ctorNoResult" class="ram-noresult" style="display:none;">Nenhum ativo encontrado para a busca.</div></div>'+
       '<div id="ctorTabNovo" class="ram-body" style="display:none;">'+
         '<div class="ram-form">'+
           '<div class="ram-field"><span class="lab">Nome do ativo</span><input id="naNome" class="ram-input" placeholder="Ex.: CDB Banco XYZ 110% CDI"></div>'+
@@ -3148,13 +3279,37 @@ function abrirAddModal(preClasse){
   m.style.display = "flex";
   // wiring
   document.getElementById("ctorAddClose").onclick = fecharAddModal;
+  // ---- busca em tempo real na aba Biblioteca ----
+  function ctorFiltrarBusca(){
+    var inp = document.getElementById("ctorSearch"); if(!inp) return;
+    var q = normTxt(inp.value.trim());
+    var wrap = document.getElementById("ctorSearchWrap"); if(wrap) wrap.classList.toggle("has", q.length>0);
+    var any = false;
+    m.querySelectorAll(".ram-grp").forEach(function(grp){
+      var vis = 0;
+      grp.querySelectorAll(".ram-libcard").forEach(function(card){
+        var hay = card.getAttribute("data-search")||"";
+        var ok = (q==="") || hay.indexOf(q)!==-1;
+        card.style.display = ok ? "" : "none";
+        if(ok) vis++;
+      });
+      grp.style.display = vis>0 ? "" : "none";
+      if(vis>0) any = true;
+    });
+    var nr = document.getElementById("ctorNoResult");
+    if(nr) nr.style.display = (!any && q!=="") ? "block" : "none";
+  }
+  var ctorSearchInp = document.getElementById("ctorSearch");
+  if(ctorSearchInp){ ctorSearchInp.addEventListener("input", ctorFiltrarBusca); }
   m.querySelectorAll("[data-ctab]").forEach(function(b){
     b.onclick = function(){
       var t = b.getAttribute("data-ctab");
       document.getElementById("ctorTabLib").style.display = (t==="lib")?"block":"none";
       document.getElementById("ctorTabNovo").style.display = (t==="novo")?"block":"none";
+      var sw = document.getElementById("ctorSearchWrap"); if(sw) sw.style.display = (t==="lib")?"block":"none";
       m.querySelectorAll(".ctab-btn").forEach(function(x){ x.classList.remove("active"); });
       b.classList.add("active");
+      if(t==="lib" && ctorSearchInp){ try{ ctorSearchInp.focus(); }catch(_f){} }
     };
   });
   // pré-seleção por classe: destaca/rola o grupo na biblioteca
@@ -3248,10 +3403,14 @@ function wrapText(ctx,text,x,y,maxW,lineH,color,size,FF){
   if(line){ ctx.fillText(line,x,yy); lines++; }
   return lines;
 }
-function buildCarteiraPNG(){
+function buildCarteiraPNG(opts){
+  opts = opts || {};
   const D=calc();
   const {template}=S, cliente=S.cliente, patrimonio=S.patrimonio;
   const {byClass,total,grouped,retAA,glossTerms,projData,endCarteira,endCDI}=D;
+  // Diff de baseline (Atual): só quando solicitado e disponível
+  const _diff = opts.comparativo ? diffBaseline() : null;
+  const _temDiff = !!(_diff && (_diff.entrou.length || _diff.saiu.length));
   const cdiMult=S.cdiMult, projAnos=S.projAnos, cdi=S.cdi;
   const FF="Arial, Helvetica, sans-serif";
   const nome=(cliente||"").trim();
@@ -3263,7 +3422,9 @@ function buildCarteiraPNG(){
   const glossH=(glossTerms&&glossTerms.length)?(50+glossTerms.length*78):0;
   const chartBlockH=560;
   const alfaH=(D&&D.temCliente?120:0);
-  const H=Math.max(1180, headH+bodyH+glossH+chartBlockH+alfaH+220);
+  const _diffRows=_temDiff?(_diff.entrou.length+_diff.saiu.length):0;
+  const alterH=_temDiff?(64+_diffRows*30+24):0;
+  const H=Math.max(1180, headH+bodyH+glossH+chartBlockH+alfaH+alterH+220);
   const scale=2;
   const cv=document.createElement("canvas"); cv.width=W*scale; cv.height=H*scale;
   const ctx=cv.getContext("2d"); ctx.scale(scale,scale);
@@ -3313,7 +3474,8 @@ function buildCarteiraPNG(){
   CLASSES.forEach(c=>{
     const list=grouped[c]; if(!list||list.length===0) return;
     ctx.fillStyle=CLASS_COLORS[c]; rr(60,y-16,6,22,3); ctx.fill();
-    T(c,80,y,19,"#fff","800","left");
+    drawClassIcon(ctx, c, 88, y-6, 20, CLASS_COLORS[c]);
+    T(c,108,y,19,"#fff","800","left");
     T(fmtPct(byClass[c])+"%",W-60,y,18,CLASS_COLORS[c],"800","right");
     y+=classGap+18;
     list.forEach(i=>{
@@ -3335,6 +3497,32 @@ function buildCarteiraPNG(){
     });
     y+=10;
   });
+
+  // ===== ALTERAÇÕES NA CARTEIRA (saiu / entrou vs baseline) =====
+  if(_temDiff){
+    y+=14;
+    const _bh=44+_diffRows*30+20;
+    ctx.fillStyle="rgba(54,197,240,.07)"; rr(60,y-22,W-120,_bh,14); ctx.fill();
+    ctx.strokeStyle="rgba(54,197,240,.28)"; ctx.lineWidth=1; rr(60,y-22,W-120,_bh,14); ctx.stroke();
+    T("ALTERAÇÕES NA CARTEIRA",84,y,14,"#7FD8F5","700","left");
+    T("vs. carteira atual do cliente",W-84,y,12,"#6F77A8","600","right");
+    y+=30;
+    _diff.saiu.forEach(d=>{
+      ctx.fillStyle="#FF5566"; ctx.beginPath(); ctx.arc(92,y-4,3.5,0,2*Math.PI); ctx.fill();
+      T("Saiu",104,y,13,"#FF8B6B","800","left");
+      T(d.nome,164,y,14,"#cfd4ef","600","left");
+      T(fmtPct(d.pct)+"%  ·  "+d.classe,W-84,y,12.5,"#8A93D8","600","right");
+      y+=30;
+    });
+    _diff.entrou.forEach(d=>{
+      ctx.fillStyle="#2BD9A6"; ctx.beginPath(); ctx.arc(92,y-4,3.5,0,2*Math.PI); ctx.fill();
+      T("Entrou",104,y,13,"#2BD9A6","800","left");
+      T(d.nome,176,y,14,"#fff","700","left");
+      T(fmtPct(d.pct)+"%  ·  "+d.classe,W-84,y,12.5,"#8A93D8","600","right");
+      y+=30;
+    });
+    y+=8;
+  }
 
   if(glossTerms&&glossTerms.length){
     y+=8;
@@ -3418,6 +3606,31 @@ document.getElementById("btnPng").onclick=()=>{
     window.mostrarPngModal(url, fname, { accent:"#F26522" });
   }catch(e){ console.error(e); alert("Não foi possível gerar a imagem: "+(e&&e.message?e.message:e)); }
 };
+(function(){
+  var bc = document.getElementById("btnPngComp");
+  if(!bc) return;
+  bc.onclick = function(){
+    try{
+      var diff = diffBaseline();
+      if(!diff || (!diff.entrou.length && !diff.saiu.length)){
+        alert("Sem comparação disponível: a carteira não tem alterações em relação à carteira atual do cliente (ou o baseline não foi definido). Abra a aba \"Atual\" para fixar a carteira do cliente.");
+        return;
+      }
+      var url=buildCarteiraPNG({ comparativo:true });
+      var fname="Carteira_comparativo_"+S.template+(S.cliente?"_"+S.cliente.replace(/[^a-zA-Z0-9]+/g,"_"):"")+".png";
+      window.mostrarPngModal(url, fname, { accent:"#36C5F0" });
+    }catch(e){ console.error(e); alert("Não foi possível gerar a imagem: "+(e&&e.message?e.message:e)); }
+  };
+})();
+/* mostra/esconde o botão "PNG comparativo" conforme exista diff de baseline */
+function atualizarBtnComparativo(){
+  try{
+    var bc = document.getElementById("btnPngComp"); if(!bc) return;
+    var diff = diffBaseline();
+    var tem = !!(diff && (diff.entrou.length || diff.saiu.length));
+    bc.style.display = tem ? "" : "none";
+  }catch(_e){}
+}
 
 /* ---------- init ---------- */
 fmtPatInput();
@@ -5986,6 +6199,59 @@ var CLASS_COLORS = {
 };
 var CLASSES = Object.keys(CLASS_COLORS);
 
+/* ===== Ícones por classe de ativo (SVG inline, estilo Lucide) — construtor RV ===== */
+var CLASS_ICON_PATHS = {
+  "Renda Fixa":'<path d="M12 2 3 7v2h18V7z"/><line x1="5" y1="11" x2="5" y2="18"/><line x1="10" y1="11" x2="10" y2="18"/><line x1="14" y1="11" x2="14" y2="18"/><line x1="19" y1="11" x2="19" y2="18"/><line x1="3" y1="21" x2="21" y2="21"/>',
+  "Renda Variável":'<path d="M3 3v18h18"/><path d="M7 14l3-4 3 3 5-7"/><path d="M18 6h3v3"/>',
+  "Multimercados":'<polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/>',
+  "Fundos Listados":'<rect x="4" y="3" width="16" height="18" rx="1.5"/><line x1="9" y1="7" x2="9" y2="7.01"/><line x1="15" y1="7" x2="15" y2="7.01"/><line x1="9" y1="11" x2="9" y2="11.01"/><line x1="15" y1="11" x2="15" y2="11.01"/><line x1="9" y1="15" x2="9" y2="15.01"/><line x1="15" y1="15" x2="15" y2="15.01"/><path d="M10 21v-3h4v3"/>',
+  "Alternativos":'<path d="M6 3h12l4 6-10 13L2 9z"/><path d="M11 3 8 9l4 13 4-13-3-6"/><path d="M2 9h20"/>',
+  "Internacional":'<circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>'
+};
+function classIconSVG(classe, color, size){
+  var p = CLASS_ICON_PATHS[classe]; if(!p) return "";
+  var s = size||15, col = color||"currentColor";
+  return '<span class="cls-ico"><svg width="'+s+'" height="'+s+'" viewBox="0 0 24 24" fill="none" stroke="'+col+'" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+p+'</svg></span>';
+}
+function drawClassIcon(ctx, classe, cx, cy, size, color){
+  try{
+    var s=size||20, h=s/2; ctx.save();
+    ctx.strokeStyle=color; ctx.fillStyle=color; ctx.lineWidth=Math.max(1.6,s/11);
+    ctx.lineCap="round"; ctx.lineJoin="round";
+    var L=cx-h, T=cy-h, R=cx+h, B=cy+h;
+    if(classe==="Renda Fixa"){
+      ctx.beginPath(); ctx.moveTo(cx,T); ctx.lineTo(L,T+s*0.28); ctx.lineTo(R,T+s*0.28); ctx.closePath(); ctx.stroke();
+      [0.28,0.5,0.72].forEach(function(fx){ var x=L+s*fx+s*0.07; ctx.beginPath(); ctx.moveTo(x,T+s*0.38); ctx.lineTo(x,B-s*0.16); ctx.stroke(); });
+      var x4=R-s*0.13; ctx.beginPath(); ctx.moveTo(x4,T+s*0.38); ctx.lineTo(x4,B-s*0.16); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(L,B); ctx.lineTo(R,B); ctx.stroke();
+    } else if(classe==="Renda Variável"){
+      ctx.beginPath(); ctx.moveTo(L,T); ctx.lineTo(L,B); ctx.lineTo(R,B); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(L+s*0.12,B-s*0.22); ctx.lineTo(cx-s*0.06,cy-s*0.04); ctx.lineTo(cx+s*0.12,cy+s*0.06); ctx.lineTo(R-s*0.04,T+s*0.16); ctx.stroke();
+    } else if(classe==="Multimercados"){
+      ctx.beginPath(); ctx.moveTo(cx,T); ctx.lineTo(R,cy-s*0.18); ctx.lineTo(cx,cy); ctx.lineTo(L,cy-s*0.18); ctx.closePath(); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(L,cy+s*0.02); ctx.lineTo(cx,cy+s*0.2); ctx.lineTo(R,cy+s*0.02); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(L,cy+s*0.22); ctx.lineTo(cx,cy+s*0.4); ctx.lineTo(R,cy+s*0.22); ctx.stroke();
+    } else if(classe==="Fundos Listados"){
+      ctx.strokeRect(L+s*0.06,T,s*0.88,s);
+      [0.28,0.5,0.72].forEach(function(fy){ [0.3,0.6].forEach(function(fx){ ctx.fillRect(L+s*fx,T+s*fy,s*0.1,s*0.1); }); });
+      ctx.strokeRect(cx-s*0.12,B-s*0.22,s*0.24,s*0.22);
+    } else if(classe==="Alternativos"){
+      ctx.beginPath(); ctx.moveTo(cx,T); ctx.lineTo(R,cy-s*0.08); ctx.lineTo(cx,B); ctx.lineTo(L,cy-s*0.08); ctx.closePath(); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(L,cy-s*0.08); ctx.lineTo(R,cy-s*0.08); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(cx-s*0.18,T); ctx.lineTo(L,cy-s*0.08); ctx.moveTo(cx+s*0.18,T); ctx.lineTo(R,cy-s*0.08); ctx.stroke();
+    } else if(classe==="Internacional"){
+      ctx.beginPath(); ctx.arc(cx,cy,h-1,0,2*Math.PI); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(L+1,cy); ctx.lineTo(R-1,cy); ctx.stroke();
+      ctx.beginPath(); ctx.ellipse(cx,cy,h*0.45,h-1,0,0,2*Math.PI); ctx.stroke();
+    }
+    ctx.restore();
+  }catch(_ic){}
+}
+function normTxt(s){
+  try{ return (s==null?"":String(s)).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,""); }
+  catch(_n){ return (s==null?"":String(s)).toLowerCase(); }
+}
+
 var SETOR_COLORS = {
   "Bancos":"#FF4E00","Financeiro":"#FF8B52","Seguros":"#FFB020","Energia Elétrica":"#2BD9A6",
   "Saneamento":"#36C5F0","Petróleo & Gás":"#7C8CFF","Mineração & Siderurgia":"#C77DFF",
@@ -6581,7 +6847,7 @@ function render(){
   CLASSES.forEach(function(c){
     var list = d.grouped[c];
     if(!list || list.length===0) return;
-    h += '<div style="margin-bottom:18px"><div class="classhead"><span class="dot" style="background:'+CLASS_COLORS[c]+'"></span>'+
+    h += '<div style="margin-bottom:18px"><div class="classhead">'+classIconSVG(c, CLASS_COLORS[c], 17)+
       '<span style="font-weight:700;font-size:15px">'+c+'</span>'+
       '<span style="color:#A9B0D6;font-weight:700;font-size:13px">'+fmtPct(d.byClass[c])+'%</span>'+
       '<button type="button" class="cls-add-btn" data-rvclsadd="'+esc(c)+'" title="Adicionar ativo em '+esc(c)+'">+</button></div>';
@@ -6854,14 +7120,15 @@ function rvAbrirAddModal(preClasse){
     grupos.forEach(function(g){
       var cc = CLASS_COLORS[g.classe]||"#8A93D8";
       libHtml += '<div class="ram-grp" data-grpcls="'+esc(g.classe)+'"><div class="ram-grp-head">'+
-        '<span class="dot" style="background:'+cc+';"></span>'+
+        classIconSVG(g.classe, cc, 16)+
         '<span class="nm" style="color:'+cc+';">'+esc(g.classe)+'</span>'+
         '<span class="ct">'+g.itens.length+'</span></div>'+
         '<div class="ram-grid">';
       g.itens.forEach(function(it){
         var key = (it.nome+"").trim().toLowerCase()+"||"+(it.classe+"").trim().toLowerCase();
         lookup[key] = it;
-        libHtml += '<div class="ram-libcard">'+
+        var hay = esc(normTxt((it.nome||"")+" "+(it.detalhe||"")));
+        libHtml += '<div class="ram-libcard" data-search="'+hay+'">'+
           '<div class="nm">'+esc(it.nome)+'</div>'+
           (it.detalhe?'<div class="dt">'+esc(it.detalhe)+'</div>':'')+
           '<div class="act">'+
@@ -6883,7 +7150,8 @@ function rvAbrirAddModal(preClasse){
         '<button class="ram-tab rvtab-btn active" data-rvtab="lib">Biblioteca / catálogo</button>'+
         '<button class="ram-tab rvtab-btn" data-rvtab="novo">Cadastrar novo</button>'+
       '</div>'+
-      '<div id="rvTabLib" class="ram-body">'+libHtml+'</div>'+
+      '<div id="rvSearchWrap" class="ram-search"><input id="rvSearch" type="text" placeholder="Buscar ativo por nome ou descrição…" autocomplete="off"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>'+
+      '<div id="rvTabLib" class="ram-body">'+libHtml+'<div id="rvNoResult" class="ram-noresult" style="display:none;">Nenhum ativo encontrado para a busca.</div></div>'+
       '<div id="rvTabNovo" class="ram-body" style="display:none;">'+
         '<div class="ram-form">'+
           '<div class="ram-field"><span class="lab">Nome do ativo</span><input id="rvnaNome" class="ram-input" placeholder="Ex.: PETR4"></div>'+
@@ -6897,13 +7165,37 @@ function rvAbrirAddModal(preClasse){
     '</div>';
   m.style.display = "flex";
   document.getElementById("rvAddClose").onclick = rvFecharAddModal;
+  // ---- busca em tempo real na aba Biblioteca (RV) ----
+  function rvFiltrarBusca(){
+    var inp = document.getElementById("rvSearch"); if(!inp) return;
+    var q = normTxt(inp.value.trim());
+    var wrap = document.getElementById("rvSearchWrap"); if(wrap) wrap.classList.toggle("has", q.length>0);
+    var any = false;
+    m.querySelectorAll(".ram-grp").forEach(function(grp){
+      var vis = 0;
+      grp.querySelectorAll(".ram-libcard").forEach(function(card){
+        var hay = card.getAttribute("data-search")||"";
+        var ok = (q==="") || hay.indexOf(q)!==-1;
+        card.style.display = ok ? "" : "none";
+        if(ok) vis++;
+      });
+      grp.style.display = vis>0 ? "" : "none";
+      if(vis>0) any = true;
+    });
+    var nr = document.getElementById("rvNoResult");
+    if(nr) nr.style.display = (!any && q!=="") ? "block" : "none";
+  }
+  var rvSearchInp = document.getElementById("rvSearch");
+  if(rvSearchInp){ rvSearchInp.addEventListener("input", rvFiltrarBusca); }
   m.querySelectorAll("[data-rvtab]").forEach(function(b){
     b.onclick = function(){
       var t = b.getAttribute("data-rvtab");
       document.getElementById("rvTabLib").style.display = (t==="lib")?"block":"none";
       document.getElementById("rvTabNovo").style.display = (t==="novo")?"block":"none";
+      var sw = document.getElementById("rvSearchWrap"); if(sw) sw.style.display = (t==="lib")?"block":"none";
       m.querySelectorAll(".rvtab-btn").forEach(function(x){ x.classList.remove("active"); });
       b.classList.add("active");
+      if(t==="lib" && rvSearchInp){ try{ rvSearchInp.focus(); }catch(_f){} }
     };
   });
   if(preClasse){
@@ -7092,7 +7384,8 @@ function buildCarteiraPNG(p){
   CLASSES.forEach(function(c){
     var list = grouped[c]; if(!list || list.length===0) return;
     ctx.fillStyle=CLASS_COLORS[c]; rr(60,y-16,6,22,3); ctx.fill();
-    T(c,80,y,19,"#fff","800","left");
+    drawClassIcon(ctx, c, 88, y-6, 20, CLASS_COLORS[c]);
+    T(c,108,y,19,"#fff","800","left");
     T(fmtPct(byClass[c])+"%",W-60,y,18,CLASS_COLORS[c],"800","right");
     y += 34;
     list.forEach(function(i){
