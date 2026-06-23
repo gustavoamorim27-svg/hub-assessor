@@ -1210,9 +1210,13 @@ button, .g-tab, [onclick]{ touch-action:manipulation; }
       var up=Math.max(Math.round(Math.abs(b)),Math.round(taxa))+15;
       return [[b-15,b-15],[b,b],[mid,taxa],[0,taxa],[up,taxa]];
     }
+    function fixingPrazo(fix){
+      var m={"29/nov/27":"1 ano","29/mai/28":"2 anos","25/jun/29":"3 anos","30/mai/29":"3 anos"};
+      return m[fix]||fix;
+    }
     function buildQuanto(o){
       var isP1=o.payoff===1;
-      var nome=o.ativo+" · "+(isP1?fmtMult(o.mult)+"x":fmtTaxa(o.taxa)+"%")+" · "+o.fixing;
+      var nome=o.ativo+" · "+(isP1?fmtMult(o.mult)+"x":fmtTaxa(o.taxa)+"%")+" · "+fixingPrazo(o.fixing);
       var tipo=isP1?"Capital protegido · alta ilimitada":"Taxa fixa ou alta ilimitada";
       var cen; if(isP1){ cen=[[-30,0],[-10,0],[0,0],[20,r1(20*o.mult)],[40,r1(40*o.mult)]]; }
       else { var t=o.taxa,tr=Math.round(t); cen=[[-25,t],[-10,t],[0,t],[tr+15,tr+15],[tr+35,tr+35]]; }
@@ -1274,8 +1278,8 @@ button, .g-tab, [onclick]{ touch-action:manipulation; }
       return prot+" · participa 1:1 na alta até "+fmtPct(op.teto)+"% (ou "+fmtPct(op.tetoBarreira)+"% se a barreira de "+fmtPct(op.barreira)+"% for atingida)";
     }
     function opDetalheQuanto(op){
-      if(op.payoff===1) return "Capital protegido — devolve 100% do capital se o "+op.ativo+" cair. Na alta, paga a variação × "+fmtMult(op.mult)+" (sem teto). Quanto: moeda local, sem risco cambial. Fixing em "+op.fixing+".";
-      return "Recebe o maior entre a taxa fixa de "+fmtTaxa(op.taxa)+"% e a alta do "+op.ativo+" (1:1, ilimitada). Quanto: moeda local, sem risco cambial. Fixing em "+op.fixing+".";
+      if(op.payoff===1) return "Capital protegido — devolve 100% do capital se o "+op.ativo+" cair. Na alta, paga a variação × "+fmtMult(op.mult)+" (sem teto). Quanto: moeda local, sem risco cambial. Prazo de "+fixingPrazo(op.fixing)+".";
+      return "Recebe o maior entre a taxa fixa de "+fmtTaxa(op.taxa)+"% e a alta do "+op.ativo+" (1:1, ilimitada). Quanto: moeda local, sem risco cambial. Prazo de "+fixingPrazo(op.fixing)+".";
     }
     function cupomDetalhe(op){ return "SmartCupom · cupom pré-fixado de "+fmtPct(op.taxa)+"% · barreira de desarme "+fmtPct(op.barreira)+"%"+(op.cdi!=null?" · ≈ "+fmtPct(op.cdi)+"% do CDI":""); }
 
@@ -1303,16 +1307,14 @@ button, .g-tab, [onclick]{ touch-action:manipulation; }
     var CUPOM=RUBI_RAW.map(function(r){ return { id:r.id, ativo:r.ativo, setor:r.setor, taxa:r.taxa, barreira:r.barreira, cdi:r.cdi, nome:r.ativo+" · SmartCupom "+fmtTaxa(r.taxa)+"%", tipo:"Cupom pré-fixado", cupom:true, cen:cupomCen(r.taxa, r.barreira) }; });
     var QUANTO=[
       { id:"q-sp-1", payoff:1, ativo:"S&P 500", fixing:"29/nov/27", mult:1.04 },
-      { id:"q-sp-2", payoff:1, ativo:"S&P 500", fixing:"29/mai/28", mult:1.15 },
-      { id:"q-sp-3", payoff:1, ativo:"S&P 500", fixing:"30/mai/29", mult:1.41 },
+      { id:"q-sp-2", payoff:1, ativo:"S&P 500", fixing:"29/mai/28", mult:1.20 },
+      { id:"q-sp-3", payoff:1, ativo:"S&P 500", fixing:"25/jun/29", mult:1.46 },
       { id:"q-nq-1", payoff:1, ativo:"Nasdaq", fixing:"29/nov/27", mult:1.00 },
       { id:"q-nq-2", payoff:1, ativo:"Nasdaq", fixing:"29/mai/28", mult:1.00 },
-      { id:"q-nq-3", payoff:1, ativo:"Nasdaq", fixing:"30/mai/29", mult:1.17 },
+      { id:"q-nq-3", payoff:1, ativo:"Nasdaq", fixing:"25/jun/29", mult:1.13 },
       { id:"q-sp-fx1", payoff:2, ativo:"S&P 500", fixing:"29/nov/27", taxa:6.30 },
-      { id:"q-sp-fx2", payoff:2, ativo:"S&P 500", fixing:"29/mai/28", taxa:11.97 },
-      { id:"q-sp-fx3", payoff:2, ativo:"S&P 500", fixing:"30/mai/29", taxa:26.44 },
-      { id:"q-nq-fx2", payoff:2, ativo:"Nasdaq", fixing:"29/mai/28", taxa:9.00 },
-      { id:"q-nq-fx3", payoff:2, ativo:"Nasdaq", fixing:"30/mai/29", taxa:14.33 }
+      { id:"q-sp-fx2", payoff:2, ativo:"S&P 500", fixing:"29/mai/28", taxa:14.86 },
+      { id:"q-sp-fx3", payoff:2, ativo:"S&P 500", fixing:"25/jun/29", taxa:30.91 }
     ].map(buildQuanto);
 
     var customSeq=0; var CUSTOM=[]; var REG={};
@@ -1327,7 +1329,7 @@ button, .g-tab, [onclick]{ touch-action:manipulation; }
       else if(cat==="cupom") badge='<span class="ocbadge cup">Cupom '+fmtPct(op.taxa)+'%</span>'+(op.cdi!=null?' <span class="ocbadge">≈ '+fmtPct(op.cdi)+'% CDI</span>':'');
       else badge='<span class="ocbadge prot">'+esc(op.tipo||"Proteção")+'</span>';
       var meta;
-      if(cat==="quanto") meta="Fixing "+esc(op.fixing);
+      if(cat==="quanto") meta="Prazo "+esc(fixingPrazo(op.fixing));
       else meta=esc(op.ativo)+(op.setor?" · "+esc(op.setor):"");
       var h='<div class="opcard"><div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start">'
         +'<div><div style="font-weight:800;font-size:14.5px;color:#fff">'+esc(op.nome)+'</div>'
@@ -1378,7 +1380,7 @@ button, .g-tab, [onclick]{ touch-action:manipulation; }
     }
     function addToCarteira(key){
       var e=REG[key]; if(!e || !window.__ctorAddAtivo) return; var op=e.op;
-      if(e.cat==="quanto") window.__ctorAddAtivo("Internacional", op.nome, opDetalheQuanto(op), "No fixing "+op.fixing, true, op);
+      if(e.cat==="quanto") window.__ctorAddAtivo("Internacional", op.nome, opDetalheQuanto(op), "Prazo "+fixingPrazo(op.fixing), true, op);
       else if(e.cat==="cupom") window.__ctorAddAtivo("Renda Variável", op.nome, cupomDetalhe(op), "No vencimento", false, op);
       else window.__ctorAddAtivo("Renda Variável", op.nome, (op.descricao||opDetalhe(op)), "No vencimento", true, op);
     }
@@ -5768,10 +5770,14 @@ function opDetalhe(op){
 function fmtMult(n){ return n.toFixed(2).replace(".",","); }
 function fmtTaxa(n){ return n.toFixed(2).replace(".",","); }
 function r1(n){ return Math.round(n*10)/10; }
+function fixingPrazo(fix){
+  var m={"29/nov/27":"1 ano","29/mai/28":"2 anos","25/jun/29":"3 anos","30/mai/29":"3 anos"};
+  return m[fix]||fix;
+}
 
 function buildQuanto(o){
   var isP1 = o.payoff === 1;
-  var nome = o.ativo+" · "+(isP1? fmtMult(o.mult)+"x": fmtTaxa(o.taxa)+"%")+" · "+o.fixing;
+  var nome = o.ativo+" · "+(isP1? fmtMult(o.mult)+"x": fmtTaxa(o.taxa)+"%")+" · "+fixingPrazo(o.fixing);
   var tipo = isP1? "Capital protegido · alta ilimitada": "Taxa fixa ou alta ilimitada";
   var cen;
   if(isP1){ cen = [[-30,0],[-10,0],[0,0],[20,r1(20*o.mult)],[40,r1(40*o.mult)]]; }
@@ -5781,26 +5787,24 @@ function buildQuanto(o){
 
 var QUANTO_OPS = [
   { id:"q-sp-1", payoff:1, ativo:"S&P 500", fixing:"29/nov/27", mult:1.04 },
-  { id:"q-sp-2", payoff:1, ativo:"S&P 500", fixing:"29/mai/28", mult:1.15 },
-  { id:"q-sp-3", payoff:1, ativo:"S&P 500", fixing:"30/mai/29", mult:1.41 },
+  { id:"q-sp-2", payoff:1, ativo:"S&P 500", fixing:"29/mai/28", mult:1.20 },
+  { id:"q-sp-3", payoff:1, ativo:"S&P 500", fixing:"25/jun/29", mult:1.46 },
   { id:"q-nq-1", payoff:1, ativo:"Nasdaq", fixing:"29/nov/27", mult:1.00 },
   { id:"q-nq-2", payoff:1, ativo:"Nasdaq", fixing:"29/mai/28", mult:1.00 },
-  { id:"q-nq-3", payoff:1, ativo:"Nasdaq", fixing:"30/mai/29", mult:1.17 },
+  { id:"q-nq-3", payoff:1, ativo:"Nasdaq", fixing:"25/jun/29", mult:1.13 },
   { id:"q-sp-fx1", payoff:2, ativo:"S&P 500", fixing:"29/nov/27", taxa:6.30 },
-  { id:"q-sp-fx2", payoff:2, ativo:"S&P 500", fixing:"29/mai/28", taxa:11.97 },
-  { id:"q-sp-fx3", payoff:2, ativo:"S&P 500", fixing:"30/mai/29", taxa:26.44 },
-  { id:"q-nq-fx2", payoff:2, ativo:"Nasdaq", fixing:"29/mai/28", taxa:9.00 },
-  { id:"q-nq-fx3", payoff:2, ativo:"Nasdaq", fixing:"30/mai/29", taxa:14.33 }
+  { id:"q-sp-fx2", payoff:2, ativo:"S&P 500", fixing:"29/mai/28", taxa:14.86 },
+  { id:"q-sp-fx3", payoff:2, ativo:"S&P 500", fixing:"25/jun/29", taxa:30.91 }
 ].map(buildQuanto);
 
 function opDetalheQuanto(op){
   if(op.payoff===1)
-    return "Capital protegido — devolve 100% do capital se o "+op.ativo+" cair. Na alta, paga a variação × "+fmtMult(op.mult)+" (sem teto). Quanto: resultado em moeda local, sem risco cambial. Fixing em "+op.fixing+".";
-  return "Recebe o maior entre a taxa fixa de "+fmtTaxa(op.taxa)+"% e a alta do "+op.ativo+" (1:1, ilimitada). Quanto: moeda local, sem risco cambial. Fixing em "+op.fixing+".";
+    return "Capital protegido — devolve 100% do capital se o "+op.ativo+" cair. Na alta, paga a variação × "+fmtMult(op.mult)+" (sem teto). Quanto: resultado em moeda local, sem risco cambial. Prazo de "+fixingPrazo(op.fixing)+".";
+  return "Recebe o maior entre a taxa fixa de "+fmtTaxa(op.taxa)+"% e a alta do "+op.ativo+" (1:1, ilimitada). Quanto: moeda local, sem risco cambial. Prazo de "+fixingPrazo(op.fixing)+".";
 }
 function mkQuanto(id, pct){
   var op = QUANTO_OPS.filter(function(o){return o.id===id;})[0];
-  var it = mk("Internacional", op.nome, pct, opDetalheQuanto(op), "No fixing "+op.fixing, "protecao", null, "Internacional");
+  var it = mk("Internacional", op.nome, pct, opDetalheQuanto(op), "Prazo "+fixingPrazo(op.fixing), "protecao", null, "Internacional");
   it.op = op; return it;
 }
 
@@ -5821,7 +5825,7 @@ var TEMPLATES = {
       mkRubi("ITUB4","Bancos",15.0,-15,null)
     ].map(function(it,idx){ it.pct = [30,25,25,20][idx]; return it; });
   },
-  "Quanto Internacional": function(){ return [ mkQuanto("q-sp-3",30), mkQuanto("q-sp-fx3",25), mkQuanto("q-nq-3",25), mkQuanto("q-nq-fx2",20) ]; },
+  "Quanto Internacional": function(){ return [ mkQuanto("q-sp-3",30), mkQuanto("q-sp-fx3",45), mkQuanto("q-nq-3",25) ]; },
   "Montar do zero": function(){ return []; }
 };
 
@@ -6109,7 +6113,7 @@ function howBoxHTML(i){
     h += '<span class="chip-orange">'+op.tipo+'</span>';
     if(op.payoff===1) h += '<span class="chip">Multiplicador '+fmtMult(op.mult)+'x</span><span class="chip">Capital protegido</span><span class="chip">Sem teto</span>';
     else h += '<span class="chip">Taxa fixa '+fmtTaxa(op.taxa)+'%</span><span class="chip">Alta 1:1 · sem teto</span>';
-    h += '<span class="chip">Fixing '+op.fixing+'</span><span class="chip">Quanto · moeda local</span></div>';
+    h += '<span class="chip">Prazo '+fixingPrazo(op.fixing)+'</span><span class="chip">Quanto · moeda local</span></div>';
   } else {
     h += '<div style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:12px">';
     h += '<span class="chip-orange">'+op.tipo+'</span>';
@@ -6128,8 +6132,8 @@ function howBoxHTML(i){
   h += '<div class="cmpgrid">'+cmp("Se "+op.ativo+" cair "+fmtPct(Math.abs(low[0]))+"%",low[0],low[1])+cmp("Se "+op.ativo+" subir "+fmtPct(high[0])+"%",high[0],high[1])+'</div>';
   var nota;
   if(op.quanto){
-    if(op.payoff===1) nota = "Cada cenário mostra o "+op.ativo+" sozinho (barra cinza) e a operação Quanto (barra colorida). Na queda, o capital é devolvido integralmente (retorno 0%). Na alta, você recebe a variação do índice × "+fmtMult(op.mult)+", sem teto. Quanto: resultado em moeda local, sem risco cambial. Fixing em "+op.fixing+".";
-    else nota = "Cada cenário mostra o "+op.ativo+" sozinho (barra cinza) e a operação Quanto (barra colorida). Você recebe sempre o maior entre a taxa fixa de "+fmtTaxa(op.taxa)+"% e a alta do índice (1:1, sem teto). Quanto: moeda local, sem risco cambial. Fixing em "+op.fixing+". Confirme as condições de proteção de capital na lâmina antes de apresentar ao cliente.";
+    if(op.payoff===1) nota = "Cada cenário mostra o "+op.ativo+" sozinho (barra cinza) e a operação Quanto (barra colorida). Na queda, o capital é devolvido integralmente (retorno 0%). Na alta, você recebe a variação do índice × "+fmtMult(op.mult)+", sem teto. Quanto: resultado em moeda local, sem risco cambial. Prazo de "+fixingPrazo(op.fixing)+".";
+    else nota = "Cada cenário mostra o "+op.ativo+" sozinho (barra cinza) e a operação Quanto (barra colorida). Você recebe sempre o maior entre a taxa fixa de "+fmtTaxa(op.taxa)+"% e a alta do índice (1:1, sem teto). Quanto: moeda local, sem risco cambial. Prazo de "+fixingPrazo(op.fixing)+". Confirme as condições de proteção de capital na lâmina antes de apresentar ao cliente.";
   } else {
     nota = "Cada cenário tem duas barras: comprar "+op.ativo+" sozinho (barra cinza) e com a estrutura (barra colorida). Na queda, a estrutura segura a perda; na alta, ela acompanha o ativo até o teto. Se "+op.ativo+" tocar a barreira de "+fmtPct(op.barreira)+"%, o teto cai para "+fmtPct(op.tetoBarreira)+"% (knock-out).";
   }
@@ -6324,7 +6328,7 @@ function render(){
       QUANTO_OPS.filter(function(op){return op.payoff===pf;}).forEach(function(op){
         h += '<div class="opcard"><div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px"><div>'+
           '<div style="font-weight:800;font-size:15px">'+op.ativo+'</div>'+
-          '<div style="font-size:11.5px;color:#A9B0D6;margin-top:2px">Fixing '+op.fixing+'</div>'+
+          '<div style="font-size:11.5px;color:#A9B0D6;margin-top:2px">Prazo '+fixingPrazo(op.fixing)+'</div>'+
           '<div style="margin-top:6px;display:inline-block;background:rgba(255,176,32,.14);border:1px solid rgba(255,176,32,.45);color:#FFB020;border-radius:7px;padding:3px 9px;font-weight:800;font-size:12px">'+(pf===1?"Multiplicador "+fmtMult(op.mult)+"x":"Taxa fixa "+fmtTaxa(op.taxa)+"%")+'</div>'+
           '</div><button class="minibtn" data-addq="'+op.id+'" style="white-space:nowrap">+ Add</button></div>'+
           '<div style="margin-top:8px">'+payoffBarsSVG(op,true)+'</div></div>';
@@ -6494,7 +6498,7 @@ function addOperacao(opId){
 }
 function addQuantoOp(opId){
   var op = QUANTO_OPS.filter(function(o){return o.id===opId;})[0];
-  var novo = mk("Internacional", op.nome, 0, opDetalheQuanto(op), "No fixing "+op.fixing, "protecao", null, "Internacional");
+  var novo = mk("Internacional", op.nome, 0, opDetalheQuanto(op), "Prazo "+fixingPrazo(op.fixing), "protecao", null, "Internacional");
   novo.op = op; state.items.push(novo); state.abertos[novo.id]=true; render();
 }
 
