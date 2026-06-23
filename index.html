@@ -966,7 +966,7 @@ button, .g-tab, [onclick]{ touch-action:manipulation; }
         <div class="news-grid" id="newsGrid"></div>
       </div>
       <script>
-      window.NEWS_DATA = {
+      var NEWS_FALLBACK = {
         updated: "22/06/2026 15:00",
         items: [
           { region:"nacional", title:"Ibovespa avança 0,93% e fecha aos 137.827 pontos", resumo:"CVCB3 (+8,3%) e VAMO3 (+7,7%) lideram os ganhos do pregão.", source:"InfoMoney", date:"22 jun 2026", url:"https://www.infomoney.com.br/mercados/" },
@@ -983,16 +983,18 @@ button, .g-tab, [onclick]{ touch-action:manipulation; }
       };
       (function(){
         function esc(t){ return (""+t).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+        var DATA=NEWS_FALLBACK, CURRENT="all";
         function render(region){
-          var grid=document.getElementById("newsGrid"); if(!grid||!window.NEWS_DATA) return;
-          var items=window.NEWS_DATA.items.filter(function(n){ return region==="all"||n.region===region; });
+          CURRENT=region||CURRENT;
+          var grid=document.getElementById("newsGrid"); if(!grid||!DATA) return;
+          var items=DATA.items.filter(function(n){ return CURRENT==="all"||n.region===CURRENT; });
           grid.innerHTML=items.map(function(n){
             return '<a class="news-card" href="'+n.url+'" target="_blank" rel="noopener noreferrer">'
               +'<span class="news-badge '+n.region+'">'+(n.region==="nacional"?"Nacional":"Internacional")+'</span>'
               +'<h3>'+esc(n.title)+'</h3>'+(n.resumo?'<p>'+esc(n.resumo)+'</p>':'')
               +'<div class="news-meta">'+esc(n.source)+' · '+esc(n.date)+'</div></a>';
           }).join("") || '<div class="news-updated">Sem notícias nesta categoria.</div>';
-          var up=document.getElementById("newsUpdated"); if(up) up.textContent="Atualizado em "+window.NEWS_DATA.updated;
+          var up=document.getElementById("newsUpdated"); if(up) up.textContent="Atualizado em "+DATA.updated;
         }
         document.querySelectorAll("#p-home .news-f").forEach(function(b){
           b.addEventListener("click",function(){
@@ -1001,6 +1003,7 @@ button, .g-tab, [onclick]{ touch-action:manipulation; }
           });
         });
         render("all");
+        try{ fetch("news.json?cb="+Date.now()).then(function(r){return r.ok?r.json():null;}).then(function(j){ if(j&&j.items&&j.items.length){ DATA=j; render(CURRENT); } }).catch(function(){}); }catch(e){}
       })();
       </script>
     </div>
