@@ -1127,6 +1127,136 @@ button, .g-tab, [onclick]{ touch-action:manipulation; }
     </div>
   </div>
 
+  <style>
+  #opcat{ margin-top:30px; }
+  #opcat .oc-head{ display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px; margin-bottom:4px; }
+  #opcat .oc-title{ font-family:'Sora',sans-serif; font-weight:700; font-size:20px; color:#fff; margin:0; }
+  #opcat .oc-new{ cursor:pointer; font-family:inherit; font-weight:700; font-size:13px; color:#fff; background:#FF4E00; border:none; border-radius:10px; padding:9px 15px; }
+  #opcat .oc-sub{ font-size:13px; color:#9AA2D0; margin-bottom:14px; }
+  #opcat .oc-search{ width:100%; box-sizing:border-box; background:rgba(255,255,255,.05); border:1px solid rgba(120,130,210,.25); border-radius:10px; padding:11px 14px; color:#fff; font-family:inherit; font-size:14px; outline:none; margin-bottom:16px; }
+  #opcat .oc-search::placeholder{ color:#6F77A8; }
+  #opcat .oc-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:14px; }
+  #opcat .oc-card{ background:rgba(20,28,87,.45); border:1px solid rgba(120,130,210,.18); border-radius:14px; padding:15px; }
+  #opcat .oc-badge{ display:inline-block; font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:.5px; padding:2px 8px; border-radius:6px; margin-bottom:8px; }
+  #opcat .oc-badge.protecao{ background:rgba(255,78,0,.13); color:#FF8B52; border:1px solid rgba(255,78,0,.4); }
+  #opcat .oc-badge.cupom{ background:rgba(54,197,240,.14); color:#7FD8F5; border:1px solid rgba(54,197,240,.4); }
+  #opcat .oc-card h4{ font-size:15px; font-weight:700; color:#fff; margin:0 0 4px; }
+  #opcat .oc-meta{ font-size:12px; color:#9AA2D0; margin-bottom:8px; }
+  #opcat .oc-desc{ font-size:12.5px; color:#cfd4ef; line-height:1.45; margin-bottom:12px; }
+  #opcat .oc-acts{ display:flex; gap:8px; }
+  #opcat .oc-btn{ cursor:pointer; font-family:inherit; font-size:12px; font-weight:700; border-radius:8px; padding:6px 12px; border:1px solid rgba(120,130,210,.3); background:rgba(255,255,255,.04); color:#cfd4ef; }
+  #opcat .oc-btn.del{ color:#FF8080; border-color:rgba(255,80,80,.35); }
+  #opcat .oc-empty{ color:#6F77A8; font-size:13px; padding:14px 0; grid-column:1/-1; }
+  #opcat .oc-form{ background:rgba(10,14,50,.6); border:1px solid rgba(120,130,210,.25); border-radius:14px; padding:16px; margin-bottom:16px; }
+  #opcat .oc-form .oc-row{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px; }
+  #opcat .oc-form label{ display:flex; flex-direction:column; gap:4px; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.4px; color:#9AA2D0; }
+  #opcat .oc-form input,#opcat .oc-form select,#opcat .oc-form textarea{ background:rgba(255,255,255,.05); border:1px solid rgba(120,130,210,.25); border-radius:9px; padding:9px 11px; color:#fff; font-family:inherit; font-size:13.5px; outline:none; }
+  #opcat .oc-form textarea{ resize:vertical; min-height:54px; }
+  #opcat .oc-form .oc-formacts{ display:flex; gap:10px; margin-top:4px; }
+  #opcat .oc-form .oc-save{ background:#FF4E00; color:#fff; border:none; font-weight:700; border-radius:9px; padding:9px 16px; cursor:pointer; font-family:inherit; }
+  #opcat .oc-form .oc-cancel{ background:transparent; color:#9AA2D0; border:1px solid rgba(120,130,210,.3); border-radius:9px; padding:9px 16px; cursor:pointer; font-family:inherit; }
+  @media(max-width:560px){ #opcat .oc-form .oc-row{ grid-template-columns:1fr; } }
+  </style>
+  <div id="opcat">
+    <div class="oc-head">
+      <h3 class="oc-title">Catálogo de operações</h3>
+      <button class="oc-new" id="ocNew">+ Nova operação</button>
+    </div>
+    <div class="oc-sub">Operações estruturadas de proteção e cupom. Pesquise, crie, edite ou remova.</div>
+    <input class="oc-search" id="ocSearch" placeholder="Pesquisar por ativo, tipo, setor ou nome...">
+    <div id="ocForm"></div>
+    <div class="oc-grid" id="ocGrid"></div>
+  </div>
+  <script>
+  (function(){
+    function esc(t){ return (""+(t==null?"":t)).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+    var seq=0;
+    function nid(){ return "op"+(++seq); }
+    var OPS=[
+      {id:nid(),nome:"PETR4 · Fence 35%",ativo:"PETR4",tipo:"Proteção",setor:"Petróleo & Gás",prazo:"2 anos",descricao:"Proteção parcial: protege até -20% da queda, com alta limitada ao teto de 35% (barreira 135%)."},
+      {id:nid(),nome:"EQTL3 · Fence 60%",ativo:"EQTL3",tipo:"Proteção",setor:"Energia Elétrica",prazo:"2 anos",descricao:"Fence: protege parte da queda e participa da alta até o teto de 60%, com barreira de knock-out."},
+      {id:nid(),nome:"SMAL11 · Collar UI",ativo:"SMAL11",tipo:"Proteção",setor:"Índice Small Caps",prazo:"2 anos",descricao:"Collar de proteção total: piso próximo ao preço atual e teto que limita o ganho no período."},
+      {id:nid(),nome:"NASD11 · Collar UI",ativo:"NASD11",tipo:"Proteção",setor:"Bolsa Americana",prazo:"2 anos",descricao:"Exposição à Nasdaq com proteção total (Collar UI) e alta limitada ao teto."},
+      {id:nid(),nome:"BPAC11 · Fence 80%",ativo:"BPAC11",tipo:"Proteção",setor:"Bancos",prazo:"1,5 ano",descricao:"BTG Pactual com Fence: proteção parcial e participação na alta até o teto."},
+      {id:nid(),nome:"ITUB4 · Fence 35%",ativo:"ITUB4",tipo:"Proteção",setor:"Bancos",prazo:"1 ano",descricao:"Itaú com Fence de proteção parcial e alta limitada por teto."},
+      {id:nid(),nome:"BBAS3 · SmartCupom 21,5%",ativo:"BBAS3",tipo:"Cupom",setor:"Bancos",prazo:"12 meses",descricao:"Cupom pré-fixado de 21,5% a.a. condicionado a barreira de -20% (equivalente a ~148% do CDI)."},
+      {id:nid(),nome:"PETR4 · SmartCupom 18%",ativo:"PETR4",tipo:"Cupom",setor:"Petróleo & Gás",prazo:"12 meses",descricao:"Cupom pré-fixado de 18% a.a. com barreira de -25% no ativo de referência."},
+      {id:nid(),nome:"VALE3 · SmartCupom 16,5%",ativo:"VALE3",tipo:"Cupom",setor:"Mineração & Siderurgia",prazo:"12 meses",descricao:"Cupom pré-fixado de 16,5% a.a. com barreira de -20%."},
+      {id:nid(),nome:"S&P 500 · Quanto",ativo:"S&P 500",tipo:"Proteção",setor:"Internacional",prazo:"2 anos",descricao:"Derivativo Quanto sobre o S&P 500 (sem risco cambial) com estrutura de proteção."}
+    ];
+    var editingId=null, formOpen=false;
+
+    function badge(tipo){ var c = (tipo==="Cupom")?"cupom":"protecao"; return '<span class="oc-badge '+c+'">'+esc(tipo)+'</span>'; }
+
+    function renderGrid(){
+      var grid=document.getElementById("ocGrid"); if(!grid) return;
+      var term=(document.getElementById("ocSearch").value||"").toLowerCase().trim();
+      var list=OPS.filter(function(o){
+        if(!term) return true;
+        return (o.nome+" "+o.ativo+" "+o.tipo+" "+o.setor).toLowerCase().indexOf(term)>=0;
+      });
+      if(!list.length){ grid.innerHTML='<div class="oc-empty">Nenhuma operação encontrada.</div>'; return; }
+      grid.innerHTML=list.map(function(o){
+        return '<div class="oc-card">'
+          + badge(o.tipo)
+          + '<h4>'+esc(o.nome)+'</h4>'
+          + '<div class="oc-meta">'+esc(o.ativo)+(o.setor?' · '+esc(o.setor):'')+(o.prazo?' · '+esc(o.prazo):'')+'</div>'
+          + '<div class="oc-desc">'+esc(o.descricao)+'</div>'
+          + '<div class="oc-acts">'
+          +   '<button class="oc-btn" data-edit="'+o.id+'">Editar</button>'
+          +   '<button class="oc-btn del" data-del="'+o.id+'">Excluir</button>'
+          + '</div>'
+          + '</div>';
+      }).join("");
+      grid.querySelectorAll("[data-edit]").forEach(function(b){ b.onclick=function(){ openForm(b.getAttribute("data-edit")); }; });
+      grid.querySelectorAll("[data-del]").forEach(function(b){ b.onclick=function(){ var id=b.getAttribute("data-del"); OPS=OPS.filter(function(x){return x.id!==id;}); renderGrid(); }; });
+    }
+
+    function openForm(id){
+      editingId=id||null; formOpen=true;
+      var o = id ? OPS.filter(function(x){return x.id===id;})[0] : {nome:"",ativo:"",tipo:"Proteção",setor:"",prazo:"",descricao:""};
+      if(!o) o={nome:"",ativo:"",tipo:"Proteção",setor:"",prazo:"",descricao:""};
+      var box=document.getElementById("ocForm");
+      box.innerHTML='<div class="oc-form">'
+        + '<div class="oc-row">'
+        +   '<label>Nome da operação<input id="ocfNome" value="'+esc(o.nome)+'" placeholder="Ex.: PETR4 · Fence 40%"></label>'
+        +   '<label>Ativo<input id="ocfAtivo" value="'+esc(o.ativo)+'" placeholder="Ex.: PETR4"></label>'
+        + '</div>'
+        + '<div class="oc-row">'
+        +   '<label>Tipo<select id="ocfTipo"><option value="Proteção"'+(o.tipo==="Proteção"?" selected":"")+'>Proteção</option><option value="Cupom"'+(o.tipo==="Cupom"?" selected":"")+'>Cupom</option></select></label>'
+        +   '<label>Setor<input id="ocfSetor" value="'+esc(o.setor)+'" placeholder="Ex.: Bancos"></label>'
+        + '</div>'
+        + '<div class="oc-row">'
+        +   '<label>Prazo<input id="ocfPrazo" value="'+esc(o.prazo)+'" placeholder="Ex.: 2 anos"></label>'
+        +   '<label>&nbsp;</label>'
+        + '</div>'
+        + '<label style="margin-bottom:12px">Descrição<textarea id="ocfDesc" placeholder="Como a operação funciona...">'+esc(o.descricao)+'</textarea></label>'
+        + '<div class="oc-formacts"><button class="oc-save" id="ocSave">Salvar</button><button class="oc-cancel" id="ocCancel">Cancelar</button></div>'
+        + '</div>';
+      document.getElementById("ocSave").onclick=saveForm;
+      document.getElementById("ocCancel").onclick=closeForm;
+      document.getElementById("ocfNome").focus();
+    }
+    function closeForm(){ formOpen=false; editingId=null; document.getElementById("ocForm").innerHTML=""; }
+    function saveForm(){
+      var nome=document.getElementById("ocfNome").value.trim();
+      if(!nome){ document.getElementById("ocfNome").focus(); return; }
+      var data={ nome:nome, ativo:document.getElementById("ocfAtivo").value.trim(), tipo:document.getElementById("ocfTipo").value,
+        setor:document.getElementById("ocfSetor").value.trim(), prazo:document.getElementById("ocfPrazo").value.trim(), descricao:document.getElementById("ocfDesc").value.trim() };
+      if(editingId){ OPS=OPS.map(function(x){ return x.id===editingId ? Object.assign({},x,data) : x; }); }
+      else { data.id=nid(); OPS.unshift(data); }
+      closeForm(); renderGrid();
+    }
+
+    function init(){
+      var sb=document.getElementById("ocSearch"); if(!sb) return;
+      sb.addEventListener("input", renderGrid);
+      document.getElementById("ocNew").addEventListener("click", function(){ openForm(null); });
+      renderGrid();
+    }
+    if(document.readyState==="loading"){ document.addEventListener("DOMContentLoaded", init); } else { init(); }
+  })();
+  </script>
   </div><!-- /#construtorFull -->
 
   <!-- RENDA VARIÁVEL: construtor focado em RV -->
@@ -1638,6 +1768,9 @@ button, .g-tab, [onclick]{ touch-action:manipulation; }
 
       <!-- RESULTADO -->
       <div id="adResult" style="display:none;">
+
+        <!-- Seletor de perfil recomendado -->
+        <div id="adProfiles" style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:16px;"></div>
 
         <!-- Score de aderência -->
         <div class="ad-score-card" id="adScoreCard"></div>
@@ -3480,7 +3613,7 @@ function protecaoPadrao() {
 const state = {
   valor: 100000, aporteMensal: 0, pctCdi: 120, prazoAnos: 20,
   rentMode: 'ipca', ipcaSpread: 6,
-  rendaMensal: 10000, ipca: 4.5, ajustarIpca: false, cdiAnual: null,
+  rendaMensal: 10000, ipca: 4.5, ajustarIpca: false, cdiAnual: 10,
   nomeCliente: '', template: 'conservadora', protecao: protecaoPadrao(), alocacao: alocacaoPadrao(),
   imoveis: [], externos: [],
 };
@@ -6454,6 +6587,12 @@ window.__rvRender = render;
     "Renda Fixa":"#3DD68C","Multimercados":"#7C8CFF","Renda Variável":"#F26522",
     "Fundos Listados":"#FFB020","Alternativos":"#C77DFF","Internacional":"#36C5F0"
   };
+  var PROFILES = {
+    "Conservadora": {"Renda Fixa":90,"Multimercados":2.5,"Renda Variável":0,"Fundos Listados":2.5,"Alternativos":0,"Internacional":5},
+    "Moderada": {"Renda Fixa":73.5,"Multimercados":12.5,"Renda Variável":5,"Fundos Listados":0,"Alternativos":3,"Internacional":6},
+    "Sofisticada": {"Renda Fixa":51,"Multimercados":10,"Renda Variável":15,"Fundos Listados":9.5,"Alternativos":7,"Internacional":7.5}
+  };
+  var adProfile = "Moderada";
 
   var parsed = null; // resultado do último parse
 
@@ -6649,12 +6788,35 @@ window.__rvRender = render;
     return h;
   }
 
+  function renderProfiles(atual){
+    var box = document.getElementById("adProfiles");
+    if(!box) return;
+    var names = ["Conservadora","Moderada","Sofisticada"];
+    var scores = names.map(function(nm){ return calcAderencia(atual, PROFILES[nm]); });
+    var best = 0; for(var i=1;i<scores.length;i++){ if(scores[i]>scores[best]) best=i; }
+    var html = '<span style="font-size:12.5px;color:#9AA2D0;font-weight:700">Comparar com:</span>';
+    names.forEach(function(nm,i){
+      var sel = (nm===adProfile);
+      var col = recColor(scores[i]);
+      html += '<button data-prof="'+nm+'" style="cursor:pointer;font-family:inherit;border-radius:10px;padding:8px 14px;font-weight:700;font-size:13px;'
+        + 'border:1px solid '+(sel?"#FF8B52":"rgba(120,130,210,.25)")+';'
+        + 'background:'+(sel?"rgba(255,78,0,.16)":"rgba(255,255,255,.04)")+';color:'+(sel?"#fff":"#cfd4ef")+'">'
+        + nm + ' <span style="color:'+col+';font-weight:800">'+fmtPct(scores[i])+'%</span>'
+        + (i===best?' <span style="font-size:11px;color:#3DD68C;font-weight:800" title="Maior aderência">★</span>':'')
+        + '</button>';
+    });
+    box.innerHTML = html;
+    box.querySelectorAll("[data-prof]").forEach(function(b){
+      b.onclick=function(){ adProfile = b.getAttribute("data-prof"); renderResult(); };
+    });
+  }
   function renderResult(){
     if(!parsed) return;
     var atual = parsed.comp;
-    var rec = recomendadaComp();
+    var rec = { comp: PROFILES[adProfile], template: adProfile };
 
     document.getElementById("adResult").style.display = "block";
+    renderProfiles(atual);
 
     // coluna atual
     document.getElementById("adAtual").innerHTML = barRows(atual);
