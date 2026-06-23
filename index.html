@@ -2690,20 +2690,9 @@ function renderRetorno(D){
   document.getElementById("inpMult").addEventListener("input",e=>{ S.cdiMult=Number(e.target.value); updateLight(); });
 }
 
-function renderAlfa(D){
-  const el=document.getElementById("alfaCard");
-  let inner=`
-    <div style="display:flex; align-items:center; gap:8px; margin-bottom:12px;">
-      <svg class="icon" viewBox="0 0 24 24" style="color:${ORANGE};"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
-      <span style="color:#A9B0D6; font-weight:700; font-size:13px; letter-spacing:1px;">ALFA DA ASSESSORIA</span>
-    </div>
-    <label class="mini-lbl">Carteira ATUAL do cliente rende (% do CDI)</label>
-    <div style="position:relative;">
-      <input class="mini-input num" type="number" step="1" min="0" placeholder="Ex.: 95" value="${S.clienteCDI||""}" id="inpClienteCDI" style="font-size:18px; padding-right:30px;">
-      <span style="position:absolute; right:12px; top:11px; color:#6F77A8; font-weight:700; font-size:15px;">%</span>
-    </div>`;
+function alfaResultHTML(D){
   if(D.temCliente){
-    inner+=`<div style="margin-top:14px;">
+    return `<div style="margin-top:14px;">
       <div style="font-weight:800; font-size:25px; color:${D.alphaCDI>=0?"#2BD9A6":ORANGE}; line-height:1.25;">${(()=>{var m=S.clienteCDI>0?(S.cdiMult-S.clienteCDI)/S.clienteCDI*100:0;return m>=0?"Melhora de "+fmtPct(m)+"%":"Queda de "+fmtPct(Math.abs(m))+"%";})()}</div>
       <div style="color:#A9B0D6; font-size:13px; font-weight:700; margin-top:2px;">em relação à carteira atual!</div>
       <div style="font-size:12.5px; color:#9AA2D0; margin-top:6px;">${fmtPct(S.clienteCDI)}% → <strong style="color:#fff;">${fmtPct(S.cdiMult)}% do CDI</strong> · ${D.alphaCDI>=0?"+":""}${fmtPct(D.alphaCDI)} p.p.</div>
@@ -2718,12 +2707,28 @@ function renderAlfa(D){
         </div>
       </div>
     </div>`;
-  } else {
-    inner+=`<div style="font-size:12.5px; color:#6F77A8; margin-top:8px; line-height:1.45;">Informe quanto a carteira atual do cliente rende (em % do CDI) para calcular o alfa que sua proposta gera.</div>`;
   }
+  return `<div style="font-size:12.5px; color:#6F77A8; margin-top:8px; line-height:1.45;">Informe quanto a carteira atual do cliente rende (em % do CDI) para calcular o alfa que sua proposta gera.</div>`;
+}
+function renderAlfa(D){
+  const el=document.getElementById("alfaCard");
+  let inner=`
+    <div style="display:flex; align-items:center; gap:8px; margin-bottom:12px;">
+      <svg class="icon" viewBox="0 0 24 24" style="color:${ORANGE};"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+      <span style="color:#A9B0D6; font-weight:700; font-size:13px; letter-spacing:1px;">ALFA DA ASSESSORIA</span>
+    </div>
+    <label class="mini-lbl">Carteira ATUAL do cliente rende (% do CDI)</label>
+    <div style="position:relative;">
+      <input class="mini-input num" type="number" step="1" min="0" placeholder="Ex.: 95" value="${S.clienteCDI||""}" id="inpClienteCDI" style="font-size:18px; padding-right:30px;">
+      <span style="position:absolute; right:12px; top:11px; color:#6F77A8; font-weight:700; font-size:15px;">%</span>
+    </div>`;
+  inner+=`<div id="alfaResult">${alfaResultHTML(D)}</div>`;
   el.innerHTML=inner;
   document.getElementById("inpClienteCDI").addEventListener("input",e=>{
-    S.clienteCDI=Number(e.target.value); updateLight();
+    S.clienteCDI=Number(e.target.value);
+    const D2=calc();
+    renderTotal(D2);renderRetorno(D2);renderDonut(D2);renderGloss(D2);renderProj(D2);publicarCarteira(D2);
+    const ar=document.getElementById("alfaResult"); if(ar) ar.innerHTML=alfaResultHTML(D2);
   });
 }
 
