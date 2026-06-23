@@ -256,6 +256,11 @@ html, body {
 [data-tool="construtor"] .tag-fgc{ background:rgba(61,214,140,.13); border:1px solid rgba(61,214,140,.42); color:#3DD68C; }
 [data-tool="construtor"] .tag-drag{ cursor:grab; user-select:none; transition:transform .1s, opacity .1s; }
 [data-tool="construtor"] .tag-drag:active{ cursor:grabbing; }
+[data-tool="construtor"] .tag-tesouro{ background:rgba(91,141,239,.16); border:1px solid rgba(91,141,239,.45); color:#7BA4F2; }
+[data-tool="construtor"] .tag-add{ cursor:pointer; user-select:none; display:inline-flex; align-items:center; justify-content:center; width:24px; height:24px; border-radius:7px; font-weight:800; font-size:15px; line-height:1; color:#9AA2D0; background:rgba(255,255,255,.05); border:1px dashed rgba(120,130,210,.45); }
+[data-tool="construtor"] .tag-add:hover{ color:#FF8B52; border-color:rgba(255,78,0,.5); background:rgba(255,78,0,.08); }
+[data-tool="construtor"] .tag-menu{ display:flex; }
+[data-tool="construtor"] .tag-menu-chip{ cursor:pointer; font-weight:700; }
 [data-tool="construtor"] .tag-drag.dragging{ opacity:.4; }
 [data-tool="construtor"] .tag-zone{ border-radius:8px; transition:background .12s, box-shadow .12s; }
 [data-tool="construtor"] .tag-zone.drop-target{ background:rgba(255,78,0,.10); box-shadow:inset 0 0 0 1px rgba(255,78,0,.4); }
@@ -930,6 +935,74 @@ button, .g-tab, [onclick]{ touch-action:manipulation; }
           <div class="hcard-desc">Compare múltiplos ativos com IR regressivo, gross-up CDI equivalente e evolução patrimonial.</div>
         </div>
       </div>
+      <style>
+      #p-home .news-wrap{ max-width:980px; width:100%; margin:46px auto 0; text-align:left; }
+      #p-home .news-head{ display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px; margin-bottom:6px; }
+      #p-home .news-title{ font-family:'Sora',sans-serif; font-weight:800; font-size:22px; margin:0; color:#fff; }
+      #p-home .news-filter{ display:flex; gap:8px; }
+      #p-home .news-f{ cursor:pointer; font-family:inherit; font-size:12.5px; font-weight:700; color:#9AA2D0; background:rgba(255,255,255,.05); border:1px solid rgba(120,130,210,.25); border-radius:9px; padding:7px 13px; }
+      #p-home .news-f.on{ color:#fff; background:rgba(255,78,0,.16); border-color:rgba(255,78,0,.5); }
+      #p-home .news-updated{ font-size:12px; color:#6F77A8; margin-bottom:16px; }
+      #p-home .news-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:14px; }
+      #p-home .news-card{ display:block; text-decoration:none; background:rgba(20,28,87,.45); border:1px solid rgba(120,130,210,.18); border-radius:14px; padding:16px; transition:border-color .15s, transform .15s; }
+      #p-home .news-card:hover{ border-color:rgba(255,78,0,.45); transform:translateY(-2px); }
+      #p-home .news-badge{ display:inline-block; font-size:10px; font-weight:800; letter-spacing:.5px; text-transform:uppercase; padding:2px 8px; border-radius:6px; margin-bottom:9px; }
+      #p-home .news-badge.nacional{ background:rgba(43,217,166,.14); color:#2BD9A6; border:1px solid rgba(43,217,166,.4); }
+      #p-home .news-badge.internacional{ background:rgba(91,141,239,.16); color:#7BA4F2; border:1px solid rgba(91,141,239,.45); }
+      #p-home .news-card h3{ font-size:14.5px; font-weight:700; color:#fff; margin:0 0 6px; line-height:1.35; }
+      #p-home .news-card p{ font-size:12.5px; color:#A9B0D6; margin:0 0 10px; line-height:1.45; }
+      #p-home .news-meta{ font-size:11.5px; color:#6F77A8; font-weight:600; }
+      </style>
+      <div class="news-wrap">
+        <div class="news-head">
+          <h2 class="news-title">Notícias do mercado</h2>
+          <div class="news-filter">
+            <button class="news-f on" data-region="all">Todas</button>
+            <button class="news-f" data-region="nacional">Nacional</button>
+            <button class="news-f" data-region="internacional">Internacional</button>
+          </div>
+        </div>
+        <div class="news-updated" id="newsUpdated"></div>
+        <div class="news-grid" id="newsGrid"></div>
+      </div>
+      <script>
+      window.NEWS_DATA = {
+        updated: "22/06/2026 15:00",
+        items: [
+          { region:"nacional", title:"Ibovespa avança 0,93% e fecha aos 137.827 pontos", resumo:"CVCB3 (+8,3%) e VAMO3 (+7,7%) lideram os ganhos do pregão.", source:"InfoMoney", date:"22 jun 2026", url:"https://www.infomoney.com.br/mercados/" },
+          { region:"nacional", title:"Mercado eleva projeção da Selic para 13,75% ao ano em 2026", resumo:"Boletim Focus sobe a estimativa de juros no fim do ano de 13,5% para 13,75%.", source:"Agência Brasil", date:"22 jun 2026", url:"https://agenciabrasil.ebc.com.br/economia/noticia/2026-06/mercado-financeiro-eleva-previsao-da-selic-para-1375-ao-ano" },
+          { region:"nacional", title:"Copom no ponto crítico: corte ou pausa da Selic?", resumo:"Mercado espera manutenção em 14,5% ao ano na próxima reunião.", source:"InfoMoney", date:"22 jun 2026", url:"https://www.infomoney.com.br/economia/reuniao-copom-selic-manutencao-corte-2026/" },
+          { region:"nacional", title:"Focus eleva projeção do IPCA para 5,3% em 2026", resumo:"Estimativa de inflação sobe pela 14ª semana seguida, acima da meta.", source:"Agência Brasil", date:"22 jun 2026", url:"https://agenciabrasil.ebc.com.br/economia/noticia/2026-06/mercado-financeiro-eleva-previsao-da-selic-para-1375-ao-ano" },
+          { region:"nacional", title:"Dólar projetado em R$ 5,20 para o fim do ano", resumo:"Câmbio segue volátil em meio às tensões geopolíticas globais.", source:"Bloomberg Línea", date:"22 jun 2026", url:"https://www.bloomberglinea.com.br/mercados/ibov:ind/" },
+          { region:"internacional", title:"S&P 500 tem o pior dia de Fed desde 1994", resumo:"Tom hawkish do Fed derruba ações e eleva juros curtos dos Treasuries.", source:"Schwab", date:"22 jun 2026", url:"https://www.schwab.com/learn/story/stock-market-update-open" },
+          { region:"internacional", title:"Fed mantém juros em 3,50%-3,75%", resumo:"Projeções e a coletiva de Kevin Warsh foram lidas como mais duras.", source:"Yahoo Finance", date:"22 jun 2026", url:"https://finance.yahoo.com/markets/stocks/live/stock-market-today-monday-june-22-225817825.html" },
+          { region:"internacional", title:"Wall Street se recupera com queda do petróleo e alta em chips", resumo:"S&P 500 +1% e Nasdaq +1,3% após a queda liderada pelo Fed.", source:"Analytics Insight", date:"22 jun 2026", url:"https://www.analyticsinsight.net/amp/story/stocks/us-stock-market-today-wall-street-climbs-as-lower-oil-prices-and-intel-gains-offset-hawkish-fed-signals" },
+          { region:"internacional", title:"Petróleo recua: Brent perto de US$ 78 e WTI de US$ 74", resumo:"Alívio geopolítico pressiona os preços do barril para baixo.", source:"Schwab", date:"22 jun 2026", url:"https://www.schwab.com/learn/story/stock-market-update-open" },
+          { region:"internacional", title:"Irã relata progresso encorajador em negociações com os EUA", resumo:"Acordo com roteiro de 60 dias reduz prêmio de risco geopolítico.", source:"Analytics Insight", date:"22 jun 2026", url:"https://www.analyticsinsight.net/amp/story/stocks/us-stock-market-today-wall-street-climbs-as-lower-oil-prices-and-intel-gains-offset-hawkish-fed-signals" }
+        ]
+      };
+      (function(){
+        function esc(t){ return (""+t).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+        function render(region){
+          var grid=document.getElementById("newsGrid"); if(!grid||!window.NEWS_DATA) return;
+          var items=window.NEWS_DATA.items.filter(function(n){ return region==="all"||n.region===region; });
+          grid.innerHTML=items.map(function(n){
+            return '<a class="news-card" href="'+n.url+'" target="_blank" rel="noopener noreferrer">'
+              +'<span class="news-badge '+n.region+'">'+(n.region==="nacional"?"Nacional":"Internacional")+'</span>'
+              +'<h3>'+esc(n.title)+'</h3>'+(n.resumo?'<p>'+esc(n.resumo)+'</p>':'')
+              +'<div class="news-meta">'+esc(n.source)+' · '+esc(n.date)+'</div></a>';
+          }).join("") || '<div class="news-updated">Sem notícias nesta categoria.</div>';
+          var up=document.getElementById("newsUpdated"); if(up) up.textContent="Atualizado em "+window.NEWS_DATA.updated;
+        }
+        document.querySelectorAll("#p-home .news-f").forEach(function(b){
+          b.addEventListener("click",function(){
+            document.querySelectorAll("#p-home .news-f").forEach(function(x){x.classList.remove("on");});
+            b.classList.add("on"); render(b.getAttribute("data-region"));
+          });
+        });
+        render("all");
+      })();
+      </script>
     </div>
   </div>
 
@@ -1344,6 +1417,11 @@ button, .g-tab, [onclick]{ touch-action:manipulation; }
       <h2>Evolução comparativa do patrimônio</h2>
       <div class="chart-tools">
         <div class="ipca-field">
+          <span>CDI</span>
+          <input type="number" id="cdiAnual" min="0" max="30" step="0.25" placeholder="auto" title="CDI projetado (% a.a.). Vazio = curva padrão." />
+          <span>% a.a.</span>
+        </div>
+        <div class="ipca-field">
           <span>IPCA</span>
           <input type="number" id="ipca" min="0" max="30" step="0.5" value="4.5" />
           <span>% a.a.</span>
@@ -1705,6 +1783,7 @@ const CDI_MULT = { Conservadora:108, Moderada:113, Sofisticada:120 };
 const CDI_DEFAULT = 14.25;
 
 const isIsento = (n)=>/(LCI|LCA|LCD)/i.test(n||"");
+const isTesouro = (n)=>/tesouro|\bNTN-?B\b|xp\s*brasil/i.test(n||"");
 const hasFGC = (n)=>/(LCI|LCA|LCD|CDB)/i.test(n||"");
 const isFII = (it)=> it && it.classe==="Fundos Listados";
 function structureTag(it){
@@ -1716,8 +1795,9 @@ function structureTag(it){
 /* Catálogo de tags possíveis com sua classe visual */
 const TAG_KIND = {
   "CETIPADO":"cetip", "Proteção":"protecao", "Cupom Pré-Fixado":"cupom",
-  "Resgate trabalhado":"resgate", "Isento de IR":"isento", "FGC":"fgc"
+  "Resgate trabalhado":"resgate", "Isento de IR":"isento", "FGC":"fgc", "Tesouro Direto":"tesouro"
 };
+const ALL_TAGS=["Resgate trabalhado","Isento de IR","FGC","Proteção","Cupom Pré-Fixado","CETIPADO","Tesouro Direto","Liquidez · No vencimento","Liquidez · D+0","Liquidez · D+1"];
 function tagKind(label){
   if(TAG_KIND[label]) return TAG_KIND[label];
   if(/^Liquidez/.test(label)) return "liq";
@@ -1732,6 +1812,7 @@ function defaultTags(it){
   if(it.liquidez) t.push("Liquidez · "+it.liquidez);
   if(isIsento(it.nome)){ t.push("Resgate trabalhado"); t.push("Isento de IR"); }
   if(hasFGC(it.nome) && t.indexOf("FGC")===-1) t.push("FGC");
+  if(isTesouro(it.nome) && t.indexOf("Tesouro Direto")===-1) t.push("Tesouro Direto");
   return t;
 }
 let _id=0; const uid=()=>"a"+(++_id);
@@ -2124,7 +2205,9 @@ function renderEditor(D){
         i.opcoes.forEach((o,idx)=>{ optsHtml+=`<button class="opt-btn ${i.escolha===idx?"active":""}" data-opt="${i.id}" data-idx="${idx}">${esc(o.rotulo)}</button>`; });
         optsHtml+=`</div>`;
       }
-      const tagsHtml=`<div class="tag-zone" data-tagzone="${i.id}" style="display:flex; gap:6px; margin-top:9px; flex-wrap:wrap; min-height:26px; align-items:center;">${tags || '<span class="tag-zone-hint">solte uma tag aqui</span>'}</div>`;
+      let menuChips="";
+      ALL_TAGS.forEach(lbl=>{ if(i.tags.indexOf(lbl)===-1){ menuChips+=`<button class="tag tag-${tagKind(lbl)} tag-menu-chip" data-addchip="${i.id}" data-label="${esc(lbl)}">+ ${esc(lbl)}</button>`; } });
+      const tagsHtml=`<div class="tag-zone" data-tagzone="${i.id}" style="display:flex; gap:6px; margin-top:9px; flex-wrap:wrap; min-height:26px; align-items:center;">${tags}<span class="tag-add" data-addtag="${i.id}" title="Adicionar tag">+</span></div><div class="tag-menu" data-tagmenu="${i.id}" style="display:none; gap:6px; flex-wrap:wrap; margin-top:8px; padding:8px; border-radius:10px; background:rgba(10,14,50,.6); border:1px solid rgba(120,130,210,.18);">${menuChips || '<span style="color:#6F77A8;font-size:12px">Todas as tags já adicionadas</span>'}</div>`;
       let selOpts=""; CLASSES.forEach(cl=>selOpts+=`<option value="${cl}" ${i.classe===cl?"selected":""}>${cl}</option>`);
       h+=`<div class="item">
         <div style="display:flex; gap:8px; align-items:center;">
@@ -2167,6 +2250,12 @@ function renderEditor(D){
   });
   el.querySelectorAll("[data-del]").forEach(b=>{
     b.onclick=()=>{ S.items=S.items.filter(x=>x.id!==b.dataset.del); render(); };
+  });
+  el.querySelectorAll("[data-addtag]").forEach(b=>{
+    b.onclick=(e)=>{ e.stopPropagation(); const m=el.querySelector('[data-tagmenu="'+b.dataset.addtag+'"]'); if(m) m.style.display=(m.style.display==="none"?"flex":"none"); };
+  });
+  el.querySelectorAll("[data-addchip]").forEach(b=>{
+    b.onclick=()=>{ addTag(b.dataset.addchip, b.dataset.label); };
   });
 
   // ===== TAGS ARRASTÁVEIS =====
@@ -2237,6 +2326,13 @@ function removerTag(fromId, idx){
   const from = S.items.find(x=>x.id===fromId);
   if(!from || !Array.isArray(from.tags)) return;
   from.tags.splice(idx,1);
+  render();
+}
+function addTag(toId,label){
+  const it = S.items.find(x=>x.id===toId);
+  if(!it) return;
+  if(!Array.isArray(it.tags)) it.tags=[];
+  if(it.tags.indexOf(label)===-1) it.tags.push(label);
   render();
 }
 
@@ -2535,7 +2631,8 @@ function buildCarteiraPNG(){
   const bodyH=linhas*(rowH+12)+classCount*36;
   const glossH=(glossTerms&&glossTerms.length)?(50+glossTerms.length*78):0;
   const chartBlockH=560;
-  const H=Math.max(1180, headH+bodyH+glossH+chartBlockH+220);
+  const alfaH=(D&&D.temCliente?120:0);
+  const H=Math.max(1180, headH+bodyH+glossH+chartBlockH+alfaH+220);
   const scale=2;
   const cv=document.createElement("canvas"); cv.width=W*scale; cv.height=H*scale;
   const ctx=cv.getContext("2d"); ctx.scale(scale,scale);
@@ -2618,6 +2715,19 @@ function buildCarteiraPNG(){
     });
   }
 
+  if(D&&D.temCliente){
+    y+=22;
+    const _ah=96;
+    ctx.fillStyle="rgba(43,217,166,.08)"; rr(60,y-22,W-120,_ah,14); ctx.fill();
+    ctx.strokeStyle="rgba(43,217,166,.3)"; ctx.lineWidth=1; rr(60,y-22,W-120,_ah,14); ctx.stroke();
+    T("ALFA DA ASSESSORIA",84,y,14,"#2BD9A6","700","left");
+    T((D.alphaCDI>=0?"+":"")+fmtPct(D.alphaCDI)+" p.p. do CDI",84,y+36,26,(D.alphaCDI>=0?"#2BD9A6":ORANGE),"800","left");
+    T(fmtPct(S.clienteCDI)+"% do CDI hoje  →  "+fmtPct(S.cdiMult)+"% do CDI na proposta",84,y+60,13.5,"#A9B0D6","500","left");
+    T("Ganho extra · 12 meses",W-60,y+30,12,"#A9B0D6","600","right");
+    T((D.alpha12>=0?"+":"")+"R$ "+fmtBRL(D.alpha12),W-60,y+52,18,(D.alpha12>=0?"#2BD9A6":ORANGE),"800","right");
+    T("· "+S.projAnos+" anos: "+(D.alphaProj>=0?"+":"")+"R$ "+fmtBRL(D.alphaProj),W-60,y+72,12.5,"#cfd4ef","600","right");
+    y+=_ah+8;
+  }
   if(projData&&projData.length){
     y+=26;
     T("PROJEÇÃO DE RENTABILIDADE · "+template.toUpperCase(),60,y,15,"#A9B0D6","700","left");
@@ -3187,6 +3297,7 @@ function projetarCdiMensal(meses) {
 }
 const cdiMensalProj = projetarCdiMensal(360);
 const cdiMensal = [...cdiMensalHist, ...cdiMensalProj];
+function cdiMensalAt(i){ if(state.cdiAnual!=null && state.cdiAnual>0 && i>=24){ return (Math.pow(1+state.cdiAnual/100,1/12)-1)*100; } return cdiMensal[i]; }
 function getTotalMeses() { return 24 + 12 * state.prazoAnos; }
 
 // ============ IPCA E OBJETIVO (renda × 100, corrigido pela inflação) ============
@@ -3366,7 +3477,7 @@ function protecaoPadrao() {
 const state = {
   valor: 100000, aporteMensal: 0, pctCdi: 120, prazoAnos: 20,
   rentMode: 'ipca', ipcaSpread: 6,
-  rendaMensal: 10000, ipca: 4.5, ajustarIpca: false,
+  rendaMensal: 10000, ipca: 4.5, ajustarIpca: false, cdiAnual: null,
   nomeCliente: '', template: 'conservadora', protecao: protecaoPadrao(), alocacao: alocacaoPadrao(),
   imoveis: [], externos: [],
 };
@@ -3378,7 +3489,7 @@ function salvarEstado() {
     const dados = {
       valor: state.valor, aporteMensal: state.aporteMensal, pctCdi: state.pctCdi,
       rentMode: state.rentMode, ipcaSpread: state.ipcaSpread,
-      prazoAnos: state.prazoAnos, rendaMensal: state.rendaMensal, ipca: state.ipca,
+      prazoAnos: state.prazoAnos, rendaMensal: state.rendaMensal, ipca: state.ipca, cdiAnual: state.cdiAnual,
       ajustarIpca: state.ajustarIpca, nomeCliente: state.nomeCliente,
       protecao: state.protecao.map(p => ({ id: p.id, on: p.on })),
       template: state.template,
@@ -3407,6 +3518,7 @@ function carregarEstado() {
     if (typeof d.rendaMensal === 'number') state.rendaMensal = d.rendaMensal;
     else if (typeof d.objetivo === 'number') state.rendaMensal = d.objetivo / 100; // compat: objetivo antigo -> renda
     if (typeof d.ipca === 'number') state.ipca = d.ipca;
+    if ('cdiAnual' in d) state.cdiAnual = d.cdiAnual;
     if (typeof d.ajustarIpca === 'boolean') state.ajustarIpca = d.ajustarIpca;
     if (typeof d.nomeCliente === 'string') state.nomeCliente = d.nomeCliente;
     if (Array.isArray(d.protecao)) {
@@ -3515,7 +3627,7 @@ function taxaCarteiraMensal(i) {
     return Math.pow(1 + anual, 1 / 12) - 1;
   }
   // modo CDI: percentual aplicado sobre o CDI do período
-  var taxaCdi = cdiMensal[i] / 100;
+  var taxaCdi = cdiMensalAt(i) / 100;
   return taxaCdi * (state.pctCdi / 100);
 }
 // Rótulo curto da rentabilidade da carteira conforme o modo
@@ -3534,7 +3646,7 @@ function calcular() {
   let totalAportadoMes = state.valor;
 
   for (let i = 0; i < totalMeses; i++) {
-    const taxaCdi = cdiMensal[i] / 100;
+    const taxaCdi = cdiMensalAt(i) / 100;
     const taxaCart = taxaCarteiraMensal(i);
     const apMes = (i >= 24) ? aporte : 0;
     const ultCdi = cdi[cdi.length-1];
@@ -4479,6 +4591,7 @@ function sincronizarInputs() {
   document.getElementById('renda').value = fmtMoney(state.rendaMensal);
   document.getElementById('rendaRange').value = Math.min(state.rendaMensal, 100000);
   document.getElementById('ipca').value = state.ipca;
+  var _cdiASync=document.getElementById('cdiAnual'); if(_cdiASync) _cdiASync.value = (state.cdiAnual==null?'':state.cdiAnual);
   const tg = document.getElementById('ipcaToggle');
   if (tg) { tg.classList.toggle('on', state.ajustarIpca); tg.setAttribute('aria-checked', String(state.ajustarIpca)); }
   document.getElementById('nomeCliente').value = state.nomeCliente;
@@ -4551,6 +4664,11 @@ function setIpca(v) {
   atualizarRendaObjetivo();
   salvarEstado(); drawChart();
 }
+function setCdiAnual(v) {
+  var sv = ("" + v).trim();
+  state.cdiAnual = (sv === "" ? null : Math.max(0, Math.min(30, Number(v) || 0)));
+  salvarEstado(); drawChart();
+}
 function setAjustarIpca(on) {
   state.ajustarIpca = !!on;
   const btn = document.getElementById('ipcaToggle');
@@ -4590,6 +4708,7 @@ document.getElementById('prazoRange').addEventListener('input', e => setPrazo(e.
 document.getElementById('renda').addEventListener('input', e => setRenda(e.target.value));
 document.getElementById('rendaRange').addEventListener('input', e => setRenda(e.target.value));
 document.getElementById('ipca').addEventListener('input', e => setIpca(e.target.value));
+var _cdiAEl=document.getElementById('cdiAnual'); if(_cdiAEl) _cdiAEl.addEventListener('input', e => setCdiAnual(e.target.value));
 document.getElementById('ipcaToggle').addEventListener('click', () => setAjustarIpca(!state.ajustarIpca));
 document.getElementById('nomeCliente').addEventListener('input', e => setNome(e.target.value));
 
