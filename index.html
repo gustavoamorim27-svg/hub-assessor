@@ -92,7 +92,7 @@ html, body {
   padding: 1px 5px; border-radius: 4px; }
 
 /* RV TOGGLE */
-.rv-toggle-bar { display:flex; align-items:center; gap:16px; flex-wrap:wrap;
+.rv-toggle-bar { display:none; align-items:center; gap:16px; flex-wrap:wrap;
   margin-bottom:22px; padding-bottom:18px; border-bottom:1px solid rgba(120,130,210,.18); }
 .rv-toggle-label { font-size:11px; letter-spacing:1.5px; text-transform:uppercase;
   font-weight:700; color:#9AA2D0; }
@@ -930,6 +930,10 @@ body.mm .ajbtn{ padding:11px 16px !important; font-size:14px !important; }
       <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
       Simulador de Investimentos
     </button>
+    <button class="g-tab" data-panel="rv" onclick="showPanel('rv')">
+      <svg viewBox="0 0 24 24"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+      Renda Variável
+    </button>
     <button class="g-tab" data-panel="simulador" onclick="showPanel('simulador')">
       <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
       Financial Planning
@@ -1061,7 +1065,16 @@ body.mm .ajbtn{ padding:11px 16px !important; font-size:14px !important; }
     #p-ajustes .pc-gavinfo{ flex:1; min-width:0; }
     #p-ajustes .pc-gavname{ font-size:12.5px; font-weight:700; color:#eef0fb; }
     #p-ajustes .pc-gavdet{ font-size:10.5px; color:#7E87BE; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-    @media (max-width:1100px){ #p-ajustes .pc-gav{ width:100%; } }
+    #p-ajustes .pc-gav.rvopen{ width:320px; }
+    #p-ajustes .pc-gavrv-empty{ font-size:11.5px; color:#9AA2D0; line-height:1.5; background:rgba(0,0,0,.22); border:1px solid rgba(120,130,210,.18); border-radius:10px; padding:11px; }
+    #p-ajustes .pc-rvcard{ background:rgba(0,0,0,.22); border:1px solid rgba(120,130,210,.16); border-radius:11px; padding:10px 11px; margin-bottom:8px; }
+    #p-ajustes .pc-rvtop{ display:flex; align-items:flex-start; justify-content:space-between; gap:8px; }
+    #p-ajustes .pc-rvname{ font-size:12.5px; font-weight:800; color:#fff; line-height:1.25; }
+    #p-ajustes .pc-rvmeta{ font-size:10.5px; color:#9AA2D0; margin-top:2px; }
+    #p-ajustes .pc-rvpay{ margin-top:8px; }
+    #p-ajustes .pc-rvpay .cen-cell{ font-size:10.5px; }
+    #p-ajustes .pc-rvpay .cen-head span{ font-size:8.5px; }
+    @media (max-width:1100px){ #p-ajustes .pc-gav, #p-ajustes .pc-gav.rvopen{ width:100%; } }
     </style>
     <input type="file" id="ajFile" accept=".xlsx,.xls" style="display:none">
     <div id="ajRoot" class="adw" style="max-width:1460px;margin:0 auto;padding:28px 20px 60px"></div>
@@ -1653,6 +1666,12 @@ body.mm .ajbtn{ padding:11px 16px !important; font-size:14px !important; }
       { id:"q-nq-fx2", payoff:2, ativo:"Nasdaq", fixing:"2 anos", taxa:9.00 },
       { id:"q-nq-fx3", payoff:2, ativo:"Nasdaq", fixing:"3 anos", taxa:14.33 }
     ].map(buildQuanto);
+
+    /* Exporta o catálogo RV e a tabela de payoff para reuso no Propor Carteira */
+    try{
+      window.__rvCatalog = { ops:OPERACOES, cupom:CUPOM, quanto:QUANTO, opDetalhe:opDetalhe, cupomDetalhe:cupomDetalhe, opDetalheQuanto:opDetalheQuanto };
+      window.__payoffTable = function(op,big){ try{ return payoffTable(op,!!big); }catch(e){ return ""; } };
+    }catch(e){}
 
     var customSeq=0; var CUSTOM=[]; var REG={};
     var currentTab="todos", editingId=null;
@@ -3549,40 +3568,37 @@ window.__fillConstrutorFromAderencia = function(data){
   render();
 };
 
-/* ---------- Toggle Carteira completa <-> Renda Variável ---------- */
-(function(){
+/* ---------- Modo Carteira completa <-> Renda Variável (agora controlado pelas abas) ---------- */
+window.__setCtorMode = function(mode){
   var toggle = document.getElementById("rvToggle");
   var full = document.getElementById("construtorFull");
   var rv = document.getElementById("construtorRv");
   var sub = document.getElementById("construtorSub");
   var btnCopy = document.getElementById("btnCopy");
   var btnPng = document.getElementById("btnPng");
+  if(!full || !rv) return;
+  if(toggle) toggle.querySelectorAll(".rv-toggle-opt").forEach(function(x){ x.classList.toggle("active", x.getAttribute("data-mode")===mode); });
+  if(mode==="rv"){
+    full.style.display = "none";
+    rv.style.display = "block";
+    if(sub) sub.textContent = "Construtor · Renda Variável · ações, operações estruturadas e Quanto";
+    if(btnCopy) btnCopy.style.display = "none";
+    if(btnPng) btnPng.style.display = "none";
+    if(typeof window.__rvInit === "function"){ window.__rvInit(); }
+    else if(typeof window.__rvRender === "function"){ window.__rvRender(); }
+  } else {
+    full.style.display = "block";
+    rv.style.display = "none";
+    if(sub) sub.textContent = "Simulador de Investimentos · ajuste ao vivo durante a ligação";
+    if(btnCopy) btnCopy.style.display = "";
+    if(btnPng) btnPng.style.display = "";
+  }
+};
+(function(){
+  var toggle = document.getElementById("rvToggle");
   if(!toggle) return;
   toggle.querySelectorAll(".rv-toggle-opt").forEach(function(b){
-    b.onclick = function(){
-      var mode = b.getAttribute("data-mode");
-      toggle.querySelectorAll(".rv-toggle-opt").forEach(function(x){ x.classList.toggle("active", x===b); });
-      if(mode==="rv"){
-        full.style.display = "none";
-        rv.style.display = "block";
-        if(sub) sub.textContent = "Construtor · Renda Variável · ações, operações estruturadas e Quanto";
-        // Os botões globais do topo (copiar/PNG) são do modo completo; ocultá-los no RV
-        if(btnCopy) btnCopy.style.display = "none";
-        if(btnPng) btnPng.style.display = "none";
-        // lazy init do construtor RV
-        if(typeof window.__rvInit === "function"){
-          window.__rvInit();
-        } else if(typeof window.__rvRender === "function"){
-          window.__rvRender();
-        }
-      } else {
-        full.style.display = "block";
-        rv.style.display = "none";
-        if(sub) sub.textContent = "Simulador de Investimentos · ajuste ao vivo durante a ligação";
-        if(btnCopy) btnCopy.style.display = "";
-        if(btnPng) btnPng.style.display = "";
-      }
-    };
+    b.onclick = function(){ window.__setCtorMode(b.getAttribute("data-mode")); };
   });
 })();
     })();
@@ -7842,6 +7858,7 @@ window.__rvRender = render;
   var state={ origem:"import", cliente:"", atual:null, atualRaw:null, prev:[], vals:{}, removed:{}, added:[], libOpen:true, totalOverride:null, appliedModel:null, gavOpen:{geral:true,rv:false} };
   var seq=0; function uid(){ return "e"+(++seq); }
   var drag=null;
+  var rvReg={};
 
   function srcObj(){ return state.origem==="sim" ? (window.RICO_BRIDGE&&window.RICO_BRIDGE.carteira) : (window.RICO_BRIDGE&&window.RICO_BRIDGE.posicaoAtual); }
   function srcSig(){ var pp=srcObj(); if(!pp||!pp.ativos||!pp.ativos.length) return null; return state.origem+"|"+(pp.conta||pp.cliente||"")+"|"+pp.ativos.length+"|"+(pp.atualizadoEm||""); }
@@ -7991,25 +8008,54 @@ window.__rvRender = render;
   }
   function gavetaHTML(){
     var G=gavetas();
+    rvReg={};
     var groups=[
       {key:"geral",icon:"📁",label:"Ativos gerais",color:"#FF8B52",classes:["Renda Fixa","Multimercados","Fundos Listados","Alternativos","Internacional"]},
       {key:"rv",icon:"🧰",label:"RV estruturada",color:"#7C8CFF",classes:["Renda Variável"]}
     ];
-    var h='<aside class="pc-gav"><div class="pc-gavtitle">Gavetas de ativos</div>';
+    var h='<aside class="pc-gav'+(state.gavOpen.rv?" rvopen":"")+'"><div class="pc-gavtitle">Gavetas de ativos</div>';
     groups.forEach(function(grp){
       var open=!!state.gavOpen[grp.key];
       h+='<button class="pc-gavpill'+(open?" on":"")+'" data-gav="'+grp.key+'" style="border-color:'+grp.color+'66;color:'+grp.color+'"><span class="pc-gavico">'+grp.icon+'</span><span class="pc-gavlbl">'+grp.label+'</span><span class="pc-gavarrow">'+(open?"▴":"▾")+'</span></button>';
-      if(open){
-        h+='<div class="pc-gavlist">';
-        grp.classes.forEach(function(cl){ var items=G.map(function(a,i){return {a:a,i:i};}).filter(function(o){return o.a.classe===cl;}); if(!items.length)return; var c=CATCOL[cl]||"#9AA2D0";
-          h+='<div class="pc-gavcat" style="color:'+c+'"><span style="background:'+c+'"></span>'+cl+'</div>';
-          items.forEach(function(o){ h+='<div class="pc-gavcard" draggable="true" data-dragidx="'+o.i+'"><div class="pc-gavinfo"><div class="pc-gavname">'+esc(o.a.nome)+'</div><div class="pc-gavdet">'+esc(o.a.detalhe||"")+'</div></div><button class="pc-add" data-addidx="'+o.i+'" title="Adicionar a Entrar">+</button></div>'; });
-        });
-        h+='</div>';
-      }
+      if(!open) return;
+      if(grp.key==="rv"){ h+=rvGavList(); return; }
+      h+='<div class="pc-gavlist">';
+      grp.classes.forEach(function(cl){ var items=G.map(function(a,i){return {a:a,i:i};}).filter(function(o){return o.a.classe===cl;}); if(!items.length)return; var c=CATCOL[cl]||"#9AA2D0";
+        h+='<div class="pc-gavcat" style="color:'+c+'"><span style="background:'+c+'"></span>'+cl+'</div>';
+        items.forEach(function(o){ h+='<div class="pc-gavcard" draggable="true" data-dragidx="'+o.i+'"><div class="pc-gavinfo"><div class="pc-gavname">'+esc(o.a.nome)+'</div><div class="pc-gavdet">'+esc(o.a.detalhe||"")+'</div></div><button class="pc-add" data-addidx="'+o.i+'" title="Adicionar a Entrar">+</button></div>'; });
+      });
+      h+='</div>';
     });
     h+='</aside>';
     return h;
+  }
+  function rvGavList(){
+    var RC=window.__rvCatalog;
+    if(!RC){ try{ if(window._toolInit&&window._toolInit['construtor']) window._toolInit['construtor'](); }catch(e){} RC=window.__rvCatalog; }
+    if(!RC) return '<div class="pc-gavlist"><div class="pc-gavrv-empty">Catálogo indisponível — abra a aba <b>Renda Variável</b> uma vez e volte.</div></div>';
+    var h='<div class="pc-gavlist pc-gavrv">';
+    function sub(title,color,ops,kind){
+      if(!ops||!ops.length) return;
+      h+='<div class="pc-gavcat" style="color:'+color+'"><span style="background:'+color+'"></span>'+title+'</div>';
+      ops.forEach(function(op){ var key=kind+":"+op.id; rvReg[key]={op:op,kind:kind};
+        var meta = kind==="quanto"?("Prazo "+esc(op.fixing)):(esc(op.ativo)+(op.setor?" · "+esc(op.setor):""));
+        var pay = window.__payoffTable?window.__payoffTable(op,false):"";
+        h+='<div class="pc-rvcard"><div class="pc-rvtop"><div><div class="pc-rvname">'+esc(op.nome)+'</div><div class="pc-rvmeta">'+meta+'</div></div><button class="pc-add" data-addop="'+key+'" title="Adicionar a Entrar">+</button></div>'+(pay?'<div class="pc-rvpay">'+pay+'</div>':'')+'</div>';
+      });
+    }
+    sub("Proteção (Collar / Fence)","#FF8B52",RC.ops,"protecao");
+    sub("Cupom pré-fixado","#E0457B",RC.cupom,"cupom");
+    sub("Quanto Internacional","#36C5F0",RC.quanto,"quanto");
+    h+='</div>';
+    return h;
+  }
+  function addOp(key){
+    var e=rvReg[key]; if(!e) return; var op=e.op, kind=e.kind; var RC=window.__rvCatalog||{};
+    var classe = kind==="quanto"?"Internacional":"Renda Variável";
+    var det = kind==="quanto"?(RC.opDetalheQuanto?RC.opDetalheQuanto(op):"") : (kind==="cupom"?(RC.cupomDetalhe?RC.cupomDetalhe(op):"") : (RC.opDetalhe?RC.opDetalhe(op):""));
+    var def=Math.round(liquidAtual()*0.05/1000)*1000;
+    state.added.push({id:uid(),nome:op.nome,classe:classe,valor:def||1000,detalhe:det});
+    render();
   }
   function chip(l,v,c){ return '<div class="pc-chip"><div class="pc-chiplbl">'+esc(l)+'</div><div class="pc-chipval" style="color:'+c+'">'+esc(v)+'</div></div>'; }
 
@@ -8022,6 +8068,7 @@ window.__rvRender = render;
     var lt=root.querySelector("[data-libtoggle]"); if(lt) lt.onclick=function(){ state.libOpen=!state.libOpen; render(); };
     root.querySelectorAll("[data-gav]").forEach(function(b){ b.onclick=function(){ var k=b.getAttribute("data-gav"); state.gavOpen[k]=!state.gavOpen[k]; render(); }; });
     root.querySelectorAll("[data-addidx]").forEach(function(b){ b.onclick=function(){ addLib(+b.getAttribute("data-addidx")); }; });
+    root.querySelectorAll("[data-addop]").forEach(function(b){ b.onclick=function(){ addOp(b.getAttribute("data-addop")); }; });
     root.querySelectorAll("[data-dragidx]").forEach(function(e2){ e2.addEventListener("dragstart",function(ev){ drag="lib:"+e2.getAttribute("data-dragidx"); try{ev.dataTransfer.effectAllowed="copy";}catch(_){}}); e2.addEventListener("dragend",function(){ drag=null; }); });
     root.querySelectorAll("[data-sell]").forEach(function(b){ b.onclick=function(){ state.removed[b.getAttribute("data-sell")]=true; render(); }; });
     root.querySelectorAll("[data-undo]").forEach(function(b){ b.onclick=function(){ var n=b.getAttribute("data-undo"); delete state.removed[n]; state.vals[n]=findOrig(n); render(); }; });
@@ -8202,6 +8249,64 @@ window.__rvRender = render;
   window._ajRender=render;
   window._toolInit=window._toolInit||{};
   window._toolInit["ajustes"]=function(){ render(); };
+})();
+</script>
+
+<!-- Aba dedicada Renda Variável: a aba "rv" reusa o painel do construtor em modo RV -->
+<script>
+(function(){
+  function wrap(){
+    if(!window.showPanel){ return setTimeout(wrap,40); }
+    if(window.__rvTabPatched) return; window.__rvTabPatched=true;
+    var prev=window.showPanel;
+    window.showPanel=function(id){
+      if(id==="rv"){
+        prev("construtor");
+        document.querySelectorAll(".g-tab").forEach(function(t){ t.classList.toggle("on", t.dataset.panel==="rv"); });
+        requestAnimationFrame(function(){ requestAnimationFrame(function(){ if(window.__setCtorMode) window.__setCtorMode("rv"); }); });
+        return;
+      }
+      prev(id);
+      if(id==="construtor" && window.__setCtorMode){ window.__setCtorMode("full"); }
+    };
+  }
+  wrap();
+})();
+</script>
+
+<!-- Barra de navegação arrastável (reordenar abas como a barra de favoritos) -->
+<style>
+.g-tabs .g-tab{ -webkit-user-drag:element; }
+.g-tabs .g-tab.dragging{ opacity:.45; }
+.g-tabs.dragmode .g-tab{ cursor:grab; }
+</style>
+<script>
+(function(){
+  var KEY="hubNavOrder";
+  function wrap(){
+    var box=document.querySelector(".g-tabs"); if(!box){ return setTimeout(wrap,60); }
+    function tabs(){ return Array.prototype.slice.call(box.querySelectorAll(".g-tab")); }
+    function save(){ try{ localStorage.setItem(KEY, JSON.stringify(tabs().map(function(t){return t.dataset.panel;}))); }catch(e){} }
+    function applySaved(){ try{ var ord=JSON.parse(localStorage.getItem(KEY)||"null"); if(!ord||!ord.length) return; ord.forEach(function(p){ var el=box.querySelector('.g-tab[data-panel="'+p+'"]'); if(el) box.appendChild(el); }); /* abas novas ainda não salvas vão para o fim */ tabs().forEach(function(t){ if(ord.indexOf(t.dataset.panel)<0) box.appendChild(t); }); }catch(e){} }
+    var dragEl=null;
+    function afterEl(x){
+      var els=tabs().filter(function(t){ return t!==dragEl; });
+      var res=null, closest=-Infinity;
+      els.forEach(function(t){ var b=t.getBoundingClientRect(); var off=x-b.left-b.width/2; if(off<0 && off>closest){ closest=off; res=t; } });
+      return res;
+    }
+    function setup(){
+      tabs().forEach(function(t){
+        if(t.__navDnd) return; t.__navDnd=true;
+        t.setAttribute("draggable","true");
+        t.addEventListener("dragstart",function(e){ dragEl=t; t.classList.add("dragging"); box.classList.add("dragmode"); try{ e.dataTransfer.effectAllowed="move"; e.dataTransfer.setData("text/plain", t.dataset.panel); }catch(_){ } });
+        t.addEventListener("dragend",function(){ t.classList.remove("dragging"); box.classList.remove("dragmode"); dragEl=null; save(); });
+      });
+    }
+    box.addEventListener("dragover",function(e){ if(!dragEl) return; e.preventDefault(); var a=afterEl(e.clientX); if(a==null){ box.appendChild(dragEl); } else if(a!==dragEl){ box.insertBefore(dragEl,a); } });
+    applySaved(); setup();
+  }
+  if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",wrap); else wrap();
 })();
 </script>
 
