@@ -956,6 +956,7 @@ button, .g-tab, [onclick]{ touch-action:manipulation; }
     #p-ajustes .ajbtn.primary:hover{ filter:brightness(1.08); }
     @media (max-width:900px){ #p-ajustes #ajCols{ grid-template-columns:1fr !important; } }
     </style>
+    <input type="file" id="ajFile" accept=".xlsx,.xls" style="display:none">
     <div id="ajRoot" class="adw" style="max-width:1180px;margin:0 auto;padding:28px 20px 60px"></div>
   </div>
   <div class="g-panel on" id="p-home">
@@ -2194,6 +2195,8 @@ button, .g-tab, [onclick]{ touch-action:manipulation; }
       <!-- RESULTADO -->
       <div id="adResult" style="display:none;">
 
+        <div style="display:flex;justify-content:flex-end;margin-bottom:12px"><button id="adRemove" type="button" style="cursor:pointer;font-family:'Manrope',sans-serif;font-weight:700;font-size:12.5px;color:#FF6B6B;background:rgba(255,107,107,.10);border:1px solid rgba(255,107,107,.45);border-radius:10px;padding:8px 14px">✕ Remover carteira atual</button></div>
+
         <!-- Seletor de perfil recomendado -->
         <div id="adProfiles" style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:16px;"></div>
 
@@ -2471,7 +2474,8 @@ const CAT_ATUAL_NOMES = {
 
 /* Recebe a posição atual do cliente (vinda da aba Aderência) e cria a aba "Atual" */
 window.__setPosicaoAtual = function(pos){
-  if(!pos || !pos.comp) return;
+  if(!pos){ S.posicaoAtual=null; if(S.template==="Atual"){ try{ loadTemplate(S.recomendadaTemplate||"Moderada"); }catch(e){} } try{ renderTabs(); }catch(e){} return; }
+  if(!pos.comp) return;
   S.posicaoAtual = pos;
   if(pos.cliente && !S.cliente) S.cliente = pos.cliente;
   if(pos.conta && !S.cliente) S.cliente = "Conta "+pos.conta;
@@ -7465,7 +7469,7 @@ window.__rvRender = render;
     if(b){ b.classList.add("done"); b.innerHTML = '<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> '+txt; }
   }
 
-  function handleFile(file){
+  function handleFile(file, onDone){
     var status = document.getElementById("adStatus");
     if(!file){ return; }
     if(!/\.xls[xm]?$/i.test(file.name)){
@@ -7512,7 +7516,8 @@ window.__rvRender = render;
           }
         }catch(e){}
         renderResult();
-        document.getElementById("adResult").scrollIntoView({behavior:"smooth", block:"nearest"});
+        if(typeof onDone==="function"){ try{ onDone(parsed); }catch(e){} }
+        else { document.getElementById("adResult").scrollIntoView({behavior:"smooth", block:"nearest"}); }
       }catch(err){
         status.className="ad-up-status err"; status.textContent="Erro ao ler o arquivo: "+(err && err.message ? err.message : err);
       }
@@ -7521,11 +7526,23 @@ window.__rvRender = render;
     reader.readAsArrayBuffer(file);
   }
 
+  window.RICO_importPosicaoFile = function(file, cb){ try{ handleFile(file, cb); }catch(e){ console.error(e); } };
+  window.RICO_removerPosicao = function(){
+    parsed = null;
+    try{ if(window.RICO_BRIDGE) window.RICO_BRIDGE.posicaoAtual = null; }catch(e){}
+    var res=document.getElementById("adResult"); if(res) res.style.display="none";
+    var st=document.getElementById("adStatus"); if(st){ st.className="ad-up-status"; st.textContent=""; }
+    var fi=document.getElementById("adFile"); if(fi){ try{ fi.value=""; }catch(e){} }
+    try{ if(typeof window.__setPosicaoAtual==="function") window.__setPosicaoAtual(null); }catch(e){}
+    try{ if(window._ajRender) window._ajRender(); }catch(e){}
+  };
+
   function init(){
     var drop = document.getElementById("adDrop");
     var fileInput = document.getElementById("adFile");
     var pick = document.getElementById("adPick");
     if(!drop) return;
+    var rem=document.getElementById("adRemove"); if(rem) rem.onclick=function(){ window.RICO_removerPosicao(); };
     pick.onclick = function(){ fileInput.click(); };
     drop.onclick = function(e){ if(e.target===drop || e.target.classList.contains("ad-up-title") || e.target.classList.contains("ad-up-desc") || e.target.classList.contains("ad-up-icon")) fileInput.click(); };
     fileInput.onchange = function(){ if(fileInput.files[0]) handleFile(fileInput.files[0]); };
@@ -7751,7 +7768,7 @@ window.__rvRender = render;
     h+='<div style="display:flex;flex-wrap:wrap;gap:18px;align-items:flex-end;margin-bottom:22px">';
     h+='<div><div style="font-size:11px;font-weight:700;color:#9AA2D0;text-transform:uppercase;letter-spacing:.5px;margin-bottom:7px">Carteira atual</div><div style="display:flex;gap:7px">'
       +'<button data-org="import" class="ajbtn'+(state.origem==="import"?" on":"")+'">Posição importada</button>'
-      +'<button data-org="sim" class="ajbtn'+(state.origem==="sim"?" on":"")+'">Carteira do Simulador</button></div></div>';
+      +'<button data-org="sim" class="ajbtn'+(state.origem==="sim"?" on":"")+'">Carteira do Simulador</button>'+(state.origem==="import"?'<button data-ajimport class="ajbtn" title="Importar Posição Consolidada (.xlsx)">Importar Excel…</button>':'')+'</div></div>';
     h+='<div><div style="font-size:11px;font-weight:700;color:#9AA2D0;text-transform:uppercase;letter-spacing:.5px;margin-bottom:7px">Carteira destino (modelo)</div><div style="display:flex;gap:7px;flex-wrap:wrap">'
       +destinos.map(function(d){return '<button data-dest="'+d+'" class="ajbtn'+(state.destino===d?" on":"")+'">'+d+'</button>';}).join("")+'</div></div>';
     h+='<button id="ajGerar" class="ajbtn primary">Gerar plano de ajuste</button>';
@@ -7761,7 +7778,7 @@ window.__rvRender = render;
       h+='<div style="border:1px dashed rgba(120,130,210,.3);border-radius:16px;padding:30px;text-align:center;color:#9AA2D0;font-size:14px;line-height:1.6">'
         +(state.origem==="sim"
           ? 'Monte uma carteira no <b style="color:#FF8B52">Simulador de Investimentos</b> para usá-la como carteira atual.'
-          : 'Importe a <b style="color:#FF8B52">Posição Consolidada</b> do cliente na aba <b style="color:#FF8B52">Aderência de Carteira</b> para carregar a carteira atual.')
+          : 'Importe a <b style="color:#FF8B52">Posição Consolidada</b> (.xlsx) do cliente para carregar a carteira atual.<div style="margin-top:16px"><button data-ajimport class="ajbtn primary">Importar Excel…</button></div>')
         +'</div>';
       root.innerHTML=h; bind(); return;
     }
@@ -7810,6 +7827,9 @@ window.__rvRender = render;
     };
     var pdf=document.getElementById("ajPDF"); if(pdf) pdf.onclick=exportPDF;
     var xls=document.getElementById("ajXLS"); if(xls) xls.onclick=exportXLS;
+    var fi=document.getElementById("ajFile");
+    root.querySelectorAll("[data-ajimport]").forEach(function(b){ b.onclick=function(){ if(typeof window.RICO_importPosicaoFile!=="function"){ try{ if(window._toolInit && window._toolInit['aderencia']) window._toolInit['aderencia'](); }catch(e){} } if(fi) fi.click(); }; });
+    if(fi) fi.onchange=function(){ var f=fi.files&&fi.files[0]; if(!f) return; if(typeof window.RICO_importPosicaoFile!=="function"){ alert("Importador indisponivel — abra a aba Aderencia uma vez."); return; } root.querySelectorAll("[data-ajimport]").forEach(function(b){ b.textContent="Importando…"; }); window.RICO_importPosicaoFile(f, function(p){ state.origem="import"; state.plan=null; try{ fi.value=""; }catch(e){} render(); }); };
   }
 
   function planRows(){
@@ -7907,6 +7927,7 @@ window.__rvRender = render;
   }
 
   window._toolInit = window._toolInit || {};
+  window._ajRender = render;
   window._toolInit["ajustes"] = function(){ render(); };
 })();
 </script>
