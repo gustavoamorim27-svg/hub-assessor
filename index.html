@@ -921,6 +921,25 @@ button, .g-tab, [onclick]{ touch-action:manipulation; }
       Aderência de Carteira
     </button>
   </div>
+<style id="g-ticker-css">
+.g-ticker{ display:flex; align-items:center; gap:16px; margin-left:auto; padding-left:18px; flex-shrink:0; }
+.g-tk-item{ display:flex; flex-direction:column; align-items:flex-end; justify-content:center; line-height:1.2; white-space:nowrap; }
+.g-tk-lbl{ font-size:9.5px; font-weight:700; letter-spacing:.5px; text-transform:uppercase; color:var(--mu); }
+.g-tk-row{ display:flex; align-items:baseline; gap:6px; }
+.g-tk-val{ font-family:'Sora',sans-serif; font-size:12.5px; font-weight:700; color:var(--wh); }
+.g-tk-chg{ font-size:10px; font-weight:800; letter-spacing:.2px; }
+.g-tk-chg.up{ color:#3DD68C; }
+.g-tk-chg.down{ color:#FF6B6B; }
+.g-tk-chg.flat{ color:var(--mu); }
+@media (max-width:1200px){ .g-ticker{ display:none; } }
+</style>
+  <div class="g-ticker" id="gTicker" role="group" aria-label="Cotações de mercado">
+    <div class="g-tk-item" id="tk-dolar"><span class="g-tk-lbl">Dólar</span><span class="g-tk-row"><span class="g-tk-val">—</span><span class="g-tk-chg flat"></span></span></div>
+    <div class="g-tk-item" id="tk-sp500"><span class="g-tk-lbl">S&amp;P 500</span><span class="g-tk-row"><span class="g-tk-val">—</span><span class="g-tk-chg flat"></span></span></div>
+    <div class="g-tk-item" id="tk-ibov"><span class="g-tk-lbl">Ibovespa</span><span class="g-tk-row"><span class="g-tk-val">—</span><span class="g-tk-chg flat"></span></span></div>
+    <div class="g-tk-item" id="tk-ouro"><span class="g-tk-lbl">Ouro</span><span class="g-tk-row"><span class="g-tk-val">—</span><span class="g-tk-chg flat"></span></span></div>
+    <div class="g-tk-item" id="tk-brent"><span class="g-tk-lbl">Brent</span><span class="g-tk-row"><span class="g-tk-val">—</span><span class="g-tk-chg flat"></span></span></div>
+  </div>
 </nav>
 
 <div class="g-body">
@@ -7531,6 +7550,48 @@ window.__rvRender = render;
     var c2=document.querySelector('[data-tool="simulador"] .goal-grid'); if(c2) initCont(c2,"goal");
   }
   if(document.readyState==="loading"){ document.addEventListener("DOMContentLoaded",function(){setTimeout(init,150);}); } else { setTimeout(init,150); }
+})();
+</script>
+<script id="g-ticker-js">
+(function(){
+  var TK = [
+    {k:'dolar', sym:'BRL=X', dec:2, prefix:'R$\u00A0'},
+    {k:'sp500', sym:'^GSPC', dec:0, prefix:''},
+    {k:'ibov',  sym:'^BVSP', dec:0, prefix:''},
+    {k:'ouro',  sym:'GC=F',  dec:2, prefix:'US$\u00A0'},
+    {k:'brent', sym:'BZ=F',  dec:2, prefix:'US$\u00A0'}
+  ];
+  function fmt(v, dec){ return v.toLocaleString('pt-BR',{minimumFractionDigits:dec, maximumFractionDigits:dec}); }
+  function proxies(u){ return ['https://corsproxy.io/?url='+encodeURIComponent(u),
+                               'https://api.allorigins.win/raw?url='+encodeURIComponent(u)]; }
+  async function fetchQuote(sym){
+    var yurl='https://query1.finance.yahoo.com/v8/finance/chart/'+encodeURIComponent(sym)+'?range=1d&interval=1d';
+    var ps=proxies(yurl);
+    for(var i=0;i<ps.length;i++){
+      try{
+        var r=await fetch(ps[i],{cache:'no-store'});
+        if(!r.ok) continue;
+        var j=await r.json();
+        var m=j.chart.result[0].meta;
+        if(m && m.regularMarketPrice!=null && m.chartPreviousClose!=null)
+          return {price:m.regularMarketPrice, prev:m.chartPreviousClose};
+      }catch(e){}
+    }
+    return null;
+  }
+  function render(it, q){
+    var el=document.getElementById('tk-'+it.k); if(!el) return;
+    var valEl=el.querySelector('.g-tk-val'), chgEl=el.querySelector('.g-tk-chg');
+    if(!q){ if(valEl.textContent==='—'){ valEl.textContent='—'; chgEl.textContent=''; chgEl.className='g-tk-chg flat'; } return; }
+    var chg=q.price-q.prev, pct=q.prev? (chg/q.prev*100):0;
+    valEl.textContent=it.prefix+fmt(q.price, it.dec);
+    var arrow = chg>0?'\u25B2':(chg<0?'\u25BC':'\u2022');
+    chgEl.textContent=arrow+' '+(chg>0?'+':'')+pct.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})+'%';
+    chgEl.className='g-tk-chg '+(chg>0?'up':(chg<0?'down':'flat'));
+  }
+  function load(){ TK.forEach(function(it){ fetchQuote(it.sym).then(function(q){ render(it,q); }); }); }
+  function start(){ load(); setInterval(load, 60000); }
+  if(document.readyState==='loading'){ document.addEventListener('DOMContentLoaded', start); } else { start(); }
 })();
 </script>
 </body>
