@@ -7790,10 +7790,10 @@ window.__rvRender = render;
     state.conta=src.conta;
     // reset edits keyed by name
     state.vals={}; state.removed={}; state.added=[];
-    state.atual.forEach(function(a){ state.vals[a.name]=a.valor; });
+    state.atual.forEach(function(a,i){ a.aid="c"+i; state.vals[a.aid]=a.valor; });
   }
 
-  function curVal(a){ return state.vals[a.name]!=null? state.vals[a.name] : a.valor; }
+  function curVal(a){ return state.vals[a.aid]!=null? state.vals[a.aid] : a.valor; }
   function liquidAtual(){ return state.atual? state.atual.reduce(function(s,a){return s+a.valor;},0):0; }
   function prevTotal(){ return state.prev.reduce(function(s,a){return s+a.valor;},0); }
 
@@ -7802,11 +7802,11 @@ window.__rvRender = render;
     var sair=[],manter=[],entrar=[];
     state.prev.forEach(function(a){ manter.push({k:"prev",name:a.name,categoria:"Previdência",orig:a.valor,val:a.valor,mov:0,acao:"Manter"}); });
     state.atual.forEach(function(a){
-      if(state.removed[a.name]){ sair.push({k:"cur",name:a.name,categoria:a.categoria,orig:a.valor,val:0,mov:-a.valor,acao:"Sair"}); return; }
+      if(state.removed[a.aid]){ sair.push({k:"cur",aid:a.aid,name:a.name,categoria:a.categoria,orig:a.valor,val:0,mov:-a.valor,acao:"Sair"}); return; }
       var v=curVal(a),d=v-a.valor;
-      if(d<-0.5) sair.push({k:"cur",name:a.name,categoria:a.categoria,orig:a.valor,val:v,mov:d,acao:"Reduzir"});
-      else if(d>0.5) entrar.push({k:"cur",name:a.name,categoria:a.categoria,orig:a.valor,val:v,mov:d,acao:"Aumentar"});
-      else manter.push({k:"cur",name:a.name,categoria:a.categoria,orig:a.valor,val:v,mov:0,acao:"Manter"});
+      if(d<-0.5) sair.push({k:"cur",aid:a.aid,name:a.name,categoria:a.categoria,orig:a.valor,val:v,mov:d,acao:"Reduzir"});
+      else if(d>0.5) entrar.push({k:"cur",aid:a.aid,name:a.name,categoria:a.categoria,orig:a.valor,val:v,mov:d,acao:"Aumentar"});
+      else manter.push({k:"cur",aid:a.aid,name:a.name,categoria:a.categoria,orig:a.valor,val:v,mov:0,acao:"Manter"});
     });
     state.added.forEach(function(x){ entrar.push({k:"add",id:x.id,name:x.nome,categoria:x.classe,orig:0,val:x.valor||0,mov:x.valor||0,acao:"Entrar"}); });
     return {sair:sair,manter:manter,entrar:entrar};
@@ -7818,7 +7818,7 @@ window.__rvRender = render;
     return {vender:vender,comprar:comprar,liquid:lb,prev:prevTotal(),patrim:lb+prevTotal(),giro: lb>0? comprar/lb*100:0, saldo: comprar-vender};
   }
   function compAtual(){ var m={},t=0; state.atual.forEach(function(a){ m[a.categoria]=(m[a.categoria]||0)+a.valor; t+=a.valor; }); state.prev.forEach(function(a){ m["Previdência"]=(m["Previdência"]||0)+a.valor; t+=a.valor; }); return {m:m,t:t}; }
-  function compProp(){ var m={},t=0; state.atual.forEach(function(a){ if(state.removed[a.name])return; var v=curVal(a); m[a.categoria]=(m[a.categoria]||0)+v; t+=v; }); state.added.forEach(function(x){ m[x.classe]=(m[x.classe]||0)+(x.valor||0); t+=(x.valor||0); }); state.prev.forEach(function(a){ m["Previdência"]=(m["Previdência"]||0)+a.valor; t+=a.valor; }); return {m:m,t:t}; }
+  function compProp(){ var m={},t=0; state.atual.forEach(function(a){ if(state.removed[a.aid])return; var v=curVal(a); m[a.categoria]=(m[a.categoria]||0)+v; t+=v; }); state.added.forEach(function(x){ m[x.classe]=(m[x.classe]||0)+(x.valor||0); t+=(x.valor||0); }); state.prev.forEach(function(a){ m["Previdência"]=(m["Previdência"]||0)+a.valor; t+=a.valor; }); return {m:m,t:t}; }
 
   function groupByCat(items){ var g={}; items.forEach(function(x){ (g[x.categoria]=g[x.categoria]||[]).push(x); }); return g; }
 
@@ -7832,19 +7832,19 @@ window.__rvRender = render;
       arr.forEach(function(x){
         var mv=x.mov>0?("+"+fmtBRL(x.mov)):(x.mov<0?("−"+fmtBRL(-x.mov)):"manter");
         var mc=x.mov>0?"#3DD68C":(x.mov<0?"#FF6B6B":"#9AA2D0");
-        var draggable=(colKey==="manter"&&x.k==="cur")?' draggable="true" data-drag="cur:'+esc(x.name)+'"':'';
+        var draggable=(colKey==="manter"&&x.k==="cur")?' draggable="true" data-drag="cur:'+x.aid+'"':'';
         h+='<div class="pc-card"'+draggable+'>'
           +'<div class="pc-cardtop"><span class="pc-name">'+(x.k==="prev"?'🔒 ':'')+esc(x.name)+'</span>';
         // controls
-        if(colKey==="sair") h+='<button class="pc-x undo" data-undo="'+esc(x.name)+'" title="Voltar">↩</button>';
+        if(colKey==="sair") h+='<button class="pc-x undo" data-undo="'+x.aid+'" title="Voltar">↩</button>';
         else if(x.k==="add") h+='<button class="pc-x" data-rmadd="'+x.id+'" title="Remover">✕</button>';
-        else if(x.k==="cur") h+='<button class="pc-x sell" data-sell="'+esc(x.name)+'" title="Vender (mover p/ Sair)">✕</button>';
+        else if(x.k==="cur") h+='<button class="pc-x sell" data-sell="'+x.aid+'" title="Vender (mover p/ Sair)">✕</button>';
         h+='</div>';
         // value row
         if(x.k==="prev"){ h+='<div class="pc-cardbot"><span class="pc-mut">'+fmtBRL(x.val)+'</span><span class="pc-mut">mantida</span></div>'; }
         else if(colKey==="sair"&&x.acao==="Sair"){ h+='<div class="pc-cardbot"><span class="pc-mut">'+fmtBRL(x.orig)+'</span><span style="color:'+mc+';font-weight:700">'+mv+'</span></div>'; }
         else {
-          var inpId=(x.k==="add"?("add:"+x.id):("cur:"+esc(x.name)));
+          var inpId=(x.k==="add"?("add:"+x.id):("cur:"+x.aid));
           h+='<div class="pc-cardbot"><span class="pc-mut">R$</span><input class="pc-val" data-val="'+inpId+'" type="number" step="1000" min="0" value="'+Math.round(x.val)+'">'
             +'<span style="color:'+mc+';font-weight:700;margin-left:auto">'+mv+'</span></div>';
         }
@@ -7918,7 +7918,7 @@ window.__rvRender = render;
       col.addEventListener("drop",function(e){ if(!drag)return; e.preventDefault(); var ck=col.getAttribute("data-col"); if(ck==="sair"&&drag.indexOf("cur:")===0){ state.removed[drag.slice(4)]=true; render(); } else if(ck==="entrar"&&drag.indexOf("lib:")===0){ addLib(+drag.slice(4)); } drag=null; });
     });
   }
-  function findOrig(n){ var a=state.atual.filter(function(x){return x.name===n;})[0]; return a?a.valor:0; }
+  function findOrig(n){ var a=state.atual.filter(function(x){return x.aid===n;})[0]; return a?a.valor:0; }
   function addLib(i){ var a=gavetas()[i]; if(!a)return; var def=Math.round(liquidAtual()*0.05/1000)*1000; state.added.push({id:uid(),nome:a.nome,classe:a.classe,valor:def||1000}); render(); }
 
   // ===== EXCEL =====
