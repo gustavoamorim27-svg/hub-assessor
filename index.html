@@ -920,6 +920,10 @@ button, .g-tab, [onclick]{ touch-action:manipulation; }
       <svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
       Aderência de Carteira
     </button>
+    <button class="g-tab" data-panel="ajustes" onclick="showPanel('ajustes')">
+      <svg viewBox="0 0 24 24"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
+      Ajustes de Carteira
+    </button>
   </div>
 <style id="g-ticker-css">
 .g-ticker{ display:flex; align-items:center; gap:16px; margin-left:auto; padding-left:18px; flex-shrink:0; }
@@ -943,6 +947,17 @@ button, .g-tab, [onclick]{ touch-action:manipulation; }
 </nav>
 
 <div class="g-body">
+  <div class="g-panel" id="p-ajustes" data-tool="ajustes">
+    <style>
+    #p-ajustes .ajbtn{ cursor:pointer;font-family:'Manrope',sans-serif;font-weight:700;font-size:13px;color:#cfd4ef;background:rgba(255,255,255,.05);border:1px solid rgba(120,130,210,.25);border-radius:10px;padding:9px 15px;transition:all .15s; }
+    #p-ajustes .ajbtn:hover{ color:#fff;border-color:#FF8B52; }
+    #p-ajustes .ajbtn.on{ color:#fff;background:rgba(255,78,0,.16);border-color:rgba(255,78,0,.5); }
+    #p-ajustes .ajbtn.primary{ background:var(--or);border-color:var(--or);color:#fff; }
+    #p-ajustes .ajbtn.primary:hover{ filter:brightness(1.08); }
+    @media (max-width:900px){ #p-ajustes #ajCols{ grid-template-columns:1fr !important; } }
+    </style>
+    <div id="ajRoot" class="adw" style="max-width:1180px;margin:0 auto;padding:28px 20px 60px"></div>
+  </div>
   <div class="g-panel on" id="p-home">
     <div class="home">
       <div class="home-logo">
@@ -2413,6 +2428,7 @@ const TEMPLATES = {
     mk("Internacional","Wellington Global Quality",7.5,"100% ações dos EUA, Europa e Reino Unido · +75% em 3 anos","D+5")
   ]
 };
+try{ window.RICO_TEMPLATES = TEMPLATES; }catch(e){}
 
 const GLOSSARY = {
   collar:{ match:["collar"], label:"Collar UI", desc:"Proteção montada com opções sobre a ação: estabelece um piso, que limita a perda, e um teto, que limita o ganho durante o período da operação." },
@@ -7594,4 +7610,304 @@ window.__rvRender = render;
   if(document.readyState==='loading'){ document.addEventListener('DOMContentLoaded', start); } else { start(); }
 })();
 </script>
+<script id="ajustes-tool">
+(function(){
+  function fmtBRL(n){ return "R$ "+Math.round(n||0).toLocaleString("pt-BR"); }
+  function fmtPct(n){ var v=Math.round((n||0)*10)/10; return (Number.isInteger(v)?v.toFixed(0):v.toFixed(1)).replace(".",",")+"%"; }
+  function esc(s){ return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+  var CATS = ["Renda Fixa","Previdência","Multimercados","Renda Variável","Fundos Listados","Alternativos","Internacional"];
+  var CATCOL = {"Renda Fixa":"#3DD68C","Previdência":"#E8709B","Multimercados":"#7C8CFF","Renda Variável":"#F26522","Fundos Listados":"#FFB020","Alternativos":"#C77DFF","Internacional":"#36C5F0"};
+  var state = { origem:"import", destino:"Moderada", plan:null };
+
+  function getAtual(){
+    if(state.origem==="sim"){
+      var c = window.RICO_BRIDGE && window.RICO_BRIDGE.carteira;
+      if(c && Array.isArray(c.itens) && c.itens.length){
+        var base = c.patrimonio||0;
+        return { fonte:"sim", conta:"", cliente:c.cliente||"", template:c.template||"", patrim:base,
+          ativos:c.itens.map(function(it){return {name:it.nome, categoria:it.classe, valor:(Number(it.pct)||0)/100*base};}) };
+      }
+      return null;
+    }
+    var p = window.RICO_BRIDGE && window.RICO_BRIDGE.posicaoAtual;
+    if(p && Array.isArray(p.ativos) && p.ativos.length){
+      return { fonte:"import", conta:p.conta||"", cliente:"", template:"", patrim:p.patrimonio||0,
+        ativos:p.ativos.map(function(a){return {name:a.name, categoria:a.categoria||"Multimercados", valor:a.valor||0};}) };
+    }
+    return null;
+  }
+  function getDestinoItens(dest){
+    if(dest==="Simulador"){
+      var c = window.RICO_BRIDGE && window.RICO_BRIDGE.carteira;
+      if(c && c.itens) return c.itens.map(function(it){return {nome:it.nome, classe:it.classe, pct:Number(it.pct)||0, detalhe:it.detalhe||""};});
+      return null;
+    }
+    var T = window.RICO_TEMPLATES;
+    if(T && typeof T[dest]==="function"){
+      return T[dest]().map(function(it){return {nome:it.nome, classe:it.classe, pct:Number(it.pct)||0, detalhe:it.detalhe||""};});
+    }
+    return null;
+  }
+
+  function coreTicker(s){ var m=String(s||"").toUpperCase().match(/\b([A-Z]{4}\d{1,2})\b/); return m?m[1]:null; }
+  function norm(s){ return String(s||"").toUpperCase().normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[^A-Z0-9]/g,""); }
+  function sameAsset(a,b){
+    var ca=coreTicker(a), cb=coreTicker(b);
+    if(ca&&cb) return ca===cb;
+    var na=norm(a), nb=norm(b);
+    if(!na||!nb||na.length<4||nb.length<4) return false;
+    return na===nb || na.indexOf(nb)===0 || nb.indexOf(na)===0;
+  }
+
+  function buildPlan(atual, modelItens){
+    var prev = atual.ativos.filter(function(a){return a.categoria==="Previdência";});
+    var liq  = atual.ativos.filter(function(a){return a.categoria!=="Previdência";});
+    var liquidBase = liq.reduce(function(s,a){return s+a.valor;},0);
+    var prevTotal = prev.reduce(function(s,a){return s+a.valor;},0);
+    var targetItens = modelItens.map(function(m){return {nome:m.nome, categoria:m.classe, detalhe:m.detalhe, pct:m.pct, valor:(m.pct/100)*liquidBase};});
+
+    var curByCat={}, tgtByCat={};
+    liq.forEach(function(a){ curByCat[a.categoria]=(curByCat[a.categoria]||0)+a.valor; });
+    targetItens.forEach(function(t){ tgtByCat[t.categoria]=(tgtByCat[t.categoria]||0)+t.valor; });
+
+    var sair=[], manter=[], entrar=[];
+    prev.forEach(function(a){ manter.push({name:a.name, categoria:"Previdência", de:a.valor, para:a.valor, mov:0, acao:"Manter", obs:"Previdência (mantida, sem movimentação)"}); });
+
+    var cats={}; CATS.forEach(function(c){cats[c]=true;}); Object.keys(curByCat).forEach(function(c){cats[c]=true;}); Object.keys(tgtByCat).forEach(function(c){cats[c]=true;});
+    Object.keys(cats).forEach(function(c){
+      if(c==="Previdência") return;
+      var cur=curByCat[c]||0, tgt=tgtByCat[c]||0;
+      var curAssets = liq.filter(function(a){return a.categoria===c;});
+      var modelAssets = targetItens.filter(function(t){return t.categoria===c;});
+      if(tgt<=0.5 && cur>0){
+        curAssets.forEach(function(a){ sair.push({name:a.name, categoria:c, de:a.valor, para:0, mov:-a.valor, acao:"Sair", obs:"Classe fora do modelo "+state.destino}); });
+        return;
+      }
+      if(tgt>=cur){
+        curAssets.forEach(function(a){ manter.push({name:a.name, categoria:c, de:a.valor, para:a.valor, mov:0, acao:"Manter", obs:"Classe abaixo do alvo — posição mantida"}); });
+        var gap=tgt-cur, sumPct=modelAssets.reduce(function(s,m){return s+m.pct;},0)||1;
+        modelAssets.forEach(function(m){
+          var buy=gap*(m.pct/sumPct);
+          if(buy>0.5){
+            var jaTem = curAssets.some(function(a){return sameAsset(m.nome,a.name);});
+            entrar.push({name:m.nome, categoria:c, de:0, para:buy, mov:buy, acao:jaTem?"Aumentar":"Entrar", obs:m.detalhe||""});
+          }
+        });
+      } else {
+        var excesso=cur-tgt;
+        var ordered=curAssets.slice().sort(function(a,b){
+          var ma=modelAssets.some(function(m){return sameAsset(m.nome,a.name);})?1:0;
+          var mb=modelAssets.some(function(m){return sameAsset(m.nome,b.name);})?1:0;
+          if(ma!==mb) return ma-mb;
+          return a.valor-b.valor;
+        });
+        var rem=excesso;
+        ordered.forEach(function(a){
+          if(rem<=0.5){ manter.push({name:a.name,categoria:c,de:a.valor,para:a.valor,mov:0,acao:"Manter",obs:""}); return; }
+          if(a.valor<=rem+0.5){ sair.push({name:a.name,categoria:c,de:a.valor,para:0,mov:-a.valor,acao:"Sair",obs:"Reduzir classe ao alvo"}); rem-=a.valor; }
+          else { manter.push({name:a.name,categoria:c,de:a.valor,para:a.valor-rem,mov:-rem,acao:"Reduzir",obs:"Ajuste parcial ao alvo"}); rem=0; }
+        });
+      }
+    });
+
+    var totalVender = -sair.reduce(function(s,x){return s+x.mov;},0) - manter.filter(function(m){return m.acao==="Reduzir";}).reduce(function(s,x){return s+x.mov;},0);
+    var totalComprar = entrar.reduce(function(s,x){return s+x.mov;},0);
+    var turnover = liquidBase>0 ? (totalComprar/liquidBase*100) : 0;
+    return { prev:prev, prevTotal:prevTotal, liquidBase:liquidBase, patrim:atual.patrim||(liquidBase+prevTotal),
+             sair:sair, manter:manter, entrar:entrar, curByCat:curByCat, tgtByCat:tgtByCat,
+             totalVender:totalVender, totalComprar:totalComprar, turnover:turnover };
+  }
+
+  function actBadge(acao){
+    var col = acao==="Sair"?"#FF6B6B":(acao==="Reduzir"?"#FFB020":(acao==="Entrar"||acao==="Aumentar"?"#3DD68C":"#9AA2D0"));
+    return '<span style="display:inline-block;font-size:10px;font-weight:800;color:'+col+';border:1px solid '+col+'55;background:'+col+'1A;border-radius:6px;padding:2px 7px">'+acao+'</span>';
+  }
+  function listHTML(items, showMov){
+    if(!items.length) return '<div style="color:#6F77A8;font-size:13px;padding:10px 0">Nada nesta seção.</div>';
+    return items.map(function(x){
+      var col=CATCOL[x.categoria]||"#9AA2D0";
+      var mov = x.mov>0?("+"+fmtBRL(x.mov)):(x.mov<0?("−"+fmtBRL(-x.mov)):"—");
+      return '<div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid rgba(120,130,210,.12)">'
+        +'<span style="width:8px;height:8px;border-radius:50%;background:'+col+';flex-shrink:0"></span>'
+        +'<div style="flex:1;min-width:0"><div style="font-size:13.5px;font-weight:700;color:#eef0fb;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(x.name)+'</div>'
+        +'<div style="font-size:11px;color:#8A93C8">'+esc(x.categoria)+(x.obs?(" · "+esc(x.obs)):"")+'</div></div>'
+        +'<div style="text-align:right;flex-shrink:0">'+actBadge(x.acao)
+        +'<div style="font-size:12.5px;font-weight:700;color:'+(x.mov>0?"#3DD68C":(x.mov<0?"#FF6B6B":"#9AA2D0"))+';margin-top:3px">'+mov+'</div></div>'
+        +'</div>';
+    }).join("");
+  }
+
+  function render(){
+    var root=document.getElementById("ajRoot"); if(!root) return;
+    var atual=getAtual();
+    var simExists = !!(window.RICO_BRIDGE && window.RICO_BRIDGE.carteira && window.RICO_BRIDGE.carteira.itens && window.RICO_BRIDGE.carteira.itens.length);
+    var destinos=["Conservadora","Moderada","Sofisticada"]; if(simExists) destinos.push("Simulador");
+
+    var h='';
+    h+='<div class="ad-header"><div class="ad-logo">rico</div><div class="ad-sub">Ajustes de Carteira · o que sai, o que fica e o que entra para chegar à carteira recomendada</div></div>';
+
+    // controls
+    h+='<div style="display:flex;flex-wrap:wrap;gap:18px;align-items:flex-end;margin-bottom:22px">';
+    h+='<div><div style="font-size:11px;font-weight:700;color:#9AA2D0;text-transform:uppercase;letter-spacing:.5px;margin-bottom:7px">Carteira atual</div><div style="display:flex;gap:7px">'
+      +'<button data-org="import" class="ajbtn'+(state.origem==="import"?" on":"")+'">Posição importada</button>'
+      +'<button data-org="sim" class="ajbtn'+(state.origem==="sim"?" on":"")+'">Carteira do Simulador</button></div></div>';
+    h+='<div><div style="font-size:11px;font-weight:700;color:#9AA2D0;text-transform:uppercase;letter-spacing:.5px;margin-bottom:7px">Carteira destino (modelo)</div><div style="display:flex;gap:7px;flex-wrap:wrap">'
+      +destinos.map(function(d){return '<button data-dest="'+d+'" class="ajbtn'+(state.destino===d?" on":"")+'">'+d+'</button>';}).join("")+'</div></div>';
+    h+='<button id="ajGerar" class="ajbtn primary">Gerar plano de ajuste</button>';
+    h+='</div>';
+
+    if(!atual){
+      h+='<div style="border:1px dashed rgba(120,130,210,.3);border-radius:16px;padding:30px;text-align:center;color:#9AA2D0;font-size:14px;line-height:1.6">'
+        +(state.origem==="sim"
+          ? 'Monte uma carteira no <b style="color:#FF8B52">Simulador de Investimentos</b> para usá-la como carteira atual.'
+          : 'Importe a <b style="color:#FF8B52">Posição Consolidada</b> do cliente na aba <b style="color:#FF8B52">Aderência de Carteira</b> para carregar a carteira atual.')
+        +'</div>';
+      root.innerHTML=h; bind(); return;
+    }
+
+    if(state.plan){
+      var p=state.plan;
+      h+='<div style="display:flex;flex-wrap:wrap;gap:12px;margin-bottom:20px">';
+      h+=chip("Patrimônio", fmtBRL(p.patrim), "#cfd4ef");
+      h+=chip("Líquido a rebalancear", fmtBRL(p.liquidBase), "#cfd4ef");
+      if(p.prevTotal>0) h+=chip("Previdência (mantida)", fmtBRL(p.prevTotal), "#E8709B");
+      h+=chip("A vender", fmtBRL(p.totalVender), "#FF6B6B");
+      h+=chip("A comprar", fmtBRL(p.totalComprar), "#3DD68C");
+      h+=chip("Giro da carteira", fmtPct(p.turnover), "#FFB020");
+      h+='</div>';
+
+      h+='<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px" id="ajCols">';
+      h+=col("Sair / Reduzir", "#FF6B6B", listHTML(p.sair.concat(p.manter.filter(function(m){return m.acao==="Reduzir";})), true));
+      h+=col("Manter", "#9AA2D0", listHTML(p.manter.filter(function(m){return m.acao==="Manter";}), false));
+      h+=col("Entrar / Aumentar", "#3DD68C", listHTML(p.entrar, true));
+      h+='</div>';
+
+      h+='<div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:22px">'
+        +'<button id="ajPDF" class="ajbtn primary">Baixar PDF (cliente)</button>'
+        +'<button id="ajXLS" class="ajbtn">Baixar Excel (execução)</button></div>';
+      h+='<div style="font-size:11px;color:#6F77A8;line-height:1.6;margin-top:16px">Plano gerado pela sobreposição da carteira atual (posição líquida) com a carteira '+esc(state.destino)+'. '
+        +'Ativos idênticos são mantidos; classes acima do alvo são reduzidas e classes abaixo do alvo recebem os ativos específicos da biblioteca. '
+        +'Previdência é mantida sem movimentação. Material de apoio interno — não constitui recomendação ou oferta.</div>';
+    } else {
+      h+='<div style="color:#9AA2D0;font-size:14px;padding:8px 0">Escolha a carteira destino e clique em <b style="color:#FF8B52">Gerar plano de ajuste</b>.</div>';
+    }
+    root.innerHTML=h; bind();
+  }
+  function chip(label,val,col){ return '<div style="background:rgba(20,28,87,.45);border:1px solid rgba(120,130,210,.18);border-radius:12px;padding:10px 14px;min-width:130px"><div style="font-size:10.5px;color:#8A93C8;font-weight:700;text-transform:uppercase;letter-spacing:.4px">'+esc(label)+'</div><div style="font-family:Sora,sans-serif;font-weight:800;font-size:16px;color:'+col+';margin-top:3px">'+esc(val)+'</div></div>'; }
+  function col(title,c,inner){ return '<div style="background:rgba(20,28,87,.30);border:1px solid rgba(120,130,210,.16);border-radius:16px;padding:16px"><div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><span style="width:10px;height:10px;border-radius:3px;background:'+c+'"></span><span style="font-family:Sora,sans-serif;font-weight:700;font-size:14.5px;color:#fff">'+title+'</span></div>'+inner+'</div>'; }
+
+  function bind(){
+    var root=document.getElementById("ajRoot"); if(!root) return;
+    root.querySelectorAll("[data-org]").forEach(function(b){ b.onclick=function(){ state.origem=b.getAttribute("data-org"); state.plan=null; render(); }; });
+    root.querySelectorAll("[data-dest]").forEach(function(b){ b.onclick=function(){ state.destino=b.getAttribute("data-dest"); state.plan=null; render(); }; });
+    var g=document.getElementById("ajGerar"); if(g) g.onclick=function(){
+      var atual=getAtual(); var modelo=getDestinoItens(state.destino);
+      if(!atual){ render(); return; }
+      if(!modelo){ alert("Carteira destino indisponível."); return; }
+      state.plan=buildPlan(atual, modelo); state.atualMeta={conta:atual.conta,cliente:atual.cliente}; render();
+      var c=document.getElementById("ajCols"); if(c) c.scrollIntoView({behavior:"smooth",block:"nearest"});
+    };
+    var pdf=document.getElementById("ajPDF"); if(pdf) pdf.onclick=exportPDF;
+    var xls=document.getElementById("ajXLS"); if(xls) xls.onclick=exportXLS;
+  }
+
+  function planRows(){
+    var p=state.plan, rows=[];
+    p.sair.forEach(function(x){rows.push(x);});
+    p.manter.filter(function(m){return m.acao==="Reduzir";}).forEach(function(x){rows.push(x);});
+    p.entrar.forEach(function(x){rows.push(x);});
+    p.manter.filter(function(m){return m.acao==="Manter";}).forEach(function(x){rows.push(x);});
+    return rows;
+  }
+  function clienteTxt(){ var m=state.atualMeta||{}; return m.cliente||(m.conta?("Conta "+m.conta):"Cliente"); }
+
+  function exportXLS(){
+    if(typeof XLSX==="undefined"){ alert("Biblioteca de planilha ainda carregando."); return; }
+    var p=state.plan;
+    var aoa=[["Ação","Ativo","Classe","R$ atual","R$ alvo","R$ movimento","Observação"]];
+    planRows().forEach(function(x){ aoa.push([x.acao,x.name,x.categoria,Math.round(x.de),Math.round(x.para),Math.round(x.mov),x.obs||""]); });
+    aoa.push([]); aoa.push(["RESUMO","","","","","",""]);
+    aoa.push(["Patrimônio total","","","",Math.round(p.patrim),"",""]);
+    aoa.push(["Líquido rebalanceado","","","",Math.round(p.liquidBase),"",""]);
+    aoa.push(["Previdência mantida","","","",Math.round(p.prevTotal),"",""]);
+    aoa.push(["Total a vender","","","","",-Math.round(p.totalVender),""]);
+    aoa.push(["Total a comprar","","","","",Math.round(p.totalComprar),""]);
+    var ws=XLSX.utils.aoa_to_sheet(aoa);
+    ws["!cols"]=[{wch:11},{wch:42},{wch:16},{wch:13},{wch:13},{wch:14},{wch:34}];
+    // segunda aba: resumo por classe
+    var aoa2=[["Classe","R$ atual","% atual","R$ alvo","% alvo","R$ movimento"]];
+    CATS.forEach(function(c){
+      var cur=(p.curByCat[c]||0)+(c==="Previdência"?p.prevTotal:0);
+      var tgt=(p.tgtByCat[c]||0)+(c==="Previdência"?p.prevTotal:0);
+      if(cur<1&&tgt<1) return;
+      var base=p.liquidBase+p.prevTotal;
+      aoa2.push([c,Math.round(cur),(base>0?(cur/base*100):0).toFixed(1)+"%",Math.round(tgt),(base>0?(tgt/base*100):0).toFixed(1)+"%",Math.round(tgt-cur)]);
+    });
+    var ws2=XLSX.utils.aoa_to_sheet(aoa2); ws2["!cols"]=[{wch:18},{wch:13},{wch:10},{wch:13},{wch:10},{wch:14}];
+    var wb=XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb,ws,"Plano");
+    XLSX.utils.book_append_sheet(wb,ws2,"Resumo por classe");
+    XLSX.writeFile(wb,"Plano de Ajuste - "+state.destino+".xlsx");
+  }
+
+  function exportPDF(){
+    var JS = window.jspdf && window.jspdf.jsPDF; if(!JS){ alert("Biblioteca de PDF ainda carregando."); return; }
+    var p=state.plan; var doc=new JS({unit:"pt",format:"a4"});
+    var W=doc.internal.pageSize.getWidth(), M=40, y=0;
+    function newPageHeader(){
+      doc.setFillColor(7,11,46); doc.rect(0,0,W,70,"F");
+      doc.setFillColor(242,101,34); doc.rect(0,0,W,4,"F");
+      doc.setTextColor(242,101,34); doc.setFont("helvetica","bold"); doc.setFontSize(20); doc.text("rico",M,42);
+      doc.setTextColor(255,255,255); doc.setFontSize(13); doc.text("Plano de Ajuste de Carteira",M+58,42);
+      y=92;
+    }
+    newPageHeader();
+    doc.setTextColor(60,60,70); doc.setFont("helvetica","normal"); doc.setFontSize(10.5);
+    doc.text(clienteTxt()+"   ·   Destino: "+state.destino+"   ·   "+new Date().toLocaleDateString("pt-BR"), M, y); y+=20;
+    // resumo
+    doc.setDrawColor(225,228,238); doc.setFillColor(247,248,252); doc.roundedRect(M,y,W-2*M,52,6,6,"FD");
+    doc.setFontSize(9); doc.setTextColor(120,125,140);
+    var sx=M+14;
+    function kv(label,val,dx,col){ doc.setTextColor(140,145,160); doc.setFontSize(8.5); doc.text(label,dx,y+18); doc.setTextColor(col[0],col[1],col[2]); doc.setFont("helvetica","bold"); doc.setFontSize(12); doc.text(val,dx,y+38); doc.setFont("helvetica","normal"); }
+    var colw=(W-2*M)/4;
+    kv("Patrimônio",fmtBRL(p.patrim),sx,[40,40,55]);
+    kv("A vender",fmtBRL(p.totalVender),sx+colw,[200,70,70]);
+    kv("A comprar",fmtBRL(p.totalComprar),sx+2*colw,[50,170,110]);
+    kv("Giro",fmtPct(p.turnover),sx+3*colw,[200,150,40]);
+    y+=70;
+
+    function section(title,rows,col){
+      if(!rows.length) return;
+      if(y>760){ doc.addPage(); newPageHeader(); }
+      doc.setFillColor(col[0],col[1],col[2]); doc.rect(M,y,W-2*M,22,"F");
+      doc.setTextColor(255,255,255); doc.setFont("helvetica","bold"); doc.setFontSize(11);
+      doc.text(title,M+8,y+15); y+=22;
+      doc.setFont("helvetica","normal"); doc.setFontSize(10);
+      rows.forEach(function(x,i){
+        if(y>800){ doc.addPage(); newPageHeader(); }
+        if(i%2===0){ doc.setFillColor(250,250,253); doc.rect(M,y,W-2*M,20,"F"); }
+        doc.setTextColor(45,45,55); doc.text(String(x.name).slice(0,46),M+8,y+14);
+        doc.setTextColor(130,135,150); doc.setFontSize(8.5); doc.text(String(x.categoria),M+300,y+14); doc.setFontSize(10);
+        var mv = x.mov>0?("+"+fmtBRL(x.mov)):(x.mov<0?("-"+fmtBRL(-x.mov)):"manter");
+        doc.setTextColor(x.mov>0?50:(x.mov<0?200:130), x.mov>0?170:(x.mov<0?70:135), x.mov>0?110:(x.mov<0?70:150));
+        doc.text(mv, W-M-8, y+14, {align:"right"});
+        y+=20;
+      });
+      y+=12;
+    }
+    section("SAIR / REDUZIR", p.sair.concat(p.manter.filter(function(m){return m.acao==="Reduzir";})), [200,70,70]);
+    section("ENTRAR / AUMENTAR", p.entrar, [50,170,110]);
+    section("MANTER", p.manter.filter(function(m){return m.acao==="Manter";}), [120,128,170]);
+
+    if(y>770){ doc.addPage(); newPageHeader(); }
+    doc.setFontSize(7.5); doc.setTextColor(150,150,165);
+    doc.text("Material de apoio interno · não constitui recomendação ou oferta · gerado pelo Hub do Assessor", M, 815);
+    doc.save("Plano de Ajuste - "+state.destino+".pdf");
+  }
+
+  window._toolInit = window._toolInit || {};
+  window._toolInit["ajustes"] = function(){ render(); };
+})();
+</script>
+
 </body>
