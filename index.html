@@ -1107,14 +1107,23 @@ button, .g-tab, [onclick]{ touch-action:manipulation; }
       [data-tool="construtor"] .lib-chip:active{ cursor:grabbing; }
       [data-tool="construtor"] .lib-chip:hover{ background:rgba(255,78,0,.08); border-color:rgba(255,78,0,.4); }
       [data-tool="construtor"] .lib-sec{ font-size:11px; letter-spacing:1.2px; text-transform:uppercase; color:#9AA2D0; font-weight:800; margin:18px 0 8px; }
+      [data-tool="construtor"] .lib-card{ position:relative; cursor:grab; background:rgba(0,0,0,.22); border:1px solid rgba(120,130,210,.2); border-radius:12px; padding:11px 13px; margin-bottom:9px; transition:transform .1s,border-color .12s; }
+      [data-tool="construtor"] .lib-card:active{ cursor:grabbing; }
+      [data-tool="construtor"] .lib-card:hover{ transform:translateX(3px); border-color:rgba(255,78,0,.4); }
+      [data-tool="construtor"] .lib-card-top{ display:flex; justify-content:space-between; align-items:flex-start; gap:8px; }
+      [data-tool="construtor"] .lib-card-name{ font-weight:800; font-size:13.5px; color:#fff; line-height:1.25; }
+      [data-tool="construtor"] .lib-card-desc{ font-size:11.5px; color:#9AA2D0; margin-top:5px; line-height:1.4; }
+      [data-tool="construtor"] .lib-card-liq{ font-size:10.5px; color:#7F88B8; margin-top:5px; text-transform:uppercase; letter-spacing:.4px; font-weight:700; }
+      [data-tool="construtor"] .lib-add{ flex-shrink:0; background:rgba(255,78,0,.15); border:1px solid rgba(255,78,0,.4); color:#FF6B2C; border-radius:8px; padding:5px 11px; font-weight:700; font-size:12px; cursor:pointer; font-family:inherit; white-space:nowrap; }
+      [data-tool="construtor"] .lib-add:hover{ background:rgba(255,78,0,.25); }
       </style>
-      <div id="libTab"><span class="tabico">📁</span>BIBLIOTECA</div>
-      <div id="catTab"><span class="tabico">🧰</span>OPERAÇÕES</div>
+      <div id="libTab"><span class="tabico">📁</span>ATIVOS GERAIS</div>
+      <div id="catTab"><span class="tabico">🧰</span>RV ESTRUTURADA</div>
       <div id="libBackdrop"></div>
       <div id="catBackdrop"></div>
       <div id="libDrawer">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
-          <div style="font-family:'Sora',sans-serif;font-weight:800;font-size:19px;color:#fff;display:flex;align-items:center;gap:9px;"><span style="font-size:23px;">📁</span>Biblioteca de ativos</div>
+          <div style="font-family:'Sora',sans-serif;font-weight:800;font-size:19px;color:#fff;display:flex;align-items:center;gap:9px;"><span style="font-size:23px;">📁</span>Ativos Gerais</div>
           <button id="libClose" style="background:none;border:none;color:#9AA2D0;font-size:20px;cursor:pointer;line-height:1;">×</button>
         </div>
         <div style="font-size:12px;color:#9AA2D0;line-height:1.5;margin-bottom:10px;">Arraste um ativo para a carteira, ou clique para adicionar. Operações estruturadas ficam no catálogo, mais abaixo.</div>
@@ -1146,13 +1155,16 @@ button, .g-tab, [onclick]{ touch-action:manipulation; }
         function esc(t){return (""+t).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
         function render(){
           var box=document.getElementById("libChips"); if(!box) return; var h="";
-          ORDER.forEach(function(cl){ var items=LIB.map(function(a,i){return {a:a,i:i};}).filter(function(o){return o.a.classe===cl;}); if(!items.length) return; var c=COL[cl]||"#9AA2D0"; h+='<div class="lib-sec" style="color:'+c+'">'+esc(cl)+'</div>'; items.forEach(function(o){ h+='<button class="lib-chip" draggable="true" data-lib="'+o.i+'" title="'+esc(o.a.detalhe)+'" style="border-left:3px solid '+c+'"><span style="color:'+c+'">●</span> '+esc(o.a.nome)+'</button>'; }); });
+          ORDER.forEach(function(cl){ var items=LIB.map(function(a,i){return {a:a,i:i};}).filter(function(o){return o.a.classe===cl;}); if(!items.length) return; var c=COL[cl]||"#9AA2D0"; h+='<div class="lib-sec" style="color:'+c+'">'+esc(cl)+'</div>'; items.forEach(function(o){ var a=o.a; h+='<div class="lib-card" draggable="true" data-libcard="'+o.i+'" title="Arraste para a carteira ou clique em + Add" style="border-left:3px solid '+c+'">'+'<div class="lib-card-top"><div class="lib-card-name"><span style="color:'+c+'">●</span> '+esc(a.nome)+'</div><button class="lib-add" data-libadd="'+o.i+'">+ Add</button></div>'+(a.detalhe?'<div class="lib-card-desc">'+esc(a.detalhe)+'</div>':'')+(a.liq?'<div class="lib-card-liq">Liquidez: '+esc(a.liq)+'</div>':'')+'</div>'; }); });
           box.innerHTML=h;
-          box.querySelectorAll("[data-lib]").forEach(function(b){
-            var idx=+b.getAttribute("data-lib");
-            b.addEventListener("dragstart", function(e){ window.__libDrag=idx; try{e.dataTransfer.setData("text/plain","lib");e.dataTransfer.effectAllowed="copy";}catch(_){} });
-            b.addEventListener("dragend", function(){ setTimeout(function(){ window.__libDrag=null; },50); });
-            b.onclick=function(){ var a=LIB[idx]; if(window.__ctorAddAtivo) window.__ctorAddAtivo(a.classe,a.nome,a.detalhe,a.liq,false); };
+          box.querySelectorAll(".lib-card").forEach(function(card){
+            var idx=+card.getAttribute("data-libcard");
+            card.addEventListener("dragstart", function(e){ window.__libDrag=idx; try{e.dataTransfer.setData("text/plain","lib");e.dataTransfer.effectAllowed="copy";}catch(_){} });
+            card.addEventListener("dragend", function(){ setTimeout(function(){ window.__libDrag=null; },50); });
+          });
+          box.querySelectorAll(".lib-add").forEach(function(b){
+            var idx=+b.getAttribute("data-libadd");
+            b.onclick=function(e){ e.stopPropagation(); var a=LIB[idx]; var add=window.__drawerAdd||window.__ctorAddAtivo; if(add) add(a.classe,a.nome,a.detalhe,a.liq,false); };
           });
         }
         function open(){ var d=document.getElementById("libDrawer"), bd=document.getElementById("libBackdrop"); if(d) d.classList.add("open"); if(bd) bd.classList.add("open"); }
@@ -1273,7 +1285,7 @@ button, .g-tab, [onclick]{ touch-action:manipulation; }
   </style>
   <div id="opcat">
     <div class="oc-head">
-      <h3 class="oc-title"><span style="font-size:23px;">🧰</span> Catálogo de operações</h3>
+      <h3 class="oc-title"><span style="font-size:23px;">🧰</span> Renda Variável Estruturada</h3>
       <div style="display:flex;align-items:center;gap:10px;">
         <button class="oc-new" id="ocNew">+ Nova operação</button>
         <button class="oc-close" id="ocClose" title="Fechar">×</button>
@@ -1425,13 +1437,14 @@ button, .g-tab, [onclick]{ touch-action:manipulation; }
     function matches(op, term){ if(!term) return true; return ((op.nome||"")+" "+(op.ativo||"")+" "+(op.setor||"")+" "+(op.tipo||"")).toLowerCase().indexOf(term)>=0; }
 
     function card(op, cat){
-      var key=cat+":"+op.id; REG[key]={op:op,cat:cat};
+      var effCat=(cat==="custom")?(op.kind||"protecao"):cat;
+      var key=cat+":"+op.id; REG[key]={op:op,cat:effCat};
       var badge;
-      if(cat==="quanto") badge='<span class="ocbadge">'+(op.payoff===1?"Multiplicador "+fmtMult(op.mult)+"x":"Taxa fixa "+fmtTaxa(op.taxa)+"%")+'</span>';
-      else if(cat==="cupom") badge='<span class="ocbadge cup">Cupom '+fmtPct(op.taxa)+'%</span>'+(op.cdi!=null?' <span class="ocbadge">≈ '+fmtPct(op.cdi)+'% CDI</span>':'');
+      if(effCat==="quanto") badge='<span class="ocbadge">'+(op.payoff===1?"Multiplicador "+fmtMult(op.mult)+"x":"Taxa fixa "+fmtTaxa(op.taxa)+"%")+'</span>';
+      else if(effCat==="cupom") badge='<span class="ocbadge cup">Cupom '+fmtPct(op.taxa)+'%</span>'+(op.cdi!=null?' <span class="ocbadge">≈ '+fmtPct(op.cdi)+'% CDI</span>':'');
       else badge='<span class="ocbadge prot">'+esc(op.tipo||"Proteção")+'</span>';
       var meta;
-      if(cat==="quanto") meta="Fixing "+esc(op.fixing);
+      if(effCat==="quanto") meta="Fixing "+esc(op.fixing);
       else meta=esc(op.ativo)+(op.setor?" · "+esc(op.setor):"");
       var h='<div class="opcard"><div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start">'
         +'<div><div style="font-weight:800;font-size:14.5px;color:#fff">'+esc(op.nome)+'</div>'
@@ -1481,10 +1494,10 @@ button, .g-tab, [onclick]{ touch-action:manipulation; }
       body.querySelectorAll("[data-del]").forEach(function(b){ b.onclick=function(){ var id=b.getAttribute("data-del"); CUSTOM=CUSTOM.filter(function(x){return x.id!==id;}); render(); }; });
     }
     function addToCarteira(key){
-      var e=REG[key]; if(!e || !window.__ctorAddAtivo) return; var op=e.op;
-      if(e.cat==="quanto") window.__ctorAddAtivo("Internacional", op.nome, opDetalheQuanto(op), "No fixing "+op.fixing, true, op);
-      else if(e.cat==="cupom") window.__ctorAddAtivo("Renda Variável", op.nome, cupomDetalhe(op), "No vencimento", false, op);
-      else window.__ctorAddAtivo("Renda Variável", op.nome, (op.descricao||opDetalhe(op)), "No vencimento", true, op);
+      var e=REG[key]; if(!e) return; var op=e.op; var add=window.__drawerAdd||window.__ctorAddAtivo; if(!add) return;
+      if(e.cat==="quanto") add("Internacional", op.nome, opDetalheQuanto(op), "No fixing "+op.fixing, true, op);
+      else if(e.cat==="cupom") add("Renda Variável", op.nome, cupomDetalhe(op), "No vencimento", false, op);
+      else add("Renda Variável", op.nome, (op.descricao||opDetalhe(op)), "No vencimento", true, op);
     }
     function tabs(){
       var box=document.getElementById("ocTabs");
@@ -1492,37 +1505,74 @@ button, .g-tab, [onclick]{ touch-action:manipulation; }
       box.innerHTML=defs.map(function(d){ return '<button class="oc-tab'+(currentTab===d[0]?" on":"")+'" data-tab="'+d[0]+'">'+d[1]+'</button>'; }).join("");
       box.querySelectorAll("[data-tab]").forEach(function(b){ b.onclick=function(){ currentTab=b.getAttribute("data-tab"); tabs(); render(); }; });
     }
-    function openForm(id){
-      editingId=id||null;
-      var o=id?CUSTOM.filter(function(x){return x.id===id;})[0]:{nome:"",ativo:"",tipo:"Proteção parcial",setor:"",protegeAte:-20,teto:35,tetoBarreira:16,barreira:135,descricao:""};
-      if(!o) return;
+    function ocVal(id){ var e=document.getElementById(id); return e?String(e.value).trim():""; }
+    function ocNum(id,def){ var e=document.getElementById(id); if(!e||e.value==="") return def; var n=Number(e.value); return isNaN(n)?def:n; }
+    function fieldProt(o){
+      return '<div class="oc-row"><label>Tipo<select id="ocfTipo"><option'+(o.tipo==="Proteção parcial"?" selected":"")+'>Proteção parcial</option><option'+(o.tipo==="Proteção total"?" selected":"")+'>Proteção total</option></select></label>'
+        +'<label>Protege até (% queda, -100 = total)<input id="ocfProt" type="number" value="'+(o.protegeAte!=null?o.protegeAte:-20)+'"></label></div>'
+        +'<div class="oc-row"><label>Teto de alta (%)<input id="ocfTeto" type="number" value="'+(o.teto!=null?o.teto:35)+'"></label>'
+        +'<label>Teto se tocar barreira (%)<input id="ocfTetoB" type="number" value="'+(o.tetoBarreira!=null?o.tetoBarreira:16)+'"></label></div>'
+        +'<div class="oc-row"><label>Barreira de alta (%)<input id="ocfBarr" type="number" value="'+(o.barreira!=null?o.barreira:135)+'"></label><label></label></div>';
+    }
+    function fieldCupom(o){
+      return '<div class="oc-row"><label>Cupom pré-fixado (% a.a.)<input id="ocfTaxa" type="number" value="'+(o.taxa!=null?o.taxa:15)+'"></label>'
+        +'<label>Barreira de desarme (% queda)<input id="ocfCupBarr" type="number" value="'+(o.cupBarreira!=null?o.cupBarreira:-20)+'"></label></div>'
+        +'<div class="oc-row"><label>% do CDI (opcional)<input id="ocfCdi" type="number" value="'+(o.cdi!=null?o.cdi:"")+'" placeholder="Ex.: 147"></label><label></label></div>';
+    }
+    function fieldQuanto(o){
+      return '<div class="oc-row"><label>Tipo de payoff<select id="ocfPayoff"><option value="1"'+(o.payoff===1?" selected":"")+'>1 · Capital protegido + alta × mult</option><option value="2"'+(o.payoff===2?" selected":"")+'>2 · Taxa fixa ou alta 1:1</option></select></label>'
+        +'<label>Fixing (data)<input id="ocfFixing" value="'+esc(o.fixing||"")+'" placeholder="Ex.: 30/mai/29"></label></div>'
+        +'<div class="oc-row"><label>Multiplicador da alta (payoff 1)<input id="ocfMult" type="number" step="0.01" value="'+(o.mult!=null?o.mult:1.10)+'"></label>'
+        +'<label>Taxa fixa % (payoff 2)<input id="ocfTaxa" type="number" value="'+(o.taxa!=null?o.taxa:10)+'"></label></div>';
+    }
+    function readForm(o){
+      o.nome=ocVal("ocfNome"); o.ativo=ocVal("ocfAtivo"); o.setor=ocVal("ocfSetor"); o.descricao=ocVal("ocfDesc");
+      if(document.getElementById("ocfTipo")){ o.tipo=ocVal("ocfTipo"); o.protegeAte=ocNum("ocfProt",-20); o.teto=ocNum("ocfTeto",35); o.tetoBarreira=ocNum("ocfTetoB",Math.round((o.teto||35)*0.45)); o.barreira=ocNum("ocfBarr",135); }
+      else if(document.getElementById("ocfCupBarr")){ o.taxa=ocNum("ocfTaxa",15); o.cupBarreira=ocNum("ocfCupBarr",-20); var cd=document.getElementById("ocfCdi"); o.cdi=(cd&&cd.value!=="")?ocNum("ocfCdi",null):null; }
+      else if(document.getElementById("ocfPayoff")){ o.payoff=Number(ocVal("ocfPayoff"))||1; o.mult=ocNum("ocfMult",1.10); o.fixing=ocVal("ocfFixing"); o.taxa=ocNum("ocfTaxa",10); }
+      return o;
+    }
+    function renderForm(o){
       var box=document.getElementById("ocForm");
+      var specific = o.kind==="cupom"?fieldCupom(o):(o.kind==="quanto"?fieldQuanto(o):fieldProt(o));
       box.innerHTML='<div class="oc-form">'
-        +'<div class="oc-row"><label>Nome da operação<input id="ocfNome" value="'+esc(o.nome)+'" placeholder="Ex.: VALE3 · Fence 40%"></label>'
-        +'<label>Ativo<input id="ocfAtivo" value="'+esc(o.ativo)+'" placeholder="Ex.: VALE3"></label></div>'
-        +'<div class="oc-row"><label>Tipo<select id="ocfTipo"><option'+(o.tipo==="Proteção parcial"?" selected":"")+'>Proteção parcial</option><option'+(o.tipo==="Proteção total"?" selected":"")+'>Proteção total</option></select></label>'
+        +'<div class="oc-row"><label>Nome da operação<input id="ocfNome" value="'+esc(o.nome)+'" placeholder="'+(o.kind==="cupom"?"Opcional · gerado do ativo e taxa":"Ex.: VALE3 · Fence 40%")+'"></label>'
+        +'<label>Ativo<input id="ocfAtivo" value="'+esc(o.ativo)+'" placeholder="'+(o.kind==="quanto"?"Ex.: S&amp;P 500":"Ex.: VALE3")+'"></label></div>'
+        +'<div class="oc-row"><label>Categoria<select id="ocfKind"><option value="protecao"'+(o.kind==="protecao"?" selected":"")+'>Proteção (Collar / Fence)</option><option value="cupom"'+(o.kind==="cupom"?" selected":"")+'>Cupom pré-fixado</option><option value="quanto"'+(o.kind==="quanto"?" selected":"")+'>Quanto Internacional</option></select></label>'
         +'<label>Setor<input id="ocfSetor" value="'+esc(o.setor)+'" placeholder="Ex.: Mineração"></label></div>'
-        +'<div class="oc-row"><label>Protege até (% queda, -100 = total)<input id="ocfProt" type="number" value="'+o.protegeAte+'"></label>'
-        +'<label>Teto de alta (%)<input id="ocfTeto" type="number" value="'+o.teto+'"></label></div>'
-        +'<div class="oc-row"><label>Teto se tocar barreira (%)<input id="ocfTetoB" type="number" value="'+o.tetoBarreira+'"></label>'
-        +'<label>Barreira de alta (%)<input id="ocfBarr" type="number" value="'+o.barreira+'"></label></div>'
+        + specific
         +'<label style="margin-bottom:12px">Descrição (opcional)<textarea id="ocfDesc" placeholder="Observações da operação...">'+esc(o.descricao||"")+'</textarea></label>'
         +'<div class="oc-formacts"><button class="oc-save" id="ocSave">Salvar</button><button class="oc-cancel" id="ocCancel">Cancelar</button></div></div>';
-      if(currentTab!=="custom"&&currentTab!=="todos"){ currentTab="custom"; tabs(); render(); box=document.getElementById("ocForm"); }
-      document.getElementById("ocSave").onclick=saveForm;
+      document.getElementById("ocfKind").onchange=function(){ readForm(o); o.kind=document.getElementById("ocfKind").value; renderForm(o); };
+      document.getElementById("ocSave").onclick=function(){ saveForm(o); };
       document.getElementById("ocCancel").onclick=function(){ editingId=null; document.getElementById("ocForm").innerHTML=""; };
-      document.getElementById("ocfNome").focus();
+      var nm=document.getElementById("ocfNome"); if(nm) nm.focus();
     }
-    function saveForm(){
-      var nome=document.getElementById("ocfNome").value.trim(); if(!nome){ document.getElementById("ocfNome").focus(); return; }
-      var protegeAte=Number(document.getElementById("ocfProt").value)||-20;
-      var teto=Number(document.getElementById("ocfTeto").value)||35;
-      var tetoB=Number(document.getElementById("ocfTetoB").value)||Math.round(teto*0.45);
-      var barreira=Number(document.getElementById("ocfBarr").value)||135;
-      var data={ nome:nome, ativo:document.getElementById("ocfAtivo").value.trim(), tipo:document.getElementById("ocfTipo").value, setor:document.getElementById("ocfSetor").value.trim(),
-        protegeAte:protegeAte, teto:teto, tetoBarreira:tetoB, barreira:barreira, descricao:document.getElementById("ocfDesc").value.trim() };
-      data.cen=protCen(protegeAte,teto,tetoB);
-      if(editingId){ CUSTOM=CUSTOM.map(function(x){ return x.id===editingId?Object.assign({},x,data):x; }); }
+    function openForm(id){
+      editingId=id||null;
+      var base={kind:"protecao",nome:"",ativo:"",tipo:"Proteção parcial",setor:"",protegeAte:-20,teto:35,tetoBarreira:16,barreira:135,taxa:15,cupBarreira:-20,cdi:null,payoff:1,mult:1.10,fixing:"",descricao:""};
+      var o=id?Object.assign({}, base, CUSTOM.filter(function(x){return x.id===id;})[0]):base;
+      if(!o) return; if(!o.kind) o.kind="protecao";
+      if(currentTab!=="custom"&&currentTab!=="todos"){ currentTab="custom"; tabs(); render(); }
+      renderForm(o);
+    }
+    function saveForm(o){
+      readForm(o);
+      var data;
+      if(o.kind==="quanto"){
+        if(!o.ativo){ document.getElementById("ocfAtivo").focus(); return; }
+        var built=buildQuanto({ id:(editingId||("cust"+(customSeq+1))), payoff:o.payoff, ativo:o.ativo, fixing:o.fixing||"—", mult:o.mult, taxa:o.taxa, setor:o.setor||"Internacional" });
+        data=Object.assign({}, built, { kind:"quanto", setor:o.setor||"Internacional", descricao:o.descricao });
+        if(o.nome) data.nome=o.nome;
+      } else if(o.kind==="cupom"){
+        if(!o.ativo){ document.getElementById("ocfAtivo").focus(); return; }
+        data={ kind:"cupom", ativo:o.ativo, setor:o.setor, taxa:o.taxa, barreira:o.cupBarreira, cdi:o.cdi, cupom:true, tipo:"Cupom pré-fixado", descricao:o.descricao, cen:cupomCen(o.taxa,o.cupBarreira) };
+        data.nome=o.nome||(o.ativo+" · SmartCupom "+fmtTaxa(o.taxa)+"%");
+      } else {
+        if(!o.nome){ document.getElementById("ocfNome").focus(); return; }
+        data={ kind:"protecao", nome:o.nome, ativo:o.ativo, tipo:o.tipo||"Proteção parcial", setor:o.setor, protegeAte:o.protegeAte, teto:o.teto, tetoBarreira:o.tetoBarreira, barreira:o.barreira, descricao:o.descricao, cen:protCen(o.protegeAte,o.teto,o.tetoBarreira) };
+      }
+      if(editingId){ data.id=editingId; CUSTOM=CUSTOM.map(function(x){ return x.id===editingId?data:x; }); }
       else { data.id="cust"+(++customSeq); CUSTOM.unshift(data); }
       editingId=null; document.getElementById("ocForm").innerHTML=""; currentTab="custom"; tabs(); render();
     }
@@ -1542,6 +1592,15 @@ button, .g-tab, [onclick]{ touch-action:manipulation; }
   <div id="construtorRv" style="display:none;" data-tool="construtor-rv">
     <div id="rv-app"></div>
   </div>
+
+  <script>
+  (function(){
+    function relocate(){ var host=document.getElementById("p-construtor"); if(!host) return; ["libTab","catTab","libBackdrop","catBackdrop","libDrawer","opcat"].forEach(function(id){ var el=document.getElementById(id); if(el && el.parentElement!==host) host.appendChild(el); }); }
+    function rvActive(){ var rv=document.getElementById("construtorRv"); return rv && getComputedStyle(rv).display!=="none"; }
+    window.__drawerAdd=function(classe,nome,detalhe,liq,protFlag,op){ if(rvActive() && typeof window.__rvAddFromDrawer==="function"){ return window.__rvAddFromDrawer(classe,nome,detalhe,liq,protFlag,op); } if(typeof window.__ctorAddAtivo==="function"){ return window.__ctorAddAtivo(classe,nome,detalhe,liq,protFlag,op); } return false; };
+    if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",relocate); else relocate();
+  })();
+  </script>
 
 </div>
 
@@ -6694,6 +6753,13 @@ function addQuantoOp(opId){
   var novo = mk("Internacional", op.nome, 0, opDetalheQuanto(op), "No fixing "+op.fixing, "protecao", null, "Internacional");
   novo.op = op; state.items.push(novo); state.abertos[novo.id]=true; render();
 }
+window.__rvAddFromDrawer=function(classe,nome,detalhe,liq,protFlag,op){
+  var kind=null;
+  if(op){ if(op.cupom) kind="cupom"; else if(op.quanto||op.protegeAte!=null) kind="protecao"; }
+  if(protFlag && !kind) kind="protecao";
+  var it=mk(classe||"Renda Variável", nome||"Operação", 0, detalhe||"", liq||"No vencimento", kind, null, (op&&op.setor)||"Outros");
+  state.items.push(it); if(state.abertos) state.abertos[it.id]=true; render(); return true;
+};
 
 /* ===== Copiar resumo ===== */
 function copyResumo(){
