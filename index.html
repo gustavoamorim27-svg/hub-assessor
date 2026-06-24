@@ -915,12 +915,10 @@ button, .g-tab, [onclick]{ touch-action:manipulation; }
     <button class="g-tab" data-panel="comparador" onclick="showPanel('comparador')">
       <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
       Comparador de Rentabilidade
-      <span class="g-badge">NOVO</span>
     </button>
     <button class="g-tab" data-panel="aderencia" onclick="showPanel('aderencia')">
       <svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
       Aderência de Carteira
-      <span class="g-badge">NOVO</span>
     </button>
   </div>
 </nav>
@@ -1143,15 +1141,16 @@ button, .g-tab, [onclick]{ touch-action:manipulation; }
       <script>
       (function(){
         var LIB=[
-          {classe:"Renda Fixa",nome:"Pós-Fixado — LCA/LCD",detalhe:"93/94% do CDI · 1–5 anos · isento de IR",liq:"No vencimento"},
-          {classe:"Renda Fixa",nome:"Inflação — LCI",detalhe:"IPCA + 6% a.a. · 1 a 3 anos · isento",liq:""},
-          {classe:"Renda Fixa",nome:"Pré-Fixado — CDB",detalhe:"14,7% a.a. · 3 a 5 anos",liq:"No vencimento"},
-          {classe:"Renda Fixa",nome:"Pré-Fixado — XP Brasil",detalhe:"15% a.a. · 5 anos",liq:"No vencimento"},
+          {classe:"Renda Fixa",nome:"LCA",detalhe:"93/94% do CDI · 1–5 anos · isento de IR",liq:"No vencimento"},
+          {classe:"Renda Fixa",nome:"LCD",detalhe:"93/94% do CDI · 1–5 anos · isento de IR",liq:"No vencimento"},
+          {classe:"Renda Fixa",nome:"LCI",detalhe:"IPCA + 6% a.a. · 1 a 3 anos · isento",liq:""},
+          {classe:"Renda Fixa",nome:"CDB",detalhe:"14,7% a.a. · 3 a 5 anos",liq:"No vencimento"},
+          {classe:"Renda Fixa",nome:"XP Brasil",detalhe:"15% a.a. · 5 anos",liq:"No vencimento"},
           {classe:"Renda Fixa",nome:"Tesouro Selic",detalhe:"Pós-fixado · liquidez diária",liq:"D+0"},
           {classe:"Renda Fixa",nome:"Tesouro IPCA+ (NTN-B)",detalhe:"IPCA + juro real · longo prazo",liq:"D+1"},
           {classe:"Multimercados",nome:"ACE Multicenários",detalhe:"Multimercado global · ~230% do CDI",liq:"D+17"},
           {classe:"Multimercados",nome:"XP Forças Armadas",detalhe:"Defesa EUA (Palantir e afins) · 5 anos",liq:"No vencimento"},
-          {classe:"Renda Variável",nome:"BOVA11 Protegida",detalhe:"ETF Ibovespa · Collar UI de 2 anos",liq:"No vencimento"},
+          {classe:"Renda Variável",nome:"BOVA11 Protegida",detalhe:"Proteção total de capital · participa da alta até 28% (15% acima) · Collar UI 2 anos",liq:"No vencimento",bova:true},
           {classe:"Fundos Listados",nome:"JHSF Capital Malls",detalhe:"Shoppings premium · trophy assets",liq:""},
           {classe:"Fundos Listados",nome:"XPAG (Fiagro)",detalhe:"Crédito do agro · renda mensal isenta",liq:""},
           {classe:"Fundos Listados",nome:"XP Logístico Prime",detalhe:"Galpões logísticos AAA",liq:""},
@@ -1179,7 +1178,7 @@ button, .g-tab, [onclick]{ touch-action:manipulation; }
           });
           box.querySelectorAll(".lib-add").forEach(function(b){
             var idx=+b.getAttribute("data-libadd");
-            b.onclick=function(e){ e.stopPropagation(); var a=allItems()[idx]; var add=window.__drawerAdd||window.__ctorAddAtivo; if(add&&a) add(a.classe,a.nome,a.detalhe,a.liq,false); };
+            b.onclick=function(e){ e.stopPropagation(); var a=allItems()[idx]; var add=window.__drawerAdd||window.__ctorAddAtivo; if(add&&a){ var op=a.bova?window.__BOVA_OP:null; add(a.classe,a.nome,a.detalhe,a.liq,!!op,op); } };
           });
           box.querySelectorAll("[data-libedit]").forEach(function(b){ b.onclick=function(e){ e.stopPropagation(); openLibForm(b.getAttribute("data-libedit")); }; });
           box.querySelectorAll("[data-libdel]").forEach(function(b){ b.onclick=function(e){ e.stopPropagation(); var id=b.getAttribute("data-libdel"); CUSTOMLIB=CUSTOMLIB.filter(function(x){return x.id!==id;}); persist(); render(); }; });
@@ -1417,6 +1416,7 @@ button, .g-tab, [onclick]{ touch-action:manipulation; }
       return h+'</div>';
     }
     window.__opPayoffHTML=function(op){ if(!op||!op.cen) return ""; return '<div class="opcat-payoff" style="margin-top:4px">'+payoffTable(op,true)+'</div><div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:8px;font-size:11px;color:#cfd4ef"><span style="display:inline-flex;align-items:center;gap:6px"><span style="width:10px;height:10px;border-radius:3px;background:#2BD9A6"></span>Ganho</span><span style="display:inline-flex;align-items:center;gap:6px"><span style="width:10px;height:10px;border-radius:3px;background:#F5B63E"></span>Estável</span><span style="display:inline-flex;align-items:center;gap:6px"><span style="width:10px;height:10px;border-radius:3px;background:#FF5566"></span>Perda</span></div>'; };
+    window.__BOVA_OP={ativo:"BOVA11",nome:"BOVA11 Protegida · Collar UI",tipo:"Proteção total",setor:"Índice / ETF",protegeAte:-100,teto:28,tetoBarreira:15,barreira:128,cen:protCen(-100,28,15)};
     function opDetalhe(op){
       var prot=op.protegeAte<=-100?"Capital protegido (0% de perda no vencimento)":"Proteção parcial até "+fmtPct(op.protegeAte)+"% de queda";
       return prot+" · participa 1:1 na alta até "+fmtPct(op.teto)+"% (ou "+fmtPct(op.tetoBarreira)+"% se a barreira de "+fmtPct(op.barreira)+"% for atingida)";
@@ -2382,7 +2382,7 @@ const TEMPLATES = {
       {rotulo:"XP NTN-B Longa",nome:"XP NTN-B Longa",detalhe:"NTN-B de longo prazo com marcação a mercado · 1 ano",liquidez:"Marcação a mercado"}
     ],true),
     mk("Multimercados","ACE Multicenários",6.5,"Rentabilizou ~230% do CDI nos últimos anos","D+17"),
-    mk("Renda Variável","BOVA11 Protegida",5,"ETF do Ibovespa — exposição ampla à bolsa brasileira · Collar UI de 2 anos","No vencimento"),
+    Object.assign(mk("Renda Variável","BOVA11 Protegida",5,"Proteção total de capital · participa da alta até 28% (15% acima) · Collar UI de 2 anos","No vencimento"),{catalogOp:window.__BOVA_OP,_howOpen:false}),
     mk("Alternativos","Alternativo",3,"","",[
       {rotulo:"Ouro",nome:"Ouro — Retorno Otimizado",detalhe:"Exposição a ouro com estrutura otimizada · 3 a 5 anos",liquidez:"No vencimento"},
       {rotulo:"XP Tecnologia",nome:"XP Tecnologia",detalhe:"QQQ (tecnologia EUA) com proteção de perda · 1 ano",liquidez:"No vencimento"}
@@ -2799,7 +2799,7 @@ function renderEditor(D){
   if(!el.__libDropBound){ el.__libDropBound=true;
     el.addEventListener("dragover", function(e){ if(window.__libDrag!=null){ e.preventDefault(); el.classList.add("lib-drop"); } });
     el.addEventListener("dragleave", function(e){ if(e.target===el) el.classList.remove("lib-drop"); });
-    el.addEventListener("drop", function(e){ if(window.__libDrag==null) return; e.preventDefault(); el.classList.remove("lib-drop"); var a=window.__LIBDATA&&window.__LIBDATA[window.__libDrag]; window.__libDrag=null; if(a&&window.__ctorAddAtivo) window.__ctorAddAtivo(a.classe,a.nome,a.detalhe,a.liq,false); });
+    el.addEventListener("drop", function(e){ if(window.__libDrag==null) return; e.preventDefault(); el.classList.remove("lib-drop"); var a=window.__LIBDATA&&window.__LIBDATA[window.__libDrag]; window.__libDrag=null; if(a&&window.__ctorAddAtivo){ var bop=a.bova?window.__BOVA_OP:null; window.__ctorAddAtivo(a.classe,a.nome,a.detalhe,a.liq,!!bop,bop); } });
   }
   el.querySelectorAll("[data-itemdrag]").forEach(function(h){
     h.addEventListener("dragstart", function(e){ window.__itemDrag=h.getAttribute("data-itemdrag"); try{e.dataTransfer.setData("text/plain","item");e.dataTransfer.effectAllowed="move";}catch(_){} });
@@ -3037,7 +3037,7 @@ function renderDonut(D){
 
 function renderGloss(D){
   const el=document.getElementById("glossCard");
-  if(!D.glossTerms.length){ el.innerHTML=""; return; }
+  el.innerHTML=""; return;
   let h=`<div class="card" style="margin-top:16px;">
     <div style="display:flex; align-items:center; gap:8px; margin-bottom:12px;">
       <svg class="icon" viewBox="0 0 24 24" style="color:${ORANGE};"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
@@ -3927,7 +3927,7 @@ const TEMPLATES = {
     { cat:'Renda Fixa', pct:10, options: OPCOES_PRE },
     { cat:'Multimercados', name:'ACE Multicenários', descr:'Multimercado quantitativo global · busca superar o CDI', pct:6.5 },
     { cat:'Multimercados', name:'XP Forças Armadas U.S.', descr:'Tese de defesa e forças armadas dos EUA (ex: Palantir)', pct:7.5, tags:['proteção'] },
-    { cat:'Renda Variável', name:'BOVA11 Protegida', descr:'ETF do Ibovespa com Collar UI de 2 anos · protege contra quedas', pct:5, tags:['proteção'] },
+    { cat:'Renda Variável', name:'BOVA11 Protegida', descr:'Collar UI · proteção total de capital · alta até 28% (15% acima)', pct:5, tags:['proteção'] },
     { cat:'Fundos Listados', name:'JHSF Capital Malls', descr:'FII de shoppings de alto padrão da JHSF · CETIP', pct:1.5 },
     { cat:'Fundos Listados', name:'XPAG', descr:'Fiagro de crédito do agro (CRAs) · CDI + spread · CETIP', pct:1.5 },
     { cat:'Fundos Listados', name:'XP Habitat', descr:'FII de papel (CRIs) da Habitat · CETIP', pct:1 },
