@@ -1257,9 +1257,20 @@ body.mm .ajbtn{ padding:11px 16px !important; font-size:14px !important; }
         Adicionar ativo
       </button>
       <style>
-      [data-tool="construtor"] #libTab{ position:fixed; left:0; top:39%; transform:translateY(-50%); z-index:62; background:linear-gradient(180deg,#FF6B2C,#FF4E00); color:#fff; font-weight:800; font-size:13.5px; letter-spacing:1px; writing-mode:vertical-rl; text-orientation:mixed; padding:22px 13px; border-radius:0 14px 14px 0; cursor:pointer; box-shadow:0 8px 26px rgba(0,0,0,.5); border:1px solid rgba(255,255,255,.18); border-left:none; transition:padding .15s,filter .15s; }
-      [data-tool="construtor"] #libTab:hover, [data-tool="construtor"] #catTab:hover{ filter:brightness(1.12); padding-right:16px; }
-      [data-tool="construtor"] #libTab .tabico, [data-tool="construtor"] #catTab .tabico{ font-size:19px; display:block; margin-bottom:7px; }
+      /* Gavetas laterais — estilo pílula (igual ao Propor Carteira) */
+      [data-tool="construtor"] #simGavRail{ position:fixed; left:12px; top:50%; transform:translateY(-50%); z-index:62; width:182px; display:flex; flex-direction:column; gap:9px; }
+      [data-tool="construtor"] #simGavRail .sgv-title{ font-family:'Sora',sans-serif; font-weight:800; font-size:11px; letter-spacing:1px; text-transform:uppercase; color:#7E87BE; margin-bottom:2px; padding-left:4px; }
+      [data-tool="construtor"] #libTab, [data-tool="construtor"] #catTab{ display:flex; align-items:center; gap:9px; cursor:pointer; font-family:'Manrope',sans-serif; font-weight:800; font-size:13px; background:rgba(255,255,255,.04); border:1px solid; border-radius:13px; padding:13px 13px; color:#fff; box-shadow:0 8px 26px rgba(0,0,0,.4); transition:background .15s,transform .12s; }
+      [data-tool="construtor"] #libTab{ border-color:rgba(255,78,0,.5); }
+      [data-tool="construtor"] #catTab{ border-color:rgba(90,73,200,.6); }
+      [data-tool="construtor"] #libTab:hover, [data-tool="construtor"] #catTab:hover{ background:rgba(255,255,255,.08); transform:translateX(2px); }
+      [data-tool="construtor"] #libTab.on{ background:rgba(255,78,0,.14); }
+      [data-tool="construtor"] #catTab.on{ background:rgba(90,73,200,.18); }
+      [data-tool="construtor"] #libTab .tabico, [data-tool="construtor"] #catTab .tabico{ font-size:17px; flex-shrink:0; }
+      [data-tool="construtor"] #libTab .sgv-lbl, [data-tool="construtor"] #catTab .sgv-lbl{ flex:1; text-align:left; line-height:1.2; }
+      [data-tool="construtor"] #libTab .sgv-arrow, [data-tool="construtor"] #catTab .sgv-arrow{ font-size:11px; color:#9AA2D0; transition:transform .2s; }
+      [data-tool="construtor"] #libTab.on .sgv-arrow, [data-tool="construtor"] #catTab.on .sgv-arrow{ transform:rotate(90deg); }
+      @media (max-width:1480px){ [data-tool="construtor"] #simGavRail{ width:54px; } [data-tool="construtor"] #libTab .sgv-lbl, [data-tool="construtor"] #catTab .sgv-lbl, [data-tool="construtor"] #libTab .sgv-arrow, [data-tool="construtor"] #catTab .sgv-arrow{ display:none; } [data-tool="construtor"] #simGavRail .sgv-title{ display:none; } [data-tool="construtor"] #libTab, [data-tool="construtor"] #catTab{ justify-content:center; padding:14px 0; } }
       [data-tool="construtor"] #libDrawer{ position:fixed; left:-480px; top:60px; bottom:0; width:min(420px,92vw); z-index:63; background:linear-gradient(160deg,#0A0F38,#070B2E 70%,#05081F); border-right:1px solid rgba(120,130,210,.28); box-shadow:14px 0 40px rgba(0,0,0,.6); transition:left .26s ease; overflow-y:auto; padding:26px 22px 48px; }
       [data-tool="construtor"] #libDrawer.open{ left:0; }
       [data-tool="construtor"] #libBackdrop{ position:fixed; inset:0; background:rgba(3,5,18,.45); z-index:60; opacity:0; pointer-events:none; transition:opacity .26s; }
@@ -1286,10 +1297,13 @@ body.mm .ajbtn{ padding:11px 16px !important; font-size:14px !important; }
       [data-tool="construtor"] .lib-form-acts{ display:flex; gap:9px; margin-top:2px; }
       [data-tool="construtor"] .lib-form .lf-save{ background:#FF4E00; color:#fff; border:none; font-weight:700; border-radius:9px; padding:8px 16px; cursor:pointer; font-family:inherit; }
       [data-tool="construtor"] .lib-form .lf-cancel{ background:transparent; color:#9AA2D0; border:1px solid rgba(120,130,210,.3); border-radius:9px; padding:8px 16px; cursor:pointer; font-family:inherit; }
-      html.hide-drawers #libTab, html.hide-drawers #catTab{ display:none !important; }
+      html.hide-drawers #simGavRail{ display:none !important; }
       </style>
-      <div id="libTab"><span class="tabico">📁</span>ATIVOS GERAIS</div>
-      <div id="catTab"><span class="tabico">🧰</span>RV ESTRUTURADA</div>
+      <div id="simGavRail">
+        <div class="sgv-title">Gavetas de ativos</div>
+        <div id="libTab"><span class="tabico">📁</span><span class="sgv-lbl">Ativos Gerais</span><span class="sgv-arrow">▸</span></div>
+        <div id="catTab"><span class="tabico">🧰</span><span class="sgv-lbl">RV Estruturada</span><span class="sgv-arrow">▸</span></div>
+      </div>
       <div id="libBackdrop"></div>
       <div id="catBackdrop"></div>
       <div id="libDrawer">
@@ -1438,7 +1452,7 @@ body.mm .ajbtn{ padding:11px 16px !important; font-size:14px !important; }
   <style>
   #opcat{ position:fixed; left:-1000px; top:60px; bottom:0; width:min(880px,95vw); z-index:65; background:linear-gradient(160deg,#0A0F38,#070B2E 72%,#05081F); border-right:1px solid rgba(120,130,210,.3); box-shadow:18px 0 50px rgba(0,0,0,.62); transition:left .28s ease; overflow-y:auto; padding:26px 26px 56px; }
   #opcat.open{ left:0; }
-  [data-tool="construtor"] #catTab{ position:fixed; left:0; top:60%; transform:translateY(-50%); z-index:62; background:linear-gradient(180deg,#5A49C8,#3A2C9A); color:#fff; font-weight:800; font-size:13.5px; letter-spacing:1px; writing-mode:vertical-rl; text-orientation:mixed; padding:22px 13px; border-radius:0 14px 14px 0; cursor:pointer; box-shadow:0 8px 26px rgba(0,0,0,.5); border:1px solid rgba(255,255,255,.18); border-left:none; transition:padding .15s,filter .15s; }
+  /* #catTab agora estilizado como pílula no bloco do rail acima */
   #catBackdrop{ position:fixed; inset:0; background:rgba(3,5,18,.5); z-index:64; opacity:0; pointer-events:none; transition:opacity .28s; }
   #catBackdrop.open{ opacity:1; pointer-events:auto; }
   #opcat .oc-close{ background:none; border:none; color:#9AA2D0; font-size:25px; cursor:pointer; line-height:1; padding:0 2px; }
@@ -1804,7 +1818,14 @@ body.mm .ajbtn{ padding:11px 16px !important; font-size:14px !important; }
 
   <script>
   (function(){
-    function relocate(){ var host=document.getElementById("p-construtor"); if(!host) return; ["libTab","catTab","libBackdrop","catBackdrop","libDrawer","opcat"].forEach(function(id){ var el=document.getElementById(id); if(el && el.parentElement!==host) host.appendChild(el); }); }
+    function relocate(){ var host=document.getElementById("p-construtor"); if(!host) return; ["simGavRail","libBackdrop","catBackdrop","libDrawer","opcat"].forEach(function(id){ var el=document.getElementById(id); if(el && el.parentElement!==host) host.appendChild(el); });
+      /* sincroniza estado on/seta das pílulas com a abertura das gavetas */
+      try{
+        var lib=document.getElementById("libDrawer"), oc=document.getElementById("opcat"), lt=document.getElementById("libTab"), ct=document.getElementById("catTab");
+        function sync(){ if(lt&&lib) lt.classList.toggle("on", lib.classList.contains("open")); if(ct&&oc) ct.classList.toggle("on", oc.classList.contains("open")); }
+        if(!window.__simGavObs){ var mo=new MutationObserver(sync); if(lib) mo.observe(lib,{attributes:true,attributeFilter:["class"]}); if(oc) mo.observe(oc,{attributes:true,attributeFilter:["class"]}); window.__simGavObs=mo; sync(); }
+      }catch(_){ }
+    }
     function rvActive(){ var rv=document.getElementById("construtorRv"); return rv && getComputedStyle(rv).display!=="none"; }
     window.__drawerAdd=function(classe,nome,detalhe,liq,protFlag,op){ if(rvActive() && typeof window.__rvAddFromDrawer==="function"){ return window.__rvAddFromDrawer(classe,nome,detalhe,liq,protFlag,op); } if(typeof window.__ctorAddAtivo==="function"){ return window.__ctorAddAtivo(classe,nome,detalhe,liq,protFlag,op); } return false; };
     if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",relocate); else relocate();
