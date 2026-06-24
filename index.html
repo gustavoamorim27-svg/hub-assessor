@@ -7695,7 +7695,7 @@ window.__rvRender = render;
     atualLiq.forEach(function(a){
       var mi=-1; for(var i=0;i<prop.length;i++){ if(!used[i]&&sameAsset(prop[i].nome,a.name)){ mi=i; break; } }
       if(mi<0){ sair.push({name:a.name,categoria:a.categoria,de:a.valor,para:0,mov:-a.valor,acao:"Sair",obs:"Removido da carteira proposta"}); }
-      else { used[mi]=true; var t=prop[mi].val,d=t-a.valor,ac=Math.abs(d)<0.5?"Manter":(d>0?"Aumentar":"Reduzir"); manter.push({name:a.name,categoria:a.categoria,de:a.valor,para:t,mov:d,acao:ac,obs:ac==="Manter"?"":"Ajuste de alocação"}); }
+      else { used[mi]=true; var t=prop[mi].val,d=t-a.valor,thr=Math.max(60,lb*0.0008),ac=Math.abs(d)<thr?"Manter":(d>0?"Aumentar":"Reduzir"); manter.push({name:a.name,categoria:a.categoria,de:a.valor,para:t,mov:d,acao:ac,obs:ac==="Manter"?"":"Ajuste de alocação"}); }
     });
     prop.forEach(function(p,i){ if(!used[i]&&p.val>0.5){ entrar.push({name:p.nome,categoria:p.classe,de:0,para:p.val,mov:p.val,acao:"Entrar",obs:"Novo ativo (gaveta)"}); } });
     var totalVender=-sair.reduce(function(s,x){return s+x.mov;},0)-manter.filter(function(m){return m.acao==="Reduzir";}).reduce(function(s,x){return s+x.mov;},0);
