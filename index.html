@@ -895,6 +895,26 @@ button, .g-tab, [onclick]{ touch-action:manipulation; }
 </head>
 <body>
 
+<style id="mm-css">
+body.mm .g-ticker{ display:none !important; }
+body.mm .g-nav{ padding:0 12px; }
+body.mm .wrap, body.mm .adw, body.mm #ajRoot{ max-width:100% !important; padding-left:14px !important; padding-right:14px !important; }
+body.mm .home-grid{ grid-template-columns:1fr !important; max-width:560px; }
+body.mm [data-tool="construtor"] .cols{ flex-direction:column !important; }
+body.mm [data-tool="construtor"] .col-editor{ min-width:0 !important; flex:1 1 auto !important; width:100%; }
+body.mm [data-tool="construtor"] #libChips{ grid-template-columns:1fr 1fr !important; }
+body.mm [data-tool="aderencia"] .ad-compare{ grid-template-columns:1fr !important; }
+body.mm #ajCols{ grid-template-columns:1fr !important; }
+body.mm #p-ajustes [style*="repeat(auto-fill"]{ grid-template-columns:1fr !important; }
+body.mm input, body.mm select, body.mm textarea{ font-size:16px !important; }
+body.mm .ajbtn{ padding:11px 16px !important; font-size:14px !important; }
+@media (max-width:760px){
+  body .home-grid{ grid-template-columns:1fr !important; }
+  body [data-tool="construtor"] .cols{ flex-direction:column !important; }
+  body #ajCols{ grid-template-columns:1fr !important; }
+  body [data-tool="aderencia"] .ad-compare{ grid-template-columns:1fr !important; }
+}
+</style>
 <div class="g-topbar"></div>
 
 <nav class="g-nav">
@@ -955,6 +975,9 @@ button, .g-tab, [onclick]{ touch-action:manipulation; }
     #p-ajustes .ajbtn.primary{ background:var(--or);border-color:var(--or);color:#fff; }
     #p-ajustes .ajbtn.primary:hover{ filter:brightness(1.08); }
     @media (max-width:900px){ #p-ajustes #ajCols{ grid-template-columns:1fr !important; } }
+    [data-tool="ajustes"] .ad-header{ border-bottom:1px solid rgba(120,130,210,.18); padding-bottom:20px; margin-bottom:24px; }
+    [data-tool="ajustes"] .ad-logo{ font-family:'Sora',sans-serif; font-weight:800; font-size:34px; letter-spacing:-1px; color:var(--or); line-height:1; }
+    [data-tool="ajustes"] .ad-sub{ color:#A9B0D6; font-size:14px; margin-top:6px; }
     </style>
     <input type="file" id="ajFile" accept=".xlsx,.xls" style="display:none">
     <div id="ajRoot" class="adw" style="max-width:1180px;margin:0 auto;padding:28px 20px 60px"></div>
@@ -1069,6 +1092,17 @@ button, .g-tab, [onclick]{ touch-action:manipulation; }
         function _feed(url,region){ return fetch("https://api.rss2json.com/v1/api.json?rss_url="+encodeURIComponent(url)).then(function(r){return r.ok?r.json():null;}).then(function(j){ if(!j||j.status!=="ok"||!j.items) return []; var src=(j.feed&&j.feed.title)||""; return j.items.slice(0,15).map(function(it){ return {region:region,title:it.title,resumo:_strip(it.description||it.content),source:src,date:_fdate(it.pubDate),url:it.link}; }).filter(_relevante); }).catch(function(){ return []; }); }
         function loadLive(){ var ps=[]; FEEDS.nacional.forEach(function(u){ps.push(_feed(u,"nacional"));}); FEEDS.internacional.forEach(function(u){ps.push(_feed(u,"internacional"));}); Promise.all(ps).then(function(res){ var items=[].concat.apply([],res); var nac=items.filter(function(x){return x.region==="nacional"&&x.title;}).slice(0,6); var intl=items.filter(function(x){return x.region==="internacional"&&x.title;}).slice(0,6); if(nac.length+intl.length>=2){ if(!nac.length) nac=(DATA.items||[]).filter(function(x){return x.region==="nacional";}); if(!intl.length) intl=(DATA.items||[]).filter(function(x){return x.region==="internacional";}); gotLive=true; DATA={updated:new Date().toLocaleString("pt-BR",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"})+" (ao vivo)", items:nac.concat(intl)}; render(CURRENT); } }).catch(function(){}); }
         try{ loadLive(); }catch(e){}
+      })();
+      </script>
+      <div style="max-width:980px;margin:44px auto 0;padding:20px;border-top:1px solid rgba(120,130,210,.18);display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;text-align:center">
+        <span style="font-size:13px;color:#9AA2D0;font-weight:600">Usando no iPad ou celular? Ative o layout otimizado para telas menores.</span>
+        <button id="mmToggle" onclick="toggleMobile()" style="cursor:pointer;font-family:'Manrope',sans-serif;font-weight:700;font-size:13px;color:#fff;background:rgba(255,78,0,.16);border:1px solid rgba(255,78,0,.5);border-radius:100px;padding:10px 20px">Versao mobile / iPad</button>
+      </div>
+      <script>
+      (function(){
+        function apply(on){ document.body.classList.toggle('mm', !!on); var b=document.getElementById('mmToggle'); if(b) b.textContent = on ? 'Voltar ao desktop' : 'Versao mobile / iPad'; }
+        window.toggleMobile=function(){ var on=!document.body.classList.contains('mm'); try{ localStorage.setItem('hubMobile', on?'1':'0'); }catch(e){} apply(on); };
+        try{ if(localStorage.getItem('hubMobile')==='1') apply(true); }catch(e){}
       })();
       </script>
     </div>
@@ -7786,7 +7820,7 @@ window.__rvRender = render;
       +'<button data-seed="Sofisticada" class="ajbtn">Sofisticada</button>'
       +'<button data-seed="vazia" class="ajbtn">Limpar</button></div></div>';
 
-    h+='<div style="background:rgba(10,14,40,.5);border:1px solid rgba(120,130,210,.16);border-radius:14px;padding:12px 14px;margin-bottom:8px">';
+    h+='<div style="background:linear-gradient(160deg,rgba(28,36,112,.45),rgba(12,17,66,.65));border:1px solid rgba(120,130,210,.18);border-radius:18px;padding:16px 18px;margin-bottom:8px">';
     h+='<div id="ajPropRows">';
     if(!state.proposta.length){ h+='<div style="color:#6F77A8;font-size:13px;padding:10px 0">Nenhum ativo. Adicione das gavetas abaixo ou use um modelo.</div>'; }
     state.proposta.forEach(function(r){
@@ -7814,7 +7848,7 @@ window.__rvRender = render;
         var items=G.map(function(a,i){return {a:a,i:i};}).filter(function(o){return o.a.classe===cl;});
         if(!items.length) return;
         var col=CATCOL[cl]||"#9AA2D0";
-        h+='<div style="background:rgba(20,28,87,.30);border:1px solid rgba(120,130,210,.16);border-radius:12px;padding:10px 12px"><div style="display:flex;align-items:center;gap:7px;margin-bottom:7px"><span style="width:9px;height:9px;border-radius:3px;background:'+col+'"></span><span style="font-weight:800;font-size:12px;color:'+col+'">'+cl+'</span></div>';
+        h+='<div style="background:linear-gradient(160deg,rgba(28,36,112,.45),rgba(12,17,66,.65));border:1px solid rgba(120,130,210,.18);border-radius:14px;padding:12px 14px"><div style="display:flex;align-items:center;gap:7px;margin-bottom:7px"><span style="width:9px;height:9px;border-radius:3px;background:'+col+'"></span><span style="font-weight:800;font-size:12px;color:'+col+'">'+cl+'</span></div>';
         items.forEach(function(o){
           h+='<div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-top:1px solid rgba(120,130,210,.08)"><div style="flex:1;min-width:0"><div style="font-size:12.5px;font-weight:700;color:#eef0fb">'+esc(o.a.nome)+'</div><div style="font-size:10.5px;color:#7E87BE;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(o.a.detalhe||"")+'</div></div><button data-libadd="'+o.i+'" title="Adicionar" style="cursor:pointer;background:rgba(61,214,140,.14);border:1px solid rgba(61,214,140,.45);color:#3DD68C;border-radius:8px;width:26px;height:26px;font-weight:800;flex-shrink:0">+</button></div>';
         });
@@ -7840,9 +7874,9 @@ window.__rvRender = render;
       h+='</div>';
       if(Math.abs(p.totalPct-100)>0.6) h+='<div style="background:rgba(255,176,32,.1);border:1px solid rgba(255,176,32,.35);border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:12.5px;color:#FFCB6B">Atenção: a carteira proposta soma '+fmtPct(p.totalPct)+' (ideal 100%). Ajuste os percentuais para um plano consistente.</div>';
       h+='<div id="ajCols" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px">';
-      h+='<div style="background:rgba(20,28,87,.30);border:1px solid rgba(120,130,210,.16);border-radius:16px;padding:16px"><div style="font-family:Sora,sans-serif;font-weight:700;font-size:14.5px;color:#FF6B6B;margin-bottom:8px">Sair / Reduzir</div>'+listHTML(p.sair.concat(p.manter.filter(function(m){return m.acao==="Reduzir";})))+'</div>';
-      h+='<div style="background:rgba(20,28,87,.30);border:1px solid rgba(120,130,210,.16);border-radius:16px;padding:16px"><div style="font-family:Sora,sans-serif;font-weight:700;font-size:14.5px;color:#9AA2D0;margin-bottom:8px">Manter</div>'+listHTML(p.manter.filter(function(m){return m.acao==="Manter";}))+'</div>';
-      h+='<div style="background:rgba(20,28,87,.30);border:1px solid rgba(120,130,210,.16);border-radius:16px;padding:16px"><div style="font-family:Sora,sans-serif;font-weight:700;font-size:14.5px;color:#3DD68C;margin-bottom:8px">Entrar / Aumentar</div>'+listHTML(p.entrar.concat(p.manter.filter(function(m){return m.acao==="Aumentar";})))+'</div>';
+      h+='<div style="background:linear-gradient(160deg,rgba(28,36,112,.45),rgba(12,17,66,.65));border:1px solid rgba(120,130,210,.18);border-radius:18px;padding:18px"><div style="font-family:Sora,sans-serif;font-weight:700;font-size:14.5px;color:#FF6B6B;margin-bottom:8px">Sair / Reduzir</div>'+listHTML(p.sair.concat(p.manter.filter(function(m){return m.acao==="Reduzir";})))+'</div>';
+      h+='<div style="background:linear-gradient(160deg,rgba(28,36,112,.45),rgba(12,17,66,.65));border:1px solid rgba(120,130,210,.18);border-radius:18px;padding:18px"><div style="font-family:Sora,sans-serif;font-weight:700;font-size:14.5px;color:#9AA2D0;margin-bottom:8px">Manter</div>'+listHTML(p.manter.filter(function(m){return m.acao==="Manter";}))+'</div>';
+      h+='<div style="background:linear-gradient(160deg,rgba(28,36,112,.45),rgba(12,17,66,.65));border:1px solid rgba(120,130,210,.18);border-radius:18px;padding:18px"><div style="font-family:Sora,sans-serif;font-weight:700;font-size:14.5px;color:#3DD68C;margin-bottom:8px">Entrar / Aumentar</div>'+listHTML(p.entrar.concat(p.manter.filter(function(m){return m.acao==="Aumentar";})))+'</div>';
       h+='</div>';
       h+='<div style="font-size:11px;color:#6F77A8;line-height:1.6;margin-top:16px">Plano = diferença entre a carteira atual do cliente e a carteira proposta. Previdência mantida sem movimentação. Material de apoio interno — não constitui recomendação ou oferta.</div>';
     }
