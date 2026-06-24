@@ -7881,29 +7881,16 @@ window.__rvRender = render;
       +chip(t.saldo>=0?"Aporte":"Resgate",fmtBRL(Math.abs(t.saldo)),t.saldo>=0?"#3DD68C":"#FF6B6B")
       +'</div></div>';
 
-    h+='<div class="pc-main">';
-    // DRAWER (left)
-    h+='<aside class="pc-drawer"><div class="pc-drawerhead"><span>Gavetas de ativos</span><button data-libtoggle class="ajbtn pc-mini">'+(state.libOpen?"Ocultar":"Mostrar")+'</button></div>';
-    if(state.libOpen){ var G=gavetas();
-      ORDER.forEach(function(cl){ if(cl==="Previdência")return; var items=G.map(function(a,i){return {a:a,i:i};}).filter(function(o){return o.a.classe===cl;}); if(!items.length)return; var c=CATCOL[cl]||"#9AA2D0";
-        h+='<div class="pc-libsec"><div class="pc-libcat" style="color:'+c+'"><span style="background:'+c+'"></span>'+cl+'</div>';
-        items.forEach(function(o){ h+='<div class="pc-libcard" draggable="true" data-drag="lib:'+o.i+'"><div class="pc-libinfo"><div class="pc-libname">'+esc(o.a.nome)+'</div><div class="pc-libdet">'+esc(o.a.detalhe||"")+'</div></div><button class="pc-add" data-libadd="'+o.i+'" title="Adicionar a Entrar">+</button></div>'; });
-        h+='</div>';
-      });
-    }
-    h+='</aside>';
-    // BOARD (right)
     h+='<div class="pc-board">';
-    h+=colHTML("Sair / Reduzir","#FF6B6B",b.sair,"sair");
     h+=colHTML("Manter","#9AA2D0",b.manter,"manter");
+    h+=colHTML("Sair / Reduzir","#FF6B6B",b.sair,"sair");
     h+=colHTML("Entrar / Aumentar","#3DD68C",b.entrar,"entrar");
     h+='</div>';
-    h+='</div>'; // pc-main
 
     h+='<div class="pc-actions"><button id="ajPNG" class="ajbtn primary">Gerar proposta (PNG antes/depois)</button><button id="ajXLS" class="ajbtn">Baixar Excel (execução)</button></div>';
-    h+='<div class="pc-disc">Arraste um ativo de "Manter" para "Sair" para vendê-lo, ou use ✕. Edite o R$ de cada ativo para ajustar. Adicione ativos das gavetas (+) na coluna Entrar. Previdência é mantida sem movimentação. Material de apoio interno — não constitui recomendação ou oferta.</div>';
+    h+='<div class="pc-disc">Arraste um ativo de "Manter" para "Sair" para vendê-lo, ou use ✕. Edite o R$ de cada ativo para ajustar. Abra as gavetas na lateral esquerda (Ativos gerais / RV estruturada) e use + para adicionar à coluna Entrar. Previdência é mantida sem movimentação. Material de apoio interno — não constitui recomendação ou oferta.</div>';
 
-    root.innerHTML=h; bind();
+    root.innerHTML=h; bind(); ensureEdge(); pcEdgeVisible(true);
   }
   function chip(l,v,c){ return '<div class="pc-chip"><div class="pc-chiplbl">'+esc(l)+'</div><div class="pc-chipval" style="color:'+c+'">'+esc(v)+'</div></div>'; }
 
@@ -7978,6 +7965,38 @@ window.__rvRender = render;
     else { var ael=document.createElement("a"); ael.href=url; ael.download="Proposta de Carteira.png"; ael.click(); }
   }
 
+  var PC_CSS="#pcLibTab,#pcRvTab{position:fixed;left:0;z-index:1500;color:#fff;font-family:Sora,sans-serif;font-weight:800;font-size:12.5px;letter-spacing:1px;writing-mode:vertical-rl;text-orientation:mixed;padding:16px 9px;border-radius:0 12px 12px 0;cursor:pointer;box-shadow:0 6px 22px rgba(0,0,0,.45);user-select:none;display:none;align-items:center;}#pcLibTab{top:40%;transform:translateY(-50%);background:linear-gradient(180deg,#FF6B2C,#FF4E00);}#pcRvTab{top:63%;transform:translateY(-50%);background:linear-gradient(180deg,#7C5CFF,#4A36C8);}#pcLibTab .pctabico,#pcRvTab .pctabico{font-size:17px;margin-bottom:7px;writing-mode:horizontal-tb;}#pcBackdrop{position:fixed;inset:0;background:rgba(3,5,18,.55);z-index:1501;opacity:0;pointer-events:none;transition:opacity .2s;}#pcBackdrop.show{opacity:1;pointer-events:auto;}#pcDrawer{position:fixed;left:-480px;top:59px;bottom:0;width:min(420px,92vw);z-index:1502;background:linear-gradient(160deg,#0A0F38,#070B2E 70%,#05081F);border-right:1px solid rgba(120,130,210,.25);box-shadow:8px 0 44px rgba(0,0,0,.55);transition:left .25s ease;overflow:auto;padding:18px;}#pcDrawer.open{left:0;}#pcDrawer .pcdr-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;}#pcDrawer .pcdr-title{font-family:Sora,sans-serif;font-weight:800;font-size:18px;color:#fff;}#pcDrClose{background:none;border:none;color:#9AA2D0;font-size:22px;cursor:pointer;line-height:1;}#pcDrawer .pcdr-sub{font-size:12px;color:#9AA2D0;line-height:1.5;margin-bottom:12px;}#pcDrawer .pcdr-cat{display:flex;align-items:center;gap:7px;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;margin:12px 0 7px;}#pcDrawer .pcdr-cat span{width:9px;height:9px;border-radius:3px;}#pcDrawer .pcdr-card{display:flex;align-items:center;gap:10px;background:rgba(0,0,0,.24);border:1px solid rgba(120,130,210,.18);border-radius:12px;padding:11px 12px;margin-bottom:8px;cursor:grab;}#pcDrawer .pcdr-info{flex:1;min-width:0;}#pcDrawer .pcdr-name{font-weight:800;font-size:13px;color:#fff;}#pcDrawer .pcdr-det{font-size:11px;color:#9AA2D0;margin-top:4px;line-height:1.35;}#pcDrawer .pcdr-add{flex-shrink:0;background:rgba(61,214,140,.16);border:1px solid rgba(61,214,140,.45);color:#3DD68C;border-radius:9px;width:30px;height:30px;font-weight:800;font-size:16px;cursor:pointer;}";
+  function elx(tag,id,html){ var e=document.createElement(tag); e.id=id; e.innerHTML=html; return e; }
+  function ensureEdge(){
+    if(document.getElementById("pcDrawer")){ renderDrawer(); return; }
+    if(!document.getElementById("pc-drawer-css")){ var st=document.createElement("style"); st.id="pc-drawer-css"; st.textContent=PC_CSS; document.head.appendChild(st); }
+    var lt=elx("div","pcLibTab",'<span class="pctabico">📁</span>Ativos gerais');
+    var rt=elx("div","pcRvTab",'<span class="pctabico">🧰</span>RV estruturada');
+    var bd=elx("div","pcBackdrop","");
+    var dr=elx("div","pcDrawer",'<div class="pcdr-head"><div class="pcdr-title" id="pcDrTitle"></div><button id="pcDrClose">×</button></div><div class="pcdr-sub">Clique no + para adicionar à coluna Entrar, ou arraste o card para a coluna Entrar.</div><div id="pcDrBody"></div>');
+    document.body.appendChild(lt); document.body.appendChild(rt); document.body.appendChild(bd); document.body.appendChild(dr);
+    lt.onclick=function(){ openDrawer("geral"); };
+    rt.onclick=function(){ openDrawer("rv"); };
+    bd.onclick=closeDrawer;
+    document.getElementById("pcDrClose").onclick=closeDrawer;
+    if(!window.__pcPatched){ window.__pcPatched=true; var o=window.showPanel; window.showPanel=function(id){ o.apply(this,arguments); pcEdgeVisible(id==="ajustes"); }; }
+    renderDrawer();
+  }
+  function pcEdgeVisible(on){ ["pcLibTab","pcRvTab"].forEach(function(i){ var e=document.getElementById(i); if(e) e.style.display=on?"flex":"none"; }); if(!on) closeDrawer(); }
+  function openDrawer(cat){ state.drawerCat=cat; renderDrawer(); var d=document.getElementById("pcDrawer"); if(d) d.classList.add("open"); var b=document.getElementById("pcBackdrop"); if(b) b.classList.add("show"); }
+  function closeDrawer(){ var d=document.getElementById("pcDrawer"); if(d) d.classList.remove("open"); var b=document.getElementById("pcBackdrop"); if(b) b.classList.remove("show"); }
+  function renderDrawer(){
+    var body=document.getElementById("pcDrBody"); if(!body) return; var cat=state.drawerCat||"geral";
+    var ti=document.getElementById("pcDrTitle"); if(ti) ti.textContent=cat==="rv"?"🧰 RV estruturada":"📁 Ativos gerais";
+    var G=gavetas(); var h=""; var cats= cat==="rv"?["Renda Variável"]:["Renda Fixa","Multimercados","Fundos Listados","Alternativos","Internacional"];
+    cats.forEach(function(cl){ var items=G.map(function(a,i){return {a:a,i:i};}).filter(function(o){return o.a.classe===cl;}); if(!items.length)return; var c=CATCOL[cl]||"#9AA2D0";
+      h+='<div class="pcdr-cat" style="color:'+c+'"><span style="background:'+c+'"></span>'+cl+'</div>';
+      items.forEach(function(o){ h+='<div class="pcdr-card" draggable="true" data-dragidx="'+o.i+'"><div class="pcdr-info"><div class="pcdr-name">'+esc(o.a.nome)+'</div><div class="pcdr-det">'+esc(o.a.detalhe||"")+'</div></div><button class="pcdr-add" data-addidx="'+o.i+'" title="Adicionar a Entrar">+</button></div>'; });
+    });
+    body.innerHTML=h;
+    body.querySelectorAll("[data-addidx]").forEach(function(b){ b.onclick=function(){ addLib(+b.getAttribute("data-addidx")); }; });
+    body.querySelectorAll("[data-dragidx]").forEach(function(e2){ e2.addEventListener("dragstart",function(ev){ drag="lib:"+e2.getAttribute("data-dragidx"); try{ev.dataTransfer.effectAllowed="copy";}catch(_){}}); e2.addEventListener("dragend",function(){ drag=null; }); });
+  }
   window._ajRender=render;
   window._toolInit=window._toolInit||{};
   window._toolInit["ajustes"]=function(){ render(); };
