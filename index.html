@@ -2321,7 +2321,7 @@ function drawRicoLogo(ctx,x,y,height,color){
   ctx.restore();
 }
 const CLASS_COLORS = {
-  "Renda Fixa":"#2BD9A6","Multimercados":"#7C8CFF","Renda Variável":"#FF4E00",
+  "Renda Fixa":"#2BD9A6","Previdência":"#E8709B","Multimercados":"#7C8CFF","Renda Variável":"#FF4E00",
   "Fundos Listados":"#FFB020","Alternativos":"#C77DFF","Internacional":"#36C5F0"
 };
 const CLASSES = Object.keys(CLASS_COLORS);
@@ -2375,7 +2375,7 @@ function mk(classe,nome,pct,detalhe,liquidez,opcoes,protecao){
 
 const TEMPLATES = {
   Conservadora: ()=>[
-    mk("Renda Fixa","LCA/LCD",72.5,"93% a 94% CDI · 1–5 anos","No vencimento"),
+    mk("Renda Fixa","LCD",72.5,"93% a 94% CDI · 1–5 anos","No vencimento"),
     mk("Renda Fixa","LCA IPCA+",12.5,"IPCA + 6% a.a. · 1 a 3 anos",""),
     mk("Renda Fixa","CDB Pré",5,"14,7% a.a. · 3 a 5 anos","No vencimento"),
     mk("Multimercados","ACE Multicenários",2.5,"Rentabilizou ~230% do CDI nos últimos anos","D+17"),
@@ -2383,7 +2383,7 @@ const TEMPLATES = {
     mk("Internacional","XP Global",5,"Fundo Renda Fixa e Renda Variável","~D+5")
   ],
   Moderada: ()=>[
-    mk("Renda Fixa","LCA/LCD",41,"93/94% CDI · 1–5 anos","No vencimento"),
+    mk("Renda Fixa","LCD",41,"93/94% CDI · 1–5 anos","No vencimento"),
     mk("Renda Fixa","LCI",22.5,"IPCA + 6% a.a. · 1 a 3 anos",""),
     mk("Renda Fixa","CDB Pré",10,"14,7% a.a. · 3 a 5 anos","No vencimento"),
     mk("Multimercados","XP Forças Armadas",6,"Exposição a empresas americanas ligadas à defesa e forças armadas, como a Palantir · 5 anos","No vencimento",null,true),
@@ -2394,7 +2394,7 @@ const TEMPLATES = {
     mk("Internacional","CD de 1 ano",2.5,"Certificate of Deposit · 1 ano pré-fixado em dólar","No vencimento")
   ],
   Sofisticada: ()=>[
-    mk("Renda Fixa","LCA/LCD",16,"Mesmo produto das demais carteiras","No vencimento"),
+    mk("Renda Fixa","LCD",16,"Mesmo produto das demais carteiras","No vencimento"),
     mk("Renda Fixa","LCI",27.5,"IPCA + 6% a.a.",""),
     mk("Renda Fixa","CDB Pré",7.5,"14,7% a.a. · 3 a 5 anos","No vencimento"),
     mk("Multimercados","ACE Multicenários",7,"Rentabilizou ~230% do CDI nos últimos anos","D+17"),
@@ -7063,7 +7063,7 @@ window.__rvRender = render;
     "COE":"Renda Fixa",
     "Aluguel":"Renda Variável",
     "Renda Fixa":"Renda Fixa",
-    "Previdência Privada":"Renda Fixa",
+    "Previdência Privada":"Previdência",
     "Tesouro Direto":"Renda Fixa",
     "Fundos de Investimento":"Multimercados",
     "Carteira Administrada":"Multimercados",
@@ -7086,15 +7086,15 @@ window.__rvRender = render;
     }
     return CLASS_MAP[classeXP] || "Multimercados";
   }
-  var CAT_ORDER = ["Renda Fixa","Multimercados","Renda Variável","Fundos Listados","Alternativos","Internacional"];
+  var CAT_ORDER = ["Renda Fixa","Previdência","Multimercados","Renda Variável","Fundos Listados","Alternativos","Internacional"];
   var CAT_COLOR = {
-    "Renda Fixa":"#3DD68C","Multimercados":"#7C8CFF","Renda Variável":"#F26522",
+    "Renda Fixa":"#3DD68C","Previdência":"#E8709B","Multimercados":"#7C8CFF","Renda Variável":"#F26522",
     "Fundos Listados":"#FFB020","Alternativos":"#C77DFF","Internacional":"#36C5F0"
   };
   var PROFILES = {
-    "Conservadora": {"Renda Fixa":90,"Multimercados":2.5,"Renda Variável":0,"Fundos Listados":2.5,"Alternativos":0,"Internacional":5},
-    "Moderada": {"Renda Fixa":73.5,"Multimercados":12.5,"Renda Variável":5,"Fundos Listados":0,"Alternativos":3,"Internacional":6},
-    "Sofisticada": {"Renda Fixa":51,"Multimercados":10,"Renda Variável":15,"Fundos Listados":9.5,"Alternativos":7,"Internacional":7.5}
+    "Conservadora": {"Renda Fixa":90,"Previdência":0,"Multimercados":2.5,"Renda Variável":0,"Fundos Listados":2.5,"Alternativos":0,"Internacional":5},
+    "Moderada": {"Renda Fixa":73.5,"Previdência":0,"Multimercados":12.5,"Renda Variável":5,"Fundos Listados":0,"Alternativos":3,"Internacional":6},
+    "Sofisticada": {"Renda Fixa":51,"Previdência":0,"Multimercados":10,"Renda Variável":15,"Fundos Listados":9.5,"Alternativos":7,"Internacional":7.5}
   };
   var adProfile = "Moderada";
 
