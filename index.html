@@ -7776,6 +7776,9 @@ window.__rvRender = render;
   var seq=0; function uid(){ return "e"+(++seq); }
   var drag=null;
 
+  function srcObj(){ return state.origem==="sim" ? (window.RICO_BRIDGE&&window.RICO_BRIDGE.carteira) : (window.RICO_BRIDGE&&window.RICO_BRIDGE.posicaoAtual); }
+  function srcSig(){ var pp=srcObj(); if(!pp||!pp.ativos||!pp.ativos.length) return null; return state.origem+"|"+(pp.conta||pp.cliente||"")+"|"+pp.ativos.length+"|"+(pp.atualizadoEm||""); }
+  function ensureLoaded(){ var sig=srcSig(); if(sig===state.sig && (state.atual||sig===null)) return; state.sig=sig; load(); }
   function load(){
     var src=null;
     if(state.origem==="sim"){ var c=window.RICO_BRIDGE&&window.RICO_BRIDGE.carteira; if(c&&c.itens&&c.itens.length){ var b=c.patrimonio||0; src={conta:"",cliente:c.cliente||"",ativos:c.itens.map(function(it){return {name:it.nome,categoria:it.classe,valor:(Number(it.pct)||0)/100*b};})}; } }
@@ -7786,7 +7789,7 @@ window.__rvRender = render;
     if(!state.cliente) state.cliente=src.cliente||(src.conta?("Conta "+src.conta):"");
     state.conta=src.conta;
     // reset edits keyed by name
-    state.vals={}; state.removed={};
+    state.vals={}; state.removed={}; state.added=[];
     state.atual.forEach(function(a){ state.vals[a.name]=a.valor; });
   }
 
@@ -7854,7 +7857,7 @@ window.__rvRender = render;
 
   function render(){
     var root=document.getElementById("ajRoot"); if(!root) return;
-    load();
+    ensureLoaded();
     var simExists=!!(window.RICO_BRIDGE&&window.RICO_BRIDGE.carteira&&window.RICO_BRIDGE.carteira.itens&&window.RICO_BRIDGE.carteira.itens.length);
     var h='';
     h+='<div class="pc-head"><div class="logo">rico</div><div class="pc-sub">Propor Carteira · arraste o que sai, adicione das gavetas o que entra, e gere a proposta</div></div>';
@@ -7906,7 +7909,7 @@ window.__rvRender = render;
 
   function bind(){
     var root=document.getElementById("ajRoot"); if(!root) return;
-    root.querySelectorAll("[data-org]").forEach(function(b){ b.onclick=function(){ state.origem=b.getAttribute("data-org"); state.cliente=""; state.added=[]; render(); }; });
+    root.querySelectorAll("[data-org]").forEach(function(b){ b.onclick=function(){ state.origem=b.getAttribute("data-org"); state.cliente=""; state.added=[]; state.sig=null; render(); }; });
     var cli=document.getElementById("ajCliente"); if(cli) cli.oninput=function(){ state.cliente=cli.value; };
     var lt=root.querySelector("[data-libtoggle]"); if(lt) lt.onclick=function(){ state.libOpen=!state.libOpen; render(); };
     root.querySelectorAll("[data-sell]").forEach(function(b){ b.onclick=function(){ state.removed[b.getAttribute("data-sell")]=true; render(); }; });
