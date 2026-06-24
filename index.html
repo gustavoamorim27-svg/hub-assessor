@@ -2519,15 +2519,17 @@ const TEMPLATES = {
     mk("Renda Fixa","CDB Pré",5,"14,7% a.a. · 3 a 5 anos","No vencimento"),
     mk("Multimercados","ACE Multicenários",2.5,"Rentabilizou ~230% do CDI nos últimos anos","D+17"),
     mk("Fundos Listados","JHSF Capital Malls",2.5,"Shoppings premium da JHSF (Cidade Jardim, Catarina Outlet) · trophy assets de alta renda · opção p/ clientes sem FIIs"),
-    mk("Internacional","XP Global",5,"Fundo Renda Fixa e Renda Variável","~D+5")
+    mk("Internacional","Renda Fixa Global",2.5,"Crédito global em dólar · Certificate of Deposit","No vencimento"),
+    mk("Internacional","XP Global Ações",2.5,"Ações globais — EUA, Europa e Reino Unido","~D+5")
   ],
   Moderada: ()=>[
-    mk("Renda Fixa","LCD",41,"93/94% CDI · 1–5 anos","No vencimento"),
+    mk("Renda Fixa","LCD",35.5,"93/94% CDI · 1–5 anos","No vencimento"),
     mk("Renda Fixa","LCI",22.5,"IPCA + 6% a.a. · 1 a 3 anos",""),
     mk("Renda Fixa","CDB Pré",10,"14,7% a.a. · 3 a 5 anos","No vencimento"),
-    mk("Multimercados","XP Forças Armadas",6,"Exposição a empresas americanas ligadas à defesa e forças armadas, como a Palantir · 5 anos","No vencimento",null,true),
-    mk("Multimercados","ACE Multicenários",6.5,"Rentabilizou ~230% do CDI nos últimos anos","D+17"),
+    mk("Multimercados","XP Forças Armadas",7,"Exposição a empresas americanas ligadas à defesa e forças armadas, como a Palantir · 5 anos","No vencimento",null,true),
+    mk("Multimercados","ACE Multicenários",7,"Rentabilizou ~230% do CDI nos últimos anos","D+17"),
     Object.assign(mk("Renda Variável","BOVA11 Protegida",5,"Proteção total de capital · participa da alta até 28% (15% acima) · Collar UI de 2 anos","No vencimento"),{catalogOp:window.__BOVA_OP,_howOpen:false}),
+    mk("Fundos Listados","JHSF Capital Malls",4,"Shoppings premium · trophy assets de alta renda"),
     mk("Alternativos","Ouro — Retorno Otimizado",3,"Exposição a ouro com estrutura otimizada · 3 a 5 anos","No vencimento"),
     mk("Internacional","Wellington Global Quality",3.5,"100% ações dos EUA, Europa e Reino Unido · +75% em 3 anos","D+5"),
     mk("Internacional","CD de 1 ano",2.5,"Certificate of Deposit · 1 ano pré-fixado em dólar","No vencimento")
@@ -2549,7 +2551,8 @@ const TEMPLATES = {
     mk("Fundos Listados","XP Habitat 2",2,"FII de papel · CRIs pulverizados de incorporação residencial, com forte estrutura de garantias"),
     mk("Alternativos","XP Tecnologia",3,"QQQ protegido de 1 ano","No vencimento"),
     mk("Alternativos","Ouro Retorno Otimizado",4,"Exposição a ouro com estrutura otimizada","No vencimento"),
-    mk("Internacional","Wellington Global Quality",7.5,"100% ações dos EUA, Europa e Reino Unido · +75% em 3 anos","D+5")
+    mk("Internacional","Wellington Global Quality",5,"100% ações dos EUA, Europa e Reino Unido · +75% em 3 anos","D+5"),
+    mk("Internacional","Renda Fixa Global",2.5,"Crédito global em dólar · Certificate of Deposit","No vencimento")
   ]
 };
 try{ window.RICO_TEMPLATES = TEMPLATES; }catch(e){}
@@ -6703,13 +6706,20 @@ function render(){
   h += '<div class="cols"><div class="col-editor">';
 
   /* EDITOR */
+  function rfSubC(it){ var b=((it.nome||"")+" "+(it.detalhe||"")).toLowerCase(); if(/ipca|ntn-?b|infla/.test(b)) return "Inflação"; if(/\blcd\b/.test(b)) return "Pós-fixado"; if(/pr[eé]\b|prefix|\bltn\b/.test(b) || (/\d+\s*%\s*a\.?\s*a/.test(b) && !/cdi/.test(b))) return "Pré-fixado"; if(/cdi|selic|p[óo]s/.test(b)) return "Pós-fixado"; return "Outros"; }
   CLASSES.forEach(function(c){
     var list = d.grouped[c];
     if(!list || list.length===0) return;
     h += '<div style="margin-bottom:18px"><div class="classhead"><span class="dot" style="background:'+CLASS_COLORS[c]+'"></span>'+
       '<span style="font-weight:700;font-size:15px">'+c+'</span>'+
       '<span style="color:#A9B0D6;font-weight:700;font-size:13px">'+fmtPct(d.byClass[c])+'%</span></div>';
-    list.forEach(function(i){ h += itemRowHTML(i); });
+    if(c==="Renda Fixa"){
+      var subs={"Pós-fixado":[],"Inflação":[],"Pré-fixado":[],"Outros":[]};
+      list.forEach(function(i){ subs[rfSubC(i)].push(i); });
+      ["Pós-fixado","Inflação","Pré-fixado","Outros"].forEach(function(s){ if(!subs[s].length) return; var sp=subs[s].reduce(function(a,i){return a+(Number(i.pct)||0);},0); h += '<div style="font-size:11.5px;font-weight:700;color:#9AA2D0;text-transform:uppercase;letter-spacing:.5px;margin:10px 0 8px 4px;padding-left:8px;border-left:2px solid '+CLASS_COLORS["Renda Fixa"]+'">'+s+' · '+fmtPct(sp)+'%</div>'; subs[s].forEach(function(i){ h += itemRowHTML(i); }); });
+    } else {
+      list.forEach(function(i){ h += itemRowHTML(i); });
+    }
     h += '</div>';
   });
 
@@ -7234,7 +7244,7 @@ window.__rvRender = render;
   };
   var PROFILES = {
     "Conservadora": {"Renda Fixa":90,"Previdência":0,"Multimercados":2.5,"Renda Variável":0,"Fundos Listados":2.5,"Alternativos":0,"Internacional":5},
-    "Moderada": {"Renda Fixa":73.5,"Previdência":0,"Multimercados":12.5,"Renda Variável":5,"Fundos Listados":0,"Alternativos":3,"Internacional":6},
+    "Moderada": {"Renda Fixa":68,"Previdência":0,"Multimercados":14,"Renda Variável":5,"Fundos Listados":4,"Alternativos":3,"Internacional":6},
     "Sofisticada": {"Renda Fixa":51,"Previdência":0,"Multimercados":10,"Renda Variável":15,"Fundos Listados":9.5,"Alternativos":7,"Internacional":7.5}
   };
   var adProfile = "Moderada";
