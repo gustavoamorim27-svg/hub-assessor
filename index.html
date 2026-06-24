@@ -982,6 +982,16 @@ button, .g-tab, [onclick]{ touch-action:manipulation; }
           <div class="hcard-title">Comparador de Rentabilidade</div>
           <div class="hcard-desc">Compare múltiplos ativos com IR regressivo, gross-up CDI equivalente e evolução patrimonial.</div>
         </div>
+        <div class="hcard" onclick="showPanel('aderencia')">
+          <div class="hcard-ic"><svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
+          <div class="hcard-title">Aderência de Carteira</div>
+          <div class="hcard-desc">Importe a Posição Consolidada do cliente e compare com a carteira recomendada.</div>
+        </div>
+        <div class="hcard" onclick="showPanel('ajustes')">
+          <div class="hcard-ic"><svg viewBox="0 0 24 24"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg></div>
+          <div class="hcard-title">Ajustes de Carteira</div>
+          <div class="hcard-desc">Monte a carteira proposta e gere o plano (o que sai, fica e entra) em PDF e Excel.</div>
+        </div>
       </div>
       <style>
       #p-home .news-wrap{ max-width:980px; width:100%; margin:46px auto 0; text-align:left; }
@@ -1195,7 +1205,18 @@ button, .g-tab, [onclick]{ touch-action:manipulation; }
           {classe:"Alternativos",nome:"Ouro — Retorno Otimizado",detalhe:"Ouro com estrutura otimizada · 3–5 anos",liq:"No vencimento"},
           {classe:"Alternativos",nome:"XP Tecnologia (QQQ)",detalhe:"Tecnologia EUA com proteção · 1 ano",liq:"No vencimento"},
           {classe:"Internacional",nome:"Wellington Global Quality",detalhe:"Ações EUA/Europa/RU · +75% em 3 anos",liq:"D+5"},
-          {classe:"Internacional",nome:"CD de 1 ano (dólar)",detalhe:"Certificate of Deposit · pré em dólar",liq:"No vencimento"}
+          {classe:"Internacional",nome:"CD de 1 ano (dólar)",detalhe:"Certificate of Deposit · pré em dólar",liq:"No vencimento"},
+          {classe:"Renda Fixa",nome:"LTN (Tesouro Prefixado)",detalhe:"Prefixado · juro travado na largada",liq:"No vencimento"},
+          {classe:"Renda Fixa",nome:"LCA Pré",detalhe:"Prefixada isenta de IR",liq:"No vencimento"},
+          {classe:"Renda Fixa",nome:"LCI Pré",detalhe:"Prefixada isenta de IR",liq:"No vencimento"},
+          {classe:"Renda Fixa",nome:"CDB Pré 15%",detalhe:"Prefixado ~15% a.a. · 2 a 4 anos",liq:"No vencimento"},
+          {classe:"Renda Fixa",nome:"Debênture Pré (Infra)",detalhe:"Crédito privado prefixado · isenta de IR",liq:"No vencimento"},
+          {classe:"Renda Variável",nome:"BPAC11 — SmartCupom",detalhe:"BTG · cupom pré ~8% em 8 meses",liq:"No vencimento"},
+          {classe:"Renda Variável",nome:"ITUB — Fence",detalhe:"Itaú · proteção parcial, alta limitada · 1 ano",liq:"No vencimento"},
+          {classe:"Renda Variável",nome:"Microsoft — Collar",detalhe:"Collar UI 2 anos · proteção total",liq:"No vencimento"},
+          {classe:"Renda Variável",nome:"AXIA3 — Collar",detalhe:"Axia Energia · Collar UI 1,5 ano",liq:"No vencimento"},
+          {classe:"Renda Variável",nome:"PETR4 — Collar",detalhe:"Petrobras · proteção total, alta limitada",liq:"No vencimento"},
+          {classe:"Renda Variável",nome:"VALE3 — Fence",detalhe:"Vale · proteção parcial · 1 ano",liq:"No vencimento"}
         ];
         var CUSTOMLIB=[]; try{ CUSTOMLIB=JSON.parse(localStorage.getItem("hubCustomLib")||"[]")||[]; }catch(_){ CUSTOMLIB=[]; }
         function persist(){ try{ localStorage.setItem("hubCustomLib", JSON.stringify(CUSTOMLIB)); }catch(_){ } }
@@ -7652,12 +7673,23 @@ window.__rvRender = render;
     {classe:"Alternativos",nome:"Ouro — Retorno Otimizado",detalhe:"Ouro com estrutura otimizada · 3–5 anos"},
     {classe:"Alternativos",nome:"XP Tecnologia (QQQ)",detalhe:"Tecnologia EUA com proteção · 1 ano"},
     {classe:"Internacional",nome:"Wellington Global Quality",detalhe:"Ações EUA/Europa/RU · +75% em 3 anos"},
-    {classe:"Internacional",nome:"CD de 1 ano (dólar)",detalhe:"Certificate of Deposit · pré em dólar"}
+    {classe:"Internacional",nome:"CD de 1 ano (dólar)",detalhe:"Certificate of Deposit · pré em dólar"},
+    {classe:"Renda Fixa",nome:"LTN (Tesouro Prefixado)",detalhe:"Prefixado · juro travado na largada"},
+    {classe:"Renda Fixa",nome:"LCA Pré",detalhe:"Prefixada isenta de IR · no vencimento"},
+    {classe:"Renda Fixa",nome:"LCI Pré",detalhe:"Prefixada isenta de IR · no vencimento"},
+    {classe:"Renda Fixa",nome:"CDB Pré 15%",detalhe:"Prefixado ~15% a.a. · 2 a 4 anos"},
+    {classe:"Renda Fixa",nome:"Debênture Pré (Infra)",detalhe:"Crédito privado prefixado · isenta de IR"},
+    {classe:"Renda Variável",nome:"BPAC11 — SmartCupom",detalhe:"BTG · cupom pré ~8% em 8 meses"},
+    {classe:"Renda Variável",nome:"ITUB — Fence",detalhe:"Itaú · proteção parcial, alta limitada · 1 ano"},
+    {classe:"Renda Variável",nome:"Microsoft — Collar",detalhe:"Collar UI 2 anos · proteção total"},
+    {classe:"Renda Variável",nome:"AXIA3 — Collar",detalhe:"Axia Energia · Collar UI 1,5 ano"},
+    {classe:"Renda Variável",nome:"PETR4 — Collar",detalhe:"Petrobras · proteção total, alta limitada"},
+    {classe:"Renda Variável",nome:"VALE3 — Fence",detalhe:"Vale · proteção parcial · 1 ano"}
   ];
   function customLib(){ try{ return JSON.parse(localStorage.getItem("hubCustomLib")||"[]")||[]; }catch(e){ return []; } }
   function gavetas(){ return LIB.concat(customLib().map(function(x){return {classe:x.classe,nome:x.nome,detalhe:x.detalhe||""};})); }
 
-  var state={ origem:"import", atual:null, proposta:[], libOpen:true, plan:null, seeded:false };
+  var state={ origem:"import", atual:null, proposta:[], libOpen:true, plan:null, seeded:false, cliente:"", baseOverride:null };
   var seq=0; function uid(){ return "p"+(++seq); }
 
   function getAtual(){
@@ -7677,13 +7709,14 @@ window.__rvRender = render;
   }
   function coreTicker(s){ var m=String(s||"").toUpperCase().match(/\b([A-Z]{4}\d{1,2})\b/); return m?m[1]:null; }
   function norm(s){ return String(s||"").toUpperCase().normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[^A-Z0-9]/g,""); }
-  function sameAsset(a,b){ var ca=coreTicker(a),cb=coreTicker(b); if(ca&&cb) return ca===cb; var na=norm(a),nb=norm(b); if(!na||!nb||na.length<4||nb.length<4) return false; return na===nb||na.indexOf(nb)===0||nb.indexOf(na)===0; }
+  function sameAsset(a,b){ var ca=coreTicker(a),cb=coreTicker(b); if(ca&&cb) return ca===cb; var na=norm(a),nb=norm(b); if(!na||!nb) return false; if(na===nb) return true; if(na.length<4||nb.length<4) return false; return na.indexOf(nb)===0||nb.indexOf(na)===0; }
 
   function prevAssets(){ return state.atual? state.atual.ativos.filter(function(a){return a.categoria==="Previdência";}):[]; }
-  function liquidBase(){ return state.atual? state.atual.ativos.filter(function(a){return a.categoria!=="Previdência";}).reduce(function(s,a){return s+a.valor;},0):0; }
+  function currentLiq(){ return state.atual? state.atual.ativos.filter(function(a){return a.categoria!=="Previdência";}).reduce(function(s,a){return s+a.valor;},0):0; }
+  function liquidBase(){ return (state.baseOverride!=null&&state.baseOverride>0)? state.baseOverride : currentLiq(); }
   function totalPct(){ return state.proposta.reduce(function(s,r){return s+(Number(r.pct)||0);},0); }
 
-  function seedFromAtual(){ var lb=liquidBase(); state.proposta=state.atual.ativos.filter(function(a){return a.categoria!=="Previdência";}).map(function(a){return {id:uid(),nome:a.name,classe:a.categoria,pct: lb>0? Math.round(a.valor/lb*1000)/10:0};}); state.seeded=true; state.plan=null; }
+  function seedFromAtual(){ var lb=currentLiq(); state.proposta=state.atual.ativos.filter(function(a){return a.categoria!=="Previdência";}).map(function(a){return {id:uid(),nome:a.name,classe:a.categoria,pct: lb>0? Math.round(a.valor/lb*1000)/10:0};}); state.seeded=true; state.plan=null; }
   function seedFromModel(dest){ var its=getTemplate(dest); if(!its){ alert("Modelo indisponível."); return; } state.proposta=its.map(function(it){return {id:uid(),nome:it.nome,classe:it.classe,pct:it.pct};}); state.seeded=true; state.plan=null; }
 
   function buildPlan(){
@@ -7700,7 +7733,7 @@ window.__rvRender = render;
     prop.forEach(function(p,i){ if(!used[i]&&p.val>0.5){ entrar.push({name:p.nome,categoria:p.classe,de:0,para:p.val,mov:p.val,acao:"Entrar",obs:"Novo ativo (gaveta)"}); } });
     var totalVender=-sair.reduce(function(s,x){return s+x.mov;},0)-manter.filter(function(m){return m.acao==="Reduzir";}).reduce(function(s,x){return s+x.mov;},0);
     var totalComprar=entrar.reduce(function(s,x){return s+x.mov;},0)+manter.filter(function(m){return m.acao==="Aumentar";}).reduce(function(s,x){return s+x.mov;},0);
-    return {patrim:state.atual.patrim||(lb+prevTotal),liquidBase:lb,prevTotal:prevTotal,sair:sair,manter:manter,entrar:entrar,totalVender:totalVender,totalComprar:totalComprar,turnover:lb>0?totalComprar/lb*100:0,totalPct:totalPct()};
+    return {patrim:lb+prevTotal,liquidBase:lb,prevTotal:prevTotal,sair:sair,manter:manter,entrar:entrar,totalVender:totalVender,totalComprar:totalComprar,turnover:lb>0?totalComprar/lb*100:0,totalPct:totalPct()};
   }
 
   function chip(label,val,col){ return '<div style="background:rgba(20,28,87,.45);border:1px solid rgba(120,130,210,.18);border-radius:12px;padding:10px 14px;min-width:120px"><div style="font-size:10.5px;color:#8A93C8;font-weight:700;text-transform:uppercase;letter-spacing:.4px">'+esc(label)+'</div><div style="font-family:Sora,sans-serif;font-weight:800;font-size:16px;color:'+col+';margin-top:3px">'+esc(val)+'</div></div>'; }
@@ -7710,6 +7743,7 @@ window.__rvRender = render;
   function render(){
     var root=document.getElementById("ajRoot"); if(!root) return;
     state.atual=getAtual();
+    if(state.atual && !state.cliente){ state.cliente=state.atual.cliente||(state.atual.conta?("Conta "+state.atual.conta):""); }
     var simExists=!!(window.RICO_BRIDGE&&window.RICO_BRIDGE.carteira&&window.RICO_BRIDGE.carteira.itens&&window.RICO_BRIDGE.carteira.itens.length);
     var lb=liquidBase();
     var h='';
@@ -7731,6 +7765,10 @@ window.__rvRender = render;
       root.innerHTML=h; bind(); return;
     }
     if(!state.seeded) seedFromAtual();
+    h+='<div style="display:flex;flex-wrap:wrap;gap:16px;align-items:flex-end;margin-bottom:14px">';
+    h+='<div><div style="font-size:11px;font-weight:700;color:#9AA2D0;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Cliente</div><input id="ajCliente" type="text" value="'+esc(state.cliente)+'" placeholder="Nome do cliente" style="background:rgba(255,255,255,.06);border:1px solid rgba(120,130,210,.25);color:#fff;border-radius:9px;padding:9px 12px;font-family:Manrope,sans-serif;font-size:13.5px;min-width:220px"></div>';
+    h+='<div><div style="font-size:11px;font-weight:700;color:#9AA2D0;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Valor investido (líquido a alocar)</div><div style="position:relative"><span style="position:absolute;left:12px;top:10px;color:#6F77A8;font-weight:700;font-size:13px">R$</span><input id="ajBase" type="number" step="1000" min="0" value="'+Math.round(lb)+'" style="background:rgba(255,255,255,.06);border:1px solid rgba(120,130,210,.25);color:#fff;border-radius:9px;padding:9px 12px 9px 36px;font-family:Sora,sans-serif;font-weight:700;font-size:13.5px;width:190px"></div></div>';
+    h+='</div>';
 
     // PREVIDÊNCIA mantida
     var prev=prevAssets();
@@ -7764,7 +7802,7 @@ window.__rvRender = render;
         +'</div>';
     });
     h+='</div>';
-    h+='<div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;font-size:13px"><span style="color:#9AA2D0">Total alocado (sobre o líquido '+fmtBRL(lb)+')</span><span id="ajTotal" style="font-family:Sora,sans-serif;font-weight:800;color:'+tpcol+'">'+fmtPct(tp)+'</span></div>';
+    h+='<div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;font-size:13px"><span style="color:#9AA2D0">Total alocado (sobre o líquido <span id="ajLiqLabel">'+fmtBRL(lb)+'</span>)</span><span id="ajTotal" style="font-family:Sora,sans-serif;font-weight:800;color:'+tpcol+'">'+fmtPct(tp)+'</span></div>';
     h+='</div>';
 
     // GAVETAS
@@ -7818,9 +7856,11 @@ window.__rvRender = render;
     root.querySelectorAll("[data-del]").forEach(function(b){ b.onclick=function(){ var id=b.getAttribute("data-del"); state.proposta=state.proposta.filter(function(r){return r.id!==id;}); state.plan=null; render(); }; });
     root.querySelectorAll("[data-libadd]").forEach(function(b){ b.onclick=function(){ var a=gavetas()[+b.getAttribute("data-libadd")]; if(a){ state.proposta.push({id:uid(),nome:a.nome,classe:a.classe,pct:0}); state.plan=null; render(); var rows=document.getElementById("ajPropRows"); if(rows) rows.scrollIntoView({behavior:"smooth",block:"nearest"}); } }; });
     var lt=root.querySelector("[data-libtoggle]"); if(lt) lt.onclick=function(){ state.libOpen=!state.libOpen; render(); };
+    var cli=document.getElementById("ajCliente"); if(cli) cli.oninput=function(){ state.cliente=cli.value; };
+    var bs=document.getElementById("ajBase"); if(bs) bs.oninput=function(){ var v=Number(bs.value)||0; state.baseOverride=v>0?v:null; state.plan=null; var nb=liquidBase(); root.querySelectorAll(".ajpct").forEach(function(inp){ var id=inp.getAttribute("data-id"); var r=state.proposta.filter(function(x){return x.id===id;})[0]; if(!r) return; var hint=root.querySelector('[data-hint="'+id+'"]'); if(hint) hint.textContent="≈ "+fmtBRL((Number(r.pct)||0)/100*nb); }); var ll=document.getElementById("ajLiqLabel"); if(ll) ll.textContent=fmtBRL(nb); };
     // pct edit (no re-render to keep focus)
     var lb=liquidBase();
-    root.querySelectorAll(".ajpct").forEach(function(inp){ inp.oninput=function(){ var id=inp.getAttribute("data-id"); var r=state.proposta.filter(function(x){return x.id===id;})[0]; if(!r) return; r.pct=Number(inp.value)||0; state.plan=null; var hint=root.querySelector('[data-hint="'+id+'"]'); if(hint) hint.textContent="≈ "+fmtBRL(r.pct/100*lb); var t=totalPct(); var el=document.getElementById("ajTotal"); if(el){ el.textContent=fmtPct(t); el.style.color=Math.abs(t-100)<0.6?"#3DD68C":"#FFB020"; } }; });
+    root.querySelectorAll(".ajpct").forEach(function(inp){ inp.oninput=function(){ var id=inp.getAttribute("data-id"); var r=state.proposta.filter(function(x){return x.id===id;})[0]; if(!r) return; r.pct=Number(inp.value)||0; state.plan=null; var hint=root.querySelector('[data-hint="'+id+'"]'); if(hint) hint.textContent="≈ "+fmtBRL((Number(r.pct)||0)/100*liquidBase()); var t=totalPct(); var el=document.getElementById("ajTotal"); if(el){ el.textContent=fmtPct(t); el.style.color=Math.abs(t-100)<0.6?"#3DD68C":"#FFB020"; } }; });
     var g=document.getElementById("ajGerar"); if(g) g.onclick=function(){ if(!state.proposta.length){ alert("Adicione ativos à carteira proposta."); return; } state.plan=buildPlan(); render(); var c=document.getElementById("ajCols"); if(c) c.scrollIntoView({behavior:"smooth",block:"nearest"}); };
     var pdf=document.getElementById("ajPDF"); if(pdf) pdf.onclick=exportPDF;
     var xls=document.getElementById("ajXLS"); if(xls) xls.onclick=exportXLS;
@@ -7830,7 +7870,7 @@ window.__rvRender = render;
     if(fi) fi.onchange=function(){ var f=fi.files&&fi.files[0]; if(!f) return; if(typeof window.RICO_importPosicaoFile!=="function"){ alert("Importador indisponível — abra a aba Aderência uma vez."); return; } root.querySelectorAll("[data-ajimport]").forEach(function(b){ b.textContent="Importando…"; }); window.RICO_importPosicaoFile(f, function(pp){ state.origem="import"; state.seeded=false; state.plan=null; try{ fi.value=""; }catch(e){} render(); }); };
   }
 
-  function clienteTxt(){ var a=state.atual||{}; return a.cliente||(a.conta?("Conta "+a.conta):"Cliente"); }
+  function clienteTxt(){ return (state.cliente&&state.cliente.trim())||"Cliente"; }
   function planRows(){ var p=state.plan,rows=[]; p.sair.forEach(function(x){rows.push(x);}); p.manter.filter(function(m){return m.acao==="Reduzir";}).forEach(function(x){rows.push(x);}); p.entrar.forEach(function(x){rows.push(x);}); p.manter.filter(function(m){return m.acao==="Aumentar";}).forEach(function(x){rows.push(x);}); p.manter.filter(function(m){return m.acao==="Manter";}).forEach(function(x){rows.push(x);}); return rows; }
 
   function exportXLS(){
