@@ -7850,7 +7850,7 @@ window.__rvRender = render;
     var vender=-b.sair.reduce(function(s,x){return s+x.mov;},0);
     var comprar=b.entrar.reduce(function(s,x){return s+x.mov;},0);
     var lb=liquidAtual();
-    return {vender:vender,comprar:comprar,liquid:lb,prev:prevTotal(),patrim:lb+prevTotal(),giro: lb>0? comprar/lb*100:0, saldo: comprar-vender};
+    return {vender:vender,comprar:comprar,liquid:lb,prev:prevTotal(),patrim:lb,giro: lb>0? comprar/lb*100:0, saldo: comprar-vender};
   }
   function compAtual(){ var m={},t=0; state.atual.forEach(function(a){ var g=grpOf(a.categoria,a.name,a.detalhe,a.subcat); m[g]=(m[g]||0)+a.valor; t+=a.valor; }); state.prev.forEach(function(a){ m["Previdência"]=(m["Previdência"]||0)+a.valor; t+=a.valor; }); return {m:m,t:t}; }
   function compProp(){ var m={},t=0; state.atual.forEach(function(a){ if(state.removed[a.aid])return; var v=curVal(a); var g=grpOf(a.categoria,a.name,a.detalhe,a.subcat); m[g]=(m[g]||0)+v; t+=v; }); state.added.forEach(function(x){ var g=grpOf(x.classe,x.nome,x.detalhe,""); m[g]=(m[g]||0)+(x.valor||0); t+=(x.valor||0); }); state.prev.forEach(function(a){ m["Previdência"]=(m["Previdência"]||0)+a.valor; t+=a.valor; }); return {m:m,t:t}; }
