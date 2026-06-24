@@ -905,7 +905,9 @@ body.mm [data-tool="construtor"] .col-editor{ min-width:0 !important; flex:1 1 a
 body.mm [data-tool="construtor"] #libChips{ grid-template-columns:1fr 1fr !important; }
 body.mm [data-tool="aderencia"] .ad-compare{ grid-template-columns:1fr !important; }
 body.mm #ajCols{ grid-template-columns:1fr !important; }
-body.mm #p-ajustes [style*="repeat(auto-fill"]{ grid-template-columns:1fr !important; }
+body.mm #p-ajustes .pc-main{ flex-direction:column !important; }
+body.mm #p-ajustes .pc-drawer{ width:100% !important; position:static !important; max-height:none !important; }
+body.mm #p-ajustes .pc-board{ grid-template-columns:1fr !important; }
 body.mm input, body.mm select, body.mm textarea{ font-size:16px !important; }
 body.mm .ajbtn{ padding:11px 16px !important; font-size:14px !important; }
 @media (max-width:760px){
@@ -942,7 +944,7 @@ body.mm .ajbtn{ padding:11px 16px !important; font-size:14px !important; }
     </button>
     <button class="g-tab" data-panel="ajustes" onclick="showPanel('ajustes')">
       <svg viewBox="0 0 24 24"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
-      Ajustes de Carteira
+      Propor Carteira
     </button>
   </div>
 <style id="g-ticker-css">
@@ -978,6 +980,52 @@ body.mm .ajbtn{ padding:11px 16px !important; font-size:14px !important; }
     [data-tool="ajustes"] .ad-header{ border-bottom:1px solid rgba(120,130,210,.18); padding-bottom:20px; margin-bottom:24px; }
     [data-tool="ajustes"] .ad-logo{ font-family:'Sora',sans-serif; font-weight:800; font-size:34px; letter-spacing:-1px; color:var(--or); line-height:1; }
     [data-tool="ajustes"] .ad-sub{ color:#A9B0D6; font-size:14px; margin-top:6px; }
+    #p-ajustes .pc-head{ border-bottom:1px solid rgba(120,130,210,.18); padding-bottom:18px; margin-bottom:18px; }
+    #p-ajustes .pc-head .logo{ font-family:'Sora',sans-serif; font-weight:800; font-size:34px; letter-spacing:-1px; color:var(--or); line-height:1; }
+    #p-ajustes .pc-sub{ color:#A9B0D6; font-size:14px; margin-top:6px; }
+    #p-ajustes .pc-controls{ display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-bottom:16px; }
+    #p-ajustes .pc-lbl{ font-size:11px; font-weight:700; color:#9AA2D0; text-transform:uppercase; letter-spacing:.5px; margin-right:4px; }
+    #p-ajustes .pc-prompt{ border:1px dashed rgba(120,130,210,.3); border-radius:16px; padding:30px; text-align:center; color:#9AA2D0; font-size:14px; line-height:1.6; }
+    #p-ajustes .pc-prompt b{ color:#FF8B52; }
+    #p-ajustes .pc-id{ display:flex; flex-wrap:wrap; gap:16px; align-items:flex-end; justify-content:space-between; margin-bottom:18px; }
+    #p-ajustes .pc-flbl{ display:block; font-size:11px; font-weight:700; color:#9AA2D0; text-transform:uppercase; letter-spacing:.5px; margin-bottom:6px; }
+    #p-ajustes .pc-input{ background:rgba(255,255,255,.06); border:1px solid rgba(120,130,210,.25); color:#fff; border-radius:10px; padding:10px 14px; font-family:'Manrope',sans-serif; font-size:14px; min-width:240px; }
+    #p-ajustes .pc-chips{ display:flex; gap:10px; flex-wrap:wrap; }
+    #p-ajustes .pc-chip{ background:linear-gradient(160deg,rgba(28,36,112,.45),rgba(12,17,66,.65)); border:1px solid rgba(120,130,210,.18); border-radius:14px; padding:10px 14px; min-width:104px; }
+    #p-ajustes .pc-chiplbl{ font-size:10px; font-weight:700; color:#8A93C8; text-transform:uppercase; letter-spacing:.4px; }
+    #p-ajustes .pc-chipval{ font-family:'Sora',sans-serif; font-weight:800; font-size:16px; margin-top:3px; }
+    #p-ajustes .pc-main{ display:flex; gap:16px; align-items:flex-start; }
+    #p-ajustes .pc-drawer{ width:272px; flex-shrink:0; background:linear-gradient(160deg,rgba(28,36,112,.45),rgba(12,17,66,.65)); border:1px solid rgba(120,130,210,.18); border-radius:18px; padding:14px; position:sticky; top:70px; max-height:calc(100vh - 90px); overflow:auto; }
+    #p-ajustes .pc-drawerhead{ display:flex; align-items:center; justify-content:space-between; font-family:'Sora',sans-serif; font-weight:700; font-size:14px; color:#fff; margin-bottom:10px; }
+    #p-ajustes .pc-mini{ font-size:11px !important; padding:5px 10px !important; }
+    #p-ajustes .pc-libsec{ margin-bottom:12px; }
+    #p-ajustes .pc-libcat{ display:flex; align-items:center; gap:7px; font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.5px; margin-bottom:6px; }
+    #p-ajustes .pc-libcat span{ width:9px; height:9px; border-radius:3px; }
+    #p-ajustes .pc-libcard{ display:flex; align-items:center; gap:8px; background:rgba(0,0,0,.22); border:1px solid rgba(120,130,210,.16); border-radius:10px; padding:8px 10px; margin-bottom:6px; cursor:grab; }
+    #p-ajustes .pc-libcard:active{ cursor:grabbing; }
+    #p-ajustes .pc-libinfo{ flex:1; min-width:0; }
+    #p-ajustes .pc-libname{ font-size:12.5px; font-weight:700; color:#eef0fb; }
+    #p-ajustes .pc-libdet{ font-size:10.5px; color:#7E87BE; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:170px; }
+    #p-ajustes .pc-add{ cursor:pointer; background:rgba(61,214,140,.14); border:1px solid rgba(61,214,140,.45); color:#3DD68C; border-radius:8px; width:26px; height:26px; font-weight:800; flex-shrink:0; }
+    #p-ajustes .pc-board{ flex:1; display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px; min-width:0; }
+    #p-ajustes .pc-col{ background:linear-gradient(160deg,rgba(28,36,112,.45),rgba(12,17,66,.65)); border:1px solid rgba(120,130,210,.18); border-radius:18px; padding:14px; min-height:240px; transition:outline .12s; }
+    #p-ajustes .pc-col.drop{ outline:2px dashed #FF8B52; outline-offset:-4px; }
+    #p-ajustes .pc-coltitle{ font-family:'Sora',sans-serif; font-weight:700; font-size:14.5px; margin-bottom:10px; }
+    #p-ajustes .pc-trash{ border:1px dashed rgba(255,107,107,.4); border-radius:10px; padding:10px; text-align:center; font-size:11.5px; color:#FF8B8B; margin-bottom:10px; }
+    #p-ajustes .pc-empty{ color:#6F77A8; font-size:13px; padding:8px 0; }
+    #p-ajustes .pc-cat{ border-left:3px solid #9AA2D0; padding-left:8px; margin:12px 0 7px; font-size:11.5px; font-weight:800; text-transform:uppercase; letter-spacing:.6px; }
+    #p-ajustes .pc-card{ background:rgba(0,0,0,.20); border:1px solid rgba(120,130,210,.16); border-radius:11px; padding:9px 11px; margin-bottom:7px; }
+    #p-ajustes .pc-card[draggable]{ cursor:grab; }
+    #p-ajustes .pc-cardtop{ display:flex; align-items:center; gap:8px; }
+    #p-ajustes .pc-name{ flex:1; min-width:0; font-size:13px; font-weight:700; color:#eef0fb; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    #p-ajustes .pc-x{ cursor:pointer; background:rgba(255,107,107,.12); border:1px solid rgba(255,107,107,.4); color:#FF6B6B; border-radius:7px; width:22px; height:22px; font-weight:800; flex-shrink:0; font-size:11px; }
+    #p-ajustes .pc-x.undo{ background:rgba(120,130,210,.14); border-color:rgba(120,130,210,.4); color:#9AA2D0; }
+    #p-ajustes .pc-cardbot{ display:flex; align-items:center; gap:6px; margin-top:6px; }
+    #p-ajustes .pc-val{ width:88px; background:rgba(255,255,255,.06); border:1px solid rgba(120,130,210,.25); color:#fff; border-radius:7px; padding:5px 7px; font-family:'Sora',sans-serif; font-weight:700; font-size:12px; }
+    #p-ajustes .pc-mut{ font-size:11.5px; color:#8A93C8; }
+    #p-ajustes .pc-actions{ display:flex; gap:12px; flex-wrap:wrap; margin:18px 0 6px; }
+    #p-ajustes .pc-disc{ font-size:11px; color:#6F77A8; line-height:1.6; margin-top:12px; }
+    @media (max-width:1000px){ #p-ajustes .pc-main{ flex-direction:column; } #p-ajustes .pc-drawer{ width:100%; position:static; max-height:none; } #p-ajustes .pc-board{ grid-template-columns:1fr; } }
     </style>
     <input type="file" id="ajFile" accept=".xlsx,.xls" style="display:none">
     <div id="ajRoot" class="adw" style="max-width:1180px;margin:0 auto;padding:28px 20px 60px"></div>
@@ -1012,8 +1060,8 @@ body.mm .ajbtn{ padding:11px 16px !important; font-size:14px !important; }
         </div>
         <div class="hcard" onclick="showPanel('ajustes')">
           <div class="hcard-ic"><svg viewBox="0 0 24 24"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg></div>
-          <div class="hcard-title">Ajustes de Carteira</div>
-          <div class="hcard-desc">Monte a carteira proposta e gere o plano (o que sai, fica e entra) em PDF e Excel.</div>
+          <div class="hcard-title">Propor Carteira</div>
+          <div class="hcard-desc">Proponha a nova carteira do cliente: arraste o que sai, adicione das gavetas, e gere a proposta em PNG.</div>
         </div>
       </div>
       <style>
@@ -7685,10 +7733,11 @@ window.__rvRender = render;
 <script id="ajustes-tool">
 (function(){
   function fmtBRL(n){ return "R$ "+Math.round(n||0).toLocaleString("pt-BR"); }
+  function fmtK(n){ n=Math.round(n||0); return n>=1000? "R$ "+(n/1000).toFixed(n%1000?1:0).replace(".",",")+"k" : "R$ "+n; }
   function fmtPct(n){ var v=Math.round((n||0)*10)/10; return (Number.isInteger(v)?v.toFixed(0):v.toFixed(1)).replace(".",",")+"%"; }
   function esc(s){ return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
   var CATCOL={"Renda Fixa":"#3DD68C","Previdência":"#E8709B","Multimercados":"#7C8CFF","Renda Variável":"#F26522","Fundos Listados":"#FFB020","Alternativos":"#C77DFF","Internacional":"#36C5F0"};
-  var LIBORDER=["Renda Fixa","Multimercados","Renda Variável","Fundos Listados","Alternativos","Internacional"];
+  var ORDER=["Renda Fixa","Previdência","Multimercados","Renda Variável","Fundos Listados","Alternativos","Internacional"];
   var LIB=[
     {classe:"Renda Fixa",nome:"LCD",detalhe:"93/94% do CDI · 1–5 anos · isento de IR"},
     {classe:"Renda Fixa",nome:"LCI",detalhe:"IPCA + 6% a.a. · 1 a 3 anos · isento"},
@@ -7697,244 +7746,233 @@ window.__rvRender = render;
     {classe:"Renda Fixa",nome:"XP Brasil IPCA+",detalhe:"IPCA + 8,2% a.a."},
     {classe:"Renda Fixa",nome:"Tesouro Selic",detalhe:"Pós-fixado · liquidez diária"},
     {classe:"Renda Fixa",nome:"Tesouro IPCA+ (NTN-B)",detalhe:"IPCA + juro real · longo prazo"},
+    {classe:"Renda Fixa",nome:"LTN (Tesouro Prefixado)",detalhe:"Prefixado · juro travado na largada"},
+    {classe:"Renda Fixa",nome:"LCA Pré",detalhe:"Prefixada isenta de IR"},
+    {classe:"Renda Fixa",nome:"LCI Pré",detalhe:"Prefixada isenta de IR"},
+    {classe:"Renda Fixa",nome:"CDB Pré 15%",detalhe:"Prefixado ~15% a.a. · 2 a 4 anos"},
+    {classe:"Renda Fixa",nome:"Debênture Pré (Infra)",detalhe:"Crédito privado prefixado · isenta"},
     {classe:"Multimercados",nome:"ACE Multicenários",detalhe:"Multimercado global · ~230% do CDI"},
     {classe:"Multimercados",nome:"XP Forças Armadas",detalhe:"Defesa EUA (Palantir e afins) · 5 anos"},
     {classe:"Multimercados",nome:"XP NTN-B Longa",detalhe:"NTN-B longa marcada a mercado · 1 ano"},
     {classe:"Renda Variável",nome:"BOVA11 Protegida",detalhe:"Proteção total · participa da alta · Collar UI 2 anos"},
+    {classe:"Renda Variável",nome:"BPAC11 — SmartCupom",detalhe:"BTG · cupom pré ~8% em 8 meses"},
+    {classe:"Renda Variável",nome:"ITUB — Fence",detalhe:"Itaú · proteção parcial, alta limitada · 1 ano"},
+    {classe:"Renda Variável",nome:"Microsoft — Collar",detalhe:"Collar UI 2 anos · proteção total"},
+    {classe:"Renda Variável",nome:"AXIA3 — Collar",detalhe:"Axia Energia · Collar UI 1,5 ano"},
+    {classe:"Renda Variável",nome:"PETR4 — Collar",detalhe:"Petrobras · proteção total, alta limitada"},
+    {classe:"Renda Variável",nome:"VALE3 — Fence",detalhe:"Vale · proteção parcial · 1 ano"},
     {classe:"Fundos Listados",nome:"JHSF Capital Malls",detalhe:"Shoppings premium · trophy assets"},
     {classe:"Fundos Listados",nome:"XPAG (Fiagro)",detalhe:"Crédito do agro · renda mensal isenta"},
     {classe:"Fundos Listados",nome:"XP Logístico Prime",detalhe:"Galpões logísticos AAA"},
     {classe:"Alternativos",nome:"Ouro — Retorno Otimizado",detalhe:"Ouro com estrutura otimizada · 3–5 anos"},
     {classe:"Alternativos",nome:"XP Tecnologia (QQQ)",detalhe:"Tecnologia EUA com proteção · 1 ano"},
     {classe:"Internacional",nome:"Wellington Global Quality",detalhe:"Ações EUA/Europa/RU · +75% em 3 anos"},
-    {classe:"Internacional",nome:"CD de 1 ano (dólar)",detalhe:"Certificate of Deposit · pré em dólar"},
-    {classe:"Renda Fixa",nome:"LTN (Tesouro Prefixado)",detalhe:"Prefixado · juro travado na largada"},
-    {classe:"Renda Fixa",nome:"LCA Pré",detalhe:"Prefixada isenta de IR · no vencimento"},
-    {classe:"Renda Fixa",nome:"LCI Pré",detalhe:"Prefixada isenta de IR · no vencimento"},
-    {classe:"Renda Fixa",nome:"CDB Pré 15%",detalhe:"Prefixado ~15% a.a. · 2 a 4 anos"},
-    {classe:"Renda Fixa",nome:"Debênture Pré (Infra)",detalhe:"Crédito privado prefixado · isenta de IR"},
-    {classe:"Renda Variável",nome:"BPAC11 — SmartCupom",detalhe:"BTG · cupom pré ~8% em 8 meses"},
-    {classe:"Renda Variável",nome:"ITUB — Fence",detalhe:"Itaú · proteção parcial, alta limitada · 1 ano"},
-    {classe:"Renda Variável",nome:"Microsoft — Collar",detalhe:"Collar UI 2 anos · proteção total"},
-    {classe:"Renda Variável",nome:"AXIA3 — Collar",detalhe:"Axia Energia · Collar UI 1,5 ano"},
-    {classe:"Renda Variável",nome:"PETR4 — Collar",detalhe:"Petrobras · proteção total, alta limitada"},
-    {classe:"Renda Variável",nome:"VALE3 — Fence",detalhe:"Vale · proteção parcial · 1 ano"}
+    {classe:"Internacional",nome:"CD de 1 ano (dólar)",detalhe:"Certificate of Deposit · pré em dólar"}
   ];
   function customLib(){ try{ return JSON.parse(localStorage.getItem("hubCustomLib")||"[]")||[]; }catch(e){ return []; } }
   function gavetas(){ return LIB.concat(customLib().map(function(x){return {classe:x.classe,nome:x.nome,detalhe:x.detalhe||""};})); }
 
-  var state={ origem:"import", atual:null, proposta:[], libOpen:true, plan:null, seeded:false, cliente:"", baseOverride:null };
-  var seq=0; function uid(){ return "p"+(++seq); }
+  var state={ origem:"import", cliente:"", atual:null, prev:[], vals:{}, removed:{}, added:[], libOpen:true };
+  var seq=0; function uid(){ return "e"+(++seq); }
+  var drag=null;
 
-  function getAtual(){
-    if(state.origem==="sim"){
-      var c=window.RICO_BRIDGE&&window.RICO_BRIDGE.carteira;
-      if(c&&c.itens&&c.itens.length){ var base=c.patrimonio||0; return {fonte:"sim",conta:"",cliente:c.cliente||"",patrim:base,ativos:c.itens.map(function(it){return {name:it.nome,categoria:it.classe,valor:(Number(it.pct)||0)/100*base};})}; }
-      return null;
-    }
-    var p=window.RICO_BRIDGE&&window.RICO_BRIDGE.posicaoAtual;
-    if(p&&p.ativos&&p.ativos.length){ return {fonte:"import",conta:p.conta||"",cliente:"",patrim:p.patrimonio||0,ativos:p.ativos.map(function(a){return {name:a.name,categoria:a.categoria||"Multimercados",valor:a.valor||0};})}; }
-    return null;
+  function load(){
+    var src=null;
+    if(state.origem==="sim"){ var c=window.RICO_BRIDGE&&window.RICO_BRIDGE.carteira; if(c&&c.itens&&c.itens.length){ var b=c.patrimonio||0; src={conta:"",cliente:c.cliente||"",ativos:c.itens.map(function(it){return {name:it.nome,categoria:it.classe,valor:(Number(it.pct)||0)/100*b};})}; } }
+    else { var p=window.RICO_BRIDGE&&window.RICO_BRIDGE.posicaoAtual; if(p&&p.ativos&&p.ativos.length){ src={conta:p.conta||"",cliente:"",ativos:p.ativos.map(function(a){return {name:a.name,categoria:a.categoria||"Multimercados",valor:a.valor||0};})}; } }
+    if(!src){ state.atual=null; return; }
+    state.atual=src.ativos.filter(function(a){return a.categoria!=="Previdência";});
+    state.prev=src.ativos.filter(function(a){return a.categoria==="Previdência";});
+    if(!state.cliente) state.cliente=src.cliente||(src.conta?("Conta "+src.conta):"");
+    state.conta=src.conta;
+    // reset edits keyed by name
+    state.vals={}; state.removed={};
+    state.atual.forEach(function(a){ state.vals[a.name]=a.valor; });
   }
-  function getTemplate(dest){
-    if(!window.RICO_TEMPLATES){ try{ if(window._toolInit&&window._toolInit['construtor']) window._toolInit['construtor'](); }catch(e){} }
-    var T=window.RICO_TEMPLATES; if(T&&typeof T[dest]==="function") return T[dest]().map(function(it){return {nome:it.nome,classe:it.classe,pct:Number(it.pct)||0};});
-    return null;
-  }
-  function coreTicker(s){ var m=String(s||"").toUpperCase().match(/\b([A-Z]{4}\d{1,2})\b/); return m?m[1]:null; }
-  function norm(s){ return String(s||"").toUpperCase().normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[^A-Z0-9]/g,""); }
-  function sameAsset(a,b){ var ca=coreTicker(a),cb=coreTicker(b); if(ca&&cb) return ca===cb; var na=norm(a),nb=norm(b); if(!na||!nb) return false; if(na===nb) return true; if(na.length<4||nb.length<4) return false; return na.indexOf(nb)===0||nb.indexOf(na)===0; }
 
-  function prevAssets(){ return state.atual? state.atual.ativos.filter(function(a){return a.categoria==="Previdência";}):[]; }
-  function currentLiq(){ return state.atual? state.atual.ativos.filter(function(a){return a.categoria!=="Previdência";}).reduce(function(s,a){return s+a.valor;},0):0; }
-  function liquidBase(){ return (state.baseOverride!=null&&state.baseOverride>0)? state.baseOverride : currentLiq(); }
-  function totalPct(){ return state.proposta.reduce(function(s,r){return s+(Number(r.pct)||0);},0); }
+  function curVal(a){ return state.vals[a.name]!=null? state.vals[a.name] : a.valor; }
+  function liquidAtual(){ return state.atual? state.atual.reduce(function(s,a){return s+a.valor;},0):0; }
+  function prevTotal(){ return state.prev.reduce(function(s,a){return s+a.valor;},0); }
 
-  function seedFromAtual(){ var lb=currentLiq(); state.proposta=state.atual.ativos.filter(function(a){return a.categoria!=="Previdência";}).map(function(a){return {id:uid(),nome:a.name,classe:a.categoria,pct: lb>0? Math.round(a.valor/lb*1000)/10:0};}); state.seeded=true; state.plan=null; }
-  function seedFromModel(dest){ var its=getTemplate(dest); if(!its){ alert("Modelo indisponível."); return; } state.proposta=its.map(function(it){return {id:uid(),nome:it.nome,classe:it.classe,pct:it.pct};}); state.seeded=true; state.plan=null; }
-
-  function buildPlan(){
-    var lb=liquidBase(), prev=prevAssets(), prevTotal=prev.reduce(function(s,a){return s+a.valor;},0);
-    var atualLiq=state.atual.ativos.filter(function(a){return a.categoria!=="Previdência";});
-    var prop=state.proposta.map(function(r){return {nome:r.nome,classe:r.classe,pct:Number(r.pct)||0,val:(Number(r.pct)||0)/100*lb};});
-    var sair=[],manter=[],entrar=[],used={};
-    prev.forEach(function(a){ manter.push({name:a.name,categoria:"Previdência",de:a.valor,para:a.valor,mov:0,acao:"Manter",obs:"Previdência (mantida)"}); });
-    atualLiq.forEach(function(a){
-      var mi=-1; for(var i=0;i<prop.length;i++){ if(!used[i]&&sameAsset(prop[i].nome,a.name)){ mi=i; break; } }
-      if(mi<0){ sair.push({name:a.name,categoria:a.categoria,de:a.valor,para:0,mov:-a.valor,acao:"Sair",obs:"Removido da carteira proposta"}); }
-      else { used[mi]=true; var t=prop[mi].val,d=t-a.valor,thr=Math.max(60,lb*0.0008),ac=Math.abs(d)<thr?"Manter":(d>0?"Aumentar":"Reduzir"); manter.push({name:a.name,categoria:a.categoria,de:a.valor,para:t,mov:d,acao:ac,obs:ac==="Manter"?"":"Ajuste de alocação"}); }
+  // classify into board columns
+  function board(){
+    var sair=[],manter=[],entrar=[];
+    state.prev.forEach(function(a){ manter.push({k:"prev",name:a.name,categoria:"Previdência",orig:a.valor,val:a.valor,mov:0,acao:"Manter"}); });
+    state.atual.forEach(function(a){
+      if(state.removed[a.name]){ sair.push({k:"cur",name:a.name,categoria:a.categoria,orig:a.valor,val:0,mov:-a.valor,acao:"Sair"}); return; }
+      var v=curVal(a),d=v-a.valor;
+      if(d<-0.5) sair.push({k:"cur",name:a.name,categoria:a.categoria,orig:a.valor,val:v,mov:d,acao:"Reduzir"});
+      else if(d>0.5) entrar.push({k:"cur",name:a.name,categoria:a.categoria,orig:a.valor,val:v,mov:d,acao:"Aumentar"});
+      else manter.push({k:"cur",name:a.name,categoria:a.categoria,orig:a.valor,val:v,mov:0,acao:"Manter"});
     });
-    prop.forEach(function(p,i){ if(!used[i]&&p.val>0.5){ entrar.push({name:p.nome,categoria:p.classe,de:0,para:p.val,mov:p.val,acao:"Entrar",obs:"Novo ativo (gaveta)"}); } });
-    var totalVender=-sair.reduce(function(s,x){return s+x.mov;},0)-manter.filter(function(m){return m.acao==="Reduzir";}).reduce(function(s,x){return s+x.mov;},0);
-    var totalComprar=entrar.reduce(function(s,x){return s+x.mov;},0)+manter.filter(function(m){return m.acao==="Aumentar";}).reduce(function(s,x){return s+x.mov;},0);
-    return {patrim:lb+prevTotal,liquidBase:lb,prevTotal:prevTotal,sair:sair,manter:manter,entrar:entrar,totalVender:totalVender,totalComprar:totalComprar,turnover:lb>0?totalComprar/lb*100:0,totalPct:totalPct()};
+    state.added.forEach(function(x){ entrar.push({k:"add",id:x.id,name:x.nome,categoria:x.classe,orig:0,val:x.valor||0,mov:x.valor||0,acao:"Entrar"}); });
+    return {sair:sair,manter:manter,entrar:entrar};
   }
+  function totals(b){
+    var vender=-b.sair.reduce(function(s,x){return s+x.mov;},0);
+    var comprar=b.entrar.reduce(function(s,x){return s+x.mov;},0);
+    var lb=liquidAtual();
+    return {vender:vender,comprar:comprar,liquid:lb,prev:prevTotal(),patrim:lb+prevTotal(),giro: lb>0? comprar/lb*100:0, saldo: comprar-vender};
+  }
+  function compAtual(){ var m={},t=0; state.atual.forEach(function(a){ m[a.categoria]=(m[a.categoria]||0)+a.valor; t+=a.valor; }); state.prev.forEach(function(a){ m["Previdência"]=(m["Previdência"]||0)+a.valor; t+=a.valor; }); return {m:m,t:t}; }
+  function compProp(){ var m={},t=0; state.atual.forEach(function(a){ if(state.removed[a.name])return; var v=curVal(a); m[a.categoria]=(m[a.categoria]||0)+v; t+=v; }); state.added.forEach(function(x){ m[x.classe]=(m[x.classe]||0)+(x.valor||0); t+=(x.valor||0); }); state.prev.forEach(function(a){ m["Previdência"]=(m["Previdência"]||0)+a.valor; t+=a.valor; }); return {m:m,t:t}; }
 
-  function chip(label,val,col){ return '<div style="background:rgba(20,28,87,.45);border:1px solid rgba(120,130,210,.18);border-radius:12px;padding:10px 14px;min-width:120px"><div style="font-size:10.5px;color:#8A93C8;font-weight:700;text-transform:uppercase;letter-spacing:.4px">'+esc(label)+'</div><div style="font-family:Sora,sans-serif;font-weight:800;font-size:16px;color:'+col+';margin-top:3px">'+esc(val)+'</div></div>'; }
-  function actBadge(a){ var c=a==="Sair"?"#FF6B6B":(a==="Reduzir"?"#FFB020":(a==="Entrar"||a==="Aumentar"?"#3DD68C":"#9AA2D0")); return '<span style="font-size:10px;font-weight:800;color:'+c+';border:1px solid '+c+'55;background:'+c+'1A;border-radius:6px;padding:2px 7px">'+a+'</span>'; }
-  function listHTML(items){ if(!items.length) return '<div style="color:#6F77A8;font-size:13px;padding:10px 0">—</div>'; return items.map(function(x){ var col=CATCOL[x.categoria]||"#9AA2D0"; var mov=x.mov>0?("+"+fmtBRL(x.mov)):(x.mov<0?("−"+fmtBRL(-x.mov)):"manter"); return '<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(120,130,210,.12)"><span style="width:8px;height:8px;border-radius:50%;background:'+col+';flex-shrink:0"></span><div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:700;color:#eef0fb;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(x.name)+'</div><div style="font-size:11px;color:#8A93C8">'+esc(x.categoria)+'</div></div><div style="text-align:right;flex-shrink:0">'+actBadge(x.acao)+'<div style="font-size:12px;font-weight:700;color:'+(x.mov>0?"#3DD68C":(x.mov<0?"#FF6B6B":"#9AA2D0"))+';margin-top:3px">'+mov+'</div></div></div>'; }).join(""); }
+  function groupByCat(items){ var g={}; items.forEach(function(x){ (g[x.categoria]=g[x.categoria]||[]).push(x); }); return g; }
+
+  function colHTML(title,color,items,colKey){
+    var h='<div class="pc-col" data-col="'+colKey+'"><div class="pc-coltitle" style="color:'+color+'">'+title+'</div>';
+    if(colKey==="sair") h+='<div class="pc-trash" data-col="sair">🗑️ Arraste aqui o que vai sair</div>';
+    if(!items.length && colKey!=="sair") h+='<div class="pc-empty">—</div>';
+    var g=groupByCat(items);
+    ORDER.forEach(function(cat){ var arr=g[cat]; if(!arr||!arr.length) return; var c=CATCOL[cat]||"#9AA2D0";
+      h+='<div class="pc-cat" style="border-left-color:'+c+'"><span style="color:'+c+'">'+cat+'</span></div>';
+      arr.forEach(function(x){
+        var mv=x.mov>0?("+"+fmtBRL(x.mov)):(x.mov<0?("−"+fmtBRL(-x.mov)):"manter");
+        var mc=x.mov>0?"#3DD68C":(x.mov<0?"#FF6B6B":"#9AA2D0");
+        var draggable=(colKey==="manter"&&x.k==="cur")?' draggable="true" data-drag="cur:'+esc(x.name)+'"':'';
+        h+='<div class="pc-card"'+draggable+'>'
+          +'<div class="pc-cardtop"><span class="pc-name">'+(x.k==="prev"?'🔒 ':'')+esc(x.name)+'</span>';
+        // controls
+        if(colKey==="sair") h+='<button class="pc-x undo" data-undo="'+esc(x.name)+'" title="Voltar">↩</button>';
+        else if(x.k==="add") h+='<button class="pc-x" data-rmadd="'+x.id+'" title="Remover">✕</button>';
+        else if(x.k==="cur") h+='<button class="pc-x sell" data-sell="'+esc(x.name)+'" title="Vender (mover p/ Sair)">✕</button>';
+        h+='</div>';
+        // value row
+        if(x.k==="prev"){ h+='<div class="pc-cardbot"><span class="pc-mut">'+fmtBRL(x.val)+'</span><span class="pc-mut">mantida</span></div>'; }
+        else if(colKey==="sair"&&x.acao==="Sair"){ h+='<div class="pc-cardbot"><span class="pc-mut">'+fmtBRL(x.orig)+'</span><span style="color:'+mc+';font-weight:700">'+mv+'</span></div>'; }
+        else {
+          var inpId=(x.k==="add"?("add:"+x.id):("cur:"+esc(x.name)));
+          h+='<div class="pc-cardbot"><span class="pc-mut">R$</span><input class="pc-val" data-val="'+inpId+'" type="number" step="1000" min="0" value="'+Math.round(x.val)+'">'
+            +'<span style="color:'+mc+';font-weight:700;margin-left:auto">'+mv+'</span></div>';
+        }
+        h+='</div>';
+      });
+    });
+    h+='</div>';
+    return h;
+  }
 
   function render(){
     var root=document.getElementById("ajRoot"); if(!root) return;
-    state.atual=getAtual();
-    if(state.atual && !state.cliente){ state.cliente=state.atual.cliente||(state.atual.conta?("Conta "+state.atual.conta):""); }
+    load();
     var simExists=!!(window.RICO_BRIDGE&&window.RICO_BRIDGE.carteira&&window.RICO_BRIDGE.carteira.itens&&window.RICO_BRIDGE.carteira.itens.length);
-    var lb=liquidBase();
     var h='';
-    h+='<div class="ad-header"><div class="ad-logo">rico</div><div class="ad-sub">Ajustes de Carteira · monte a carteira proposta do cliente e gere o plano (o que sai, fica e entra)</div></div>';
+    h+='<div class="pc-head"><div class="logo">rico</div><div class="pc-sub">Propor Carteira · arraste o que sai, adicione das gavetas o que entra, e gere a proposta</div></div>';
 
-    // ORIGEM
-    h+='<div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:8px">';
-    h+='<span style="font-size:11px;font-weight:700;color:#9AA2D0;text-transform:uppercase;letter-spacing:.5px">Carteira atual do cliente:</span>';
-    h+='<button data-org="import" class="ajbtn'+(state.origem==="import"?" on":"")+'">Posição importada</button>';
-    h+='<button data-org="sim" class="ajbtn'+(state.origem==="sim"?" on":"")+'">Carteira do Simulador</button>';
-    h+='<button data-ajimport class="ajbtn">Importar Excel…</button>';
-    if(state.atual) h+='<span style="font-size:12.5px;color:#9AA2D0">'+(state.atual.conta?("Conta "+esc(state.atual.conta)+" · "):"")+fmtBRL(state.atual.patrim||lb)+'</span>';
-    h+='</div>';
+    h+='<div class="pc-controls"><span class="pc-lbl">Carteira do cliente:</span>'
+      +'<button data-org="import" class="ajbtn'+(state.origem==="import"?" on":"")+'">Posição importada</button>'
+      +'<button data-org="sim" class="ajbtn'+(state.origem==="sim"?" on":"")+'">Carteira do Simulador</button>'
+      +'<button data-ajimport class="ajbtn">Importar Excel…</button></div>';
 
     if(!state.atual){
-      h+='<div style="border:1px dashed rgba(120,130,210,.3);border-radius:16px;padding:30px;text-align:center;color:#9AA2D0;font-size:14px;line-height:1.6">'
-        +(state.origem==="sim"?'Monte uma carteira no <b style="color:#FF8B52">Simulador de Investimentos</b> para usá-la como carteira atual.'
-          :'Importe a <b style="color:#FF8B52">Posição Consolidada</b> (.xlsx) do cliente para carregar a carteira atual.<div style="margin-top:16px"><button data-ajimport class="ajbtn primary">Importar Excel…</button></div>')+'</div>';
+      h+='<div class="pc-prompt">'+(state.origem==="sim"?'Monte uma carteira no <b>Simulador de Investimentos</b> para usá-la aqui.':'Importe a <b>Posição Consolidada</b> (.xlsx) do cliente.<div style="margin-top:16px"><button data-ajimport class="ajbtn primary">Importar Excel…</button></div>')+'</div>';
       root.innerHTML=h; bind(); return;
     }
-    if(!state.seeded) seedFromAtual();
-    h+='<div style="display:flex;flex-wrap:wrap;gap:16px;align-items:flex-end;margin-bottom:14px">';
-    h+='<div><div style="font-size:11px;font-weight:700;color:#9AA2D0;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Cliente</div><input id="ajCliente" type="text" value="'+esc(state.cliente)+'" placeholder="Nome do cliente" style="background:rgba(255,255,255,.06);border:1px solid rgba(120,130,210,.25);color:#fff;border-radius:9px;padding:9px 12px;font-family:Manrope,sans-serif;font-size:13.5px;min-width:220px"></div>';
-    h+='<div><div style="font-size:11px;font-weight:700;color:#9AA2D0;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Valor investido (líquido a alocar)</div><div style="position:relative"><span style="position:absolute;left:12px;top:10px;color:#6F77A8;font-weight:700;font-size:13px">R$</span><input id="ajBase" type="number" step="1000" min="0" value="'+Math.round(lb)+'" style="background:rgba(255,255,255,.06);border:1px solid rgba(120,130,210,.25);color:#fff;border-radius:9px;padding:9px 12px 9px 36px;font-family:Sora,sans-serif;font-weight:700;font-size:13.5px;width:190px"></div></div>';
-    h+='</div>';
+    var b=board(), t=totals(b);
+    h+='<div class="pc-id"><div><label class="pc-flbl">Cliente</label><input id="ajCliente" class="pc-input" type="text" value="'+esc(state.cliente)+'" placeholder="Nome do cliente"></div>'
+      +'<div class="pc-chips">'
+      +chip("Patrimônio",fmtBRL(t.patrim),"#cfd4ef")
+      +chip("A vender",fmtBRL(t.vender),"#FF6B6B")
+      +chip("A comprar",fmtBRL(t.comprar),"#3DD68C")
+      +chip("Giro",fmtPct(t.giro),"#FFB020")
+      +chip(t.saldo>=0?"Aporte":"Resgate",fmtBRL(Math.abs(t.saldo)),t.saldo>=0?"#3DD68C":"#FF6B6B")
+      +'</div></div>';
 
-    // PREVIDÊNCIA mantida
-    var prev=prevAssets();
-    if(prev.length){
-      h+='<div style="background:rgba(232,112,155,.08);border:1px solid rgba(232,112,155,.3);border-radius:12px;padding:10px 14px;margin-bottom:14px;font-size:12.5px;color:#E8a9c2">🔒 Previdência mantida (não movimenta): '+prev.map(function(a){return esc(a.name)+" · "+fmtBRL(a.valor);}).join(" · ")+'</div>';
-    }
-
-    // PROPOSTA editor
-    var tp=totalPct(); var tpcol=Math.abs(tp-100)<0.6?"#3DD68C":"#FFB020";
-    h+='<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin:6px 0 10px"><div style="font-family:Sora,sans-serif;font-weight:800;font-size:17px;color:#fff">Carteira proposta (editável)</div>'
-      +'<div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center"><span style="font-size:11px;color:#9AA2D0;font-weight:700">Começar de:</span>'
-      +'<button data-seed="atual" class="ajbtn">Carteira atual</button>'
-      +'<button data-seed="Conservadora" class="ajbtn">Conservadora</button>'
-      +'<button data-seed="Moderada" class="ajbtn">Moderada</button>'
-      +'<button data-seed="Sofisticada" class="ajbtn">Sofisticada</button>'
-      +'<button data-seed="vazia" class="ajbtn">Limpar</button></div></div>';
-
-    h+='<div style="background:linear-gradient(160deg,rgba(28,36,112,.45),rgba(12,17,66,.65));border:1px solid rgba(120,130,210,.18);border-radius:18px;padding:16px 18px;margin-bottom:8px">';
-    h+='<div id="ajPropRows">';
-    if(!state.proposta.length){ h+='<div style="color:#6F77A8;font-size:13px;padding:10px 0">Nenhum ativo. Adicione das gavetas abaixo ou use um modelo.</div>'; }
-    state.proposta.forEach(function(r){
-      var col=CATCOL[r.classe]||"#9AA2D0";
-      h+='<div class="ajrow" data-row="'+r.id+'" style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid rgba(120,130,210,.1)">'
-        +'<span style="width:8px;height:8px;border-radius:50%;background:'+col+';flex-shrink:0"></span>'
-        +'<input class="ajpct" data-id="'+r.id+'" type="number" step="0.5" min="0" value="'+r.pct+'" style="width:64px;background:rgba(255,255,255,.06);border:1px solid rgba(120,130,210,.25);color:#fff;border-radius:8px;padding:6px 8px;font-family:Sora,sans-serif;font-weight:700;font-size:13px">'
-        +'<span style="color:#9AA2D0;font-size:12px">%</span>'
-        +'<span style="flex:1;min-width:0;font-size:13.5px;font-weight:700;color:#eef0fb;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(r.nome)+'</span>'
-        +'<span style="font-size:11px;color:'+col+';font-weight:700">'+esc(r.classe)+'</span>'
-        +'<span class="ajhint" data-hint="'+r.id+'" style="font-size:12px;color:#8A93C8;min-width:90px;text-align:right">≈ '+fmtBRL((Number(r.pct)||0)/100*lb)+'</span>'
-        +'<button data-del="'+r.id+'" title="Remover" style="cursor:pointer;background:rgba(255,107,107,.12);border:1px solid rgba(255,107,107,.4);color:#FF6B6B;border-radius:8px;width:26px;height:26px;font-weight:800;flex-shrink:0">✕</button>'
-        +'</div>';
-    });
-    h+='</div>';
-    h+='<div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;font-size:13px"><span style="color:#9AA2D0">Total alocado (sobre o líquido <span id="ajLiqLabel">'+fmtBRL(lb)+'</span>)</span><span id="ajTotal" style="font-family:Sora,sans-serif;font-weight:800;color:'+tpcol+'">'+fmtPct(tp)+'</span></div>';
-    h+='</div>';
-
-    // GAVETAS
-    h+='<div style="display:flex;align-items:center;gap:10px;margin:16px 0 8px"><div style="font-family:Sora,sans-serif;font-weight:800;font-size:15px;color:#fff">Gavetas de ativos</div><button data-libtoggle class="ajbtn" style="font-size:11.5px;padding:5px 10px">'+(state.libOpen?"Ocultar":"Mostrar")+'</button></div>';
-    if(state.libOpen){
-      var G=gavetas();
-      h+='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px;margin-bottom:8px">';
-      LIBORDER.forEach(function(cl){
-        var items=G.map(function(a,i){return {a:a,i:i};}).filter(function(o){return o.a.classe===cl;});
-        if(!items.length) return;
-        var col=CATCOL[cl]||"#9AA2D0";
-        h+='<div style="background:linear-gradient(160deg,rgba(28,36,112,.45),rgba(12,17,66,.65));border:1px solid rgba(120,130,210,.18);border-radius:14px;padding:12px 14px"><div style="display:flex;align-items:center;gap:7px;margin-bottom:7px"><span style="width:9px;height:9px;border-radius:3px;background:'+col+'"></span><span style="font-weight:800;font-size:12px;color:'+col+'">'+cl+'</span></div>';
-        items.forEach(function(o){
-          h+='<div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-top:1px solid rgba(120,130,210,.08)"><div style="flex:1;min-width:0"><div style="font-size:12.5px;font-weight:700;color:#eef0fb">'+esc(o.a.nome)+'</div><div style="font-size:10.5px;color:#7E87BE;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(o.a.detalhe||"")+'</div></div><button data-libadd="'+o.i+'" title="Adicionar" style="cursor:pointer;background:rgba(61,214,140,.14);border:1px solid rgba(61,214,140,.45);color:#3DD68C;border-radius:8px;width:26px;height:26px;font-weight:800;flex-shrink:0">+</button></div>';
-        });
+    h+='<div class="pc-main">';
+    // DRAWER (left)
+    h+='<aside class="pc-drawer"><div class="pc-drawerhead"><span>Gavetas de ativos</span><button data-libtoggle class="ajbtn pc-mini">'+(state.libOpen?"Ocultar":"Mostrar")+'</button></div>';
+    if(state.libOpen){ var G=gavetas();
+      ORDER.forEach(function(cl){ if(cl==="Previdência")return; var items=G.map(function(a,i){return {a:a,i:i};}).filter(function(o){return o.a.classe===cl;}); if(!items.length)return; var c=CATCOL[cl]||"#9AA2D0";
+        h+='<div class="pc-libsec"><div class="pc-libcat" style="color:'+c+'"><span style="background:'+c+'"></span>'+cl+'</div>';
+        items.forEach(function(o){ h+='<div class="pc-libcard" draggable="true" data-drag="lib:'+o.i+'"><div class="pc-libinfo"><div class="pc-libname">'+esc(o.a.nome)+'</div><div class="pc-libdet">'+esc(o.a.detalhe||"")+'</div></div><button class="pc-add" data-libadd="'+o.i+'" title="Adicionar a Entrar">+</button></div>'; });
         h+='</div>';
       });
-      h+='</div>';
     }
-
-    // GERAR
-    h+='<div style="display:flex;gap:12px;flex-wrap:wrap;margin:16px 0 6px"><button id="ajGerar" class="ajbtn primary">Gerar plano do cliente</button>';
-    if(state.plan){ h+='<button id="ajPDF" class="ajbtn">Baixar PDF (cliente)</button><button id="ajXLS" class="ajbtn">Baixar Excel (execução)</button>'; }
+    h+='</aside>';
+    // BOARD (right)
+    h+='<div class="pc-board">';
+    h+=colHTML("Sair / Reduzir","#FF6B6B",b.sair,"sair");
+    h+=colHTML("Manter","#9AA2D0",b.manter,"manter");
+    h+=colHTML("Entrar / Aumentar","#3DD68C",b.entrar,"entrar");
     h+='</div>';
+    h+='</div>'; // pc-main
 
-    if(state.plan){
-      var p=state.plan;
-      h+='<div style="display:flex;flex-wrap:wrap;gap:12px;margin:14px 0 18px">';
-      h+=chip("Patrimônio",fmtBRL(p.patrim),"#cfd4ef");
-      h+=chip("Líquido",fmtBRL(p.liquidBase),"#cfd4ef");
-      if(p.prevTotal>0) h+=chip("Previdência",fmtBRL(p.prevTotal),"#E8709B");
-      h+=chip("A vender",fmtBRL(p.totalVender),"#FF6B6B");
-      h+=chip("A comprar",fmtBRL(p.totalComprar),"#3DD68C");
-      h+=chip("Giro",fmtPct(p.turnover),"#FFB020");
-      h+='</div>';
-      if(Math.abs(p.totalPct-100)>0.6) h+='<div style="background:rgba(255,176,32,.1);border:1px solid rgba(255,176,32,.35);border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:12.5px;color:#FFCB6B">Atenção: a carteira proposta soma '+fmtPct(p.totalPct)+' (ideal 100%). Ajuste os percentuais para um plano consistente.</div>';
-      h+='<div id="ajCols" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px">';
-      h+='<div style="background:linear-gradient(160deg,rgba(28,36,112,.45),rgba(12,17,66,.65));border:1px solid rgba(120,130,210,.18);border-radius:18px;padding:18px"><div style="font-family:Sora,sans-serif;font-weight:700;font-size:14.5px;color:#FF6B6B;margin-bottom:8px">Sair / Reduzir</div>'+listHTML(p.sair.concat(p.manter.filter(function(m){return m.acao==="Reduzir";})))+'</div>';
-      h+='<div style="background:linear-gradient(160deg,rgba(28,36,112,.45),rgba(12,17,66,.65));border:1px solid rgba(120,130,210,.18);border-radius:18px;padding:18px"><div style="font-family:Sora,sans-serif;font-weight:700;font-size:14.5px;color:#9AA2D0;margin-bottom:8px">Manter</div>'+listHTML(p.manter.filter(function(m){return m.acao==="Manter";}))+'</div>';
-      h+='<div style="background:linear-gradient(160deg,rgba(28,36,112,.45),rgba(12,17,66,.65));border:1px solid rgba(120,130,210,.18);border-radius:18px;padding:18px"><div style="font-family:Sora,sans-serif;font-weight:700;font-size:14.5px;color:#3DD68C;margin-bottom:8px">Entrar / Aumentar</div>'+listHTML(p.entrar.concat(p.manter.filter(function(m){return m.acao==="Aumentar";})))+'</div>';
-      h+='</div>';
-      h+='<div style="font-size:11px;color:#6F77A8;line-height:1.6;margin-top:16px">Plano = diferença entre a carteira atual do cliente e a carteira proposta. Previdência mantida sem movimentação. Material de apoio interno — não constitui recomendação ou oferta.</div>';
-    }
+    h+='<div class="pc-actions"><button id="ajPNG" class="ajbtn primary">Gerar proposta (PNG antes/depois)</button><button id="ajXLS" class="ajbtn">Baixar Excel (execução)</button></div>';
+    h+='<div class="pc-disc">Arraste um ativo de "Manter" para "Sair" para vendê-lo, ou use ✕. Edite o R$ de cada ativo para ajustar. Adicione ativos das gavetas (+) na coluna Entrar. Previdência é mantida sem movimentação. Material de apoio interno — não constitui recomendação ou oferta.</div>';
+
     root.innerHTML=h; bind();
   }
+  function chip(l,v,c){ return '<div class="pc-chip"><div class="pc-chiplbl">'+esc(l)+'</div><div class="pc-chipval" style="color:'+c+'">'+esc(v)+'</div></div>'; }
 
   function bind(){
     var root=document.getElementById("ajRoot"); if(!root) return;
-    root.querySelectorAll("[data-org]").forEach(function(b){ b.onclick=function(){ state.origem=b.getAttribute("data-org"); state.seeded=false; state.plan=null; render(); }; });
-    root.querySelectorAll("[data-seed]").forEach(function(b){ b.onclick=function(){ var s=b.getAttribute("data-seed"); if(s==="atual") seedFromAtual(); else if(s==="vazia"){ state.proposta=[]; state.seeded=true; state.plan=null; } else seedFromModel(s); render(); }; });
-    root.querySelectorAll("[data-del]").forEach(function(b){ b.onclick=function(){ var id=b.getAttribute("data-del"); state.proposta=state.proposta.filter(function(r){return r.id!==id;}); state.plan=null; render(); }; });
-    root.querySelectorAll("[data-libadd]").forEach(function(b){ b.onclick=function(){ var a=gavetas()[+b.getAttribute("data-libadd")]; if(a){ state.proposta.push({id:uid(),nome:a.nome,classe:a.classe,pct:0}); state.plan=null; render(); var rows=document.getElementById("ajPropRows"); if(rows) rows.scrollIntoView({behavior:"smooth",block:"nearest"}); } }; });
-    var lt=root.querySelector("[data-libtoggle]"); if(lt) lt.onclick=function(){ state.libOpen=!state.libOpen; render(); };
+    root.querySelectorAll("[data-org]").forEach(function(b){ b.onclick=function(){ state.origem=b.getAttribute("data-org"); state.cliente=""; state.added=[]; render(); }; });
     var cli=document.getElementById("ajCliente"); if(cli) cli.oninput=function(){ state.cliente=cli.value; };
-    var bs=document.getElementById("ajBase"); if(bs) bs.oninput=function(){ var v=Number(bs.value)||0; state.baseOverride=v>0?v:null; state.plan=null; var nb=liquidBase(); root.querySelectorAll(".ajpct").forEach(function(inp){ var id=inp.getAttribute("data-id"); var r=state.proposta.filter(function(x){return x.id===id;})[0]; if(!r) return; var hint=root.querySelector('[data-hint="'+id+'"]'); if(hint) hint.textContent="≈ "+fmtBRL((Number(r.pct)||0)/100*nb); }); var ll=document.getElementById("ajLiqLabel"); if(ll) ll.textContent=fmtBRL(nb); };
-    // pct edit (no re-render to keep focus)
-    var lb=liquidBase();
-    root.querySelectorAll(".ajpct").forEach(function(inp){ inp.oninput=function(){ var id=inp.getAttribute("data-id"); var r=state.proposta.filter(function(x){return x.id===id;})[0]; if(!r) return; r.pct=Number(inp.value)||0; state.plan=null; var hint=root.querySelector('[data-hint="'+id+'"]'); if(hint) hint.textContent="≈ "+fmtBRL((Number(r.pct)||0)/100*liquidBase()); var t=totalPct(); var el=document.getElementById("ajTotal"); if(el){ el.textContent=fmtPct(t); el.style.color=Math.abs(t-100)<0.6?"#3DD68C":"#FFB020"; } }; });
-    var g=document.getElementById("ajGerar"); if(g) g.onclick=function(){ if(!state.proposta.length){ alert("Adicione ativos à carteira proposta."); return; } state.plan=buildPlan(); render(); var c=document.getElementById("ajCols"); if(c) c.scrollIntoView({behavior:"smooth",block:"nearest"}); };
-    var pdf=document.getElementById("ajPDF"); if(pdf) pdf.onclick=exportPDF;
+    var lt=root.querySelector("[data-libtoggle]"); if(lt) lt.onclick=function(){ state.libOpen=!state.libOpen; render(); };
+    root.querySelectorAll("[data-sell]").forEach(function(b){ b.onclick=function(){ state.removed[b.getAttribute("data-sell")]=true; render(); }; });
+    root.querySelectorAll("[data-undo]").forEach(function(b){ b.onclick=function(){ var n=b.getAttribute("data-undo"); delete state.removed[n]; state.vals[n]=findOrig(n); render(); }; });
+    root.querySelectorAll("[data-rmadd]").forEach(function(b){ b.onclick=function(){ var id=b.getAttribute("data-rmadd"); state.added=state.added.filter(function(x){return x.id!==id;}); render(); }; });
+    root.querySelectorAll("[data-libadd]").forEach(function(b){ b.onclick=function(){ addLib(+b.getAttribute("data-libadd")); }; });
+    root.querySelectorAll(".pc-val").forEach(function(inp){ inp.onchange=function(){ var key=inp.getAttribute("data-val"),v=Number(inp.value)||0; if(key.indexOf("add:")===0){ var id=key.slice(4); var it=state.added.filter(function(x){return x.id===id;})[0]; if(it) it.valor=v; } else { var nm=key.slice(4); state.vals[nm]=v; } render(); }; });
+    var png=document.getElementById("ajPNG"); if(png) png.onclick=genPNG;
     var xls=document.getElementById("ajXLS"); if(xls) xls.onclick=exportXLS;
     // importar excel
     var fi=document.getElementById("ajFile");
     root.querySelectorAll("[data-ajimport]").forEach(function(b){ b.onclick=function(){ if(typeof window.RICO_importPosicaoFile!=="function"){ try{ if(window._toolInit&&window._toolInit['aderencia']) window._toolInit['aderencia'](); }catch(e){} } if(fi) fi.click(); }; });
-    if(fi) fi.onchange=function(){ var f=fi.files&&fi.files[0]; if(!f) return; if(typeof window.RICO_importPosicaoFile!=="function"){ alert("Importador indisponível — abra a aba Aderência uma vez."); return; } root.querySelectorAll("[data-ajimport]").forEach(function(b){ b.textContent="Importando…"; }); window.RICO_importPosicaoFile(f, function(pp){ state.origem="import"; state.seeded=false; state.plan=null; try{ fi.value=""; }catch(e){} render(); }); };
+    if(fi) fi.onchange=function(){ var f=fi.files&&fi.files[0]; if(!f)return; if(typeof window.RICO_importPosicaoFile!=="function"){ alert("Importador indisponível — abra a aba Aderência uma vez."); return; } root.querySelectorAll("[data-ajimport]").forEach(function(b){ b.textContent="Importando…"; }); window.RICO_importPosicaoFile(f,function(){ state.origem="import"; state.cliente=""; state.added=[]; try{fi.value="";}catch(e){} render(); }); };
+    // drag and drop
+    root.querySelectorAll("[data-drag]").forEach(function(el){ el.addEventListener("dragstart",function(e){ drag=el.getAttribute("data-drag"); try{e.dataTransfer.effectAllowed="move";e.dataTransfer.setData("text/plain",drag);}catch(_){}}); el.addEventListener("dragend",function(){ drag=null; root.querySelectorAll(".pc-col,.pc-trash").forEach(function(c){c.classList.remove("drop");}); }); });
+    root.querySelectorAll('[data-col]').forEach(function(col){
+      col.addEventListener("dragover",function(e){ if(!drag)return; var ck=col.getAttribute("data-col"); if((ck==="sair"&&drag.indexOf("cur:")===0)||(ck==="entrar"&&drag.indexOf("lib:")===0)){ e.preventDefault(); col.classList.add("drop"); } });
+      col.addEventListener("dragleave",function(){ col.classList.remove("drop"); });
+      col.addEventListener("drop",function(e){ if(!drag)return; e.preventDefault(); var ck=col.getAttribute("data-col"); if(ck==="sair"&&drag.indexOf("cur:")===0){ state.removed[drag.slice(4)]=true; render(); } else if(ck==="entrar"&&drag.indexOf("lib:")===0){ addLib(+drag.slice(4)); } drag=null; });
+    });
+  }
+  function findOrig(n){ var a=state.atual.filter(function(x){return x.name===n;})[0]; return a?a.valor:0; }
+  function addLib(i){ var a=gavetas()[i]; if(!a)return; var def=Math.round(liquidAtual()*0.05/1000)*1000; state.added.push({id:uid(),nome:a.nome,classe:a.classe,valor:def||1000}); render(); }
+
+  // ===== EXCEL =====
+  function rows(){ var b=board(),r=[]; b.sair.forEach(function(x){r.push(x);}); b.entrar.forEach(function(x){r.push(x);}); b.manter.forEach(function(x){r.push(x);}); return r; }
+  function exportXLS(){ if(typeof XLSX==="undefined"){ alert("Biblioteca de planilha carregando."); return; } var b=board(),t=totals(b);
+    var aoa=[["Ação","Ativo","Classe","R$ atual","R$ proposto","R$ movimento"]];
+    rows().forEach(function(x){ aoa.push([x.acao,x.name,x.categoria,Math.round(x.orig),Math.round(x.val),Math.round(x.mov)]); });
+    aoa.push([]); aoa.push(["Patrimônio","","","",Math.round(t.patrim),""]); aoa.push(["A vender","","","","",-Math.round(t.vender)]); aoa.push(["A comprar","","","","",Math.round(t.comprar)]);
+    var ws=XLSX.utils.aoa_to_sheet(aoa); ws["!cols"]=[{wch:11},{wch:40},{wch:16},{wch:13},{wch:13},{wch:14}];
+    var wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,ws,"Proposta"); XLSX.writeFile(wb,"Proposta de Carteira.xlsx");
   }
 
-  function clienteTxt(){ return (state.cliente&&state.cliente.trim())||"Cliente"; }
-  function planRows(){ var p=state.plan,rows=[]; p.sair.forEach(function(x){rows.push(x);}); p.manter.filter(function(m){return m.acao==="Reduzir";}).forEach(function(x){rows.push(x);}); p.entrar.forEach(function(x){rows.push(x);}); p.manter.filter(function(m){return m.acao==="Aumentar";}).forEach(function(x){rows.push(x);}); p.manter.filter(function(m){return m.acao==="Manter";}).forEach(function(x){rows.push(x);}); return rows; }
-
-  function exportXLS(){
-    if(typeof XLSX==="undefined"){ alert("Biblioteca de planilha ainda carregando."); return; }
-    var p=state.plan; var aoa=[["Ação","Ativo","Classe","R$ atual","R$ alvo","R$ movimento","Observação"]];
-    planRows().forEach(function(x){ aoa.push([x.acao,x.name,x.categoria,Math.round(x.de),Math.round(x.para),Math.round(x.mov),x.obs||""]); });
-    aoa.push([]); aoa.push(["Patrimônio total","","","",Math.round(p.patrim),"",""]);
-    aoa.push(["Líquido rebalanceado","","","",Math.round(p.liquidBase),"",""]);
-    aoa.push(["Previdência mantida","","","",Math.round(p.prevTotal),"",""]);
-    aoa.push(["Total a vender","","","","",-Math.round(p.totalVender),""]);
-    aoa.push(["Total a comprar","","","","",Math.round(p.totalComprar),""]);
-    var ws=XLSX.utils.aoa_to_sheet(aoa); ws["!cols"]=[{wch:11},{wch:42},{wch:16},{wch:13},{wch:13},{wch:14},{wch:30}];
-    var wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,ws,"Plano de Ajuste"); XLSX.writeFile(wb,"Plano de Ajuste.xlsx");
-  }
-  function exportPDF(){
-    var JS=window.jspdf&&window.jspdf.jsPDF; if(!JS){ alert("Biblioteca de PDF ainda carregando."); return; }
-    var p=state.plan, doc=new JS({unit:"pt",format:"a4"}), W=doc.internal.pageSize.getWidth(), M=40, y=0;
-    function head(){ doc.setFillColor(7,11,46); doc.rect(0,0,W,70,"F"); doc.setFillColor(242,101,34); doc.rect(0,0,W,4,"F"); doc.setTextColor(242,101,34); doc.setFont("helvetica","bold"); doc.setFontSize(20); doc.text("rico",M,42); doc.setTextColor(255,255,255); doc.setFontSize(13); doc.text("Plano de Ajuste de Carteira",M+58,42); y=92; }
-    head();
-    doc.setTextColor(60,60,70); doc.setFont("helvetica","normal"); doc.setFontSize(10.5); doc.text(clienteTxt()+"   ·   "+new Date().toLocaleDateString("pt-BR"),M,y); y+=20;
-    doc.setDrawColor(225,228,238); doc.setFillColor(247,248,252); doc.roundedRect(M,y,W-2*M,52,6,6,"FD");
-    function kv(l,v,dx,c){ doc.setTextColor(140,145,160); doc.setFontSize(8.5); doc.text(l,dx,y+18); doc.setTextColor(c[0],c[1],c[2]); doc.setFont("helvetica","bold"); doc.setFontSize(12); doc.text(v,dx,y+38); doc.setFont("helvetica","normal"); }
-    var cw=(W-2*M)/4, sx=M+14; kv("Patrimônio",fmtBRL(p.patrim),sx,[40,40,55]); kv("A vender",fmtBRL(p.totalVender),sx+cw,[200,70,70]); kv("A comprar",fmtBRL(p.totalComprar),sx+2*cw,[50,170,110]); kv("Giro",fmtPct(p.turnover),sx+3*cw,[200,150,40]); y+=70;
-    function sec(t,rows,c){ if(!rows.length) return; if(y>760){ doc.addPage(); head(); } doc.setFillColor(c[0],c[1],c[2]); doc.rect(M,y,W-2*M,22,"F"); doc.setTextColor(255,255,255); doc.setFont("helvetica","bold"); doc.setFontSize(11); doc.text(t,M+8,y+15); y+=22; doc.setFont("helvetica","normal"); doc.setFontSize(10); rows.forEach(function(x,i){ if(y>800){ doc.addPage(); head(); } if(i%2===0){ doc.setFillColor(250,250,253); doc.rect(M,y,W-2*M,20,"F"); } doc.setTextColor(45,45,55); doc.text(String(x.name).slice(0,46),M+8,y+14); doc.setTextColor(130,135,150); doc.setFontSize(8.5); doc.text(String(x.categoria),M+300,y+14); doc.setFontSize(10); var mv=x.mov>0?("+"+fmtBRL(x.mov)):(x.mov<0?("-"+fmtBRL(-x.mov)):"manter"); doc.setTextColor(x.mov>0?50:(x.mov<0?200:130),x.mov>0?170:(x.mov<0?70:135),x.mov>0?110:(x.mov<0?70:150)); doc.text(mv,W-M-8,y+14,{align:"right"}); y+=20; }); y+=12; }
-    sec("SAIR / REDUZIR",p.sair.concat(p.manter.filter(function(m){return m.acao==="Reduzir";})),[200,70,70]);
-    sec("ENTRAR / AUMENTAR",p.entrar.concat(p.manter.filter(function(m){return m.acao==="Aumentar";})),[50,170,110]);
-    sec("MANTER",p.manter.filter(function(m){return m.acao==="Manter";}),[120,128,170]);
-    if(y>770){ doc.addPage(); head(); }
-    doc.setFontSize(7.5); doc.setTextColor(150,150,165); doc.text("Material de apoio interno · não constitui recomendação ou oferta · gerado pelo Hub do Assessor",M,815);
-    doc.save("Plano de Ajuste.pdf");
+  // ===== PNG antes/depois =====
+  function genPNG(){
+    var W=1080, ca=compAtual(), cp=compProp(), b=board(), t=totals(b);
+    var cv=document.createElement("canvas"); var sc=2; cv.width=W*sc; var H=720; cv.height=H*sc; var x=cv.getContext("2d"); x.scale(sc,sc);
+    function R(a,b,w,h,r){ x.beginPath(); x.moveTo(a+r,b); x.arcTo(a+w,b,a+w,b+h,r); x.arcTo(a+w,b+h,a,b+h,r); x.arcTo(a,b+h,a,b,r); x.arcTo(a,b,a+w,b,r); x.closePath(); }
+    x.fillStyle="#070B2E"; x.fillRect(0,0,W,H);
+    x.fillStyle="#F26522"; x.fillRect(0,0,W,5);
+    x.font="800 30px Sora,sans-serif"; x.fillStyle="#F26522"; x.fillText("rico",40,58);
+    x.font="700 17px Manrope,sans-serif"; x.fillStyle="#fff"; x.fillText("Proposta de Carteira",110,57);
+    x.font="600 13px Manrope,sans-serif"; x.fillStyle="#9AA2D0"; x.textAlign="right"; x.fillText((state.cliente||"Cliente")+"  ·  "+new Date().toLocaleDateString("pt-BR"),W-40,57); x.textAlign="left";
+    // summary chips
+    var cy=86; var chips=[["Patrimônio",fmtBRL(t.patrim),"#cfd4ef"],["A vender",fmtBRL(t.vender),"#FF6B6B"],["A comprar",fmtBRL(t.comprar),"#3DD68C"],["Giro",fmtPct(t.giro),"#FFB020"]];
+    var cw=(W-80)/4; chips.forEach(function(c,i){ var cx=40+i*cw; x.fillStyle="rgba(255,255,255,.05)"; R(cx,cy,cw-12,54,10); x.fill(); x.font="700 10px Manrope"; x.fillStyle="#8A93C8"; x.fillText(c[0].toUpperCase(),cx+14,cy+20); x.font="800 18px Sora"; x.fillStyle=c[2]; x.fillText(c[1],cx+14,cy+42); });
+    // before/after bars
+    function comp(title,data,bx,by,bw){ x.font="800 14px Sora"; x.fillStyle="#fff"; x.fillText(title,bx,by); var yy=by+22; var entries=ORDER.filter(function(k){return (data.m[k]||0)>0.5;}); entries.forEach(function(k){ var pct=data.t>0?(data.m[k]/data.t*100):0; var col=CATCOL[k]||"#9AA2D0"; x.font="600 12px Manrope"; x.fillStyle="#cfd4ef"; x.fillText(k,bx,yy); x.textAlign="right"; x.fillStyle=col; x.font="700 12px Sora"; x.fillText(fmtPct(pct),bx+bw,yy); x.textAlign="left"; yy+=8; x.fillStyle="rgba(255,255,255,.08)"; R(bx,yy,bw,7,3); x.fill(); x.fillStyle=col; R(bx,yy,Math.max(2,bw*Math.min(100,pct)/100),7,3); x.fill(); yy+=22; }); return yy; }
+    var colW=(W-100)/2;
+    x.fillStyle="rgba(20,28,87,.4)"; R(40,160,colW,300,14); x.fill();
+    x.fillStyle="rgba(20,28,87,.4)"; R(60+colW,160,colW,300,14); x.fill();
+    comp("ANTES — carteira atual",ca,64,188,colW-48);
+    comp("DEPOIS — carteira proposta",cp,84+colW,188,colW-48);
+    // movements lists
+    var my=486; x.font="800 13px Sora";
+    x.fillStyle="#FF6B6B"; x.fillText("SAEM / REDUZEM",40,my);
+    x.fillStyle="#3DD68C"; x.fillText("ENTRAM / AUMENTAM",60+colW,my);
+    x.font="600 12px Manrope"; var ly=my+22;
+    var saiL=b.sair.slice(0,8), entL=b.entrar.slice(0,8);
+    saiL.forEach(function(s){ x.fillStyle="#cfd4ef"; x.fillText(String(s.name).slice(0,30),40,ly); x.textAlign="right"; x.fillStyle="#FF6B6B"; x.fillText("−"+fmtBRL(-s.mov),40+colW-10,ly); x.textAlign="left"; ly+=20; });
+    var ly2=my+22; entL.forEach(function(s){ x.fillStyle="#cfd4ef"; x.fillText(String(s.name).slice(0,30),60+colW,ly2); x.textAlign="right"; x.fillStyle="#3DD68C"; x.fillText("+"+fmtBRL(s.mov),W-40,ly2); x.textAlign="left"; ly2+=20; });
+    x.font="500 10px Manrope"; x.fillStyle="#6F77A8"; x.fillText("Material de apoio interno · não constitui recomendação ou oferta · gerado pelo Hub do Assessor",40,H-22);
+    var url=cv.toDataURL("image/png");
+    if(typeof window.mostrarPngModal==="function") window.mostrarPngModal(url,"Proposta de Carteira.png",{accent:"#F26522",hint:"Baixe ou copie a imagem para enviar ao cliente pelo WhatsApp."});
+    else { var ael=document.createElement("a"); ael.href=url; ael.download="Proposta de Carteira.png"; ael.click(); }
   }
 
   window._ajRender=render;
