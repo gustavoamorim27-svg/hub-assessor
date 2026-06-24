@@ -1095,21 +1095,26 @@ button, .g-tab, [onclick]{ touch-action:manipulation; }
         Adicionar ativo
       </button>
       <style>
-      [data-tool="construtor"] #libTab{ position:fixed; left:0; top:46%; transform:translateY(-50%); z-index:60; background:linear-gradient(180deg,#FF6B2C,#FF4E00); color:#fff; font-weight:800; font-size:12px; letter-spacing:.5px; writing-mode:vertical-rl; text-orientation:mixed; padding:16px 9px; border-radius:0 12px 12px 0; cursor:pointer; box-shadow:0 8px 24px rgba(0,0,0,.45); border:1px solid rgba(255,255,255,.15); border-left:none; }
-      [data-tool="construtor"] #libDrawer{ position:fixed; left:-360px; top:0; bottom:0; width:330px; z-index:61; background:linear-gradient(160deg,#0A0F38,#070B2E 70%,#05081F); border-right:1px solid rgba(120,130,210,.28); box-shadow:10px 0 36px rgba(0,0,0,.55); transition:left .26s ease; overflow-y:auto; padding:20px 16px 40px; }
+      [data-tool="construtor"] #libTab{ position:fixed; left:0; top:39%; transform:translateY(-50%); z-index:62; background:linear-gradient(180deg,#FF6B2C,#FF4E00); color:#fff; font-weight:800; font-size:13.5px; letter-spacing:1px; writing-mode:vertical-rl; text-orientation:mixed; padding:22px 13px; border-radius:0 14px 14px 0; cursor:pointer; box-shadow:0 8px 26px rgba(0,0,0,.5); border:1px solid rgba(255,255,255,.18); border-left:none; transition:padding .15s,filter .15s; }
+      [data-tool="construtor"] #libTab:hover, [data-tool="construtor"] #catTab:hover{ filter:brightness(1.12); padding-right:16px; }
+      [data-tool="construtor"] #libTab .tabico, [data-tool="construtor"] #catTab .tabico{ font-size:19px; display:block; margin-bottom:7px; }
+      [data-tool="construtor"] #libDrawer{ position:fixed; left:-480px; top:0; bottom:0; width:min(420px,92vw); z-index:63; background:linear-gradient(160deg,#0A0F38,#070B2E 70%,#05081F); border-right:1px solid rgba(120,130,210,.28); box-shadow:14px 0 40px rgba(0,0,0,.6); transition:left .26s ease; overflow-y:auto; padding:26px 22px 48px; }
       [data-tool="construtor"] #libDrawer.open{ left:0; }
       [data-tool="construtor"] #libBackdrop{ position:fixed; inset:0; background:rgba(3,5,18,.45); z-index:60; opacity:0; pointer-events:none; transition:opacity .26s; }
       [data-tool="construtor"] #libBackdrop.open{ opacity:1; pointer-events:auto; }
-      [data-tool="construtor"] .lib-chip{ display:block; width:100%; text-align:left; cursor:grab; font-family:inherit; font-size:12.5px; font-weight:700; color:#cfd4ef; background:rgba(255,255,255,.04); border:1px solid rgba(120,130,210,.25); border-radius:10px; padding:9px 12px; margin-bottom:7px; }
+      [data-tool="construtor"] .lib-chip{ display:block; width:100%; text-align:left; cursor:grab; font-family:inherit; font-size:13.5px; font-weight:700; color:#cfd4ef; background:rgba(255,255,255,.04); border:1px solid rgba(120,130,210,.25); border-radius:11px; padding:12px 14px; margin-bottom:8px; transition:transform .1s; }
+      [data-tool="construtor"] .lib-chip:hover{ transform:translateX(3px); }
       [data-tool="construtor"] .lib-chip:active{ cursor:grabbing; }
       [data-tool="construtor"] .lib-chip:hover{ background:rgba(255,78,0,.08); border-color:rgba(255,78,0,.4); }
-      [data-tool="construtor"] .lib-sec{ font-size:10px; letter-spacing:1px; text-transform:uppercase; color:#9AA2D0; font-weight:800; margin:12px 0 6px; }
+      [data-tool="construtor"] .lib-sec{ font-size:11px; letter-spacing:1.2px; text-transform:uppercase; color:#9AA2D0; font-weight:800; margin:18px 0 8px; }
       </style>
-      <div id="libTab">📁 BIBLIOTECA</div>
+      <div id="libTab"><span class="tabico">📁</span>BIBLIOTECA</div>
+      <div id="catTab"><span class="tabico">🧰</span>OPERAÇÕES</div>
       <div id="libBackdrop"></div>
+      <div id="catBackdrop"></div>
       <div id="libDrawer">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
-          <div style="font-family:'Sora',sans-serif;font-weight:800;font-size:17px;color:#fff;">Biblioteca de ativos</div>
+          <div style="font-family:'Sora',sans-serif;font-weight:800;font-size:19px;color:#fff;display:flex;align-items:center;gap:9px;"><span style="font-size:23px;">📁</span>Biblioteca de ativos</div>
           <button id="libClose" style="background:none;border:none;color:#9AA2D0;font-size:20px;cursor:pointer;line-height:1;">×</button>
         </div>
         <div style="font-size:12px;color:#9AA2D0;line-height:1.5;margin-bottom:10px;">Arraste um ativo para a carteira, ou clique para adicionar. Operações estruturadas ficam no catálogo, mais abaixo.</div>
@@ -1211,7 +1216,13 @@ button, .g-tab, [onclick]{ touch-action:manipulation; }
   </div>
 
   <style>
-  #opcat{ margin-top:30px; }
+  #opcat{ position:fixed; left:-1000px; top:0; bottom:0; width:min(880px,95vw); z-index:65; background:linear-gradient(160deg,#0A0F38,#070B2E 72%,#05081F); border-right:1px solid rgba(120,130,210,.3); box-shadow:18px 0 50px rgba(0,0,0,.62); transition:left .28s ease; overflow-y:auto; padding:26px 26px 56px; }
+  #opcat.open{ left:0; }
+  [data-tool="construtor"] #catTab{ position:fixed; left:0; top:60%; transform:translateY(-50%); z-index:62; background:linear-gradient(180deg,#5A49C8,#3A2C9A); color:#fff; font-weight:800; font-size:13.5px; letter-spacing:1px; writing-mode:vertical-rl; text-orientation:mixed; padding:22px 13px; border-radius:0 14px 14px 0; cursor:pointer; box-shadow:0 8px 26px rgba(0,0,0,.5); border:1px solid rgba(255,255,255,.18); border-left:none; transition:padding .15s,filter .15s; }
+  #catBackdrop{ position:fixed; inset:0; background:rgba(3,5,18,.5); z-index:64; opacity:0; pointer-events:none; transition:opacity .28s; }
+  #catBackdrop.open{ opacity:1; pointer-events:auto; }
+  #opcat .oc-close{ background:none; border:none; color:#9AA2D0; font-size:25px; cursor:pointer; line-height:1; padding:0 2px; }
+  #opcat .oc-close:hover{ color:#fff; }
   #opcat .oc-head{ display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px; margin-bottom:4px; }
   #opcat .oc-title{ font-family:'Sora',sans-serif; font-weight:700; font-size:20px; color:#fff; margin:0; }
   #opcat .oc-new{ cursor:pointer; font-family:inherit; font-weight:700; font-size:13px; color:#fff; background:#FF4E00; border:none; border-radius:10px; padding:9px 15px; }
@@ -1262,8 +1273,11 @@ button, .g-tab, [onclick]{ touch-action:manipulation; }
   </style>
   <div id="opcat">
     <div class="oc-head">
-      <h3 class="oc-title">Catálogo de operações</h3>
-      <button class="oc-new" id="ocNew">+ Nova operação</button>
+      <h3 class="oc-title"><span style="font-size:23px;">🧰</span> Catálogo de operações</h3>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <button class="oc-new" id="ocNew">+ Nova operação</button>
+        <button class="oc-close" id="ocClose" title="Fechar">×</button>
+      </div>
     </div>
     <div class="oc-sub">Operações estruturadas como na mesa XP: proteção, cupom pré-fixado e Quanto internacional. Veja o payoff de cada cenário e toque em "+ Add" para incluir o ativo na carteira (entra com 0% — defina a alocação depois).</div>
     <div class="oc-tabs" id="ocTabs"></div>
@@ -1271,6 +1285,16 @@ button, .g-tab, [onclick]{ touch-action:manipulation; }
     <div id="ocForm"></div>
     <div id="ocBody"></div>
   </div>
+  <script>
+  (function(){
+    function byId(i){return document.getElementById(i);}
+    function openCat(){ var d=byId("opcat"),b=byId("catBackdrop"); if(d)d.classList.add("open"); if(b)b.classList.add("open"); var ld=byId("libDrawer"),lb=byId("libBackdrop"); if(ld)ld.classList.remove("open"); if(lb)lb.classList.remove("open"); }
+    function closeCat(){ var d=byId("opcat"),b=byId("catBackdrop"); if(d)d.classList.remove("open"); if(b)b.classList.remove("open"); }
+    function init(){ var t=byId("catTab"); if(t)t.addEventListener("click",openCat); var c=byId("ocClose"); if(c)c.addEventListener("click",closeCat); var b=byId("catBackdrop"); if(b)b.addEventListener("click",closeCat); var lt=byId("libTab"); if(lt)lt.addEventListener("click",closeCat); var oc=byId("opcat"); if(oc)oc.addEventListener("click",function(e){ if(e.target.closest&&e.target.closest(".minibtn")) setTimeout(closeCat,120); }); }
+    if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init); else init();
+    window.__closeCatDrawer=closeCat;
+  })();
+  </script>
   <script>
   (function(){
     function esc(t){ return (""+(t==null?"":t)).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
