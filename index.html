@@ -490,6 +490,14 @@ html, body {
 [data-tool="simulador"] .rent-mode-opt{background:transparent;border:none;color:#A9B0D6;font-weight:700;font-size:12px;padding:5px 11px;border-radius:7px;cursor:pointer;font-family:inherit;letter-spacing:.2px;transition:all .15s;}
 [data-tool="simulador"] .rent-mode-opt:hover{color:#fff;}
 [data-tool="simulador"] .rent-mode-opt.active{background:var(--laranja,#FF4E00);color:#fff;}
+[data-tool="simulador"] .rd-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+[data-tool="simulador"] .rd-field label{display:block;font-size:12px;font-weight:600;color:var(--cinza-2,#A9B0D6);margin-bottom:6px;}
+[data-tool="simulador"] .rd-field .num-input{background:rgba(0,0,0,.22);border:1px solid var(--line,rgba(120,130,210,.22));border-radius:10px;padding:8px 11px;}
+[data-tool="simulador"] .rd-field .num-input input{font-size:18px;}
+[data-tool="simulador"] .rd-result{margin-top:14px;font-size:13px;color:var(--cinza-2,#A9B0D6);}
+[data-tool="simulador"] .rd-result b{color:#2BD9A6;font-size:16px;font-weight:800;}
+[data-tool="simulador"] .prazo-hint{margin-top:12px;font-size:12px;color:var(--cinza-2,#8089BE);line-height:1.4;}
+[data-tool="simulador"] .prazo-hint b{color:#cfd4ef;}
 [data-tool="simulador"] .num-input .pre{color:#A9B0D6;font-weight:700;font-size:13px;margin-right:4px;white-space:nowrap;}
 [data-tool="simulador"] .mono{font-family:'JetBrains Mono',ui-monospace,monospace;}
 [data-tool="simulador"] .wrap{max-width:1400px;margin:0 auto;padding:60px 40px 40px;}
@@ -2002,20 +2010,41 @@ body.mm .ajbtn{ padding:11px 16px !important; font-size:14px !important; }
     <div class="card control">
       <div class="label-row">
         <label>Aporte mensal</label>
+        <div class="rent-mode" id="aporteMode" role="tablist" aria-label="Forma de informar o aporte">
+          <button type="button" class="rent-mode-opt active" data-amode="direto" role="tab" aria-selected="true">Valor direto</button>
+          <button type="button" class="rent-mode-opt" data-amode="rendadespesa" role="tab" aria-selected="false">Renda − Despesa</button>
+        </div>
+      </div>
+      <!-- MODO: valor direto -->
+      <div id="aporteDireto">
         <div class="num-input">
           <span class="pre">R$</span>
           <input type="text" inputmode="numeric" id="aporte" class="money" value="0" />
         </div>
+        <input type="range" id="aporteRange" min="0" max="20000" step="100" value="0" />
+        <div class="range-row"><span>R$ 0</span><span>R$ 10 mil</span><span>R$ 20 mil</span></div>
+        <div class="quick">
+          <button data-a="0">Sem aporte</button>
+          <button data-a="500">500</button>
+          <button data-a="1000">1 mil</button>
+          <button data-a="2500">2,5 mil</button>
+          <button data-a="5000">5 mil</button>
+          <button data-a="15000">15 mil</button>
+        </div>
       </div>
-      <input type="range" id="aporteRange" min="0" max="20000" step="100" value="0" />
-      <div class="range-row"><span>R$ 0</span><span>R$ 10 mil</span><span>R$ 20 mil</span></div>
-      <div class="quick">
-        <button data-a="0">Sem aporte</button>
-        <button data-a="500">500</button>
-        <button data-a="1000">1 mil</button>
-        <button data-a="2500">2,5 mil</button>
-        <button data-a="5000">5 mil</button>
-        <button data-a="15000">15 mil</button>
+      <!-- MODO: renda menos despesa -->
+      <div id="aporteRD" style="display:none;">
+        <div class="rd-grid">
+          <div class="rd-field">
+            <label>Renda mensal</label>
+            <div class="num-input"><span class="pre">R$</span><input type="text" inputmode="numeric" id="rendaAtual" class="money" value="12.000" /></div>
+          </div>
+          <div class="rd-field">
+            <label>Despesa mensal</label>
+            <div class="num-input"><span class="pre">R$</span><input type="text" inputmode="numeric" id="despesaMensal" class="money" value="8.000" /></div>
+          </div>
+        </div>
+        <div class="rd-result">Capacidade de aporte: <b id="rdAporte">R$ 4.000</b> <span>/mês (renda − despesa)</span></div>
       </div>
     </div>
 
@@ -2083,6 +2112,24 @@ body.mm .ajbtn{ padding:11px 16px !important; font-size:14px !important; }
         <button data-t="20">20 anos</button>
         <button data-t="30">30 anos</button>
       </div>
+      <div class="prazo-hint" id="prazoHint">Aposentadoria estimada aos <b id="hintApos">60</b> anos (idade atual + prazo).</div>
+    </div>
+
+    <div class="card control">
+      <div class="label-row">
+        <label>Ciclo de vida</label>
+      </div>
+      <div class="rd-grid">
+        <div class="rd-field">
+          <label>Idade atual</label>
+          <div class="num-input"><input type="number" id="idadeAtual" min="18" max="95" step="1" value="40" /><span class="pos">anos</span></div>
+        </div>
+        <div class="rd-field">
+          <label>Expectativa de vida</label>
+          <div class="num-input"><input type="number" id="expectativa" min="70" max="110" step="1" value="100" /><span class="pos">anos</span></div>
+        </div>
+      </div>
+      <div class="prazo-hint">Define as fases de <b>acúmulo</b> (até a aposentadoria) e <b>resgate</b> (até a expectativa) no plano detalhado.</div>
     </div>
   </div>
 
@@ -4253,7 +4300,15 @@ const state = {
   rendaMensal: 10000, ipca: 4.5, ajustarIpca: false, cdiAnual: 10,
   nomeCliente: '', template: 'conservadora', protecao: protecaoPadrao(), alocacao: alocacaoPadrao(),
   imoveis: [], externos: [],
+  // Ciclo de vida / aporte
+  aporteMode: 'direto', rendaAtual: 12000, despesaMensal: 8000,
+  idadeAtual: 40, expectativa: 100,
 };
+// Aporte efetivo conforme o modo escolhido (direto x renda-despesa)
+function aporteEfetivo(){
+  if(state.aporteMode === 'rendadespesa') return Math.max(0, (state.rendaAtual||0) - (state.despesaMensal||0));
+  return state.aporteMensal||0;
+}
 
 // ============ PERSISTÊNCIA (salva no navegador) ============
 const STORAGE_KEY = 'rico-simulador-v1';
@@ -4261,6 +4316,8 @@ function salvarEstado() {
   try {
     const dados = {
       valor: state.valor, aporteMensal: state.aporteMensal, pctCdi: state.pctCdi,
+      aporteMode: state.aporteMode, rendaAtual: state.rendaAtual, despesaMensal: state.despesaMensal,
+      idadeAtual: state.idadeAtual, expectativa: state.expectativa,
       rentMode: state.rentMode, ipcaSpread: state.ipcaSpread,
       prazoAnos: state.prazoAnos, rendaMensal: state.rendaMensal, ipca: state.ipca, cdiAnual: state.cdiAnual,
       ajustarIpca: state.ajustarIpca, nomeCliente: state.nomeCliente,
@@ -4284,6 +4341,11 @@ function carregarEstado() {
     const d = JSON.parse(raw);
     if (typeof d.valor === 'number') state.valor = d.valor;
     if (typeof d.aporteMensal === 'number') state.aporteMensal = d.aporteMensal;
+    if (d.aporteMode === 'direto' || d.aporteMode === 'rendadespesa') state.aporteMode = d.aporteMode;
+    if (typeof d.rendaAtual === 'number') state.rendaAtual = d.rendaAtual;
+    if (typeof d.despesaMensal === 'number') state.despesaMensal = d.despesaMensal;
+    if (typeof d.idadeAtual === 'number') state.idadeAtual = d.idadeAtual;
+    if (typeof d.expectativa === 'number') state.expectativa = d.expectativa;
     if (typeof d.pctCdi === 'number') state.pctCdi = d.pctCdi;
     if (d.rentMode === 'ipca' || d.rentMode === 'cdi') state.rentMode = d.rentMode;
     if (typeof d.ipcaSpread === 'number') state.ipcaSpread = d.ipcaSpread;
@@ -4412,7 +4474,7 @@ function rentLabel() {
 }
 function calcular() {
   const totalMeses = getTotalMeses();
-  const aporte = state.aporteMensal;
+  const aporte = aporteEfetivo();
   const cdi = [state.valor];
   const cart = [state.valor];
   const flat = [state.valor];
@@ -4473,10 +4535,10 @@ function renderKpis(cdi, cart, totalMeses, totalAportado) {
   const delta = finalCart - finalCdi;
   const deltaPct = finalCdi > 0 ? (finalCart/finalCdi - 1) * 100 : 0;
 
-  if (state.aporteMensal > 0) {
+  if (aporteEfetivo() > 0) {
     document.getElementById('kpiInv').textContent = f(totalAportado);
     document.getElementById('kpiInvLabel').textContent = 'Total aportado';
-    document.getElementById('kpiInvSub').textContent = `R$ ${f(state.valor)} inicial + R$ ${f(state.aporteMensal)}/mês`;
+    document.getElementById('kpiInvSub').textContent = `R$ ${f(state.valor)} inicial + R$ ${f(aporteEfetivo())}/mês`;
   } else {
     document.getElementById('kpiInv').textContent = f(state.valor);
     document.getElementById('kpiInvLabel').textContent = 'Valor investido';
@@ -4539,7 +4601,7 @@ function renderGoalBanner(cart, totalMeses) {
     banner.className = 'goal-banner ok';
     icon.textContent = '🚀';
     title.textContent = `No caminho! Renda atingível em ${tempoTxt}`;
-    desc.innerHTML = `Mantendo <strong>${rentLabel()}</strong>${state.aporteMensal>0?` e aportes de <strong>R$ ${f(state.aporteMensal)}/mês</strong>`:''}, ${nome} acumula o patrimônio necessário (<strong>R$ ${valorAmigavel(objFim)}</strong> corrigido por IPCA) para uma renda de <strong>R$ ${valorAmigavel(state.rendaMensal)}/mês</strong> em poder de compra de hoje, antes do fim do prazo.`;
+    desc.innerHTML = `Mantendo <strong>${rentLabel()}</strong>${aporteEfetivo()>0?` e aportes de <strong>R$ ${f(aporteEfetivo())}/mês</strong>`:''}, ${nome} acumula o patrimônio necessário (<strong>R$ ${valorAmigavel(objFim)}</strong> corrigido por IPCA) para uma renda de <strong>R$ ${valorAmigavel(state.rendaMensal)}/mês</strong> em poder de compra de hoje, antes do fim do prazo.`;
     small.textContent = `em ${tempoTxt}`;
 
     if (mesAtinge > state.prazoAnos * 12 * 0.8) {
@@ -5354,6 +5416,11 @@ function sincronizarInputs() {
   document.getElementById('valorRange').value = Math.min(state.valor, 2000000);
   document.getElementById('aporte').value = fmtMoney(state.aporteMensal);
   document.getElementById('aporteRange').value = Math.min(state.aporteMensal, 20000);
+  var _ra=document.getElementById('rendaAtual'); if(_ra) _ra.value=fmtMoney(state.rendaAtual);
+  var _dm=document.getElementById('despesaMensal'); if(_dm) _dm.value=fmtMoney(state.despesaMensal);
+  var _ia=document.getElementById('idadeAtual'); if(_ia) _ia.value=state.idadeAtual;
+  var _ev=document.getElementById('expectativa'); if(_ev) _ev.value=state.expectativa;
+  syncAporteMode();
   document.getElementById('pctCdi').value = state.pctCdi;
   document.getElementById('pctCdiRange').value = state.pctCdi;
   var spd = document.getElementById('ipcaSpread'), spr = document.getElementById('ipcaSpreadRange');
@@ -5370,7 +5437,25 @@ function sincronizarInputs() {
   const tg = document.getElementById('ipcaToggle');
   if (tg) { tg.classList.toggle('on', state.ajustarIpca); tg.setAttribute('aria-checked', String(state.ajustarIpca)); }
   document.getElementById('nomeCliente').value = state.nomeCliente;
+  updatePrazoHint();
   atualizarRendaObjetivo();
+}
+function updatePrazoHint(){
+  var h=document.getElementById('hintApos'); if(h) h.textContent=(Number(state.idadeAtual)||0)+(Number(state.prazoAnos)||0);
+  var rd=document.getElementById('rdAporte'); if(rd) rd.textContent='R$ '+fmtMoney(Math.max(0,(state.rendaAtual||0)-(state.despesaMensal||0)));
+}
+function syncAporteMode(){
+  var bar=document.getElementById('aporteMode');
+  if(bar) bar.querySelectorAll('.rent-mode-opt').forEach(function(b){ var on=b.getAttribute('data-amode')===state.aporteMode; b.classList.toggle('active',on); b.setAttribute('aria-selected',String(on)); });
+  var dir=document.getElementById('aporteDireto'), rd=document.getElementById('aporteRD');
+  if(dir) dir.style.display = state.aporteMode==='rendadespesa' ? 'none':'';
+  if(rd) rd.style.display = state.aporteMode==='rendadespesa' ? '':'none';
+}
+function setAporteMode(m){
+  state.aporteMode = (m==='rendadespesa')?'rendadespesa':'direto';
+  syncAporteMode(); updatePrazoHint(); salvarEstado();
+  if(typeof drawChart==='function') drawChart();
+  if(typeof renderAlocacao==='function') renderAlocacao();
 }
 
 // ============ INTERAÇÃO ============
@@ -5418,9 +5503,14 @@ function setPrazo(t) {
   document.getElementById('prazo').value = state.prazoAnos;
   document.getElementById('prazoRange').value = state.prazoAnos;
   document.getElementById('hdrPrazo').textContent = state.prazoAnos;
+  updatePrazoHint();
   atualizarRendaObjetivo();
   salvarEstado(); drawChart();
 }
+function setRendaAtual(v){ state.rendaAtual=Math.max(0,Math.min(10000000,parseNum(v))); var el=document.getElementById('rendaAtual'); if(el) el.value=fmtMoney(state.rendaAtual); updatePrazoHint(); salvarEstado(); if(state.aporteMode==='rendadespesa'){ drawChart(); renderAlocacao(); } }
+function setDespesaMensal(v){ state.despesaMensal=Math.max(0,Math.min(10000000,parseNum(v))); var el=document.getElementById('despesaMensal'); if(el) el.value=fmtMoney(state.despesaMensal); updatePrazoHint(); salvarEstado(); if(state.aporteMode==='rendadespesa'){ drawChart(); renderAlocacao(); } }
+function setIdadeAtual(v){ state.idadeAtual=Math.max(18,Math.min(95,Number(v)||0)); updatePrazoHint(); salvarEstado(); }
+function setExpectativa(v){ state.expectativa=Math.max(70,Math.min(110,Number(v)||0)); salvarEstado(); }
 function setAporte(a) {
   state.aporteMensal = Math.max(0, Math.min(100000, parseNum(a)));
   document.getElementById('aporte').value = fmtMoney(state.aporteMensal);
@@ -5480,6 +5570,14 @@ document.getElementById('pctCdiRange').addEventListener('input', e => setPct(e.t
 })();
 document.getElementById('prazo').addEventListener('input', e => setPrazo(e.target.value));
 document.getElementById('prazoRange').addEventListener('input', e => setPrazo(e.target.value));
+(function(){
+  var aBar=document.getElementById('aporteMode');
+  if(aBar) aBar.querySelectorAll('.rent-mode-opt').forEach(function(b){ b.addEventListener('click', function(){ setAporteMode(b.getAttribute('data-amode')); }); });
+  var ra=document.getElementById('rendaAtual'); if(ra) ra.addEventListener('input', e=>setRendaAtual(e.target.value));
+  var dm=document.getElementById('despesaMensal'); if(dm) dm.addEventListener('input', e=>setDespesaMensal(e.target.value));
+  var ia=document.getElementById('idadeAtual'); if(ia) ia.addEventListener('input', e=>setIdadeAtual(e.target.value));
+  var ev=document.getElementById('expectativa'); if(ev) ev.addEventListener('input', e=>setExpectativa(e.target.value));
+})();
 document.getElementById('renda').addEventListener('input', e => setRenda(e.target.value));
 document.getElementById('rendaRange').addEventListener('input', e => setRenda(e.target.value));
 document.getElementById('ipca').addEventListener('input', e => setIpca(e.target.value));
@@ -6089,69 +6187,243 @@ document.getElementById('btnExport').addEventListener('click', async () => {
   }
 });
 
+// ============ MOTOR DE CICLO DE VIDA (3 cenários) ============
+function realRateAnual(){
+  if(state.rentMode==='ipca') return (Number(state.ipcaSpread)||0)/100;
+  var cdiBase = (state.cdiAnual!=null ? Number(state.cdiAnual) : 10)/100;
+  var nominal = cdiBase * (Number(state.pctCdi)||0)/100;
+  var ipca = (Number(state.ipca)||0)/100;
+  return (1+nominal)/(1+ipca) - 1;
+}
+function lifeCycle(){
+  var r = realRateAnual(); if(!isFinite(r)) r=0;
+  var i0 = Math.round(Number(state.idadeAtual)||40);
+  var prazo = Math.round(Number(state.prazoAnos)||20);
+  var iA = i0 + prazo;                                  // idade de aposentadoria
+  var iF = Math.max(iA+1, Math.round(Number(state.expectativa)||100)); // expectativa
+  var T = iA - i0, N = iF - iA;
+  var V0 = Number(state.valor)||0;
+  var aporteAnualAtual = aporteEfetivo()*12;
+  var resgateAnual = (Number(state.rendaMensal)||0)*12;
+  function fv(t){ return Math.pow(1+r,t); }
+  function annFV(t){ return Math.abs(r)<1e-9 ? t : (Math.pow(1+r,t)-1)/r; }
+  function pvAnn(n){ return Math.abs(r)<1e-9 ? resgateAnual*n : resgateAnual*(1-Math.pow(1+r,-n))/r; }
+  var targetConsumo = pvAnn(N);
+  var targetPreserv = Math.abs(r)<1e-9 ? targetConsumo : resgateAnual/r;
+  var sFac = annFV(T);
+  function aporteNeeded(target){ return sFac>0 ? (target - V0*fv(T))/sFac : 0; }
+  var aporteConsumoAnual = Math.max(0, aporteNeeded(targetConsumo));
+  var aportePreservAnual = Math.max(0, aporteNeeded(targetPreserv));
+  function build(aporteAnual, floor0){
+    var arr=[]; var P=V0;
+    for(var age=i0; age<=iF; age++){
+      arr.push({age:age, val:P});
+      if(age<iA){ P = P*(1+r) + aporteAnual; }
+      else { P = P*(1+r) - resgateAnual; }
+      if(floor0 && P<0) P=0;
+    }
+    return arr;
+  }
+  var cAtual = build(aporteAnualAtual, true);
+  var cConsumo = build(aporteConsumoAnual, true);
+  var cPreserv = build(aportePreservAnual, false);
+  function atAge(arr, age){ for(var i=0;i<arr.length;i++){ if(arr[i].age===age) return arr[i].val; } return arr.length?arr[arr.length-1].val:0; }
+  var pAtualApos = atAge(cAtual, iA);
+  var status, statusColor, statusKey, diagMsg;
+  if(pAtualApos >= targetPreserv-1){ statusKey='preservacao'; status='Planejamento Adequado — Preservação'; statusColor=[43,180,120]; diagMsg='O planejamento atual é suficiente para preservar o patrimônio: a renda de aposentadoria seria custeada apenas pelos juros, mantendo o principal ao longo de toda a expectativa de vida.'; }
+  else if(pAtualApos >= targetConsumo-1){ statusKey='consumo'; status='Planejamento Adequado — Consumo'; statusColor=[43,180,120]; diagMsg='O planejamento atual está adequado para atingir o objetivo de aposentadoria, com consumo do patrimônio. Aos '+iA+' anos, o patrimônio investido atingiria '+brlCents(pAtualApos)+', suficiente para uma renda mensal de '+brlCents((state.rendaMensal||0))+' até os '+iF+' anos, considerando um retorno real de '+(r*100).toFixed(1).replace('.',',')+'% a.a.'; }
+  else { statusKey='insuficiente'; status='Planejamento a Ajustar'; statusColor=[230,140,40]; diagMsg='Nas premissas atuais, o patrimônio aos '+iA+' anos ('+brlCents(pAtualApos)+') ainda não é suficiente para sustentar a renda desejada até os '+iF+' anos. Vale aumentar o aporte mensal, rever o prazo até a aposentadoria ou ajustar a renda-alvo.'; }
+  return {
+    r:r, i0:i0, iA:iA, iF:iF, T:T, N:N, V0:V0,
+    aporteMensalAtual:aporteEfetivo(), aporteAnualAtual:aporteAnualAtual,
+    resgateMensal:(state.rendaMensal||0), resgateAnual:resgateAnual,
+    targetConsumo:targetConsumo, targetPreserv:targetPreserv,
+    aporteConsumoAnual:aporteConsumoAnual, aporteConsumoMensal:aporteConsumoAnual/12,
+    aportePreservAnual:aportePreservAnual, aportePreservMensal:aportePreservAnual/12,
+    pAtualApos:pAtualApos, cAtual:cAtual, cConsumo:cConsumo, cPreserv:cPreserv,
+    status:status, statusColor:statusColor, statusKey:statusKey, diagMsg:diagMsg
+  };
+}
+function brlCents(n){ n=Number(n)||0; return 'R$ '+n.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+
 document.getElementById('btnExportPdf').addEventListener('click', async function(){
   var ns = window.jspdf; if(!ns || !ns.jsPDF){ showToast('PDF ainda carregando — tente novamente em instantes'); return; }
   var doc = new ns.jsPDF({unit:'pt', format:'a4'});
   var W=doc.internal.pageSize.getWidth(), H=doc.internal.pageSize.getHeight();
-  var M=48, x=M, y=M, cw=W-2*M;
-  function bg(){ doc.setFillColor(8,11,40); doc.rect(0,0,W,H,'F'); }
-  bg();
-  function ensure(h){ if(y+h>H-M){ doc.addPage(); bg(); y=M; } }
-  function heading(t){ ensure(38); doc.setFont('helvetica','bold'); doc.setFontSize(14); doc.setTextColor(255,255,255); doc.text(t, x, y); y+=9; doc.setDrawColor(60,70,120); doc.line(x,y,x+cw,y); y+=18; }
-  function para(t, o){ o=o||{}; doc.setFont('helvetica', o.bold?'bold':'normal'); doc.setFontSize(o.size||10.5); var c=o.color||[205,212,235]; doc.setTextColor(c[0],c[1],c[2]); var ls=doc.splitTextToSize(t, cw); for(var i=0;i<ls.length;i++){ ensure(o.lh||14.5); doc.text(ls[i], x, y); y+=(o.lh||14.5); } y+=(o.gap!=null?o.gap:5); }
-  function kv(k,v){ ensure(16); doc.setFont('helvetica','normal'); doc.setFontSize(10.5); doc.setTextColor(150,160,190); doc.text(k, x, y); doc.setFont('helvetica','bold'); doc.setTextColor(255,255,255); doc.text(String(v), x+cw, y, {align:'right'}); y+=16; }
-  function brl(n){ return 'R$ '+fmtMoney(n); }
-  var d=calcular(); var fim=d.totalMeses; var cartFim=d.cart[fim], cdiFim=d.cdi[fim]; var objetivo=objetivoNoMesIndex(d.totalMeses);
-  var aportado=d.totalAportado; var ganhoCDI=cartFim-cdiFim; var atinge=cartFim>=objetivo;
-  var mesAtinge=-1; for(var i=24;i<=fim;i++){ if(d.cart[i]>=objetivoNoMesIndex(i)){ mesAtinge=i-24; break; } }
-  var anos=state.prazoAnos; var nomeCli=state.nomeCliente||'Cliente';
-  try{ var planoImg = await gerarPngCanvas(); var ip=doc.getImageProperties(planoImg); var rr=ip.height/ip.width; var iw=cw, ih=iw*rr; if(ih>H-2*M){ ih=H-2*M; iw=ih/rr; } doc.addImage(planoImg,'PNG',(W-iw)/2, M, iw, ih); doc.addPage(); bg(); y=M; }catch(e){}
-  doc.setFont('helvetica','bold'); doc.setFontSize(26); doc.setTextColor(242,101,34); doc.text('rico', x, y+8);
-  doc.setFont('helvetica','bold'); doc.setFontSize(11); doc.setTextColor(242,101,34); doc.text('PLANEJAMENTO FINANCEIRO', x+cw, y, {align:'right'});
-  doc.setFont('helvetica','normal'); doc.setFontSize(9); doc.setTextColor(150,160,190); doc.text('Projeção de '+anos+' anos · '+new Date().toLocaleDateString('pt-BR'), x+cw, y+14, {align:'right'});
-  y+=34; doc.setDrawColor(60,70,120); doc.line(x,y,x+cw,y); y+=22;
-  doc.setFont('helvetica','bold'); doc.setFontSize(18); doc.setTextColor(255,255,255); doc.text('Plano de '+nomeCli, x, y); y+=26;
-  heading('1. Resumo do plano');
-  kv('Valor inicial', brl(state.valor));
-  kv('Aporte mensal', state.aporteMensal>0?brl(state.aporteMensal):'sem aporte');
-  kv('Rentabilidade estimada da carteira', rentLabel());
-  kv('Prazo da projeção', anos+' anos');
-  kv('Renda mensal desejada (hoje)', brl(state.rendaMensal));
-  kv('Patrimônio necessário hoje (100x a renda)', brl(state.rendaMensal*100));
-  kv('Patrimônio-alvo corrigido pelo IPCA', brl(objetivo));
-  y+=6;
-  heading('2. Evolução da carteira x objetivo do cliente');
-  kv('Montante da carteira em '+anos+' anos', brl(cartFim));
-  kv('Se aplicado a 100% do CDI', brl(cdiFim));
-  kv('Ganho da carteira sobre o CDI', (ganhoCDI>=0?'+':'')+brl(ganhoCDI));
-  kv('Total aportado no período', brl(aportado));
-  y+=4;
-  if(atinge){ para('Nas premissas atuais, a carteira ALCANCA o patrimonio-alvo de '+brl(objetivo)+(mesAtinge>=0?' em aproximadamente '+(mesAtinge<12?mesAtinge+' meses':(Math.round(mesAtinge/12*10)/10)+' anos'):'')+', preservando uma renda de '+brl(state.rendaMensal)+'/mes em poder de compra de hoje. A combinacao de aporte, prazo e rentabilidade esta adequada ao objetivo do cliente.', {color:[43,217,166]}); }
-  else { para('Nas premissas atuais, a carteira ainda NAO alcanca o patrimonio-alvo de '+brl(objetivo)+' no prazo definido. Para fechar a diferenca, vale considerar aumentar o aporte mensal, estender o prazo ou elevar a rentabilidade-alvo (maior exposicao a classes de maior retorno), sempre respeitando o perfil de risco do cliente.', {color:[255,176,32]}); }
-  heading('3. A importancia de cada classe de ativos');
-  para('Uma carteira bem construida combina classes com papeis diferentes: uma protege, outra gera renda, outra busca crescimento. A diversificacao reduz o risco sem abrir mao do retorno.', {});
-  para('Renda Fixa - a base da carteira. Preserva o capital e da previsibilidade (LCA/LCD isentas, inflacao via IPCA+, pre-fixados). E a ancora de seguranca e liquidez.', {});
-  para('Multimercados - flexibilidade. Fundos que operam juros, moedas, acoes e commodities buscando superar o CDI com risco controlado e descorrelacao.', {});
-  para('Renda Variavel - motor de crescimento de longo prazo. Acoes e ETFs, idealmente com estruturas de protecao (Collar/Fence) para limitar a queda.', {});
-  para('Fundos Listados (FIIs/Fiagro) - renda recorrente, muitas vezes isenta de IR, com exposicao a imoveis e credito.', {});
-  para('Alternativos - descorrelacao e protecao (ouro, temas especificos), uteis em cenarios de stress de mercado.', {});
-  para('Internacional - diversificacao geografica e cambial; reduz a dependencia do Brasil e da acesso as maiores empresas globais.', {});
-  heading('4. Protecao patrimonial - por que importa');
-  para('Acumular patrimonio sem proteger deixa o plano vulneravel a imprevistos (morte, invalidez, processos, sucessao). A protecao garante que o objetivo do cliente e da familia se mantenha mesmo diante do inesperado.', {});
-  para('Whole Life (seguro vitalicio) - a linha mais completa: protege a familia, cria liquidez imediata para a sucessao e funciona como reserva de valor de longo prazo.', {});
-  para('Seguro de Vida - protecao familiar e sucessoria a custo acessivel, garantindo renda ou capital aos beneficiarios.', {});
-  para('Previdencia (PGBL/VGBL) - planejamento de longo prazo com beneficios tributarios e sucessorios (nao entra em inventario).', {});
-  para('Holding patrimonial - organiza bens e sucessao, reduzindo custos e conflitos na transferencia do patrimonio.', {});
+  // ===== Paleta (relatório claro estilo XP/Rico) =====
+  var M=44, cw=W-2*M, y=M;
+  var OR=[255,78,0], BLACK=[26,28,34], DARK=[55,58,66], TITLE=[74,78,90], MUT=[120,127,150], HEADBG=[92,96,106], SEP=[226,229,236], GREEN=[40,170,115], GRAY=[140,144,156];
+  var nomeCli=state.nomeCliente||'Cliente';
+  var perfilMap={conservadora:'Conservadora',moderada:'Moderada',sofisticada:'Sofisticada'};
+  var perfil=perfilMap[state.template]||'Conservadora';
+  var refLabel=(function(){ var mm=['JAN','FEV','MAR','ABR','MAI','JUN','JUL','AGO','SET','OUT','NOV','DEZ']; var dt=new Date(); return mm[dt.getMonth()]+'/'+dt.getFullYear(); })();
+  var hoje=new Date().toLocaleDateString('pt-BR');
+  var lc=lifeCycle();
+  var isRD=(state.aporteMode==='rendadespesa');
+  function moneyK(n){ n=Number(n)||0; var s=n<0?'-':''; n=Math.abs(n); if(n>=1e6) return s+'R$ '+(n/1e6).toFixed(2).replace('.',',')+'Mi'; if(n>=1e3) return s+'R$ '+(Math.round(n/1e3))+'mil'; return s+'R$ '+Math.round(n); }
+  function white(){ doc.setFillColor(255,255,255); doc.rect(0,0,W,H,'F'); }
+  var pageNum=0;
+  function header(){ doc.setFont('helvetica','bold'); doc.setFontSize(7.6); doc.setTextColor(BLACK[0],BLACK[1],BLACK[2]); doc.text('RELATÓRIO',M,32);
+    doc.setFontSize(8.6); doc.text('PLANEJAMENTO FINANCEIRO',M,43); var ww=doc.getTextWidth('PLANEJAMENTO FINANCEIRO');
+    doc.setFont('helvetica','normal'); doc.setTextColor(OR[0],OR[1],OR[2]); doc.text(' - '+refLabel, M+ww, 43);
+    doc.setDrawColor(OR[0],OR[1],OR[2]); doc.setLineWidth(2); doc.line(M,49,M+118,49);
+    doc.setFont('helvetica','bold'); doc.setFontSize(17); doc.setTextColor(OR[0],OR[1],OR[2]); doc.text('rico',W-M,46,{align:'right'}); }
+  function footer(){ doc.setFont('helvetica','normal'); doc.setFontSize(9); doc.setTextColor(MUT[0],MUT[1],MUT[2]); doc.text('Página '+pageNum,W-M,H-26,{align:'right'}); }
+  function newPage(){ doc.addPage(); white(); pageNum++; header(); footer(); y=72; }
+  function ensure(h){ if(y+h>H-44){ newPage(); } }
+  function title(t){ ensure(40); doc.setFont('helvetica','normal'); doc.setFontSize(22); doc.setTextColor(TITLE[0],TITLE[1],TITLE[2]); doc.text(t,M,y); y+=22; }
+  function intro(t){ doc.setFont('helvetica','normal'); doc.setFontSize(10); doc.setTextColor(MUT[0],MUT[1],MUT[2]); var ls=doc.splitTextToSize(t,cw); for(var i=0;i<ls.length;i++){ ensure(14); doc.text(ls[i],M,y); y+=14; } y+=6; }
+  function para(t,o){ o=o||{}; doc.setFont('helvetica',o.bold?'bold':'normal'); doc.setFontSize(o.size||10); var c=o.color||DARK; doc.setTextColor(c[0],c[1],c[2]); var ls=doc.splitTextToSize(t,o.w||cw); for(var i=0;i<ls.length;i++){ ensure(o.lh||13.5); doc.text(ls[i],o.x||M,y); y+=(o.lh||13.5); } y+=(o.gap!=null?o.gap:5); }
+  function tlabel(t){ ensure(20); doc.setFont('helvetica','bold'); doc.setFontSize(10.5); doc.setTextColor(BLACK[0],BLACK[1],BLACK[2]); doc.text(t,M,y); y+=6; doc.setDrawColor(SEP[0],SEP[1],SEP[2]); doc.setLineWidth(0.8); doc.line(M,y,M+cw,y); y+=10; }
+  function table(cols,rows,opt){ opt=opt||{}; var tw=0; cols.forEach(function(c){tw+=c.w;}); cols.forEach(function(c){ c.cw=c.w/tw*cw; });
+    var rowH=opt.rowH||21, headH=opt.headH||26;
+    function head(){ ensure(headH+rowH); doc.setFillColor(HEADBG[0],HEADBG[1],HEADBG[2]); doc.rect(M,y,cw,headH,'F'); doc.setFont('helvetica','bold'); doc.setFontSize(7); doc.setTextColor(255,255,255); var cx=M; cols.forEach(function(c){ var ls=doc.splitTextToSize(String(c.label).toUpperCase(),c.cw-10); var ty=y+headH/2-(ls.length-1)*3.4+2.5; doc.text(ls,(c.align==='right'?cx+c.cw-6:cx+6),ty,c.align==='right'?{align:'right'}:undefined); cx+=c.cw; }); y+=headH; }
+    head();
+    rows.forEach(function(r){ if(y+rowH>H-44){ newPage(); if(opt.label){ tlabel(opt.label); } head(); } doc.setFont('helvetica',(r._b?'bold':'normal')); doc.setFontSize(8.6); var cx=M; cols.forEach(function(c,ci){ var v=String(r[ci]==null?'':r[ci]); var col=(r._c&&r._c[ci])||DARK; doc.setTextColor(col[0],col[1],col[2]); doc.text(v,(c.align==='right'?cx+c.cw-6:cx+6),y+rowH/2+3,c.align==='right'?{align:'right'}:undefined); cx+=c.cw; }); doc.setDrawColor(SEP[0],SEP[1],SEP[2]); doc.setLineWidth(0.5); doc.line(M,y+rowH,M+cw,y+rowH); y+=rowH; }); y+=10; }
+  function cards(items,opt){ opt=opt||{}; var n=items.length, gap=12, h=opt.h||92; ensure(h+6); var cwc=(cw-gap*(n-1))/n, cx=M; items.forEach(function(it){ doc.setDrawColor(SEP[0],SEP[1],SEP[2]); doc.setLineWidth(1); doc.roundedRect(cx,y,cwc,h,8,8,'S'); var ty=y+18; doc.setFont('helvetica','bold'); doc.setFontSize(10.5); doc.setTextColor((it.color||DARK)[0],(it.color||DARK)[1],(it.color||DARK)[2]); doc.text(it.title,cx+12,ty); ty+=15; (it.rows||[]).forEach(function(rw){ doc.setFont('helvetica','normal'); doc.setFontSize(7.6); doc.setTextColor(MUT[0],MUT[1],MUT[2]); var kl=doc.splitTextToSize(rw.k,cwc-22); doc.text(kl,cx+12,ty); ty+=kl.length*8.5; doc.setFont('helvetica','bold'); doc.setFontSize(rw.big?12.5:10.5); var vc=rw.color||DARK; doc.setTextColor(vc[0],vc[1],vc[2]); doc.text(rw.v,cx+12,ty); ty+=15; }); cx+=cwc+gap; }); y+=h+10; }
+
+  // ===================== CAPA =====================
+  white(); pageNum=1;
+  (function cover(){
+    doc.setLineWidth(0.5);
+    for(var k=0;k<24;k++){ var amp=70+k*3.2, xoff=14+k*6.0, phase=k*0.16; var g=Math.min(70+k*6,200), b=Math.min(30+k*6,170); doc.setDrawColor(255,g,b); var pX=null,pY=null; for(var t=0;t<=1.0001;t+=0.018){ var py=30+t*(H-70); var px=xoff+amp*Math.sin(t*2.7*Math.PI+phase)*(1-t*0.15); if(pX!=null) doc.line(pX,pY,px,py); pX=px; pY=py; } }
+    var tx=W*0.42;
+    doc.setFont('helvetica','bold'); doc.setFontSize(17); doc.setTextColor(OR[0],OR[1],OR[2]); doc.text('rico',W-M,52,{align:'right'});
+    doc.setFontSize(13); doc.setLetterSpacing&&doc.setLetterSpacing(2); doc.text('R E L A T Ó R I O',tx,355); doc.setLetterSpacing&&doc.setLetterSpacing(0);
+    doc.setFontSize(33); doc.setTextColor(BLACK[0],BLACK[1],BLACK[2]); doc.text('Planejamento',tx,398); doc.text('Financeiro',tx,435);
+    var my=496; function meta(k,v){ doc.setFont('helvetica','bold'); doc.setFontSize(9); doc.setTextColor(BLACK[0],BLACK[1],BLACK[2]); doc.text(k,tx,my); my+=14; doc.setFont('helvetica','normal'); doc.setFontSize(9.5); doc.text(v,tx,my); my+=26; }
+    meta('Cliente','Cliente '+nomeCli);
+    meta('Assessor:','Gustavo Amorim');
+    meta('Data de Referência:',hoje);
+    doc.setFont('helvetica','normal'); doc.setFontSize(8); doc.setTextColor(MUT[0],MUT[1],MUT[2]); doc.text('Gerado em '+hoje,W-M,H-26,{align:'right'});
+  })();
+
+  // ===================== INTRODUÇÃO =====================
+  newPage();
+  title('Olá, '+nomeCli);
+  doc.setFont('helvetica','italic'); doc.setFontSize(11); doc.setTextColor(DARK[0],DARK[1],DARK[2]);
+  var quote=doc.splitTextToSize('"Este é o relatório do seu Planejamento Financeiro, completo e personalizado, baseado na sua realidade e nos seus objetivos de vida."',cw); doc.text(quote,M,y); y+=quote.length*15+10;
+  intro('Com o Planejamento Financeiro você visualiza com clareza seu patrimônio, rendas e despesas, entende sua capacidade de poupar e define suas metas futuras — ganhando segurança e estratégia para decisões que trazem tranquilidade hoje e constroem o futuro que deseja.');
+  y+=4; doc.setFont('helvetica','bold'); doc.setFontSize(13); doc.setTextColor(TITLE[0],TITLE[1],TITLE[2]); doc.text('Benefícios de ter um Planejamento Financeiro',M,y); y+=20;
+  (function(){ var bens=[['Controle de rendas e despesas','para garantir conforto no presente e poupança para o futuro.'],['Estratégias para a liberdade financeira','com uma renda estável durante a aposentadoria.'],['Seguros e sucessão','para proteger seus bens e sua família.'],['Otimização fiscal','para reduzir tributos e investir mais nas suas metas.']]; var colW=(cw-20)/2; for(var i=0;i<bens.length;i++){ var cxb=M+(i%2)*(colW+20); var ry=y+Math.floor(i/2)*60; doc.setFillColor(255,237,230); doc.circle(cxb+7,ry-3,7,'F'); doc.setFont('helvetica','bold'); doc.setFontSize(10); doc.setTextColor(BLACK[0],BLACK[1],BLACK[2]); doc.text(doc.splitTextToSize(bens[i][0],colW-24),cxb+22,ry); doc.setFont('helvetica','normal'); doc.setFontSize(8.6); doc.setTextColor(MUT[0],MUT[1],MUT[2]); doc.text(doc.splitTextToSize(bens[i][1],colW-24),cxb+22,ry+13); } y+=Math.ceil(bens.length/2)*60+10; })();
+
+  // ===================== PREMISSAS =====================
+  newPage();
+  title('Premissas');
+  intro('As premissas são as informações-chave usadas como base para construir o planejamento. A partir delas projetamos o crescimento do patrimônio, as possibilidades de realização dos objetivos e os ajustes necessários ao longo do tempo.');
+  tlabel('Informações pessoais mapeadas');
+  table([{label:'Informação',w:50},{label:'Valor',w:50,align:'right'}],[
+    ['Nome',nomeCli],['Idade atual',lc.i0+' anos'],['Idade de aposentadoria',lc.iA+' anos'],['Expectativa de vida',lc.iF+' anos']
+  ],{});
+  tlabel('Informações financeiras mapeadas');
+  var premRows=[['Política de Investimentos',perfil],['Rentabilidade real estimada',(lc.r*100).toFixed(1).replace('.',',')+'% a.a. ('+rentLabel()+')']];
+  if(isRD){ premRows.push(['Renda média mensal / anual',brlCents(state.rendaAtual)+' / '+brlCents(state.rendaAtual*12)]); premRows.push(['Despesa média mensal / anual',brlCents(state.despesaMensal)+' / '+brlCents(state.despesaMensal*12)]); }
+  premRows.push(['Capacidade de aporte mensal',brlCents(lc.aporteMensalAtual)]);
+  premRows.push(['Renda desejada na aposentadoria',brlCents(lc.resgateMensal)+'/mês']);
+  premRows.push(['Investimento inicial',brlCents(state.valor)]);
+  table([{label:'Informação',w:50},{label:'Valor',w:50,align:'right'}],premRows,{});
+
+  // ===================== OBJETIVOS =====================
+  newPage();
+  title('Objetivos');
+  intro('Os objetivos refletem o que é mais importante para o cliente e serão acompanhados ao longo do tempo para garantir que o plano esteja no caminho certo.');
+  tlabel('Tabela 1: Objetivos');
+  table([{label:'Descrição',w:26},{label:'Categoria',w:22},{label:'Idade atingimento',w:18},{label:'Frequência',w:16},{label:'Ocorrências',w:14},{label:'Valor',w:24,align:'right'}],[
+    ['Aposentadoria','Aposentadoria',String(lc.iA),'Mensal',String(lc.N*12),brlCents(lc.resgateMensal)+'/mês']
+  ],{});
+
+  // ===================== RENDAS E DESPESAS =====================
+  newPage();
+  title('Rendas e Despesas');
+  intro('Aqui estão organizadas as fontes de renda e as despesas. Ter clareza sobre o fluxo de entradas e saídas permite decisões mais seguras e alinhadas com os objetivos.');
+  if(isRD){
+    cards([
+      {title:'RENDAS',color:OR,rows:[{k:'Renda média mensal',v:brlCents(state.rendaAtual),big:true},{k:'Renda média anual',v:brlCents(state.rendaAtual*12),big:true}]},
+      {title:'DESPESAS',color:DARK,rows:[{k:'Despesa média mensal',v:brlCents(state.despesaMensal),big:true},{k:'Despesa média anual',v:brlCents(state.despesaMensal*12),big:true}]}
+    ],{h:104});
+    intro('Os valores acima são considerados constantes (em poder de compra de hoje) durante a fase de acúmulo, até a aposentadoria.');
+  } else {
+    cards([
+      {title:'APORTE MENSAL',color:OR,rows:[{k:'Capacidade de aporte mensal',v:brlCents(lc.aporteMensalAtual),big:true},{k:'Capacidade de aporte anual',v:brlCents(lc.aporteAnualAtual),big:true}]},
+      {title:'RENDA-ALVO',color:DARK,rows:[{k:'Renda desejada (aposentadoria)',v:brlCents(lc.resgateMensal),big:true},{k:'Necessidade anual na aposentadoria',v:brlCents(lc.resgateAnual),big:true}]}
+    ],{h:104});
+    intro('No modo "Valor direto", o aporte mensal informado é usado como capacidade de poupança até a aposentadoria.');
+  }
+
+  // ===================== FLUXO FINANCEIRO =====================
+  newPage();
+  title('Fluxo Financeiro');
+  intro('A capacidade de aporte é o que sobra no balanço entre entradas e saídas a cada ano — essencial para formar patrimônio e atingir as metas.');
+  cards([
+    {title:'CAPACIDADE DE APORTE',color:GREEN,rows:[{k:'Aporte médio mensal',v:brlCents(lc.aporteMensalAtual),big:true},{k:'Aporte médio anual',v:brlCents(lc.aporteAnualAtual),big:true}]}
+  ],{h:96});
+  tlabel('Tabela: Fluxo Financeiro');
+  (function(){ var rows=[]; var entAcc=isRD?state.rendaAtual*12:lc.aporteAnualAtual; var saiAcc=isRD?state.despesaMensal*12:0; for(var age=lc.i0; age<lc.iF; age++){ var acc=age<lc.iA; var ent=acc?entAcc:0, sai=acc?saiAcc:lc.resgateAnual, cap=ent-sai; var rr=[String(age),brlCents(ent),brlCents(sai),brlCents(cap)]; rr._c=[DARK,DARK,DARK, cap>=0?GREEN:[210,70,70]]; rows.push(rr); } table([{label:'Idade',w:20},{label:'Entradas',w:28,align:'right'},{label:'Saídas',w:26,align:'right'},{label:'Capacidade de aporte',w:30,align:'right'}],rows,{rowH:17,label:'Tabela: Fluxo Financeiro'}); })();
+
+  // ===================== PATRIMÔNIO =====================
+  newPage();
+  title('Patrimônio');
+  intro('Retrato da composição dos ativos por categoria, em valores absolutos e em proporção, incluindo investimentos e bens imobilizados.');
+  (function(){ var byCat={}; (state.alocacao||[]).forEach(function(a){ byCat[a.cat]=(byCat[a.cat]||0)+(Number(a.pct)||0); }); var inv=state.valor||0; var rows=[]; var cats=Object.keys(byCat); var somaPct=cats.reduce(function(s,k){return s+byCat[k];},0)||100; cats.forEach(function(k){ var pct=byCat[k]/somaPct*100; rows.push([k,brlCents(pct/100*inv),pct.toFixed(1).replace('.',',')+'%']); }); var imoTot=(state.imoveis||[]).reduce(function(s,i){return s+(Number(i.valor)||0)*(Number(i.quantidade)||1);},0); var patr=inv+imoTot; tlabel('Investimentos por classe de ativo'); table([{label:'Categoria',w:50},{label:'Valor (R$)',w:30,align:'right'},{label:'%',w:20,align:'right'}],rows.length?rows:[['—','—','—']],{});
+    var resumo=[['Investimento Nacional',brlCents(inv),(patr? (inv/patr*100):0).toFixed(1).replace('.',',')+'%']]; if(imoTot>0) resumo.push(['Imóveis e bens',brlCents(imoTot),(patr?(imoTot/patr*100):0).toFixed(1).replace('.',',')+'%']); var totRow=['Patrimônio total',brlCents(patr),'100%']; totRow._b=true; resumo.push(totRow); tlabel('Patrimônio total por origem'); table([{label:'Origem',w:50},{label:'Valor (R$)',w:30,align:'right'},{label:'%',w:20,align:'right'}],resumo,{});
+    if((state.imoveis||[]).length){ tlabel('Tabela: Imóveis e bens mapeados'); var ir=state.imoveis.map(function(i){ return [(i.tipo||'Imóvel')+(i.estado?(' · '+i.estado):''),String(i.quantidade||1),brlCents((Number(i.valor)||0)*(Number(i.quantidade)||1))]; }); table([{label:'Identificação',w:50},{label:'Qtd',w:14,align:'right'},{label:'Valor atual (R$)',w:36,align:'right'}],ir,{}); }
+  })();
+
+  // ===================== DIAGNÓSTICO =====================
+  newPage();
+  title('Diagnóstico do planejamento');
+  doc.setFillColor(lc.statusColor[0],lc.statusColor[1],lc.statusColor[2]); doc.circle(M+5,y-3,4,'F'); doc.setFont('helvetica','bold'); doc.setFontSize(11); doc.setTextColor(BLACK[0],BLACK[1],BLACK[2]); doc.text(lc.status,M+16,y); y+=8; doc.setDrawColor(SEP[0],SEP[1],SEP[2]); doc.setLineWidth(0.8); doc.line(M,y,M+cw,y); y+=12;
+  para(lc.diagMsg,{});
+  cards([
+    {title:'Planejamento atual',color:GREEN,rows:[{k:'Patrimônio projetado aos '+lc.iA+' anos',v:brlCents(lc.pAtualApos),big:true},{k:'Capacidade de aporte mensal/anual',v:brlCents(lc.aporteMensalAtual)+' / '+brlCents(lc.aporteAnualAtual)}]},
+    {title:'Consumo do patrimônio',color:GRAY,rows:[{k:'Patrimônio mínimo aos '+lc.iA+' anos',v:brlCents(lc.targetConsumo),big:true},{k:'Aporte médio mensal/anual',v:brlCents(lc.aporteConsumoMensal)+' / '+brlCents(lc.aporteConsumoAnual)}]},
+    {title:'Preservação do patrimônio',color:BLACK,rows:[{k:'Patrimônio necessário aos '+lc.iA+' anos',v:brlCents(lc.targetPreserv),big:true},{k:'Aporte médio mensal/anual',v:brlCents(lc.aportePreservMensal)+' / '+brlCents(lc.aportePreservAnual)}]}
+  ],{h:118});
+  // gráfico de projeção (3 cenários)
+  (function(){ var ch=210; ensure(ch+44); var cx0=M+44, cy0=y+ch-22, plotW=cw-54, plotH=ch-40; var maxV=1; [lc.cAtual,lc.cConsumo,lc.cPreserv].forEach(function(a){a.forEach(function(p){ if(p.val>maxV)maxV=p.val; });}); maxV*=1.05; var a0=lc.i0,a1=lc.iF; function X(a){return cx0+(a-a0)/(a1-a0)*plotW;} function Y(v){return cy0-(v/maxV)*plotH;}
+    doc.setFontSize(7); for(var g=0;g<=4;g++){ var vv=maxV*g/4, yy=Y(vv); doc.setDrawColor(SEP[0],SEP[1],SEP[2]); doc.setLineWidth(0.5); doc.line(cx0,yy,cx0+plotW,yy); doc.setTextColor(MUT[0],MUT[1],MUT[2]); doc.text(moneyK(vv),cx0-6,yy+3,{align:'right'}); }
+    for(var a=a0;a<=a1;a+=10){ doc.setTextColor(MUT[0],MUT[1],MUT[2]); doc.text(String(a),X(a),cy0+12,{align:'center'}); }
+    function plot(arr,col,wd){ doc.setDrawColor(col[0],col[1],col[2]); doc.setLineWidth(wd); for(var i=1;i<arr.length;i++){ doc.line(X(arr[i-1].age),Y(arr[i-1].val),X(arr[i].age),Y(arr[i].val)); } }
+    plot(lc.cPreserv,BLACK,1.1); plot(lc.cConsumo,GRAY,1.1); plot(lc.cAtual,GREEN,1.8);
+    var pa=0; lc.cAtual.forEach(function(p){ if(p.age===lc.iA) pa=p.val; }); doc.setFillColor(20,20,20); doc.circle(X(lc.iA),Y(pa),3,'F');
+    y=cy0+24; var lx=M; function leg(c,t){ doc.setFillColor(c[0],c[1],c[2]); doc.rect(lx,y-6,10,4,'F'); doc.setFont('helvetica','normal'); doc.setFontSize(8); doc.setTextColor(DARK[0],DARK[1],DARK[2]); doc.text(t,lx+14,y-2); lx+=14+doc.getTextWidth(t)+18; }
+    leg(GREEN,'Projeção atual'); leg(GRAY,'Consumo do patrimônio'); leg(BLACK,'Preservação do patrimônio'); y+=16; })();
+
+  // ===================== PROJEÇÃO (TABELA) =====================
+  newPage();
+  title('Projeção do Planejamento');
+  intro('Evolução do patrimônio a valor presente (poder de compra de hoje) nos três cenários, ano a ano.');
+  tlabel('Tabela: Projeção Financeira');
+  (function(){ var rows=[]; for(var i=0;i<lc.cAtual.length;i++){ var age=lc.cAtual[i].age; rows.push([String(age),brlCents(lc.cAtual[i].val),brlCents(lc.cConsumo[i].val),brlCents(lc.cPreserv[i].val)]); } table([{label:'Idade',w:16},{label:'Projeção atual',w:28,align:'right'},{label:'Consumo do patrimônio',w:28,align:'right'},{label:'Preservação do patrimônio',w:28,align:'right'}],rows,{rowH:16,label:'Tabela: Projeção Financeira'}); })();
+
+  // ===================== SUCESSÃO E PROTEÇÃO PATRIMONIAL =====================
+  newPage();
+  title('Proteção e Sucessão Patrimonial');
+  intro('Acumular patrimônio sem proteger deixa o plano vulnerável a imprevistos (morte, invalidez, processos, sucessão). As estruturas abaixo garantem que o objetivo do cliente e da família se mantenha mesmo diante do inesperado e que a transferência de bens seja eficiente.');
+  function subsec(t){ ensure(22); doc.setFont('helvetica','bold'); doc.setFontSize(12); doc.setTextColor(OR[0],OR[1],OR[2]); doc.text(t,M,y); y+=15; }
+  subsec('Whole Life — Seguro de Vida Vitalício');
+  para('A linha mais completa de proteção. O Whole Life garante cobertura por toda a vida (não expira), constrói valor em dinheiro ao longo do tempo e cria liquidez imediata e isenta para os beneficiários no momento da sucessão. É ideal para cobrir o imposto de transmissão (ITCMD) e custos de inventário sem que a família precise vender bens às pressas, além de funcionar como reserva de valor de longo prazo em moeda forte.',{});
+  subsec('Holding Patrimonial');
+  para('A holding familiar organiza os bens (imóveis, participações e investimentos) em uma estrutura societária, simplificando e barateando a sucessão: a transferência ocorre via doação de cotas com reserva de usufruto, evitando inventário, reduzindo custos e prevenindo conflitos entre herdeiros. Também traz eficiência tributária na gestão de aluguéis e na venda de ativos, além de proteção patrimonial contra riscos da atividade profissional.',{});
+  subsec('Previdência Privada (PGBL / VGBL)');
+  para('A previdência é um dos veículos mais eficientes para o planejamento sucessório: os recursos não entram em inventário e são pagos diretamente aos beneficiários indicados, com rapidez. O PGBL permite deduzir até 12% da renda bruta tributável (para quem declara no completo), enquanto o VGBL é indicado para quem usa o modelo simplificado ou já atingiu o limite. Em ambos, a tabela regressiva pode levar a alíquota de IR a 10% no longo prazo.',{});
   var temProt=(state.protecao||[]).filter(function(p){return p.on;});
-  if(temProt.length){ para('Hoje o cliente ja possui: '+temProt.map(function(p){return p.name;}).join(', ')+'.', {color:[43,217,166]}); }
-  else { para('Atencao: o cliente ainda NAO possui protecao patrimonial - uma oportunidade clara de protecao e de fortalecer a relacao com o assessor.', {color:[255,140,80]}); }
-  heading('5. Visao 360 e Open Finance');
-  para('Para uma gestao de riscos e de alocacao realmente completa, e essencial enxergar TODO o patrimonio do cliente - inclusive o que esta em outras instituicoes. O Open Finance permite que o cliente compartilhe, com seguranca e mediante autorizacao, suas posicoes e movimentacoes de outros bancos e corretoras.', {});
-  para('Com essa visao 360, o assessor consegue: (1) evitar concentracao e sobreposicao de riscos entre instituicoes; (2) identificar ativos caros, ociosos ou inadequados ao perfil; (3) propor uma alocacao consolidada e mais eficiente; e (4) acompanhar a aderencia da carteira total ao objetivo. Em vez de aconselhar apenas sobre uma fatia, o assessor passa a cuidar do patrimonio completo - gerando mais valor e confianca.', {});
-  y+=8; doc.setDrawColor(60,70,120); doc.line(x,y,x+cw,y); y+=14;
-  para('Material de apoio comercial. Valores e projecoes ilustrativos (estimativa bruta, sem IR/IOF), baseados em premissas editaveis. Rentabilidade passada nao garante resultados futuros. Nao constitui recomendacao ou oferta. Rico - Grupo XP.', {size:8, color:[120,127,168], lh:11});
+  y+=2; if(temProt.length){ para('Hoje o cliente já possui: '+temProt.map(function(p){return p.name;}).join(', ')+'.',{color:GREEN,bold:true}); } else { para('Atenção: o cliente ainda NÃO possui estruturas de proteção e sucessão — uma oportunidade clara de proteger a família e fortalecer a relação com o assessor.',{color:[210,90,30],bold:true}); }
+
+  // ===================== TERMOS E ENCERRAMENTO =====================
+  newPage();
+  title('Termos e Conceitos');
+  function termo(t,d){ ensure(34); doc.setFont('helvetica','bold'); doc.setFontSize(9.5); doc.setTextColor(BLACK[0],BLACK[1],BLACK[2]); doc.text(t,M,y); y+=12; doc.setFont('helvetica','normal'); doc.setFontSize(8.6); doc.setTextColor(MUT[0],MUT[1],MUT[2]); var ls=doc.splitTextToSize(d,cw); for(var i=0;i<ls.length;i++){ ensure(12); doc.text(ls[i],M,y); y+=12; } y+=8; }
+  termo('Projeção a valor presente','Os valores são projetados pela rentabilidade real (retorno descontado da inflação/IPCA), indicando o poder de compra de hoje.');
+  termo('Planejamento atual','Projeção da carteira com as premissas capturadas, incluindo os aportes e os resgates dos objetivos.');
+  termo('Consumo total do patrimônio','Cenário em que o patrimônio principal também é consumido para atingir o objetivo, exigindo o aporte mínimo durante o acúmulo.');
+  termo('Preservação do patrimônio','Cenário em que o resgate na aposentadoria considera apenas os juros, mantendo o principal até a expectativa de vida.');
+  termo('Capacidade de aporte','Saldo entre rendas e despesas — é com ela que o cliente forma patrimônio e atinge as metas.');
+  y+=6; doc.setDrawColor(SEP[0],SEP[1],SEP[2]); doc.setLineWidth(0.8); doc.line(M,y,M+cw,y); y+=12;
+  para('Material de apoio comercial elaborado no app do assessor. Valores e projeções ilustrativos a valor presente (estimativa bruta, sem IR/IOF), baseados em premissas editáveis. Rentabilidade passada não garante resultados futuros. Não constitui recomendação ou oferta. Rico — Grupo XP.',{size:7.6,color:MUT,lh:10.5});
+
   var slug = state.nomeCliente ? '-'+state.nomeCliente.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'') : '';
-  doc.save('plano-detalhado-rico'+slug+'.pdf');
+  doc.save('planejamento-financeiro-rico'+slug+'.pdf');
   showToast('✓ Plano detalhado (PDF) gerado!');
 });
 
