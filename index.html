@@ -490,12 +490,18 @@ html, body {
 [data-tool="simulador"] .rent-mode-opt{background:transparent;border:none;color:#A9B0D6;font-weight:700;font-size:12px;padding:5px 11px;border-radius:7px;cursor:pointer;font-family:inherit;letter-spacing:.2px;transition:all .15s;}
 [data-tool="simulador"] .rent-mode-opt:hover{color:#fff;}
 [data-tool="simulador"] .rent-mode-opt.active{background:var(--laranja,#FF4E00);color:#fff;}
-[data-tool="simulador"] .rd-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
-[data-tool="simulador"] .rd-field label{display:block;font-size:12px;font-weight:600;color:var(--cinza-2,#A9B0D6);margin-bottom:6px;}
-[data-tool="simulador"] .rd-field .num-input{background:rgba(0,0,0,.22);border:1px solid var(--line,rgba(120,130,210,.22));border-radius:10px;padding:8px 11px;}
-[data-tool="simulador"] .rd-field .num-input input{font-size:18px;}
-[data-tool="simulador"] .rd-result{margin-top:14px;font-size:13px;color:var(--cinza-2,#A9B0D6);}
+[data-tool="simulador"] .amode-bar{display:flex;width:100%;margin:2px 0 14px;}
+[data-tool="simulador"] .amode-bar .rent-mode-opt{flex:1;text-align:center;padding:7px 6px;}
+[data-tool="simulador"] .rd-grid{display:grid;grid-template-columns:1fr;gap:12px;}
+[data-tool="simulador"] .rd-field label{display:block;font-size:11px;font-weight:700;letter-spacing:.3px;text-transform:uppercase;color:var(--cinza-2,#8089BE);margin-bottom:6px;}
+[data-tool="simulador"] .rd-field .num-input{background:rgba(0,0,0,.22);border:1px solid var(--line,rgba(120,130,210,.22));border-radius:10px;padding:8px 11px;justify-content:space-between;}
+[data-tool="simulador"] .rd-field .num-input input{font-size:19px;}
+[data-tool="simulador"] .rd-result{margin-top:14px;font-size:12.5px;color:var(--cinza-2,#A9B0D6);}
 [data-tool="simulador"] .rd-result b{color:#2BD9A6;font-size:16px;font-weight:800;}
+[data-tool="simulador"] .prazo-idade{margin-top:14px;display:flex;align-items:center;justify-content:space-between;gap:10px;border-top:1px solid var(--line,rgba(120,130,210,.18));padding-top:12px;}
+[data-tool="simulador"] .prazo-idade label{font-size:12px;font-weight:600;color:var(--cinza-2,#A9B0D6);}
+[data-tool="simulador"] .prazo-idade .num-input{background:rgba(0,0,0,.22);border:1px solid var(--line,rgba(120,130,210,.22));border-radius:9px;padding:6px 10px;flex-shrink:0;}
+[data-tool="simulador"] .prazo-idade .num-input input{font-size:16px;width:46px;}
 [data-tool="simulador"] .prazo-hint{margin-top:12px;font-size:12px;color:var(--cinza-2,#8089BE);line-height:1.4;}
 [data-tool="simulador"] .prazo-hint b{color:#cfd4ef;}
 [data-tool="simulador"] .num-input .pre{color:#A9B0D6;font-weight:700;font-size:13px;margin-right:4px;white-space:nowrap;}
@@ -2008,12 +2014,10 @@ body.mm .ajbtn{ padding:11px 16px !important; font-size:14px !important; }
     </div>
 
     <div class="card control">
-      <div class="label-row">
-        <label>Aporte mensal</label>
-        <div class="rent-mode" id="aporteMode" role="tablist" aria-label="Forma de informar o aporte">
-          <button type="button" class="rent-mode-opt active" data-amode="direto" role="tab" aria-selected="true">Valor direto</button>
-          <button type="button" class="rent-mode-opt" data-amode="rendadespesa" role="tab" aria-selected="false">Renda − Despesa</button>
-        </div>
+      <div class="label-row"><label>Aporte mensal</label></div>
+      <div class="rent-mode amode-bar" id="aporteMode" role="tablist" aria-label="Forma de informar o aporte">
+        <button type="button" class="rent-mode-opt active" data-amode="direto" role="tab" aria-selected="true">Valor direto</button>
+        <button type="button" class="rent-mode-opt" data-amode="rendadespesa" role="tab" aria-selected="false">Renda − Despesa</button>
       </div>
       <!-- MODO: valor direto -->
       <div id="aporteDireto">
@@ -2112,24 +2116,11 @@ body.mm .ajbtn{ padding:11px 16px !important; font-size:14px !important; }
         <button data-t="20">20 anos</button>
         <button data-t="30">30 anos</button>
       </div>
-      <div class="prazo-hint" id="prazoHint">Aposentadoria estimada aos <b id="hintApos">60</b> anos (idade atual + prazo).</div>
-    </div>
-
-    <div class="card control">
-      <div class="label-row">
-        <label>Ciclo de vida</label>
+      <div class="prazo-idade">
+        <label>Idade atual do cliente</label>
+        <div class="num-input"><input type="number" id="idadeAtual" min="18" max="95" step="1" value="40" /><span class="pos">anos</span></div>
       </div>
-      <div class="rd-grid">
-        <div class="rd-field">
-          <label>Idade atual</label>
-          <div class="num-input"><input type="number" id="idadeAtual" min="18" max="95" step="1" value="40" /><span class="pos">anos</span></div>
-        </div>
-        <div class="rd-field">
-          <label>Expectativa de vida</label>
-          <div class="num-input"><input type="number" id="expectativa" min="70" max="110" step="1" value="100" /><span class="pos">anos</span></div>
-        </div>
-      </div>
-      <div class="prazo-hint">Define as fases de <b>acúmulo</b> (até a aposentadoria) e <b>resgate</b> (até a expectativa) no plano detalhado.</div>
+      <div class="prazo-hint" id="prazoHint">Aposentadoria estimada aos <b id="hintApos">60</b> anos · projeção de resgate até os <b>100 anos</b>.</div>
     </div>
   </div>
 
@@ -6200,7 +6191,7 @@ function lifeCycle(){
   var i0 = Math.round(Number(state.idadeAtual)||40);
   var prazo = Math.round(Number(state.prazoAnos)||20);
   var iA = i0 + prazo;                                  // idade de aposentadoria
-  var iF = Math.max(iA+1, Math.round(Number(state.expectativa)||100)); // expectativa
+  var iF = Math.max(iA+1, 100);                          // expectativa fixa: 100 anos
   var T = iA - i0, N = iF - iA;
   var V0 = Number(state.valor)||0;
   var aporteAnualAtual = aporteEfetivo()*12;
