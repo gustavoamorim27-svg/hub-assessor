@@ -7800,7 +7800,7 @@ window.__rvRender = render;
   function customLib(){ try{ return JSON.parse(localStorage.getItem("hubCustomLib")||"[]")||[]; }catch(e){ return []; } }
   function gavetas(){ return LIB.concat(customLib().map(function(x){return {classe:x.classe,nome:x.nome,detalhe:x.detalhe||""};})); }
 
-  var state={ origem:"import", cliente:"", atual:null, prev:[], vals:{}, removed:{}, added:[], libOpen:true, baseOverride:null };
+  var state={ origem:"import", cliente:"", atual:null, atualRaw:null, prev:[], vals:{}, removed:{}, added:[], libOpen:true, totalOverride:null };
   var seq=0; function uid(){ return "e"+(++seq); }
   var drag=null;
 
@@ -7812,18 +7812,23 @@ window.__rvRender = render;
     if(state.origem==="sim"){ var c=window.RICO_BRIDGE&&window.RICO_BRIDGE.carteira; if(c&&c.itens&&c.itens.length){ var b=c.patrimonio||0; src={conta:"",cliente:c.cliente||"",ativos:c.itens.map(function(it){return {name:it.nome,categoria:it.classe,valor:(Number(it.pct)||0)/100*b,subcat:"",detalhe:it.detalhe||""};})}; } }
     else { var p=window.RICO_BRIDGE&&window.RICO_BRIDGE.posicaoAtual; if(p&&p.ativos&&p.ativos.length){ src={conta:p.conta||"",cliente:"",ativos:p.ativos.map(function(a){return {name:a.name,categoria:a.categoria||"Multimercados",valor:a.valor||0,subcat:a.subcat||"",detalhe:a.detalhe||""};})}; } }
     if(!src){ state.atual=null; return; }
-    state.atual=src.ativos.filter(function(a){return a.categoria!=="Previdência";});
+    state.atualRaw=src.ativos.filter(function(a){return a.categoria!=="Previdência";}).map(function(a){return {name:a.name,categoria:a.categoria,valor:a.valor,subcat:a.subcat||"",detalhe:a.detalhe||""};});
     state.prev=src.ativos.filter(function(a){return a.categoria==="Previdência";});
     if(!state.cliente) state.cliente=src.cliente||(src.conta?("Conta "+src.conta):"");
     state.conta=src.conta;
-    // reset edits keyed by name
-    state.vals={}; state.removed={}; state.added=[]; state.baseOverride=null;
-    state.atual.forEach(function(a,i){ a.aid="c"+i; state.vals[a.aid]=a.valor; });
+    state.totalOverride=null;
+    rebuildScaled();
+  }
+  function rebuildScaled(){
+    var raw=state.atualRaw||[]; var rawSum=raw.reduce(function(s,a){return s+a.valor;},0);
+    var f=(state.totalOverride>0 && rawSum>0)? state.totalOverride/rawSum : 1;
+    state.atual=raw.map(function(a,i){ return {name:a.name,categoria:a.categoria,valor:Math.round(a.valor*f),subcat:a.subcat,detalhe:a.detalhe,aid:"c"+i}; });
+    state.vals={}; state.removed={}; state.added=[];
+    state.atual.forEach(function(a){ state.vals[a.aid]=a.valor; });
   }
 
   function curVal(a){ return state.vals[a.aid]!=null? state.vals[a.aid] : a.valor; }
-  function currentLiq(){ return state.atual? state.atual.reduce(function(s,a){return s+a.valor;},0):0; }
-  function liquidAtual(){ return (state.baseOverride!=null&&state.baseOverride>0)? state.baseOverride : currentLiq(); }
+  function liquidAtual(){ return state.atual? state.atual.reduce(function(s,a){return s+a.valor;},0):0; }
   function prevTotal(){ return state.prev.reduce(function(s,a){return s+a.valor;},0); }
 
   // classify into board columns
@@ -7919,7 +7924,7 @@ window.__rvRender = render;
       root.innerHTML=h; bind(); return;
     }
     var b=board(), t=totals(b);
-    h+='<div class="pc-id"><div><label class="pc-flbl">Cliente</label><input id="ajCliente" class="pc-input" type="text" value="'+esc(state.cliente)+'" placeholder="Nome do cliente"></div>'+'<div><label class="pc-flbl">Valor a alocar</label><div class="pc-basewrap"><span>R$</span><input id="ajBase" class="pc-input pc-baseinp" type="number" step="1000" min="0" value="'+Math.round(liquidAtual())+'"></div></div>'
+    h+='<div class="pc-id"><div><label class="pc-flbl">Cliente</label><input id="ajCliente" class="pc-input" type="text" value="'+esc(state.cliente)+'" placeholder="Nome do cliente"></div>'+'<div><label class="pc-flbl">Valor total da carteira</label><div class="pc-basewrap"><span>R$</span><input id="ajBase" class="pc-input pc-baseinp" type="number" step="1000" min="0" value="'+Math.round(liquidAtual())+'"></div></div>'
       +'<div class="pc-chips">'
       +chip("Patrimônio",fmtBRL(t.patrim),"#cfd4ef")
       +chip("A vender",fmtBRL(t.vender),"#FF6B6B")
@@ -7949,7 +7954,7 @@ window.__rvRender = render;
     var root=document.getElementById("ajRoot"); if(!root) return;
     root.querySelectorAll("[data-org]").forEach(function(b){ b.onclick=function(){ state.origem=b.getAttribute("data-org"); state.cliente=""; state.added=[]; state.sig=null; render(); }; });
     var cli=document.getElementById("ajCliente"); if(cli) cli.oninput=function(){ state.cliente=cli.value; };
-    var bs=document.getElementById("ajBase"); if(bs) bs.onchange=function(){ var v=Number(bs.value)||0; state.baseOverride=v>0?v:null; render(); };
+    var bs=document.getElementById("ajBase"); if(bs) bs.onchange=function(){ var v=Number(bs.value)||0; state.totalOverride=v>0?v:null; rebuildScaled(); render(); };
     root.querySelectorAll("[data-model]").forEach(function(b){ b.onclick=function(){ applyModel(b.getAttribute("data-model")); }; });
     var lt=root.querySelector("[data-libtoggle]"); if(lt) lt.onclick=function(){ state.libOpen=!state.libOpen; render(); };
     root.querySelectorAll("[data-sell]").forEach(function(b){ b.onclick=function(){ state.removed[b.getAttribute("data-sell")]=true; render(); }; });
