@@ -1116,6 +1116,15 @@ button, .g-tab, [onclick]{ touch-action:manipulation; }
       [data-tool="construtor"] .lib-card-liq{ font-size:10.5px; color:#7F88B8; margin-top:5px; text-transform:uppercase; letter-spacing:.4px; font-weight:700; }
       [data-tool="construtor"] .lib-add{ flex-shrink:0; background:rgba(255,78,0,.15); border:1px solid rgba(255,78,0,.4); color:#FF6B2C; border-radius:8px; padding:5px 11px; font-weight:700; font-size:12px; cursor:pointer; font-family:inherit; white-space:nowrap; }
       [data-tool="construtor"] .lib-add:hover{ background:rgba(255,78,0,.25); }
+      [data-tool="construtor"] .lib-mini{ background:rgba(255,255,255,.05); border:1px solid rgba(120,130,210,.3); color:#cfd4ef; border-radius:7px; padding:4px 10px; font-weight:700; font-size:11.5px; cursor:pointer; font-family:inherit; }
+      [data-tool="construtor"] .lib-mini.del{ color:#FF8080; border-color:rgba(255,80,80,.35); }
+      [data-tool="construtor"] .lib-form{ background:rgba(10,14,50,.6); border:1px solid rgba(120,130,210,.25); border-radius:12px; padding:13px; margin-bottom:14px; }
+      [data-tool="construtor"] .lib-form label{ display:flex; flex-direction:column; gap:4px; font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:.4px; color:#9AA2D0; margin-bottom:9px; }
+      [data-tool="construtor"] .lib-form input, [data-tool="construtor"] .lib-form select{ background:rgba(255,255,255,.05); border:1px solid rgba(120,130,210,.25); border-radius:9px; padding:9px 11px; color:#fff; font-family:inherit; font-size:13px; outline:none; }
+      [data-tool="construtor"] .lib-form-acts{ display:flex; gap:9px; margin-top:2px; }
+      [data-tool="construtor"] .lib-form .lf-save{ background:#FF4E00; color:#fff; border:none; font-weight:700; border-radius:9px; padding:8px 16px; cursor:pointer; font-family:inherit; }
+      [data-tool="construtor"] .lib-form .lf-cancel{ background:transparent; color:#9AA2D0; border:1px solid rgba(120,130,210,.3); border-radius:9px; padding:8px 16px; cursor:pointer; font-family:inherit; }
+      html.hide-drawers #libTab, html.hide-drawers #catTab{ display:none !important; }
       </style>
       <div id="libTab"><span class="tabico">📁</span>ATIVOS GERAIS</div>
       <div id="catTab"><span class="tabico">🧰</span>RV ESTRUTURADA</div>
@@ -1127,6 +1136,8 @@ button, .g-tab, [onclick]{ touch-action:manipulation; }
           <button id="libClose" style="background:none;border:none;color:#9AA2D0;font-size:20px;cursor:pointer;line-height:1;">×</button>
         </div>
         <div style="font-size:12px;color:#9AA2D0;line-height:1.5;margin-bottom:10px;">Arraste um ativo para a carteira, ou clique para adicionar. Operações estruturadas ficam no catálogo, mais abaixo.</div>
+        <button id="libNew" style="width:100%;margin-bottom:12px;background:#FF4E00;border:none;color:#fff;font-family:inherit;font-weight:700;font-size:13px;border-radius:10px;padding:10px 14px;cursor:pointer;">+ Novo ativo</button>
+        <div id="libForm"></div>
         <div id="libChips"></div>
       </div>
       <script>
@@ -1149,13 +1160,17 @@ button, .g-tab, [onclick]{ touch-action:manipulation; }
           {classe:"Internacional",nome:"Wellington Global Quality",detalhe:"Ações EUA/Europa/RU · +75% em 3 anos",liq:"D+5"},
           {classe:"Internacional",nome:"CD de 1 ano (dólar)",detalhe:"Certificate of Deposit · pré em dólar",liq:"No vencimento"}
         ];
-        window.__LIBDATA=LIB;
+        var CUSTOMLIB=[]; try{ CUSTOMLIB=JSON.parse(localStorage.getItem("hubCustomLib")||"[]")||[]; }catch(_){ CUSTOMLIB=[]; }
+        function persist(){ try{ localStorage.setItem("hubCustomLib", JSON.stringify(CUSTOMLIB)); }catch(_){ } }
+        function allItems(){ return LIB.concat(CUSTOMLIB); }
+        var libSeq=0; CUSTOMLIB.forEach(function(x){ var n=parseInt(String(x.id||"").replace("u",""),10); if(!isNaN(n)&&n>libSeq) libSeq=n; });
+        window.__LIBDATA=allItems();
         var COL={"Renda Fixa":"#2BD9A6","Multimercados":"#7C8CFF","Renda Variável":"#FF8B52","Fundos Listados":"#FFB020","Alternativos":"#C77DFF","Internacional":"#36C5F0"};
         var ORDER=["Renda Fixa","Multimercados","Renda Variável","Fundos Listados","Alternativos","Internacional"];
         function esc(t){return (""+t).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
         function render(){
-          var box=document.getElementById("libChips"); if(!box) return; var h="";
-          ORDER.forEach(function(cl){ var items=LIB.map(function(a,i){return {a:a,i:i};}).filter(function(o){return o.a.classe===cl;}); if(!items.length) return; var c=COL[cl]||"#9AA2D0"; h+='<div class="lib-sec" style="color:'+c+'">'+esc(cl)+'</div>'; items.forEach(function(o){ var a=o.a; h+='<div class="lib-card" draggable="true" data-libcard="'+o.i+'" title="Arraste para a carteira ou clique em + Add" style="border-left:3px solid '+c+'">'+'<div class="lib-card-top"><div class="lib-card-name"><span style="color:'+c+'">●</span> '+esc(a.nome)+'</div><button class="lib-add" data-libadd="'+o.i+'">+ Add</button></div>'+(a.detalhe?'<div class="lib-card-desc">'+esc(a.detalhe)+'</div>':'')+(a.liq?'<div class="lib-card-liq">Liquidez: '+esc(a.liq)+'</div>':'')+'</div>'; }); });
+          var box=document.getElementById("libChips"); if(!box) return; var h=""; var ALL=allItems(); window.__LIBDATA=ALL;
+          ORDER.forEach(function(cl){ var items=ALL.map(function(a,i){return {a:a,i:i};}).filter(function(o){return o.a.classe===cl;}); if(!items.length) return; var c=COL[cl]||"#9AA2D0"; h+='<div class="lib-sec" style="color:'+c+'">'+esc(cl)+'</div>'; items.forEach(function(o){ var a=o.a; var isC=!!a.custom; h+='<div class="lib-card" draggable="true" data-libcard="'+o.i+'" title="Arraste para a carteira ou clique em + Add" style="border-left:3px solid '+c+'">'+'<div class="lib-card-top"><div class="lib-card-name"><span style="color:'+c+'">●</span> '+esc(a.nome)+(isC?' <span style="font-size:9.5px;color:'+c+';border:1px solid '+c+';border-radius:5px;padding:1px 5px;margin-left:4px;vertical-align:middle;">MEU</span>':'')+'</div><button class="lib-add" data-libadd="'+o.i+'">+ Add</button></div>'+(a.detalhe?'<div class="lib-card-desc">'+esc(a.detalhe)+'</div>':'')+(a.liq?'<div class="lib-card-liq">Liquidez: '+esc(a.liq)+'</div>':'')+(isC?'<div style="display:flex;gap:8px;margin-top:8px"><button class="lib-mini" data-libedit="'+esc(a.id)+'">Editar</button><button class="lib-mini del" data-libdel="'+esc(a.id)+'">Excluir</button></div>':'')+'</div>'; }); });
           box.innerHTML=h;
           box.querySelectorAll(".lib-card").forEach(function(card){
             var idx=+card.getAttribute("data-libcard");
@@ -1164,12 +1179,29 @@ button, .g-tab, [onclick]{ touch-action:manipulation; }
           });
           box.querySelectorAll(".lib-add").forEach(function(b){
             var idx=+b.getAttribute("data-libadd");
-            b.onclick=function(e){ e.stopPropagation(); var a=LIB[idx]; var add=window.__drawerAdd||window.__ctorAddAtivo; if(add) add(a.classe,a.nome,a.detalhe,a.liq,false); };
+            b.onclick=function(e){ e.stopPropagation(); var a=allItems()[idx]; var add=window.__drawerAdd||window.__ctorAddAtivo; if(add&&a) add(a.classe,a.nome,a.detalhe,a.liq,false); };
           });
+          box.querySelectorAll("[data-libedit]").forEach(function(b){ b.onclick=function(e){ e.stopPropagation(); openLibForm(b.getAttribute("data-libedit")); }; });
+          box.querySelectorAll("[data-libdel]").forEach(function(b){ b.onclick=function(e){ e.stopPropagation(); var id=b.getAttribute("data-libdel"); CUSTOMLIB=CUSTOMLIB.filter(function(x){return x.id!==id;}); persist(); render(); }; });
+        }
+        function openLibForm(id){
+          var o=id?CUSTOMLIB.filter(function(x){return x.id===id;})[0]:{id:null,classe:"Renda Fixa",nome:"",detalhe:"",liq:""};
+          if(!o) return; var editing=!!id;
+          var box=document.getElementById("libForm"); if(!box) return;
+          var opts=ORDER.map(function(cl){return '<option'+(o.classe===cl?" selected":"")+'>'+esc(cl)+'</option>';}).join("");
+          box.innerHTML='<div class="lib-form">'
+            +'<label>Classe<select id="lfClasse">'+opts+'</select></label>'
+            +'<label>Nome do ativo<input id="lfNome" value="'+esc(o.nome)+'" placeholder="Ex.: CDB Banco X 110% CDI"></label>'
+            +'<label>Detalhe<input id="lfDet" value="'+esc(o.detalhe)+'" placeholder="Ex.: 110% do CDI · 2 anos"></label>'
+            +'<label>Liquidez<input id="lfLiq" value="'+esc(o.liq)+'" placeholder="Ex.: No vencimento / D+0"></label>'
+            +'<div class="lib-form-acts"><button class="lf-save" id="lfSave">Salvar</button><button class="lf-cancel" id="lfCancel">Cancelar</button></div></div>';
+          document.getElementById("lfSave").onclick=function(){ var nome=document.getElementById("lfNome").value.trim(); if(!nome){ document.getElementById("lfNome").focus(); return; } var data={ classe:document.getElementById("lfClasse").value, nome:nome, detalhe:document.getElementById("lfDet").value.trim(), liq:document.getElementById("lfLiq").value.trim(), custom:true }; if(editing){ data.id=o.id; CUSTOMLIB=CUSTOMLIB.map(function(x){return x.id===o.id?data:x;}); } else { data.id="u"+(++libSeq); CUSTOMLIB.push(data); } persist(); document.getElementById("libForm").innerHTML=""; render(); };
+          document.getElementById("lfCancel").onclick=function(){ document.getElementById("libForm").innerHTML=""; };
+          document.getElementById("lfNome").focus();
         }
         function open(){ var d=document.getElementById("libDrawer"), bd=document.getElementById("libBackdrop"); if(d) d.classList.add("open"); if(bd) bd.classList.add("open"); }
         function close(){ var d=document.getElementById("libDrawer"), bd=document.getElementById("libBackdrop"); if(d) d.classList.remove("open"); if(bd) bd.classList.remove("open"); }
-        function init(){ var t=document.getElementById("libTab"); if(!t) return; t.addEventListener("click",open); var c=document.getElementById("libClose"); if(c) c.addEventListener("click",close); var bd=document.getElementById("libBackdrop"); if(bd) bd.addEventListener("click",close); render(); }
+        function init(){ var t=document.getElementById("libTab"); if(!t) return; t.addEventListener("click",open); var c=document.getElementById("libClose"); if(c) c.addEventListener("click",close); var bd=document.getElementById("libBackdrop"); if(bd) bd.addEventListener("click",close); var nb=document.getElementById("libNew"); if(nb) nb.addEventListener("click",function(){ openLibForm(null); }); render(); }
         if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",init);}else{init();}
       })();
       </script>
@@ -1599,6 +1631,20 @@ button, .g-tab, [onclick]{ touch-action:manipulation; }
     function rvActive(){ var rv=document.getElementById("construtorRv"); return rv && getComputedStyle(rv).display!=="none"; }
     window.__drawerAdd=function(classe,nome,detalhe,liq,protFlag,op){ if(rvActive() && typeof window.__rvAddFromDrawer==="function"){ return window.__rvAddFromDrawer(classe,nome,detalhe,liq,protFlag,op); } if(typeof window.__ctorAddAtivo==="function"){ return window.__ctorAddAtivo(classe,nome,detalhe,liq,protFlag,op); } return false; };
     if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",relocate); else relocate();
+  })();
+  </script>
+
+  <div id="drawerToggleBar" style="max-width:1180px;margin:36px auto 0;padding:18px 20px 6px;border-top:1px solid rgba(120,130,210,.18);display:flex;align-items:center;justify-content:center;">
+    <label style="display:flex;align-items:center;gap:11px;cursor:pointer;color:#9AA2D0;font-size:13px;font-weight:600;text-align:center;">
+      <input type="checkbox" id="drawerToggle" style="width:18px;height:18px;accent-color:#FF4E00;cursor:pointer;flex-shrink:0;">
+      Mostrar gavetas laterais (Ativos Gerais e RV Estruturada) — desligue para liberar a tela no iPad/celular
+    </label>
+  </div>
+  <script>
+  (function(){
+    function apply(hide){ document.documentElement.classList.toggle("hide-drawers", hide); if(hide){ ["libDrawer","libBackdrop","opcat","catBackdrop"].forEach(function(id){ var e=document.getElementById(id); if(e) e.classList.remove("open"); }); } }
+    function init(){ var cb=document.getElementById("drawerToggle"); if(!cb) return; var hide=false; try{ hide=localStorage.getItem("hubHideDrawers")==="1"; }catch(_){ } cb.checked=!hide; apply(hide); cb.addEventListener("change", function(){ var h=!cb.checked; apply(h); try{ localStorage.setItem("hubHideDrawers", h?"1":"0"); }catch(_){ } }); }
+    if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init); else init();
   })();
   </script>
 
