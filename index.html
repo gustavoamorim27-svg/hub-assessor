@@ -1044,6 +1044,23 @@ body.mm .ajbtn{ padding:11px 16px !important; font-size:14px !important; }
     #p-ajustes .pc-pvtot{ margin-top:12px; font-size:12px; font-weight:800; color:#fff; border-top:1px solid rgba(120,130,210,.18); padding-top:10px; }
     @media (max-width:1200px){ #p-ajustes .pc-board4{ grid-template-columns:1fr 1fr !important; } }
     @media (max-width:760px){ #p-ajustes .pc-board4{ grid-template-columns:1fr !important; } }
+    #p-ajustes .pc-gav{ width:268px; flex-shrink:0; }
+    #p-ajustes .pc-gavtitle{ font-family:'Sora',sans-serif; font-weight:800; font-size:14px; color:#fff; margin-bottom:10px; }
+    #p-ajustes .pc-gavpill{ width:100%; display:flex; align-items:center; gap:10px; cursor:pointer; font-family:'Manrope',sans-serif; font-weight:800; font-size:13px; background:rgba(255,255,255,.04); border:1px solid; border-radius:12px; padding:12px 14px; margin-bottom:8px; transition:background .15s; }
+    #p-ajustes .pc-gavpill:hover{ background:rgba(255,255,255,.08); }
+    #p-ajustes .pc-gavpill.on{ background:rgba(255,255,255,.07); }
+    #p-ajustes .pc-gavico{ font-size:16px; }
+    #p-ajustes .pc-gavlbl{ flex:1; text-align:left; }
+    #p-ajustes .pc-gavarrow{ font-size:11px; }
+    #p-ajustes .pc-gavlist{ margin:-2px 0 14px; padding-left:2px; }
+    #p-ajustes .pc-gavcat{ display:flex; align-items:center; gap:7px; font-size:10.5px; font-weight:800; text-transform:uppercase; letter-spacing:.5px; margin:10px 0 6px; }
+    #p-ajustes .pc-gavcat span{ width:8px; height:8px; border-radius:2px; }
+    #p-ajustes .pc-gavcard{ display:flex; align-items:center; gap:8px; background:rgba(0,0,0,.22); border:1px solid rgba(120,130,210,.16); border-radius:10px; padding:8px 10px; margin-bottom:6px; cursor:grab; }
+    #p-ajustes .pc-gavcard:active{ cursor:grabbing; }
+    #p-ajustes .pc-gavinfo{ flex:1; min-width:0; }
+    #p-ajustes .pc-gavname{ font-size:12.5px; font-weight:700; color:#eef0fb; }
+    #p-ajustes .pc-gavdet{ font-size:10.5px; color:#7E87BE; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    @media (max-width:1100px){ #p-ajustes .pc-main{ flex-direction:column; } #p-ajustes .pc-gav{ width:100%; } }
     </style>
     <input type="file" id="ajFile" accept=".xlsx,.xls" style="display:none">
     <div id="ajRoot" class="adw" style="max-width:1180px;margin:0 auto;padding:28px 20px 60px"></div>
@@ -7800,7 +7817,7 @@ window.__rvRender = render;
   function customLib(){ try{ return JSON.parse(localStorage.getItem("hubCustomLib")||"[]")||[]; }catch(e){ return []; } }
   function gavetas(){ return LIB.concat(customLib().map(function(x){return {classe:x.classe,nome:x.nome,detalhe:x.detalhe||""};})); }
 
-  var state={ origem:"import", cliente:"", atual:null, atualRaw:null, prev:[], vals:{}, removed:{}, added:[], libOpen:true, totalOverride:null, appliedModel:null };
+  var state={ origem:"import", cliente:"", atual:null, atualRaw:null, prev:[], vals:{}, removed:{}, added:[], libOpen:true, totalOverride:null, appliedModel:null, gavOpen:{geral:true,rv:false} };
   var seq=0; function uid(){ return "e"+(++seq); }
   var drag=null;
 
@@ -7936,17 +7953,41 @@ window.__rvRender = render;
     if(rfb.t>0){ h+='<div class="pc-rfsum"><span class="pc-rfsum-lbl">Renda Fixa por indexador (atual):</span>'; RFGROUPS.forEach(function(s){ if((rfb.m[s]||0)>0.5){ var col=RFCOL[s]; h+='<span class="pc-rfpill" style="border-color:'+col+'66;color:'+col+'">'+s+' '+fmtPct(rfb.m[s]/rfb.t*100)+'</span>'; } }); h+='</div>'; }
 
     h+='<div class="pc-models"><span class="pc-lbl">Propor modelo sobre a atual:</span><button data-model="Conservadora" class="ajbtn">Conservadora</button><button data-model="Moderada" class="ajbtn">Moderada</button><button data-model="Sofisticada" class="ajbtn">Sofisticada</button><button data-model="__reset" class="ajbtn">Limpar proposta</button></div>';
+    h+='<div class="pc-main">';
+    h+=gavetaHTML();
     h+='<div class="pc-board pc-board4">';
     h+=colHTML("Manter","#9AA2D0",b.manter,"manter");
     h+=colHTML("Sair / Reduzir","#FF6B6B",b.sair,"sair");
     h+=colHTML("Entrar / Aumentar","#3DD68C",b.entrar,"entrar");
     h+=previewCol();
-    h+='</div>';
+    h+='</div></div>';
 
     h+='<div class="pc-actions"><button id="ajPNG" class="ajbtn primary">Gerar proposta (PNG antes/depois)</button><button id="ajXLS" class="ajbtn">Baixar Excel (execução)</button></div>';
     h+='<div class="pc-disc">Arraste um ativo de "Manter" para "Sair" para vendê-lo, ou use ✕. Edite o R$ de cada ativo para ajustar. Abra as gavetas na lateral esquerda (Ativos gerais / RV estruturada) e use + para adicionar à coluna Entrar. Previdência é mantida sem movimentação. Material de apoio interno — não constitui recomendação ou oferta.</div>';
 
-    root.innerHTML=h; bind(); ensureEdge(); pcEdgeVisible(true);
+    root.innerHTML=h; bind();
+  }
+  function gavetaHTML(){
+    var G=gavetas();
+    var groups=[
+      {key:"geral",icon:"📁",label:"Ativos gerais",color:"#FF8B52",classes:["Renda Fixa","Multimercados","Fundos Listados","Alternativos","Internacional"]},
+      {key:"rv",icon:"🧰",label:"RV estruturada",color:"#7C8CFF",classes:["Renda Variável"]}
+    ];
+    var h='<aside class="pc-gav"><div class="pc-gavtitle">Gavetas de ativos</div>';
+    groups.forEach(function(grp){
+      var open=!!state.gavOpen[grp.key];
+      h+='<button class="pc-gavpill'+(open?" on":"")+'" data-gav="'+grp.key+'" style="border-color:'+grp.color+'66;color:'+grp.color+'"><span class="pc-gavico">'+grp.icon+'</span><span class="pc-gavlbl">'+grp.label+'</span><span class="pc-gavarrow">'+(open?"▴":"▾")+'</span></button>';
+      if(open){
+        h+='<div class="pc-gavlist">';
+        grp.classes.forEach(function(cl){ var items=G.map(function(a,i){return {a:a,i:i};}).filter(function(o){return o.a.classe===cl;}); if(!items.length)return; var c=CATCOL[cl]||"#9AA2D0";
+          h+='<div class="pc-gavcat" style="color:'+c+'"><span style="background:'+c+'"></span>'+cl+'</div>';
+          items.forEach(function(o){ h+='<div class="pc-gavcard" draggable="true" data-dragidx="'+o.i+'"><div class="pc-gavinfo"><div class="pc-gavname">'+esc(o.a.nome)+'</div><div class="pc-gavdet">'+esc(o.a.detalhe||"")+'</div></div><button class="pc-add" data-addidx="'+o.i+'" title="Adicionar a Entrar">+</button></div>'; });
+        });
+        h+='</div>';
+      }
+    });
+    h+='</aside>';
+    return h;
   }
   function chip(l,v,c){ return '<div class="pc-chip"><div class="pc-chiplbl">'+esc(l)+'</div><div class="pc-chipval" style="color:'+c+'">'+esc(v)+'</div></div>'; }
 
@@ -7957,6 +7998,9 @@ window.__rvRender = render;
     var bs=document.getElementById("ajBase"); if(bs) bs.onchange=function(){ var v=Number(bs.value)||0; state.totalOverride=v>0?v:null; rebuildScaled(); render(); };
     root.querySelectorAll("[data-model]").forEach(function(b){ b.onclick=function(){ applyModel(b.getAttribute("data-model")); }; });
     var lt=root.querySelector("[data-libtoggle]"); if(lt) lt.onclick=function(){ state.libOpen=!state.libOpen; render(); };
+    root.querySelectorAll("[data-gav]").forEach(function(b){ b.onclick=function(){ var k=b.getAttribute("data-gav"); state.gavOpen[k]=!state.gavOpen[k]; render(); }; });
+    root.querySelectorAll("[data-addidx]").forEach(function(b){ b.onclick=function(){ addLib(+b.getAttribute("data-addidx")); }; });
+    root.querySelectorAll("[data-dragidx]").forEach(function(e2){ e2.addEventListener("dragstart",function(ev){ drag="lib:"+e2.getAttribute("data-dragidx"); try{ev.dataTransfer.effectAllowed="copy";}catch(_){}}); e2.addEventListener("dragend",function(){ drag=null; }); });
     root.querySelectorAll("[data-sell]").forEach(function(b){ b.onclick=function(){ state.removed[b.getAttribute("data-sell")]=true; render(); }; });
     root.querySelectorAll("[data-undo]").forEach(function(b){ b.onclick=function(){ var n=b.getAttribute("data-undo"); delete state.removed[n]; state.vals[n]=findOrig(n); render(); }; });
     root.querySelectorAll("[data-rmadd]").forEach(function(b){ b.onclick=function(){ var id=b.getAttribute("data-rmadd"); state.added=state.added.filter(function(x){return x.id!==id;}); render(); }; });
