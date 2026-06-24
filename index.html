@@ -7642,6 +7642,7 @@ window.__rvRender = render;
       if(c && c.itens) return c.itens.map(function(it){return {nome:it.nome, classe:it.classe, pct:Number(it.pct)||0, detalhe:it.detalhe||""};});
       return null;
     }
+    if(!window.RICO_TEMPLATES){ try{ if(window._toolInit && window._toolInit['construtor']) window._toolInit['construtor'](); }catch(e){} }
     var T = window.RICO_TEMPLATES;
     if(T && typeof T[dest]==="function"){
       return T[dest]().map(function(it){return {nome:it.nome, classe:it.classe, pct:Number(it.pct)||0, detalhe:it.detalhe||""};});
