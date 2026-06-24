@@ -265,6 +265,9 @@ html, body {
 [data-tool="construtor"] .tag-add:hover{ color:#FF8B52; border-color:rgba(255,78,0,.5); background:rgba(255,78,0,.08); }
 [data-tool="construtor"] .tag-menu{ display:flex; }
 [data-tool="construtor"] .tag-menu-chip{ cursor:pointer; font-weight:700; }
+[data-tool="construtor"] .item-drag{ cursor:grab; color:#6F77A8; font-size:15px; line-height:1; padding:2px 4px; user-select:none; }
+[data-tool="construtor"] .item-drag:hover{ color:#FF8B52; }
+[data-tool="construtor"] #editor.lib-drop{ outline:2px dashed #FF8B52; outline-offset:5px; border-radius:14px; }
 [data-tool="construtor"] .op-how-btn{ margin-top:8px; cursor:pointer; font-family:inherit; font-size:12px; font-weight:700; color:#FF8B52; background:rgba(255,78,0,.10); border:1px solid rgba(255,78,0,.35); border-radius:9px; padding:7px 12px; }
 [data-tool="construtor"] .op-how-body{ margin-top:8px; }
 [data-tool="construtor"] .tag-drag.dragging{ opacity:.4; }
@@ -1091,10 +1094,26 @@ button, .g-tab, [onclick]{ touch-action:manipulation; }
         <svg class="icon" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         Adicionar ativo
       </button>
-      <div id="assetlib" style="margin-top:14px;background:rgba(0,0,0,.18);border:1px solid rgba(120,130,210,.18);border-radius:14px;padding:14px;">
-        <div style="font-family:'Sora',sans-serif;font-weight:700;font-size:14px;color:#fff;margin-bottom:2px;">Biblioteca de ativos</div>
-        <div style="font-size:12px;color:#9AA2D0;margin-bottom:10px;">Clique para adicionar à carteira. Operações estruturadas ficam no catálogo, mais abaixo.</div>
-        <div id="assetlibChips" style="display:flex;flex-wrap:wrap;gap:7px;"></div>
+      <style>
+      [data-tool="construtor"] #libTab{ position:fixed; left:0; top:46%; transform:translateY(-50%); z-index:60; background:linear-gradient(180deg,#FF6B2C,#FF4E00); color:#fff; font-weight:800; font-size:12px; letter-spacing:.5px; writing-mode:vertical-rl; text-orientation:mixed; padding:16px 9px; border-radius:0 12px 12px 0; cursor:pointer; box-shadow:0 8px 24px rgba(0,0,0,.45); border:1px solid rgba(255,255,255,.15); border-left:none; }
+      [data-tool="construtor"] #libDrawer{ position:fixed; left:-360px; top:0; bottom:0; width:330px; z-index:61; background:linear-gradient(160deg,#0A0F38,#070B2E 70%,#05081F); border-right:1px solid rgba(120,130,210,.28); box-shadow:10px 0 36px rgba(0,0,0,.55); transition:left .26s ease; overflow-y:auto; padding:20px 16px 40px; }
+      [data-tool="construtor"] #libDrawer.open{ left:0; }
+      [data-tool="construtor"] #libBackdrop{ position:fixed; inset:0; background:rgba(3,5,18,.45); z-index:60; opacity:0; pointer-events:none; transition:opacity .26s; }
+      [data-tool="construtor"] #libBackdrop.open{ opacity:1; pointer-events:auto; }
+      [data-tool="construtor"] .lib-chip{ display:block; width:100%; text-align:left; cursor:grab; font-family:inherit; font-size:12.5px; font-weight:700; color:#cfd4ef; background:rgba(255,255,255,.04); border:1px solid rgba(120,130,210,.25); border-radius:10px; padding:9px 12px; margin-bottom:7px; }
+      [data-tool="construtor"] .lib-chip:active{ cursor:grabbing; }
+      [data-tool="construtor"] .lib-chip:hover{ background:rgba(255,78,0,.08); border-color:rgba(255,78,0,.4); }
+      [data-tool="construtor"] .lib-sec{ font-size:10px; letter-spacing:1px; text-transform:uppercase; color:#9AA2D0; font-weight:800; margin:12px 0 6px; }
+      </style>
+      <div id="libTab">📁 BIBLIOTECA</div>
+      <div id="libBackdrop"></div>
+      <div id="libDrawer">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+          <div style="font-family:'Sora',sans-serif;font-weight:800;font-size:17px;color:#fff;">Biblioteca de ativos</div>
+          <button id="libClose" style="background:none;border:none;color:#9AA2D0;font-size:20px;cursor:pointer;line-height:1;">×</button>
+        </div>
+        <div style="font-size:12px;color:#9AA2D0;line-height:1.5;margin-bottom:10px;">Arraste um ativo para a carteira, ou clique para adicionar. Operações estruturadas ficam no catálogo, mais abaixo.</div>
+        <div id="libChips"></div>
       </div>
       <script>
       (function(){
@@ -1116,14 +1135,25 @@ button, .g-tab, [onclick]{ touch-action:manipulation; }
           {classe:"Internacional",nome:"Wellington Global Quality",detalhe:"Ações EUA/Europa/RU · +75% em 3 anos",liq:"D+5"},
           {classe:"Internacional",nome:"CD de 1 ano (dólar)",detalhe:"Certificate of Deposit · pré em dólar",liq:"No vencimento"}
         ];
+        window.__LIBDATA=LIB;
         var COL={"Renda Fixa":"#2BD9A6","Multimercados":"#7C8CFF","Renda Variável":"#FF8B52","Fundos Listados":"#FFB020","Alternativos":"#C77DFF","Internacional":"#36C5F0"};
+        var ORDER=["Renda Fixa","Multimercados","Renda Variável","Fundos Listados","Alternativos","Internacional"];
         function esc(t){return (""+t).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
         function render(){
-          var box=document.getElementById("assetlibChips"); if(!box) return;
-          box.innerHTML=LIB.map(function(a,i){ var c=COL[a.classe]||"#9AA2D0"; return '<button data-lib="'+i+'" title="'+esc(a.detalhe)+'" style="cursor:pointer;font-family:inherit;font-size:12px;font-weight:700;color:#cfd4ef;background:rgba(255,255,255,.04);border:1px solid '+c+'55;border-left:3px solid '+c+';border-radius:9px;padding:6px 11px;"><span style="color:'+c+'">●</span> '+esc(a.nome)+'</button>'; }).join("");
-          box.querySelectorAll("[data-lib]").forEach(function(b){ b.onclick=function(){ var a=LIB[+b.getAttribute("data-lib")]; if(window.__ctorAddAtivo) window.__ctorAddAtivo(a.classe,a.nome,a.detalhe,a.liq,false); }; });
+          var box=document.getElementById("libChips"); if(!box) return; var h="";
+          ORDER.forEach(function(cl){ var items=LIB.map(function(a,i){return {a:a,i:i};}).filter(function(o){return o.a.classe===cl;}); if(!items.length) return; var c=COL[cl]||"#9AA2D0"; h+='<div class="lib-sec" style="color:'+c+'">'+esc(cl)+'</div>'; items.forEach(function(o){ h+='<button class="lib-chip" draggable="true" data-lib="'+o.i+'" title="'+esc(o.a.detalhe)+'" style="border-left:3px solid '+c+'"><span style="color:'+c+'">●</span> '+esc(o.a.nome)+'</button>'; }); });
+          box.innerHTML=h;
+          box.querySelectorAll("[data-lib]").forEach(function(b){
+            var idx=+b.getAttribute("data-lib");
+            b.addEventListener("dragstart", function(e){ window.__libDrag=idx; try{e.dataTransfer.setData("text/plain","lib");e.dataTransfer.effectAllowed="copy";}catch(_){} });
+            b.addEventListener("dragend", function(){ setTimeout(function(){ window.__libDrag=null; },50); });
+            b.onclick=function(){ var a=LIB[idx]; if(window.__ctorAddAtivo) window.__ctorAddAtivo(a.classe,a.nome,a.detalhe,a.liq,false); };
+          });
         }
-        if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",render);}else{render();}
+        function open(){ var d=document.getElementById("libDrawer"), bd=document.getElementById("libBackdrop"); if(d) d.classList.add("open"); if(bd) bd.classList.add("open"); }
+        function close(){ var d=document.getElementById("libDrawer"), bd=document.getElementById("libBackdrop"); if(d) d.classList.remove("open"); if(bd) bd.classList.remove("open"); }
+        function init(){ var t=document.getElementById("libTab"); if(!t) return; t.addEventListener("click",open); var c=document.getElementById("libClose"); if(c) c.addEventListener("click",close); var bd=document.getElementById("libBackdrop"); if(bd) bd.addEventListener("click",close); render(); }
+        if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",init);}else{init();}
       })();
       </script>
     </div>
@@ -2593,8 +2623,9 @@ function renderEditor(D){
       ALL_TAGS.forEach(lbl=>{ if(i.tags.indexOf(lbl)===-1){ menuChips+=`<button class="tag tag-${tagKind(lbl)} tag-menu-chip" data-addchip="${i.id}" data-label="${esc(lbl)}">+ ${esc(lbl)}</button>`; } });
       const tagsHtml=`<div class="tag-zone" data-tagzone="${i.id}" style="display:flex; gap:6px; margin-top:9px; flex-wrap:wrap; min-height:26px; align-items:center;">${tags}<span class="tag-add" data-addtag="${i.id}" title="Adicionar tag">+</span></div><div class="tag-menu" data-tagmenu="${i.id}" style="display:none; gap:6px; flex-wrap:wrap; margin-top:8px; padding:8px; border-radius:10px; background:rgba(10,14,50,.6); border:1px solid rgba(120,130,210,.18);">${menuChips || '<span style="color:#6F77A8;font-size:12px">Todas as tags já adicionadas</span>'}</div>`;
       let selOpts=""; CLASSES.forEach(cl=>selOpts+=`<option value="${cl}" ${i.classe===cl?"selected":""}>${cl}</option>`);
-      h+=`<div class="item">
+      h+=`<div class="item" data-item="${i.id}">
         <div style="display:flex; gap:8px; align-items:center;">
+          <span class="item-drag" draggable="true" data-itemdrag="${i.id}" title="Arraste para reordenar">⠿</span>
           <div class="pct-wrap">
             <input class="pct-input num" type="number" step="0.5" value="${i.pct}" data-f="pct" data-id="${i.id}">
             <span class="pct-suffix">%</span>
@@ -2635,6 +2666,19 @@ function renderEditor(D){
   });
   el.querySelectorAll("[data-del]").forEach(b=>{
     b.onclick=()=>{ S.items=S.items.filter(x=>x.id!==b.dataset.del); render(); };
+  });
+  if(!el.__libDropBound){ el.__libDropBound=true;
+    el.addEventListener("dragover", function(e){ if(window.__libDrag!=null){ e.preventDefault(); el.classList.add("lib-drop"); } });
+    el.addEventListener("dragleave", function(e){ if(e.target===el) el.classList.remove("lib-drop"); });
+    el.addEventListener("drop", function(e){ if(window.__libDrag==null) return; e.preventDefault(); el.classList.remove("lib-drop"); var a=window.__LIBDATA&&window.__LIBDATA[window.__libDrag]; window.__libDrag=null; if(a&&window.__ctorAddAtivo) window.__ctorAddAtivo(a.classe,a.nome,a.detalhe,a.liq,false); });
+  }
+  el.querySelectorAll("[data-itemdrag]").forEach(function(h){
+    h.addEventListener("dragstart", function(e){ window.__itemDrag=h.getAttribute("data-itemdrag"); try{e.dataTransfer.setData("text/plain","item");e.dataTransfer.effectAllowed="move";}catch(_){} });
+    h.addEventListener("dragend", function(){ window.__itemDrag=null; });
+  });
+  el.querySelectorAll(".item").forEach(function(it){
+    it.addEventListener("dragover", function(e){ if(window.__itemDrag) e.preventDefault(); });
+    it.addEventListener("drop", function(e){ if(!window.__itemDrag) return; e.preventDefault(); var fromId=window.__itemDrag, toId=it.getAttribute("data-item"); window.__itemDrag=null; if(!toId||fromId===toId) return; var fi=S.items.findIndex(function(z){return z.id===fromId;}), ti=S.items.findIndex(function(z){return z.id===toId;}); if(fi<0||ti<0) return; var mv=S.items.splice(fi,1)[0]; var nti=S.items.findIndex(function(z){return z.id===toId;}); S.items.splice(nti,0,mv); render(); });
   });
   el.querySelectorAll("[data-addtag]").forEach(b=>{
     b.onclick=(e)=>{ e.stopPropagation(); const m=el.querySelector('[data-tagmenu="'+b.dataset.addtag+'"]'); if(m) m.style.display=(m.style.display==="none"?"flex":"none"); };
@@ -2724,9 +2768,7 @@ function addTag(toId,label){
   render();
 }
 window.__ctorAddAtivo = function(classe,nome,detalhe,liquidez,protecaoFlag,op){
-  try{ var o = mk(classe||"Renda Variável", nome||"Operação", 0, detalhe||"", liquidez||"No vencimento", null, !!protecaoFlag); if(op){ o.catalogOp=op; o._howOpen=true; } S.items.push(o); render();
-    try{ var ed=document.getElementById("editor"); if(ed) ed.scrollIntoView({behavior:"smooth",block:"start"}); }catch(_e){}
-    return true; }catch(e){ return false; }
+  try{ var o = mk(classe||"Renda Variável", nome||"Operação", 0, detalhe||"", liquidez||"No vencimento", null, !!protecaoFlag); if(op){ o.catalogOp=op; o._howOpen=true; } S.items.push(o); render(); return true; }catch(e){ return false; }
 };
 
 /* atualiza apenas os cards derivados sem reconstruir o editor (mantém foco nos inputs) */
@@ -5715,7 +5757,7 @@ document.getElementById('btnExport').addEventListener('click', async () => {
   }
 });
 
-document.getElementById('btnExportPdf').addEventListener('click', function(){
+document.getElementById('btnExportPdf').addEventListener('click', async function(){
   var ns = window.jspdf; if(!ns || !ns.jsPDF){ showToast('PDF ainda carregando — tente novamente em instantes'); return; }
   var doc = new ns.jsPDF({unit:'pt', format:'a4'});
   var W=doc.internal.pageSize.getWidth(), H=doc.internal.pageSize.getHeight();
@@ -5731,6 +5773,7 @@ document.getElementById('btnExportPdf').addEventListener('click', function(){
   var aportado=d.totalAportado; var ganhoCDI=cartFim-cdiFim; var atinge=cartFim>=objetivo;
   var mesAtinge=-1; for(var i=24;i<=fim;i++){ if(d.cart[i]>=objetivoNoMesIndex(i)){ mesAtinge=i-24; break; } }
   var anos=state.prazoAnos; var nomeCli=state.nomeCliente||'Cliente';
+  try{ var planoImg = await gerarPngCanvas(); var ip=doc.getImageProperties(planoImg); var rr=ip.height/ip.width; var iw=cw, ih=iw*rr; if(ih>H-2*M){ ih=H-2*M; iw=ih/rr; } doc.addImage(planoImg,'PNG',(W-iw)/2, M, iw, ih); doc.addPage(); bg(); y=M; }catch(e){}
   doc.setFont('helvetica','bold'); doc.setFontSize(26); doc.setTextColor(242,101,34); doc.text('rico', x, y+8);
   doc.setFont('helvetica','bold'); doc.setFontSize(11); doc.setTextColor(242,101,34); doc.text('PLANEJAMENTO FINANCEIRO', x+cw, y, {align:'right'});
   doc.setFont('helvetica','normal'); doc.setFontSize(9); doc.setTextColor(150,160,190); doc.text('Projeção de '+anos+' anos · '+new Date().toLocaleDateString('pt-BR'), x+cw, y+14, {align:'right'});
