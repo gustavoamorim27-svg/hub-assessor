@@ -905,7 +905,8 @@ body.mm [data-tool="construtor"] .col-editor{ min-width:0 !important; flex:1 1 a
 body.mm [data-tool="construtor"] #libChips{ grid-template-columns:1fr 1fr !important; }
 body.mm [data-tool="aderencia"] .ad-compare{ grid-template-columns:1fr !important; }
 body.mm #ajCols{ grid-template-columns:1fr !important; }
-body.mm #p-ajustes .pc-main{ flex-direction:column !important; }
+body.mm #p-ajustes .pc-main, body.mm #p-ajustes .pc-main.rvwide{ grid-template-columns:1fr !important; }
+body.mm #p-home .news-cols{ grid-template-columns:1fr !important; }
 body.mm #p-ajustes .pc-drawer{ width:100% !important; position:static !important; max-height:none !important; }
 body.mm #p-ajustes .pc-board{ grid-template-columns:1fr !important; }
 body.mm input, body.mm select, body.mm textarea{ font-size:16px !important; }
@@ -999,6 +1000,7 @@ body.mm .ajbtn{ padding:11px 16px !important; font-size:14px !important; }
     #p-ajustes .pc-chiplbl{ font-size:10px; font-weight:700; color:#8A93C8; text-transform:uppercase; letter-spacing:.4px; }
     #p-ajustes .pc-chipval{ font-family:'Sora',sans-serif; font-weight:800; font-size:16px; margin-top:3px; }
     #p-ajustes .pc-main{ display:grid; grid-template-columns:268px minmax(0,1fr); gap:16px; align-items:start; }
+    #p-ajustes .pc-main.rvwide{ grid-template-columns:336px minmax(0,1fr); }
     #p-ajustes .pc-drawer{ width:272px; flex-shrink:0; background:linear-gradient(160deg,rgba(28,36,112,.45),rgba(12,17,66,.65)); border:1px solid rgba(120,130,210,.18); border-radius:18px; padding:14px; position:sticky; top:70px; max-height:calc(100vh - 90px); overflow:auto; }
     #p-ajustes .pc-drawerhead{ display:flex; align-items:center; justify-content:space-between; font-family:'Sora',sans-serif; font-weight:700; font-size:14px; color:#fff; margin-bottom:10px; }
     #p-ajustes .pc-mini{ font-size:11px !important; padding:5px 10px !important; }
@@ -1049,7 +1051,7 @@ body.mm .ajbtn{ padding:11px 16px !important; font-size:14px !important; }
     #p-ajustes .pc-pvtot{ margin-top:12px; font-size:12px; font-weight:800; color:#fff; border-top:1px solid rgba(120,130,210,.18); padding-top:10px; }
     @media (max-width:1200px){ #p-ajustes .pc-board4{ grid-template-columns:repeat(2,minmax(0,1fr)) !important; } }
     @media (max-width:760px){ #p-ajustes .pc-board4{ grid-template-columns:1fr !important; } }
-    #p-ajustes .pc-gav{ width:268px; flex-shrink:0; }
+    #p-ajustes .pc-gav{ width:100%; min-width:0; }
     #p-ajustes .pc-gavtitle{ font-family:'Sora',sans-serif; font-weight:800; font-size:14px; color:#fff; margin-bottom:10px; }
     #p-ajustes .pc-gavpill{ width:100%; display:flex; align-items:center; gap:10px; cursor:pointer; font-family:'Manrope',sans-serif; font-weight:800; font-size:13px; background:rgba(255,255,255,.04); border:1px solid; border-radius:12px; padding:12px 14px; margin-bottom:8px; transition:background .15s; }
     #p-ajustes .pc-gavpill:hover{ background:rgba(255,255,255,.08); }
@@ -1065,7 +1067,6 @@ body.mm .ajbtn{ padding:11px 16px !important; font-size:14px !important; }
     #p-ajustes .pc-gavinfo{ flex:1; min-width:0; }
     #p-ajustes .pc-gavname{ font-size:12.5px; font-weight:700; color:#eef0fb; }
     #p-ajustes .pc-gavdet{ font-size:10.5px; color:#7E87BE; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-    #p-ajustes .pc-gav.rvopen{ width:320px; }
     #p-ajustes .pc-gavrv-empty{ font-size:11.5px; color:#9AA2D0; line-height:1.5; background:rgba(0,0,0,.22); border:1px solid rgba(120,130,210,.18); border-radius:10px; padding:11px; }
     #p-ajustes .pc-rvcard{ background:rgba(0,0,0,.22); border:1px solid rgba(120,130,210,.16); border-radius:11px; padding:10px 11px; margin-bottom:8px; }
     #p-ajustes .pc-rvtop{ display:flex; align-items:flex-start; justify-content:space-between; gap:8px; }
@@ -1074,7 +1075,7 @@ body.mm .ajbtn{ padding:11px 16px !important; font-size:14px !important; }
     #p-ajustes .pc-rvpay{ margin-top:8px; }
     #p-ajustes .pc-rvpay .cen-cell{ font-size:10.5px; }
     #p-ajustes .pc-rvpay .cen-head span{ font-size:8.5px; }
-    @media (max-width:1100px){ #p-ajustes .pc-gav, #p-ajustes .pc-gav.rvopen{ width:100%; } }
+    @media (max-width:1100px){ #p-ajustes .pc-gav{ width:100%; } #p-ajustes .pc-main.rvwide{ grid-template-columns:1fr; } }
     </style>
     <input type="file" id="ajFile" accept=".xlsx,.xls" style="display:none">
     <div id="ajRoot" class="adw" style="max-width:1460px;margin:0 auto;padding:28px 20px 60px"></div>
@@ -1091,6 +1092,11 @@ body.mm .ajbtn{ padding:11px 16px !important; font-size:14px !important; }
           <div class="hcard-ic"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></div>
           <div class="hcard-title">Simulador de Investimentos</div>
           <div class="hcard-desc">Monte alocações ao vivo com templates Conservadora, Moderada e Sofisticada. Gera PNG para WhatsApp.</div>
+        </div>
+        <div class="hcard" onclick="showPanel('rv')">
+          <div class="hcard-ic"><svg viewBox="0 0 24 24"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg></div>
+          <div class="hcard-title">Renda Variável</div>
+          <div class="hcard-desc">Construtor focado em RV: ações, operações estruturadas (proteção, cupom) e Quanto internacional com payoff.</div>
         </div>
         <div class="hcard" onclick="showPanel('simulador')">
           <div class="hcard-ic"><svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div>
@@ -1114,14 +1120,16 @@ body.mm .ajbtn{ padding:11px 16px !important; font-size:14px !important; }
         </div>
       </div>
       <style>
-      #p-home .news-wrap{ max-width:980px; width:100%; margin:46px auto 0; text-align:left; }
+      #p-home .news-wrap{ max-width:1200px; width:100%; margin:46px auto 0; text-align:left; }
       #p-home .news-head{ display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px; margin-bottom:6px; }
       #p-home .news-title{ font-family:'Sora',sans-serif; font-weight:800; font-size:22px; margin:0; color:#fff; }
-      #p-home .news-filter{ display:flex; gap:8px; }
-      #p-home .news-f{ cursor:pointer; font-family:inherit; font-size:12.5px; font-weight:700; color:#9AA2D0; background:rgba(255,255,255,.05); border:1px solid rgba(120,130,210,.25); border-radius:9px; padding:7px 13px; }
-      #p-home .news-f.on{ color:#fff; background:rgba(255,78,0,.16); border-color:rgba(255,78,0,.5); }
       #p-home .news-updated{ font-size:12px; color:#6F77A8; margin-bottom:16px; }
-      #p-home .news-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:14px; }
+      #p-home .news-cols{ display:grid; grid-template-columns:1fr 1fr; gap:24px; align-items:start; }
+      #p-home .news-col-h{ display:flex; align-items:center; gap:9px; font-family:'Sora',sans-serif; font-weight:800; font-size:15px; margin:0 0 12px; padding-bottom:9px; border-bottom:1px solid rgba(120,130,210,.18); }
+      #p-home .news-col-h.nac{ color:#2BD9A6; }
+      #p-home .news-col-h.intl{ color:#7BA4F2; }
+      #p-home .news-grid{ display:grid; grid-template-columns:1fr; gap:14px; }
+      @media (max-width:820px){ #p-home .news-cols{ grid-template-columns:1fr; } }
       #p-home .news-card{ display:block; text-decoration:none; background:rgba(20,28,87,.45); border:1px solid rgba(120,130,210,.18); border-radius:14px; padding:16px; transition:border-color .15s, transform .15s; }
       #p-home .news-card:hover{ border-color:rgba(255,78,0,.45); transform:translateY(-2px); }
       #p-home .news-badge{ display:inline-block; font-size:10px; font-weight:800; letter-spacing:.5px; text-transform:uppercase; padding:2px 8px; border-radius:6px; margin-bottom:9px; }
@@ -1134,14 +1142,18 @@ body.mm .ajbtn{ padding:11px 16px !important; font-size:14px !important; }
       <div class="news-wrap">
         <div class="news-head">
           <h2 class="news-title">Notícias do mercado</h2>
-          <div class="news-filter">
-            <button class="news-f on" data-region="all">Todas</button>
-            <button class="news-f" data-region="nacional">Nacional</button>
-            <button class="news-f" data-region="internacional">Internacional</button>
+          <div class="news-updated" id="newsUpdated" style="margin-bottom:0"></div>
+        </div>
+        <div class="news-cols">
+          <div class="news-col">
+            <div class="news-col-h nac">🇧🇷 Mercado nacional</div>
+            <div class="news-grid" id="newsGridNac"></div>
+          </div>
+          <div class="news-col">
+            <div class="news-col-h intl">🌎 Mercado internacional</div>
+            <div class="news-grid" id="newsGridIntl"></div>
           </div>
         </div>
-        <div class="news-updated" id="newsUpdated"></div>
-        <div class="news-grid" id="newsGrid"></div>
       </div>
       <script>
       var NEWS_FALLBACK = {
@@ -1162,32 +1174,29 @@ body.mm .ajbtn{ padding:11px 16px !important; font-size:14px !important; }
       (function(){
         function esc(t){ return (""+t).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
         var DATA=NEWS_FALLBACK, CURRENT="all", gotLive=false;
-        function render(region){
-          CURRENT=region||CURRENT;
-          var grid=document.getElementById("newsGrid"); if(!grid||!DATA) return;
-          var items=DATA.items.filter(function(n){ return CURRENT==="all"||n.region===CURRENT; });
-          grid.innerHTML=items.map(function(n){
-            return '<a class="news-card" href="'+n.url+'" target="_blank" rel="noopener noreferrer">'
-              +'<span class="news-badge '+n.region+'">'+(n.region==="nacional"?"Nacional":"Internacional")+'</span>'
-              +'<h3>'+esc(n.title)+'</h3>'+(n.resumo?'<p>'+esc(n.resumo)+'</p>':'')
-              +'<div class="news-meta">'+esc(n.source)+' · '+esc(n.date)+'</div></a>';
-          }).join("") || '<div class="news-updated">Sem notícias nesta categoria.</div>';
+        function cardHTML(n){
+          return '<a class="news-card" href="'+n.url+'" target="_blank" rel="noopener noreferrer">'
+            +'<span class="news-badge '+n.region+'">'+(n.region==="nacional"?"Nacional":"Internacional")+'</span>'
+            +'<h3>'+esc(n.title)+'</h3>'+(n.resumo?'<p>'+esc(n.resumo)+'</p>':'')
+            +'<div class="news-meta">'+esc(n.source)+' · '+esc(n.date)+'</div></a>';
+        }
+        function render(){
+          if(!DATA) return;
+          var gN=document.getElementById("newsGridNac"), gI=document.getElementById("newsGridIntl");
+          var nac=DATA.items.filter(function(n){ return n.region==="nacional"; });
+          var intl=DATA.items.filter(function(n){ return n.region==="internacional"; });
+          if(gN) gN.innerHTML=nac.map(cardHTML).join("") || '<div class="news-updated">Sem notícias no momento.</div>';
+          if(gI) gI.innerHTML=intl.map(cardHTML).join("") || '<div class="news-updated">Sem notícias no momento.</div>';
           var up=document.getElementById("newsUpdated"); if(up) up.textContent="Atualizado em "+DATA.updated;
         }
-        document.querySelectorAll("#p-home .news-f").forEach(function(b){
-          b.addEventListener("click",function(){
-            document.querySelectorAll("#p-home .news-f").forEach(function(x){x.classList.remove("on");});
-            b.classList.add("on"); render(b.getAttribute("data-region"));
-          });
-        });
-        render("all");
-        try{ fetch("news.json?cb="+Date.now()).then(function(r){return r.ok?r.json():null;}).then(function(j){ if(!gotLive && j&&j.items&&j.items.length){ DATA=j; render(CURRENT); } }).catch(function(){}); }catch(e){}
+        render();
+        try{ fetch("news.json?cb="+Date.now()).then(function(r){return r.ok?r.json():null;}).then(function(j){ if(!gotLive && j&&j.items&&j.items.length){ DATA=j; render(); } }).catch(function(){}); }catch(e){}
         var FEEDS={ nacional:["https://www.infomoney.com.br/mercados/feed/","https://g1.globo.com/rss/g1/economia/"], internacional:["https://www.cnbc.com/id/100003114/device/rss/rss.html"] };
         function _strip(h){ try{ var d=document.createElement("div"); d.innerHTML=h||""; var t=(d.textContent||"").replace(/\s+/g," ").trim(); return t.length>150?t.slice(0,148)+"…":t; }catch(e){ return ""; } }
         function _fdate(pd){ try{ var dt=new Date(pd); if(isNaN(dt.getTime())) return ""; var m=["jan","fev","mar","abr","mai","jun","jul","ago","set","out","nov","dez"]; return dt.getDate()+" "+m[dt.getMonth()]+" "+dt.getFullYear(); }catch(e){ return ""; } }
         function _relevante(x){ var t=((x.title||"")+" "+(x.resumo||"")).toLowerCase(); var EXC=["churrasco","picanha","filé-mignon","file-mignon","novela","bbb","horóscopo","horoscopo","futebol","copa do mundo","libertadores","brasileirão","carnaval","receita de","série ","cinema","celebridade","fofoca","home office","home-office","pis/pasep","pis /pasep","inss","aposentad","auxílio","auxilio","bolsa família","bolsa familia","mega-sena","mega sena","loteria","concurso","fgts","saque-aniversário","décimo terceiro","13º salário","dinheiro esquecido","golpe","whatsapp","receita federal libera"]; for(var i=0;i<EXC.length;i++){ if(t.indexOf(EXC[i])>=0) return false; } var INC=["ibovespa","bovespa","b3","bolsa de valores","ações","ação ","dólar","dolar","juro","selic","copom","cdi","inflação","ipca","igp-m","fed","fomc","banco central","mercado financeiro","mercados","petrobras","vale3","dividendo","renda fixa","tesouro direto","tesouro selic","tesouro ipca","câmbio","cambio","commodit","petróleo","petroleo","minério","minerio","ouro","nasdaq","s&p","dow jones","wall street","fii","fiagro","fundo imobiliário","balanço","lucro líquido","pib","treasury","yield","cripto","bitcoin","recess","earnings","stocks","wall st","interest rate","inflation","dividend","payroll","central bank","juros"]; for(var j=0;j<INC.length;j++){ if(t.indexOf(INC[j])>=0) return true; } return false; }
         function _feed(url,region){ return fetch("https://api.rss2json.com/v1/api.json?rss_url="+encodeURIComponent(url)).then(function(r){return r.ok?r.json():null;}).then(function(j){ if(!j||j.status!=="ok"||!j.items) return []; var src=(j.feed&&j.feed.title)||""; return j.items.slice(0,15).map(function(it){ return {region:region,title:it.title,resumo:_strip(it.description||it.content),source:src,date:_fdate(it.pubDate),url:it.link}; }).filter(_relevante); }).catch(function(){ return []; }); }
-        function loadLive(){ var ps=[]; FEEDS.nacional.forEach(function(u){ps.push(_feed(u,"nacional"));}); FEEDS.internacional.forEach(function(u){ps.push(_feed(u,"internacional"));}); Promise.all(ps).then(function(res){ var items=[].concat.apply([],res); var nac=items.filter(function(x){return x.region==="nacional"&&x.title;}).slice(0,6); var intl=items.filter(function(x){return x.region==="internacional"&&x.title;}).slice(0,6); if(nac.length+intl.length>=2){ if(!nac.length) nac=(DATA.items||[]).filter(function(x){return x.region==="nacional";}); if(!intl.length) intl=(DATA.items||[]).filter(function(x){return x.region==="internacional";}); gotLive=true; DATA={updated:new Date().toLocaleString("pt-BR",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"})+" (ao vivo)", items:nac.concat(intl)}; render(CURRENT); } }).catch(function(){}); }
+        function loadLive(){ var ps=[]; FEEDS.nacional.forEach(function(u){ps.push(_feed(u,"nacional"));}); FEEDS.internacional.forEach(function(u){ps.push(_feed(u,"internacional"));}); Promise.all(ps).then(function(res){ var items=[].concat.apply([],res); var nac=items.filter(function(x){return x.region==="nacional"&&x.title;}).slice(0,6); var intl=items.filter(function(x){return x.region==="internacional"&&x.title;}).slice(0,6); if(nac.length+intl.length>=2){ if(!nac.length) nac=(DATA.items||[]).filter(function(x){return x.region==="nacional";}); if(!intl.length) intl=(DATA.items||[]).filter(function(x){return x.region==="internacional";}); gotLive=true; DATA={updated:new Date().toLocaleString("pt-BR",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"})+" (ao vivo)", items:nac.concat(intl)}; render(); } }).catch(function(){}); }
         try{ loadLive(); }catch(e){}
       })();
       </script>
@@ -7861,7 +7870,7 @@ window.__rvRender = render;
   var rvReg={};
 
   function srcObj(){ return state.origem==="sim" ? (window.RICO_BRIDGE&&window.RICO_BRIDGE.carteira) : (window.RICO_BRIDGE&&window.RICO_BRIDGE.posicaoAtual); }
-  function srcSig(){ var pp=srcObj(); if(!pp||!pp.ativos||!pp.ativos.length) return null; return state.origem+"|"+(pp.conta||pp.cliente||"")+"|"+pp.ativos.length+"|"+(pp.atualizadoEm||""); }
+  function srcSig(){ var pp=srcObj(); if(!pp) return null; var arr=state.origem==="sim"?pp.itens:pp.ativos; if(!arr||!arr.length) return null; return state.origem+"|"+(pp.conta||pp.cliente||"")+"|"+arr.length+"|"+(pp.atualizadoEm||pp.template||""); }
   function ensureLoaded(){ var sig=srcSig(); if(sig===state.sig && (state.atual||sig===null)) return; state.sig=sig; load(); }
   function load(){
     var src=null;
@@ -7992,7 +8001,7 @@ window.__rvRender = render;
     if(rfb.t>0){ h+='<div class="pc-rfsum"><span class="pc-rfsum-lbl">Renda Fixa por indexador (atual):</span>'; RFGROUPS.forEach(function(s){ if((rfb.m[s]||0)>0.5){ var col=RFCOL[s]; h+='<span class="pc-rfpill" style="border-color:'+col+'66;color:'+col+'">'+s+' '+fmtPct(rfb.m[s]/rfb.t*100)+'</span>'; } }); h+='</div>'; }
 
     h+='<div class="pc-models"><span class="pc-lbl">Propor modelo sobre a atual:</span><button data-model="Conservadora" class="ajbtn">Conservadora</button><button data-model="Moderada" class="ajbtn">Moderada</button><button data-model="Sofisticada" class="ajbtn">Sofisticada</button><button data-model="__reset" class="ajbtn">Limpar proposta</button></div>';
-    h+='<div class="pc-main">';
+    h+='<div class="pc-main'+(state.gavOpen.rv?" rvwide":"")+'">';
     h+=gavetaHTML();
     h+='<div class="pc-board pc-board4">';
     h+=colHTML("Manter","#9AA2D0",b.manter,"manter");
