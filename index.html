@@ -977,8 +977,6 @@ body.mm .ajbtn{ padding:11px 16px !important; font-size:14px !important; }
 .g-tk-chg.up{ color:#3DD68C; }
 .g-tk-chg.down{ color:#FF6B6B; }
 .g-tk-chg.flat{ color:var(--mu); }
-.g-tk-upd{ display:flex; flex-direction:column; align-items:flex-end; justify-content:center; line-height:1.2; white-space:nowrap; font-size:9px; letter-spacing:.3px; color:var(--mu); opacity:.75; }
-.g-tk-upd.err{ color:#FF6B6B; opacity:.85; }
 @media (max-width:1200px){ .g-ticker{ display:none; } }
 </style>
   <div class="g-ticker" id="gTicker" role="group" aria-label="Cotações de mercado">
@@ -988,7 +986,6 @@ body.mm .ajbtn{ padding:11px 16px !important; font-size:14px !important; }
     <div class="g-tk-item" id="tk-ouro"><span class="g-tk-lbl">Ouro</span><span class="g-tk-row"><span class="g-tk-val">—</span><span class="g-tk-chg flat"></span></span></div>
     <div class="g-tk-item" id="tk-brent"><span class="g-tk-lbl">Brent</span><span class="g-tk-row"><span class="g-tk-val">—</span><span class="g-tk-chg flat"></span></span></div>
     <div class="g-tk-item" id="tk-btc"><span class="g-tk-lbl">Bitcoin</span><span class="g-tk-row"><span class="g-tk-val">—</span><span class="g-tk-chg flat"></span></span></div>
-    <div class="g-tk-upd" id="tk-upd" title="Horário da última atualização das cotações"></div>
   </div>
 </nav>
 
@@ -8173,23 +8170,6 @@ window.__rvRender = render;
     chgEl.className='g-tk-chg '+(pct>0?'up':(pct<0?'down':'flat'));
   }
 
-  // Indicador "atualizado as HH:MM" / "sem conexao".
-  // Mostra "atualizado as HH:MM" se PELO MENOS UM instrumento atualizou no ciclo;
-  // so mostra "sem conexao" se TODAS as fontes falharem para tudo (e nunca houve sucesso antes).
-  function setUpdated(ok){
-    try{
-      var el=document.getElementById('tk-upd'); if(!el) return;
-      if(ok){
-        var d=new Date();
-        var hh=('0'+d.getHours()).slice(-2), mm=('0'+d.getMinutes()).slice(-2);
-        el.textContent='atualizado às '+hh+':'+mm;
-        el.className='g-tk-upd';
-      } else {
-        if(!el.textContent || /sem conexão/.test(el.textContent)){ el.textContent='sem conexão'; el.className='g-tk-upd err'; }
-      }
-    }catch(e){}
-  }
-
   async function load(){
     // Contador de sucessos do ciclo (qualquer fonte/instrumento conta).
     var anyOk=false;
@@ -8229,8 +8209,6 @@ window.__rvRender = render;
     });
 
     try{ await Promise.all(jobs); }catch(e){}
-    // "atualizado" se qualquer instrumento (de qualquer fonte) deu certo.
-    setUpdated(anyOk);
   }
 
   function start(){ load(); setInterval(load, 60000); }
