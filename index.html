@@ -1726,7 +1726,7 @@ body.mm .ajbtn{ padding:11px 16px !important; font-size:14px !important; }
     var CUPOM=RUBI_RAW.map(function(r){ return { id:r.id, ativo:r.ativo, setor:r.setor, taxa:r.taxa, barreira:r.barreira, cdi:r.cdi, nome:r.ativo+" · SmartCupom "+fmtTaxa(r.taxa)+"%", tipo:"Cupom pré-fixado", cupom:true, cen:cupomCen(r.taxa, r.barreira) }; });
     var QUANTO=[
       { id:"q-sp-1", payoff:1, ativo:"S&P 500", fixing:"1 ano", mult:1.04 },
-      { id:"q-sp-2", payoff:1, ativo:"S&P 500", fixing:"2 anos", mult:1.15 },
+      { id:"q-sp-2", payoff:1, ativo:"S&P 500", fixing:"2 anos", mult:1.20 },
       { id:"q-sp-3", payoff:1, ativo:"S&P 500", fixing:"3 anos", mult:1.41 },
       { id:"q-nq-1", payoff:1, ativo:"Nasdaq", fixing:"1 ano", mult:1.00 },
       { id:"q-nq-2", payoff:1, ativo:"Nasdaq", fixing:"2 anos", mult:1.00 },
@@ -6598,7 +6598,7 @@ function buildQuanto(o){
 
 var QUANTO_OPS = [
   { id:"q-sp-1", payoff:1, ativo:"S&P 500", fixing:"1 ano", mult:1.04 },
-  { id:"q-sp-2", payoff:1, ativo:"S&P 500", fixing:"2 anos", mult:1.15 },
+  { id:"q-sp-2", payoff:1, ativo:"S&P 500", fixing:"2 anos", mult:1.20 },
   { id:"q-sp-3", payoff:1, ativo:"S&P 500", fixing:"3 anos", mult:1.41 },
   { id:"q-nq-1", payoff:1, ativo:"Nasdaq", fixing:"1 ano", mult:1.00 },
   { id:"q-nq-2", payoff:1, ativo:"Nasdaq", fixing:"2 anos", mult:1.00 },
