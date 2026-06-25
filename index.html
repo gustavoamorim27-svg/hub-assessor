@@ -985,6 +985,7 @@ body.mm .ajbtn{ padding:11px 16px !important; font-size:14px !important; }
     <div class="g-tk-item" id="tk-ibov"><span class="g-tk-lbl">Ibovespa</span><span class="g-tk-row"><span class="g-tk-val">—</span><span class="g-tk-chg flat"></span></span></div>
     <div class="g-tk-item" id="tk-ouro"><span class="g-tk-lbl">Ouro</span><span class="g-tk-row"><span class="g-tk-val">—</span><span class="g-tk-chg flat"></span></span></div>
     <div class="g-tk-item" id="tk-brent"><span class="g-tk-lbl">Brent</span><span class="g-tk-row"><span class="g-tk-val">—</span><span class="g-tk-chg flat"></span></span></div>
+    <div class="g-tk-item" id="tk-btc"><span class="g-tk-lbl">Bitcoin</span><span class="g-tk-row"><span class="g-tk-val">—</span><span class="g-tk-chg flat"></span></span></div>
   </div>
 </nav>
 
@@ -8046,17 +8047,45 @@ window.__rvRender = render;
 </script>
 <script id="g-ticker-js">
 (function(){
+  // Ticker de cotacoes. Fonte primaria: AwesomeAPI (CORS-friendly, gratuita, https).
+  // AwesomeAPI fornece Dolar (USD-BRL), Ouro (XAU-USD) e Bitcoin (BTC-BRL) com bid + pctChange.
+  // S&P 500, Ibovespa e Brent nao tem fonte gratuita CORS-friendly: tentamos Yahoo via proxy
+  // como best-effort e, se falhar, mantemos "—" (fallback elegante, sem quebrar o resto).
   var TK = [
-    {k:'dolar', sym:'BRL=X', dec:2, prefix:'R$\u00A0'},
-    {k:'sp500', sym:'^GSPC', dec:0, prefix:''},
-    {k:'ibov',  sym:'^BVSP', dec:0, prefix:''},
-    {k:'ouro',  sym:'GC=F',  dec:2, prefix:'US$\u00A0'},
-    {k:'brent', sym:'BZ=F',  dec:2, prefix:'US$\u00A0'}
+    {k:'dolar', src:'awesome', pair:'USDBRL', dec:2, prefix:'R$ '},
+    {k:'sp500', src:'yahoo',   sym:'^GSPC',  dec:0, prefix:''},
+    {k:'ibov',  src:'yahoo',   sym:'^BVSP',  dec:0, prefix:''},
+    {k:'ouro',  src:'awesome', pair:'XAUUSD', dec:2, prefix:'US$ '},
+    {k:'brent', src:'yahoo',   sym:'BZ=F',   dec:2, prefix:'US$ '},
+    {k:'btc',   src:'awesome', pair:'BTCBRL', dec:0, prefix:'R$ '}
   ];
+
   function fmt(v, dec){ return v.toLocaleString('pt-BR',{minimumFractionDigits:dec, maximumFractionDigits:dec}); }
+
+  // ---- AwesomeAPI: uma chamada para todos os pares de uma vez ----
+  var AWESOME_PAIRS = ['USD-BRL','XAU-USD','BTC-BRL'];
+  async function fetchAwesome(){
+    var url='https://economia.awesomeapi.com.br/json/last/'+AWESOME_PAIRS.join(',');
+    var out={};
+    try{
+      var r=await fetch(url,{cache:'no-store'});
+      if(!r.ok) return out;
+      var j=await r.json();
+      for(var key in j){
+        if(!Object.prototype.hasOwnProperty.call(j,key)) continue;
+        var d=j[key];
+        var price=parseFloat(d.bid);
+        var pct=parseFloat(d.pctChange);
+        if(!isNaN(price)) out[key]={price:price, pct:isNaN(pct)?null:pct};
+      }
+    }catch(e){}
+    return out;
+  }
+
+  // ---- Yahoo via proxies CORS (best-effort para indices/commodities) ----
   function proxies(u){ return ['https://corsproxy.io/?url='+encodeURIComponent(u),
                                'https://api.allorigins.win/raw?url='+encodeURIComponent(u)]; }
-  async function fetchQuote(sym){
+  async function fetchYahoo(sym){
     var yurl='https://query1.finance.yahoo.com/v8/finance/chart/'+encodeURIComponent(sym)+'?range=1d&interval=1d';
     var ps=proxies(yurl);
     for(var i=0;i<ps.length;i++){
@@ -8065,23 +8094,45 @@ window.__rvRender = render;
         if(!r.ok) continue;
         var j=await r.json();
         var m=j.chart.result[0].meta;
-        if(m && m.regularMarketPrice!=null && m.chartPreviousClose!=null)
-          return {price:m.regularMarketPrice, prev:m.chartPreviousClose};
+        if(m && m.regularMarketPrice!=null && m.chartPreviousClose!=null){
+          var price=m.regularMarketPrice, prev=m.chartPreviousClose;
+          return {price:price, pct: prev? ((price-prev)/prev*100):null};
+        }
       }catch(e){}
     }
     return null;
   }
+
   function render(it, q){
     var el=document.getElementById('tk-'+it.k); if(!el) return;
     var valEl=el.querySelector('.g-tk-val'), chgEl=el.querySelector('.g-tk-chg');
-    if(!q){ if(valEl.textContent==='—'){ valEl.textContent='—'; chgEl.textContent=''; chgEl.className='g-tk-chg flat'; } return; }
-    var chg=q.price-q.prev, pct=q.prev? (chg/q.prev*100):0;
+    // q == null: mantem o ultimo valor exibido (fallback elegante); so deixa "—" se nunca veio nada
+    if(!q || q.price==null){ return; }
     valEl.textContent=it.prefix+fmt(q.price, it.dec);
-    var arrow = chg>0?'\u25B2':(chg<0?'\u25BC':'\u2022');
-    chgEl.textContent=arrow+' '+(chg>0?'+':'')+pct.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})+'%';
-    chgEl.className='g-tk-chg '+(chg>0?'up':(chg<0?'down':'flat'));
+    var pct = (q.pct==null? 0 : q.pct);
+    var hasPct = (q.pct!=null);
+    var arrow = pct>0?'▲':(pct<0?'▼':'•');
+    chgEl.textContent = hasPct
+      ? arrow+' '+(pct>0?'+':'')+pct.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})+'%'
+      : '';
+    chgEl.className='g-tk-chg '+(pct>0?'up':(pct<0?'down':'flat'));
   }
-  function load(){ TK.forEach(function(it){ fetchQuote(it.sym).then(function(q){ render(it,q); }); }); }
+
+  async function load(){
+    // AwesomeAPI: dolar, ouro, bitcoin (uma requisicao)
+    var aw = await fetchAwesome();
+    TK.forEach(function(it){
+      if(it.src!=='awesome') return;
+      var q=aw[it.pair];
+      render(it, q || null);
+    });
+    // Yahoo (best-effort) para sp500, ibov, brent
+    TK.forEach(function(it){
+      if(it.src!=='yahoo') return;
+      fetchYahoo(it.sym).then(function(q){ render(it, q); }).catch(function(){});
+    });
+  }
+
   function start(){ load(); setInterval(load, 60000); }
   if(document.readyState==='loading'){ document.addEventListener('DOMContentLoaded', start); } else { start(); }
 })();
