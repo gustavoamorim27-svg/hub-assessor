@@ -2840,6 +2840,139 @@ const TEMPLATES = {
 };
 try{ window.RICO_TEMPLATES = TEMPLATES; }catch(e){}
 
+/* =====================================================================
+   PERSISTENCIA (localStorage) — Tarefas 2 e 3
+   - hubConstrutorState : estado editado da carteira do Simulador (state S)
+   - hubTemplatesOverride: override de fabrica dos templates
+       Conservadora / Moderada / Sofisticada
+   Tudo defensivo (try/catch).
+   ===================================================================== */
+var LS_CTOR_STATE   = "hubConstrutorState";
+var LS_TPL_OVERRIDE = "hubTemplatesOverride";
+
+/* fabrica original de cada template (antes de qualquer override) */
+var TEMPLATES_FACTORY = {};
+Object.keys(TEMPLATES).forEach(function(k){ TEMPLATES_FACTORY[k] = TEMPLATES[k]; });
+
+/* serializa um item para JSON (mantem so campos de dados; descarta funcoes).
+   Marca _bovaOp p/ re-anexar o catalogOp do BOVA ao restaurar. */
+function serItem(it){
+  if(!it || typeof it!=="object") return null;
+  var o={};
+  Object.keys(it).forEach(function(k){
+    if(k==="op"||k==="catalogOp") return;          // objetos derivados / funcoes
+    var v=it[k];
+    var t=typeof v;
+    if(t==="function") return;
+    o[k]=v;
+  });
+  try{ if(it.catalogOp && it.catalogOp===window.__BOVA_OP) o._bovaOp=true; }catch(_){}
+  // garante um id
+  if(!o.id){ try{ o.id=uid(); }catch(_){ o.id="it"+Math.random().toString(36).slice(2); } }
+  return o;
+}
+/* desserializa um item: clona e re-anexa catalogOp do BOVA se marcado */
+function deserItem(o){
+  if(!o || typeof o!=="object") return null;
+  var it={};
+  Object.keys(o).forEach(function(k){ it[k]=o[k]; });
+  try{ if(it._bovaOp && window.__BOVA_OP){ it.catalogOp=window.__BOVA_OP; } }catch(_){}
+  // garante consistencia de tags/retorno
+  try{ if(!Array.isArray(it.tags)) it.tags=defaultTags(it); }catch(_){}
+  try{ ensureRetorno(it); }catch(_){}
+  if(!it.id){ try{ it.id=uid(); }catch(_){ it.id="it"+Math.random().toString(36).slice(2); } }
+  return it;
+}
+function serItems(arr){ return (arr||[]).map(serItem).filter(Boolean); }
+function deserItems(arr){ return (arr||[]).map(deserItem).filter(Boolean); }
+
+/* ---------- OVERRIDES DE TEMPLATE (Tarefa 3) ---------- */
+function loadTplOverrides(){
+  try{ return JSON.parse(localStorage.getItem(LS_TPL_OVERRIDE)||"{}")||{}; }
+  catch(_){ return {}; }
+}
+function saveTplOverrides(ov){
+  try{ localStorage.setItem(LS_TPL_OVERRIDE, JSON.stringify(ov||{})); }catch(_){}
+}
+var __tplOverrides = loadTplOverrides();
+
+/* Reescreve cada TEMPLATES[name] para devolver o override salvo (se houver)
+   ou a fabrica original. Como window.RICO_TEMPLATES === TEMPLATES, todos os
+   consumidores (Simulador, Propor Carteira, Aderencia, etc.) leem o override. */
+function applyTplOverrideWrappers(){
+  Object.keys(TEMPLATES_FACTORY).forEach(function(name){
+    TEMPLATES[name]=function(){
+      var ov=__tplOverrides && __tplOverrides[name];
+      if(ov && ov.length){ return deserItems(ov); }
+      return TEMPLATES_FACTORY[name]();
+    };
+  });
+  try{ window.RICO_TEMPLATES = TEMPLATES; }catch(_){}
+}
+applyTplOverrideWrappers();
+
+/* Grava um override (snapshot dos itens atuais) para um template e re-aplica wrappers */
+function setTplOverride(name, items){
+  if(!TEMPLATES_FACTORY[name]) return;
+  __tplOverrides[name]=serItems(items);
+  saveTplOverrides(__tplOverrides);
+  applyTplOverrideWrappers();
+}
+/* Remove o override de um template (volta a fabrica) */
+function clearTplOverride(name){
+  if(__tplOverrides && __tplOverrides[name]!=null){ delete __tplOverrides[name]; saveTplOverrides(__tplOverrides); }
+  applyTplOverrideWrappers();
+}
+function hasTplOverride(name){ return !!(__tplOverrides && __tplOverrides[name] && __tplOverrides[name].length); }
+
+/* ---------- PERSISTENCIA DO ESTADO DO SIMULADOR (Tarefa 2) ---------- */
+var __ctorRestoring=false;
+function persistCtorState(){
+  if(__ctorRestoring) return;
+  try{
+    var snap={
+      template:S.template,
+      items:serItems(S.items),
+      cliente:S.cliente||"",
+      patrimonio:Number(S.patrimonio)||0,
+      cdi:Number(S.cdi)||0,
+      cdiMult:Number(S.cdiMult)||0,
+      clienteCDI:Number(S.clienteCDI)||0,
+      projAnos:Number(S.projAnos)||5,
+      recomendadaTemplate:S.recomendadaTemplate||"Moderada",
+      usarRetornoAtivo:!!S.usarRetornoAtivo,
+      _v:1
+    };
+    localStorage.setItem(LS_CTOR_STATE, JSON.stringify(snap));
+  }catch(_){}
+}
+function restoreCtorState(){
+  var raw=null;
+  try{ raw=localStorage.getItem(LS_CTOR_STATE); }catch(_){ raw=null; }
+  if(!raw) return false;
+  var snap=null;
+  try{ snap=JSON.parse(raw); }catch(_){ return false; }
+  if(!snap || typeof snap!=="object") return false;
+  __ctorRestoring=true;
+  try{
+    if(snap.template) S.template=snap.template;
+    if(Array.isArray(snap.items) && snap.items.length){ S.items=deserItems(snap.items); }
+    if(typeof snap.cliente==="string") S.cliente=snap.cliente;
+    if(snap.patrimonio!=null && !isNaN(Number(snap.patrimonio))) S.patrimonio=Number(snap.patrimonio);
+    if(snap.cdi!=null && !isNaN(Number(snap.cdi))) S.cdi=Number(snap.cdi);
+    if(snap.cdiMult!=null && !isNaN(Number(snap.cdiMult))) S.cdiMult=Number(snap.cdiMult);
+    if(snap.clienteCDI!=null && !isNaN(Number(snap.clienteCDI))) S.clienteCDI=Number(snap.clienteCDI);
+    if(snap.projAnos!=null && !isNaN(Number(snap.projAnos))) S.projAnos=Number(snap.projAnos);
+    if(snap.recomendadaTemplate) S.recomendadaTemplate=snap.recomendadaTemplate;
+    if(typeof snap.usarRetornoAtivo==="boolean") S.usarRetornoAtivo=snap.usarRetornoAtivo;
+  }catch(_){ __ctorRestoring=false; return false; }
+  __ctorRestoring=false;
+  return true;
+}
+/* atalho usado nos pontos de edicao */
+function ctorPersist(){ try{ persistCtorState(); }catch(_){} }
+
+
 const GLOSSARY = {
   collar:{ match:["collar"], label:"Collar UI", desc:"Proteção montada com opções sobre a ação: estabelece um piso, que limita a perda, e um teto, que limita o ganho durante o período da operação." },
   fence:{ match:["fence"], label:"Fence", desc:"Proteção parcial feita com opções sobre a ação: protege parte da queda e mantém a alta limitada por um teto." },
@@ -2867,7 +3000,8 @@ const S = {
   projAnos:5,
   posicaoAtual:null,      // posição consolidada importada (categoria -> %)
   recomendadaTemplate:"Moderada",  // template ideal de referência p/ aderência da aba Atual
-  usarRetornoAtivo:true   // Parte A: calcula o retorno da carteira pelo "Retorno" de cada ativo
+  usarRetornoAtivo:true,  // Parte A: calcula o retorno da carteira pelo "Retorno" de cada ativo
+  editandoTemplate:null   // Tarefa 3: nome do modelo em edicao (Conservadora/Moderada/Sofisticada) ou null
 };
 
 /* Categorias do construtor para montar a carteira "Atual" a partir da posição importada */
@@ -2995,6 +3129,7 @@ function render(){
   renderAderencia(D);
   document.getElementById("projTitle").textContent = "PROJEÇÃO DE RENTABILIDADE · "+S.template.toUpperCase();
   publicarCarteira(D);
+  ctorPersist();   // Tarefa 2: persiste o estado editado a cada render
 }
 
 // Ponte com o Simulador: publica a carteira montada num objeto global
@@ -3032,15 +3167,57 @@ function renderTabs(){
     h+=`<button class="tab tab-atual ${S.template==="Atual"?"active":""}" data-atual="1">
           <svg class="icon" viewBox="0 0 24 24" style="margin-right:6px; vertical-align:-3px; width:14px; height:14px;"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>Atual</button>`;
   }
-  h+=`<button class="tab" data-restore="1" style="margin-left:auto;">
+  // ===== Tarefa 3: edicao de modelos (Conservadora/Moderada/Sofisticada) =====
+  var ehBase = !!TEMPLATES_FACTORY[S.template];
+  var temOv = ehBase && hasTplOverride(S.template);
+  h+=`<div style="margin-left:auto;display:flex;gap:8px;flex-wrap:wrap;align-items:center">`;
+  if(ehBase && S.editandoTemplate===S.template){
+    // modo edicao ativo: salvar / cancelar
+    h+=`<span style="font-size:11px;font-weight:800;letter-spacing:.5px;color:#FFB020;display:inline-flex;align-items:center;gap:6px;background:rgba(255,176,32,.12);border:1px solid rgba(255,176,32,.4);border-radius:8px;padding:7px 11px">
+          <svg class="icon" viewBox="0 0 24 24" style="width:13px;height:13px;stroke:#FFB020"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+          Editando modelo ${esc(S.template)}</span>`;
+    h+=`<button class="tab tab-nova active" data-tplsave="1">Salvar modelo</button>`;
+    h+=`<button class="tab" data-tplcancel="1">Cancelar</button>`;
+  } else if(ehBase){
+    h+=`<button class="tab" data-tpledit="1" title="Editar este modelo e salvar para usar em todo o site">
+          <svg class="icon" viewBox="0 0 24 24" style="margin-right:6px; vertical-align:-3px; width:14px; height:14px;"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>Editar modelo</button>`;
+  }
+  if(temOv && S.editandoTemplate!==S.template){
+    h+=`<button class="tab" data-tplfactory="1" title="Reverter este modelo para a versao de fabrica" style="border-color:rgba(255,107,107,.5);color:#FF9B9B">
+          <svg class="icon" viewBox="0 0 24 24" style="margin-right:6px; vertical-align:-3px; width:14px; height:14px;"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>Padrão de fábrica</button>`;
+  }
+  h+=`<button class="tab" data-restore="1">
         <svg class="icon" viewBox="0 0 24 24" style="margin-right:6px; vertical-align:-3px; width:14px; height:14px;"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>Restaurar template</button>`;
+  h+=`</div>`;
   el.innerHTML=h;
   el.querySelectorAll("[data-tpl]").forEach(b=>b.onclick=()=>loadTemplate(b.dataset.tpl));
   const atualBtn = el.querySelector("[data-atual]");
   if(atualBtn) atualBtn.onclick=()=>loadAtual();
   const novaBtn = el.querySelector("[data-nova]");
   if(novaBtn) novaBtn.onclick=()=>loadNova();
-  el.querySelector("[data-restore]").onclick=()=>{ if(S.template==="Nova") loadNova(); else loadTemplate(S.template==="Atual"?S.recomendadaTemplate:S.template); };
+  el.querySelector("[data-restore]").onclick=()=>{ S.editandoTemplate=null; if(S.template==="Nova") loadNova(); else loadTemplate(S.template==="Atual"?S.recomendadaTemplate:S.template); };
+  // ----- Tarefa 3: handlers de edicao de modelo -----
+  var bEdit=el.querySelector("[data-tpledit]");
+  if(bEdit) bEdit.onclick=()=>{ S.editandoTemplate=S.template; render(); };
+  var bCancel=el.querySelector("[data-tplcancel]");
+  if(bCancel) bCancel.onclick=()=>{ S.editandoTemplate=null; if(TEMPLATES_FACTORY[S.template]) loadTemplate(S.template); else render(); };
+  var bSave=el.querySelector("[data-tplsave]");
+  if(bSave) bSave.onclick=()=>{
+    var nome=S.template;
+    try{ setTplOverride(nome, S.items); }catch(_){}
+    S.editandoTemplate=null;
+    try{ alert("Modelo \""+nome+"\" salvo. Essa versao sera usada em todo o site neste navegador."); }catch(_){}
+    render();
+  };
+  var bFactory=el.querySelector("[data-tplfactory]");
+  if(bFactory) bFactory.onclick=()=>{
+    var nome=S.template;
+    var ok=true; try{ ok=confirm("Reverter o modelo \""+nome+"\" para a versao de fabrica? Sua versao editada sera descartada."); }catch(_){}
+    if(!ok) return;
+    try{ clearTplOverride(nome); }catch(_){}
+    S.editandoTemplate=null;
+    loadTemplate(nome);
+  };
 }
 
 function loadTemplate(t){
@@ -3256,6 +3433,7 @@ function renderEditor(D){
       if(f==="pct"){ updateLight(); }
       else if(f==="classe"){ render(); }
       else { /* nome/detalhe: só atualiza derivados leves sem reconstruir o input em foco */ updateLight(); }
+      ctorPersist();   // Tarefa 2: persiste edicao de nome/pct/detalhe/classe
     });
   });
   el.querySelectorAll("[data-opt]").forEach(b=>{
@@ -3283,13 +3461,13 @@ function renderEditor(D){
   function bindRetBox(id){
     const it=S.items.find(x=>x.id===id); if(!it) return;
     const sel=el.querySelector('[data-retcat="'+id+'"]');
-    if(sel) sel.addEventListener("change",function(){ it.retCat=sel.value; rebuildRetBox(it); });
+    if(sel) sel.addEventListener("change",function(){ it.retCat=sel.value; rebuildRetBox(it); ctorPersist(); });
     const v=el.querySelector('[data-retval="'+id+'"]');
-    if(v) v.addEventListener("input",function(){ it.retVal=Number(v.value)||0; const s=el.querySelector('[data-retsum="'+id+'"]'); if(s) s.textContent=ativoRetSummary(it); updateLight(); });
+    if(v) v.addEventListener("input",function(){ it.retVal=Number(v.value)||0; const s=el.querySelector('[data-retsum="'+id+'"]'); if(s) s.textContent=ativoRetSummary(it); updateLight(); ctorPersist(); });
     const dv=el.querySelector('[data-retdiv="'+id+'"]');
-    if(dv) dv.addEventListener("input",function(){ it.retDiv=Number(dv.value)||0; const s=el.querySelector('[data-retsum="'+id+'"]'); if(s) s.textContent=ativoRetSummary(it); updateLight(); });
+    if(dv) dv.addEventListener("input",function(){ it.retDiv=Number(dv.value)||0; const s=el.querySelector('[data-retsum="'+id+'"]'); if(s) s.textContent=ativoRetSummary(it); updateLight(); ctorPersist(); });
     const iso=el.querySelector('[data-retisento="'+id+'"]');
-    if(iso) iso.onclick=function(){ it.retIsento=!it.retIsento; rebuildRetBox(it); };
+    if(iso) iso.onclick=function(){ it.retIsento=!it.retIsento; rebuildRetBox(it); ctorPersist(); };
   }
   S.items.forEach(function(it){ bindRetBox(it.id); });
   if(!el.__libDropBound){ el.__libDropBound=true;
@@ -3634,13 +3812,13 @@ function renderProj(D){
 
 /* ---------- inputs gerais ---------- */
 function fmtPatInput(){ document.getElementById("patrimonio").value=fmtBRL(S.patrimonio); }
-document.getElementById("cliente").addEventListener("input",e=>{ S.cliente=e.target.value; renderDonut(calc()); publicarCarteira(calc()); });
+document.getElementById("cliente").addEventListener("input",e=>{ S.cliente=e.target.value; renderDonut(calc()); publicarCarteira(calc()); ctorPersist(); });
 document.getElementById("patrimonio").addEventListener("input",e=>{
   const digits=e.target.value.replace(/\D/g,""); S.patrimonio=digits?parseInt(digits,10):0;
   e.target.value=fmtBRL(S.patrimonio);
   // reposiciona cursor no fim
   const v=e.target.value; e.target.setSelectionRange(v.length,v.length);
-  updateLight();
+  updateLight(); ctorPersist();
 });
 document.getElementById("btnAdd").onclick=()=>{ S.items.push(mk("Renda Fixa","Novo ativo",0,"","")); render(); };
 
@@ -3868,6 +4046,18 @@ document.getElementById("btnPng").onclick=()=>{
 };
 
 /* ---------- init ---------- */
+/* Tarefa 2: restaura o estado persistido do Simulador antes da 1a renderizacao */
+try{
+  if(restoreCtorState()){
+    // template "Atual" depende de posicaoAtual (nao persistida): cai p/ recomendada
+    if(S.template==="Atual" && !(S.posicaoAtual && S.posicaoAtual.comp)){
+      S.template = S.recomendadaTemplate || "Moderada";
+    }
+    // sincroniza campos de input com o estado restaurado
+    var _cli=document.getElementById("cliente"); if(_cli) _cli.value=S.cliente||"";
+    var _cdi=document.getElementById("inpCdi"); if(_cdi && S.cdi!=null) _cdi.value=S.cdi;
+  }
+}catch(_){}
 fmtPatInput();
 render();
 
@@ -8003,6 +8193,7 @@ function rvCardData(entry){
     d.cta = "Fale com seu assessor para entender como esta operação se encaixa na sua carteira.";
   }
   d.prazoAnos=anos; d.venc=venc;
+  d.op=op; d.kindResolved=kind;
   return d;
 }
 
@@ -8041,12 +8232,24 @@ function rvCardValCor(v){ return v>0.001 ? "#2BD9A6" : (v<-0.001 ? "#FF5566" : "
 /* Tabela "R$ 100 em cada cenário": consolida d.secoes numa única lista
    ordenada (alta -> baixa), com 2 colunas: variação do ativo | variação da estratégia. */
 function rvCardScenTableHTML(d){
-  var rows=[];
-  (d.secoes||[]).forEach(function(sec){ (sec.rows||[]).forEach(function(r){ rows.push(r); }); });
-  // dedup por ativoVar + ordena do maior para o menor
-  var seen={}, uniq=[];
-  rows.forEach(function(r){ var k=Math.round(r.ativoVar*100)/100; if(seen[k]==null){ seen[k]=1; uniq.push(r); } });
-  uniq.sort(function(a,b){ return b.ativoVar-a.ativoVar; });
+  var uniq=[];
+  // Usa EXATAMENTE os mesmos cenarios de "Como funciona a operacao" (payoffBarsSVG(op,false)):
+  // todas as linhas de op.cen, ordenadas do maior para o menor, sem reducao.
+  if(d && d.op && d.op.cen && d.op.cen.length){
+    var full=d.op.cen.slice().sort(function(a,b){ return b[0]-a[0]; });
+    var seenF={};
+    full.forEach(function(p){
+      var k=Math.round(p[0]*100)/100;
+      if(seenF[k]==null){ seenF[k]=1; uniq.push({ ativoVar:p[0], recebe:p[1] }); }
+    });
+  } else {
+    // fallback: consolida d.secoes (comportamento antigo)
+    var rows=[];
+    (d.secoes||[]).forEach(function(sec){ (sec.rows||[]).forEach(function(r){ rows.push(r); }); });
+    var seen={};
+    rows.forEach(function(r){ var k=Math.round(r.ativoVar*100)/100; if(seen[k]==null){ seen[k]=1; uniq.push(r); } });
+    uniq.sort(function(a,b){ return b.ativoVar-a.ativoVar; });
+  }
   var ativoUp=esc((d.ativo||"").toUpperCase());
   var h='<div class="rvc-sc">';
   h+='<div class="rvc-sc-title">O que acontece com R$ 100 investidos em cada cenário</div>';
@@ -8127,7 +8330,7 @@ function injectCardCSS(){
   var st=document.createElement("style"); st.id="rvCardCSS";
   st.textContent = ''+
   '#rvCardStage{position:fixed;left:-99999px;top:0;z-index:-1;}'+
-  '.rvc-root{width:1200px;height:675px;box-sizing:border-box;position:relative;overflow:hidden;'+
+  '.rvc-root{width:1200px;min-height:675px;box-sizing:border-box;position:relative;overflow:hidden;'+
     'font-family:Arial,Helvetica,sans-serif;color:#fff;padding:34px 40px 22px;'+
     'background:linear-gradient(155deg,#0A0F38 0%,#070B2E 58%,#05081F 100%);}'+
   '.rvc-glow{position:absolute;top:-160px;right:-120px;width:560px;height:560px;border-radius:50%;'+
@@ -8252,8 +8455,10 @@ function gerarCardsSelecionados(entries){
 
   ensureHtml2Canvas(function(h2c){
     if(!h2c){ cardPrintFallback(htmlList); return; }
-    // empilha TODOS os cards selecionados num único container e gera UMA imagem
-    var CARD_H=675, n=htmlList.length, totalH=CARD_H*n;
+    // empilha TODOS os cards selecionados num único container e gera UMA imagem.
+    // Cada card pode ter altura DIFERENTE (mais cenarios = mais alto), entao medimos
+    // a altura REAL renderizada de cada card em vez de assumir 675px fixos.
+    var n=htmlList.length;
     var stack=document.createElement("div");
     stack.style.cssText="width:1200px;background:#05081F;";
     stack.innerHTML=htmlList.join("");
@@ -8265,7 +8470,14 @@ function gerarCardsSelecionados(entries){
       nomeArq="Card_"+(atvs.slice(0,3).join("_")||"cliente")+(n>1?"_"+n+"ops":"")+".png";
     }catch(_){ nomeArq="Card_cliente.png"; }
     setTimeout(function(){
-      h2c(stack,{backgroundColor:null,scale:2,width:1200,height:totalH,useCORS:true,logging:false}).then(function(canvas){
+      // mede a altura real do stack (soma das alturas de cada card, que variam)
+      var totalH=675*n;
+      try{
+        var rh=Math.ceil(stack.getBoundingClientRect().height);
+        var sh=Math.ceil(stack.scrollHeight);
+        totalH=Math.max(rh,sh,675);
+      }catch(_){ totalH=675*n; }
+      h2c(stack,{backgroundColor:null,scale:2,useCORS:true,logging:false,windowWidth:1200,height:totalH,width:1200}).then(function(canvas){
         var url=canvas.toDataURL("image/png");
         try{ window.mostrarPngModal(url,nomeArq,{accent:"#FF4E00",hint:"Card do cliente — "+(n>1?(n+" operações empilhadas numa imagem só. "):"")+"Baixe ou copie para enviar pelo WhatsApp."}); }
         catch(_){ var a=document.createElement("a"); a.href=url; a.download=nomeArq; a.click(); }
