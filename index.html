@@ -8050,22 +8050,52 @@ window.__rvRender = render;
 </script>
 <script id="g-ticker-js">
 (function(){
-  // Ticker de cotacoes. Fonte primaria: AwesomeAPI (CORS-friendly, gratuita, https).
-  // AwesomeAPI fornece Dolar (USD-BRL), Ouro (XAU-USD) e Bitcoin (BTC-BRL) com bid + pctChange.
-  // S&P 500, Ibovespa e Brent nao tem fonte gratuita CORS-friendly: tentamos Yahoo via proxy
-  // como best-effort e, se falhar, mantemos "—" (fallback elegante, sem quebrar o resto).
+  // Ticker de cotacoes. Fonte PRIMARIA: Yahoo Finance via proxies CORS
+  // (mesmos endpoints/proxies da versao original que funcionava na rede do usuario).
+  // FALLBACK: AwesomeAPI (CORS-friendly) apenas para os pares que ela suporta
+  // (USD-BRL p/ Dolar, XAU-USD p/ Ouro, BTC-BRL p/ Bitcoin), usada so se o Yahoo falhar.
+  // Cada instrumento atualiza de forma independente: se uma fonte/proxy cair, os demais seguem.
   var TK = [
-    {k:'dolar', src:'awesome', pair:'USDBRL', dec:2, prefix:'R$ '},
-    {k:'sp500', src:'yahoo',   sym:'^GSPC',  dec:0, prefix:''},
-    {k:'ibov',  src:'yahoo',   sym:'^BVSP',  dec:0, prefix:''},
-    {k:'ouro',  src:'awesome', pair:'XAUUSD', dec:2, prefix:'US$ '},
-    {k:'brent', src:'yahoo',   sym:'BZ=F',   dec:2, prefix:'US$ '},
-    {k:'btc',   src:'awesome', pair:'BTCBRL', dec:0, prefix:'R$ '}
+    {k:'dolar', sym:'BRL=X', dec:2, prefix:'R$ ',   awPair:'USD-BRL'},
+    {k:'sp500', sym:'^GSPC', dec:0, prefix:''},
+    {k:'ibov',  sym:'^BVSP', dec:0, prefix:''},
+    {k:'ouro',  sym:'GC=F',  dec:2, prefix:'US$ ',  awPair:'XAU-USD'},
+    {k:'brent', sym:'BZ=F',  dec:2, prefix:'US$ '},
+    {k:'btc',   sym:'BTC-BRL',dec:0, prefix:'R$ ',  awPair:'BTC-BRL'}
   ];
 
   function fmt(v, dec){ return v.toLocaleString('pt-BR',{minimumFractionDigits:dec, maximumFractionDigits:dec}); }
 
-  // ---- AwesomeAPI: uma chamada para todos os pares de uma vez ----
+  // ---- Yahoo Finance via proxies CORS (caminho PRIMARIO) ----
+  // Mesmos proxies da versao original: corsproxy.io e api.allorigins.win.
+  // Tentamos varios em sequencia para robustez; o primeiro que responder valido vence.
+  function proxies(u){
+    return [
+      'https://corsproxy.io/?url='+encodeURIComponent(u),
+      'https://api.allorigins.win/raw?url='+encodeURIComponent(u),
+      'https://thingproxy.freeboard.io/fetch/'+u
+    ];
+  }
+  async function fetchYahoo(sym){
+    var yurl='https://query1.finance.yahoo.com/v8/finance/chart/'+encodeURIComponent(sym)+'?range=1d&interval=1d';
+    var ps=proxies(yurl);
+    for(var i=0;i<ps.length;i++){
+      try{
+        var r=await fetch(ps[i],{cache:'no-store'});
+        if(!r.ok) continue;
+        var j=await r.json();
+        var m=j && j.chart && j.chart.result && j.chart.result[0] && j.chart.result[0].meta;
+        if(m && m.regularMarketPrice!=null){
+          var price=m.regularMarketPrice;
+          var prev=(m.chartPreviousClose!=null? m.chartPreviousClose : m.previousClose);
+          return {price:price, pct:(prev? ((price-prev)/prev*100):null)};
+        }
+      }catch(e){}
+    }
+    return null;
+  }
+
+  // ---- AwesomeAPI (FALLBACK): uma chamada para todos os pares suportados ----
   var AWESOME_PAIRS = ['USD-BRL','XAU-USD','BTC-BRL'];
   async function fetchAwesome(){
     var url='https://economia.awesomeapi.com.br/json/last/'+AWESOME_PAIRS.join(',');
@@ -8079,37 +8109,20 @@ window.__rvRender = render;
         var d=j[key];
         var price=parseFloat(d.bid);
         var pct=parseFloat(d.pctChange);
-        if(!isNaN(price)) out[key]={price:price, pct:isNaN(pct)?null:pct};
+        // chave do retorno (ex: USDBRL) -> normaliza p/ casar com awPair (ex: USD-BRL)
+        if(!isNaN(price)){
+          var code=(d.code||'')+'-'+(d.codein||'');
+          out[code]={price:price, pct:isNaN(pct)?null:pct};
+        }
       }
     }catch(e){}
     return out;
   }
 
-  // ---- Yahoo via proxies CORS (best-effort para indices/commodities) ----
-  function proxies(u){ return ['https://corsproxy.io/?url='+encodeURIComponent(u),
-                               'https://api.allorigins.win/raw?url='+encodeURIComponent(u)]; }
-  async function fetchYahoo(sym){
-    var yurl='https://query1.finance.yahoo.com/v8/finance/chart/'+encodeURIComponent(sym)+'?range=1d&interval=1d';
-    var ps=proxies(yurl);
-    for(var i=0;i<ps.length;i++){
-      try{
-        var r=await fetch(ps[i],{cache:'no-store'});
-        if(!r.ok) continue;
-        var j=await r.json();
-        var m=j.chart.result[0].meta;
-        if(m && m.regularMarketPrice!=null && m.chartPreviousClose!=null){
-          var price=m.regularMarketPrice, prev=m.chartPreviousClose;
-          return {price:price, pct: prev? ((price-prev)/prev*100):null};
-        }
-      }catch(e){}
-    }
-    return null;
-  }
-
   function render(it, q){
     var el=document.getElementById('tk-'+it.k); if(!el) return;
     var valEl=el.querySelector('.g-tk-val'), chgEl=el.querySelector('.g-tk-chg');
-    // q == null: mantem o ultimo valor exibido (fallback elegante); so deixa "—" se nunca veio nada
+    // q invalido: mantem o ultimo valor exibido (fallback elegante; so fica "—" se nunca veio nada)
     if(!q || q.price==null){ return; }
     valEl.textContent=it.prefix+fmt(q.price, it.dec);
     var pct = (q.pct==null? 0 : q.pct);
@@ -8121,9 +8134,9 @@ window.__rvRender = render;
     chgEl.className='g-tk-chg '+(pct>0?'up':(pct<0?'down':'flat'));
   }
 
-  // Indicador "atualizado as HH:MM" no ticker. Atualiza no horario local (24h)
-  // sempre que a busca primaria (AwesomeAPI) traz dados com sucesso; mostra
-  // "sem conexao" de forma discreta se a tentativa falhar. Defensivo: nunca quebra.
+  // Indicador "atualizado as HH:MM" / "sem conexao".
+  // Mostra "atualizado as HH:MM" se PELO MENOS UM instrumento atualizou no ciclo;
+  // so mostra "sem conexao" se TODAS as fontes falharem para tudo (e nunca houve sucesso antes).
   function setUpdated(ok){
     try{
       var el=document.getElementById('tk-upd'); if(!el) return;
@@ -8133,29 +8146,39 @@ window.__rvRender = render;
         el.textContent='atualizado às '+hh+':'+mm;
         el.className='g-tk-upd';
       } else {
-        // so mostra erro se nunca houve uma atualizacao bem-sucedida antes
-        if(!el.textContent){ el.textContent='sem conexão'; el.className='g-tk-upd err'; }
+        if(!el.textContent || /sem conexão/.test(el.textContent)){ el.textContent='sem conexão'; el.className='g-tk-upd err'; }
       }
     }catch(e){}
   }
 
   async function load(){
-    // AwesomeAPI: dolar, ouro, bitcoin (uma requisicao)
-    var aw = await fetchAwesome();
-    var awOk = false;
-    TK.forEach(function(it){
-      if(it.src!=='awesome') return;
-      var q=aw[it.pair];
-      if(q && q.price!=null) awOk=true;
-      render(it, q || null);
+    // Contador de sucessos do ciclo (qualquer fonte conta).
+    var anyOk=false;
+    // Pre-busca AwesomeAPI uma unica vez (so sera usada como fallback de quem suportar).
+    var awPromise=fetchAwesome();
+
+    // Cada instrumento e tratado de forma independente.
+    var jobs=TK.map(function(it){
+      return (async function(){
+        var q=null;
+        // 1) Yahoo (PRIMARIO)
+        try{ q=await fetchYahoo(it.sym); }catch(e){ q=null; }
+        // 2) Fallback AwesomeAPI (so para os que ela suporta)
+        if((!q || q.price==null) && it.awPair){
+          try{
+            var aw=await awPromise;
+            var a=aw && aw[it.awPair];
+            if(a && a.price!=null) q=a;
+          }catch(e){}
+        }
+        if(q && q.price!=null){ anyOk=true; render(it, q); }
+        else { render(it, null); }
+      })();
     });
-    // marca o horario da atualizacao se a fonte primaria respondeu com dados
-    setUpdated(awOk);
-    // Yahoo (best-effort) para sp500, ibov, brent
-    TK.forEach(function(it){
-      if(it.src!=='yahoo') return;
-      fetchYahoo(it.sym).then(function(q){ render(it, q); }).catch(function(){});
-    });
+
+    try{ await Promise.all(jobs); }catch(e){}
+    // "atualizado" se qualquer instrumento (de qualquer fonte) deu certo.
+    setUpdated(anyOk);
   }
 
   function start(){ load(); setInterval(load, 60000); }
