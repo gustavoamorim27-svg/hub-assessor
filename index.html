@@ -8132,6 +8132,12 @@ window.__rvRender = render;
   // preco_token x ~1.805 aproxima o barril. APROXIMACAO: pode desviar com o tempo
   // (rebalanceamento do fundo, drift). Usado SO como fallback quando o Yahoo falha (ex.: rede RICO).
   var BRENT_BNO_MULT = 1.805;
+  // IBOV_EWZ_MULT: fator de conversao do token EWZ (ishares-msci-brazil-etf-ondo-tokenized)
+  // para o Ibovespa em pontos. EWZ (em US$) x dolar (USD/BRL) x esse fator ~ Ibovespa.
+  // APROXIMACAO: o EWZ replica o MSCI Brazil, correlacionado mas NAO identico ao Ibovespa
+  // (composicao/peso diferentes), entao pode desviar com o tempo. Usado SO como fallback
+  // quando o Yahoo (^BVSP, fonte primaria) falha (ex.: rede RICO).
+  var IBOV_EWZ_MULT = 966.84;
   // Ticker de cotacoes. Fonte PRINCIPAL = CoinGecko (api.coingecko.com), unica liberada
   // em redes corporativas que bloqueiam AwesomeAPI/Frankfurter/proxies (ex.: rede RICO).
   // Uma unica chamada combinada cobre Bitcoin, Dolar e Ouro:
@@ -8180,8 +8186,8 @@ window.__rvRender = render;
   // Cobre Bitcoin (US$), Dolar (via Tether/BRL) e Ouro (via PAX Gold/USD).
   // E a unica fonte liberada em redes corporativas (ex.: RICO), entao e a PRINCIPAL.
   async function fetchCoinGecko(){
-    var url='https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,tether,pax-gold,spdr-s-p-500-etf-ondo-tokenized-etf,us-brent-oil-fund-ondo-tokenized&vs_currencies=usd,brl&include_24hr_change=true';
-    var out={btc:null, dolar:null, ouro:null, sp500:null, brent:null};
+    var url='https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,tether,pax-gold,spdr-s-p-500-etf-ondo-tokenized-etf,us-brent-oil-fund-ondo-tokenized,ishares-msci-brazil-etf-ondo-tokenized&vs_currencies=usd,brl&include_24hr_change=true';
+    var out={btc:null, dolar:null, ouro:null, sp500:null, brent:null, ibov:null};
     try{
       var r=await fetch(url,{cache:'no-store'});
       if(!r.ok) return out;
@@ -8203,6 +8209,19 @@ window.__rvRender = render;
       // Variacao % usa usd_24h_change (do token). So usado se o Yahoo (BZ=F, fonte primaria) falhar.
       var br=j && j['us-brent-oil-fund-ondo-tokenized'];
       if(br && br.usd!=null){ out.brent={price:br.usd*BRENT_BNO_MULT, pct:(br.usd_24h_change!=null? br.usd_24h_change : null)}; }
+      // Ibovespa (FALLBACK): token EWZ (ishares-msci-brazil-etf-ondo-tokenized, iShares MSCI Brazil)
+      // em US$ x dolar (USD/BRL via tether.brl) x IBOV_EWZ_MULT aproxima o indice em pontos.
+      // Variacao % ~ combinacao da variacao do EWZ (US$) com a do dolar (USD/BRL).
+      // So usado se o Yahoo (^BVSP, fonte primaria) falhar.
+      var ewz=j && j['ishares-msci-brazil-etf-ondo-tokenized'];
+      var usdbrl=(j && j.tether && j.tether.brl!=null)? j.tether.brl : null;
+      if(ewz && ewz.usd!=null && usdbrl!=null){
+        var ibovValor=ewz.usd*usdbrl*IBOV_EWZ_MULT;
+        var ewzChg=(ewz.usd_24h_change!=null? ewz.usd_24h_change : 0);
+        var brlChg=(j.tether && j.tether.brl_24h_change!=null? j.tether.brl_24h_change : 0);
+        var ibovPct=((1 + ewzChg/100) * (1 + brlChg/100) - 1) * 100;
+        out.ibov={price:ibovValor, pct:ibovPct};
+      }
     }catch(e){}
     return out;
   }
@@ -8298,8 +8317,12 @@ window.__rvRender = render;
             // 1) Yahoo (BZ=F, Brent real) PRIMARIO -> 2) CoinGecko BNO x BRENT_BNO_MULT (FALLBACK p/ RICO)
             try{ q=await fetchYahoo(it.sym); }catch(e){ q=null; }
             if(!q || q.price==null){ try{ var cg5=await cgPromise; if(cg5 && cg5.brent && cg5.brent.price!=null) q=cg5.brent; }catch(e){} }
+          } else if(it.k==='ibov'){
+            // 1) Yahoo (^BVSP, Ibovespa real) PRIMARIO -> 2) CoinGecko EWZ x dolar x IBOV_EWZ_MULT (FALLBACK p/ RICO)
+            try{ q=await fetchYahoo(it.sym); }catch(e){ q=null; }
+            if(!q || q.price==null){ try{ var cg6=await cgPromise; if(cg6 && cg6.ibov && cg6.ibov.price!=null) q=cg6.ibov; }catch(e){} }
           } else {
-            // ibov: sem API CORS-nativa confiavel -> Yahoo proxy (best-effort)
+            // outros instrumentos sem fonte dedicada -> Yahoo proxy (best-effort)
             try{ q=await fetchYahoo(it.sym); }catch(e){ q=null; }
           }
         }catch(e){ q=null; }
