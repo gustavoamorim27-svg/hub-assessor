@@ -8050,11 +8050,13 @@ window.__rvRender = render;
 </script>
 <script id="g-ticker-js">
 (function(){
-  // Ticker de cotacoes. Camada de DADOS prioriza APIs DIRETAS, CORS-nativas, SEM proxy:
-  //   - Dolar (USD/BRL): AwesomeAPI direto -> Frankfurter direto -> Yahoo via proxy.
-  //   - Bitcoin (BRL):   CoinGecko direto  -> AwesomeAPI direto  -> Yahoo via proxy.
-  //   - Ouro (XAU/USD):  AwesomeAPI direto -> Yahoo via proxy.
-  //   - S&P500 / Ibov / Brent: sem API CORS-nativa confiavel -> Yahoo via proxy (best-effort).
+  // Ticker de cotacoes. Fonte PRINCIPAL = CoinGecko (api.coingecko.com), unica liberada
+  // em redes corporativas que bloqueiam AwesomeAPI/Frankfurter/proxies (ex.: rede RICO).
+  // Uma unica chamada combinada cobre Bitcoin, Dolar e Ouro:
+  //   - Bitcoin (US$):   CoinGecko bitcoin.usd            (exibido em dolar).
+  //   - Dolar (USD/BRL): CoinGecko tether.brl (USDT~US$1) -> AwesomeAPI -> Frankfurter -> Yahoo.
+  //   - Ouro (XAU/USD):  CoinGecko pax-gold.usd (PAXG~1oz)-> AwesomeAPI -> Yahoo.
+  //   - S&P500 / Ibov / Brent: sem fonte CoinGecko/CORS -> Yahoo via proxy (best-effort).
   // Para cada instrumento paramos no primeiro que retornar valor valido.
   // Tudo defensivo (try/catch): se uma fonte/proxy cair, os demais seguem.
   var TK = [
@@ -8063,7 +8065,7 @@ window.__rvRender = render;
     {k:'ibov',  sym:'^BVSP', dec:0, prefix:''},
     {k:'ouro',  sym:'GC=F',  dec:2, prefix:'US$ ',  awPair:'XAU-USD'},
     {k:'brent', sym:'BZ=F',  dec:2, prefix:'US$ '},
-    {k:'btc',   sym:'BTC-BRL',dec:0, prefix:'R$ ',  awPair:'BTC-BRL'}
+    {k:'btc',   sym:'BTC-BRL',dec:0, prefix:'US$ ', awPair:'BTC-BRL'}
   ];
 
   function fmt(v, dec){ return v.toLocaleString('pt-BR',{minimumFractionDigits:dec, maximumFractionDigits:dec}); }
@@ -8092,20 +8094,27 @@ window.__rvRender = render;
     return out;
   }
 
-  // ---- CoinGecko DIRETO (sem proxy): Bitcoin em BRL com variacao 24h ----
-  async function fetchCoinGeckoBTC(){
-    var url='https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=brl&include_24hr_change=true';
+  // ---- CoinGecko DIRETO (sem proxy): UMA chamada combinada ----
+  // Cobre Bitcoin (US$), Dolar (via Tether/BRL) e Ouro (via PAX Gold/USD).
+  // E a unica fonte liberada em redes corporativas (ex.: RICO), entao e a PRINCIPAL.
+  async function fetchCoinGecko(){
+    var url='https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,tether,pax-gold&vs_currencies=usd,brl&include_24hr_change=true';
+    var out={btc:null, dolar:null, ouro:null};
     try{
       var r=await fetch(url,{cache:'no-store'});
-      if(!r.ok) return null;
+      if(!r.ok) return out;
       var j=await r.json();
+      // Bitcoin em US$
       var b=j && j.bitcoin;
-      if(b && b.brl!=null){
-        var pct=(b.brl_24h_change!=null)? b.brl_24h_change : null;
-        return {price:b.brl, pct:pct};
-      }
+      if(b && b.usd!=null){ out.btc={price:b.usd, pct:(b.usd_24h_change!=null? b.usd_24h_change : null)}; }
+      // Dolar: USDT/BRL ~ USD/BRL (USDT ~ US$1)
+      var t=j && j.tether;
+      if(t && t.brl!=null){ out.dolar={price:t.brl, pct:(t.brl_24h_change!=null? t.brl_24h_change : null)}; }
+      // Ouro: PAXG/USD ~ onca de ouro em US$ (PAXG ~ 1oz)
+      var g=j && j['pax-gold'];
+      if(g && g.usd!=null){ out.ouro={price:g.usd, pct:(g.usd_24h_change!=null? g.usd_24h_change : null)}; }
     }catch(e){}
-    return null;
+    return out;
   }
 
   // ---- Frankfurter DIRETO (sem proxy): fallback do Dolar (sem variacao) ----
@@ -8184,7 +8193,9 @@ window.__rvRender = render;
   async function load(){
     // Contador de sucessos do ciclo (qualquer fonte/instrumento conta).
     var anyOk=false;
-    // Pre-busca AwesomeAPI uma unica vez (cobre USD-BRL, XAU-USD, BTC-BRL).
+    // Pre-busca a CoinGecko (fonte PRINCIPAL) uma unica vez: cobre Bitcoin, Dolar e Ouro.
+    var cgPromise=fetchCoinGecko();
+    // Pre-busca AwesomeAPI uma unica vez (fallback p/ Dolar/Ouro fora da RICO).
     var awPromise=fetchAwesome();
 
     var jobs=TK.map(function(it){
@@ -8192,18 +8203,19 @@ window.__rvRender = render;
         var q=null;
         try{
           if(it.k==='dolar'){
-            // 1) AwesomeAPI direto -> 2) Frankfurter direto -> 3) Yahoo proxy
-            try{ var aw=await awPromise; var a=aw && aw[it.awPair]; if(a && a.price!=null) q=a; }catch(e){}
+            // 1) CoinGecko (tether.brl) -> 2) AwesomeAPI -> 3) Frankfurter -> 4) Yahoo proxy
+            try{ var cg=await cgPromise; if(cg && cg.dolar && cg.dolar.price!=null) q=cg.dolar; }catch(e){}
+            if(!q || q.price==null){ try{ var aw=await awPromise; var a=aw && aw[it.awPair]; if(a && a.price!=null) q=a; }catch(e){} }
             if(!q || q.price==null){ try{ q=await fetchFrankfurterUSDBRL(); }catch(e){ q=null; } }
             if(!q || q.price==null){ try{ q=await fetchYahoo(it.sym); }catch(e){ q=null; } }
           } else if(it.k==='btc'){
-            // 1) CoinGecko direto -> 2) AwesomeAPI direto -> 3) Yahoo proxy
-            try{ q=await fetchCoinGeckoBTC(); }catch(e){ q=null; }
-            if(!q || q.price==null){ try{ var aw2=await awPromise; var b=aw2 && aw2[it.awPair]; if(b && b.price!=null) q=b; }catch(e){} }
+            // 1) CoinGecko (bitcoin.usd) -> 2) Yahoo proxy
+            try{ var cg2=await cgPromise; if(cg2 && cg2.btc && cg2.btc.price!=null) q=cg2.btc; }catch(e){}
             if(!q || q.price==null){ try{ q=await fetchYahoo(it.sym); }catch(e){ q=null; } }
           } else if(it.k==='ouro'){
-            // 1) AwesomeAPI direto -> 2) Yahoo proxy
-            try{ var aw3=await awPromise; var o=aw3 && aw3[it.awPair]; if(o && o.price!=null) q=o; }catch(e){}
+            // 1) CoinGecko (pax-gold.usd) -> 2) AwesomeAPI -> 3) Yahoo proxy
+            try{ var cg3=await cgPromise; if(cg3 && cg3.ouro && cg3.ouro.price!=null) q=cg3.ouro; }catch(e){}
+            if(!q || q.price==null){ try{ var aw3=await awPromise; var o=aw3 && aw3[it.awPair]; if(o && o.price!=null) q=o; }catch(e){} }
             if(!q || q.price==null){ try{ q=await fetchYahoo(it.sym); }catch(e){ q=null; } }
           } else {
             // sp500 / ibov / brent: sem API CORS-nativa -> Yahoo proxy (best-effort)
