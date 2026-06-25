@@ -7052,6 +7052,7 @@ var ICON_CHECK = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" st
 var ICON_ROTATE = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:6px"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>';
 var ICON_PLUS = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>';
 var ICON_SEARCH_RV = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>';
+var ICON_CARD = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px"><rect x="2" y="4" width="20" height="16" rx="3"/><path d="M2 9h20"/><path d="M6 14h6"/><path d="M16 14h2"/></svg>';
 
 /* ===== Render principal ===== */
 function render(){
@@ -7064,6 +7065,7 @@ function render(){
     '<div class="sub" style="font-size:13px">Selecione um perfil ou monte do zero · operações estruturadas e Quanto</div>'+
     '</div><div class="hbtns">'+
     '<button class="btn-ghost" id="rvBtnCopy">'+ICON_COPY+' Copiar resumo</button>'+
+    '<button class="btn-ghost" id="rvBtnCard" style="border-color:rgba(255,78,0,.5);color:#FF8B52">'+ICON_CARD+' Card do cliente</button>'+
     '<button class="btn-solid" id="rvBtnPng">'+ICON_DOWNLOAD+' Gerar PNG</button>'+
     '</div></div>';
 
@@ -7263,6 +7265,7 @@ function bind(d){
   // header
   document.getElementById("rvBtnCopy").onclick = copyResumo;
   document.getElementById("rvBtnPng").onclick = gerarPNG;
+  var _rvBtnCard=document.getElementById("rvBtnCard"); if(_rvBtnCard) _rvBtnCard.onclick = abrirCardModal;
   // templates
   document.querySelectorAll("[data-tpl]").forEach(function(b){ b.onclick = function(){ loadTemplate(b.getAttribute("data-tpl")); }; });
   document.getElementById("rvBtnRestore").onclick = function(){ loadTemplate(state.template); };
@@ -7587,6 +7590,520 @@ function buildCarteiraPNG(p){
   T("rico.",W-60,yF+52,15,ORANGE,"800","right");
 
   return cv.toDataURL("image/png");
+}
+
+/* ============================================================
+   CARD DO CLIENTE — arte de marketing (1 a 3 operações)
+   Reaproveita OPERACOES / QUANTO_OPS / RUBI_CATALOG e a lógica
+   de cenários (keyScenarios / cupomOp / payoff) já existentes.
+   ============================================================ */
+function rvCardFmtPct(n){ var v=Math.round(n*100)/100; var s=(Math.abs(v)<1e-9?0:v); return s.toFixed(2).replace(/\.?0+$/,"").replace(".",","); }
+function rvCardSigned(n){ if(Math.abs(n)<1e-9) return "0%"; return (n>0?"+":"−")+rvCardFmtPct(Math.abs(n))+"%"; }
+function rvCardSlug(t){ return (t==null?"":String(t)).normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[^a-zA-Z0-9]+/g,"_").replace(/^_+|_+$/g,"") || "op"; }
+function rvCardAnos(fixing){ if(!fixing) return 3; var m=String(fixing).match(/(\d+)/); return m? parseInt(m[1],10):3; }
+function rvCardVencimento(anos){
+  try{ var d=new Date(); d.setFullYear(d.getFullYear()+(anos||3)); var mm=("0"+(d.getMonth()+1)).slice(-2); return mm+"/"+d.getFullYear(); }catch(_){ return ""; }
+}
+
+/* Catálogo unificado de operações para o seletor do card.
+   Cada item: { key, ativo, mercado, kind, label, op }  (op é a estrutura nativa) */
+function rvCardCatalog(){
+  var out=[];
+  try{
+    OPERACOES.forEach(function(op){
+      out.push({ key:op.id, ativo:op.ativo, mercado:"Brasil · B3", kind:"protecao", label:op.nome, op:op });
+    });
+  }catch(_){}
+  try{
+    QUANTO_OPS.forEach(function(op){
+      out.push({ key:op.id, ativo:op.ativo, mercado:"Internacional · Quanto", kind:(op.payoff===1?"quanto":"quantoTaxa"), label:op.nome, op:op });
+    });
+  }catch(_){}
+  try{
+    RUBI_CATALOG.forEach(function(r){
+      var it={ nome:r.ativo, cupomTaxa:r.taxa, cupomBarreira:r.barreira, cupomCDI:r.cdi, setor:r.setor };
+      out.push({ key:r.id, ativo:r.ativo, mercado:"Brasil · Cupom", kind:"cupom", label:r.ativo+" · Cupom "+rvCardFmtPct(r.taxa)+"%", op:cupomOp(it) });
+    });
+  }catch(_){}
+  return out;
+}
+
+/* Deriva todos os campos do card a partir da operação + tipo. */
+function rvCardData(entry){
+  var op=entry.op, kind=entry.kind, ativo=entry.ativo||op.ativo||"o ativo";
+  var anos, prazoTxt, venc;
+  // ----- defaults -----
+  var d={
+    ativo:ativo, mercado:entry.mercado||"Brasil", kind:kind,
+    titulo:"", destaqueNum:"", destaqueLeg:"",
+    metric:[], chartFloor:null, chartLabel:ativo+" (ilustrativo)",
+    tabTitulo:"O que você recebe em cada cenário",
+    tabCols:["CENÁRIO", ativo, "VOCÊ RECEBE"],
+    secoes:[], cta:"", tipoLabel:"", grafTitulo:"O piso é seu — o índice se move por cima"
+  };
+
+  if(kind==="protecao"){
+    // fence / collar (proteção parcial ou total)
+    anos=3; prazoTxt="3 anos"; venc=rvCardVencimento(anos);
+    var protTotal = (op.protegeAte!=null && op.protegeAte<=-100);
+    var teto=op.teto, tetoB=op.tetoBarreira, barr=op.barreira;
+    d.tipoLabel = protTotal? "COLLAR · CAPITAL PROTEGIDO" : "FENCE · PROTEÇÃO PARCIAL";
+    d.destaqueNum = rvCardFmtPct(teto)+"%";
+    d.destaqueLeg = "TETO DE GANHO · PARTICIPA 1:1";
+    if(protTotal){
+      d.titulo = "Seu capital 100% protegido — e ainda surfe a alta do "+ativo+" até <b>"+rvCardFmtPct(teto)+"%</b>";
+      d.metric=[
+        { lbl:"CAPITAL", val:"100% protegido", col:"#2BD9A6", sub:"piso travado no vencimento" },
+        { lbl:"TETO DE GANHO", val:"+"+rvCardFmtPct(teto)+"%", col:ORANGE, sub:"participa 1:1 até o teto" },
+        { lbl:"PRAZO", val:prazoTxt, col:"#fff", sub:"vencimento em "+venc },
+        { lbl:"CUSTO PARA VOCÊ", val:"Zero taxas", col:"#2BD9A6", sub:"sem taxa de entrada" }
+      ];
+      d.chartFloor={ pct:0, label:"PISO 0%" };
+      d.cta = "Você não perde capital em queda e, se o "+ativo+" subir, participa <b>1:1</b> da alta até <b>+"+rvCardFmtPct(teto)+"%</b>.";
+    } else {
+      var pAte=Math.abs(op.protegeAte);
+      d.titulo = "Até <b>"+rvCardFmtPct(pAte)+"%</b> de queda sem perda — e a alta do "+ativo+" até <b>"+rvCardFmtPct(teto)+"%</b> é sua";
+      d.metric=[
+        { lbl:"PROTEÇÃO", val:"até −"+rvCardFmtPct(pAte)+"%", col:"#2BD9A6", sub:"queda absorvida no vencimento" },
+        { lbl:"TETO DE GANHO", val:"+"+rvCardFmtPct(teto)+"%", col:ORANGE, sub:"participa 1:1 até o teto" },
+        { lbl:"PRAZO", val:prazoTxt, col:"#fff", sub:"vencimento em "+venc },
+        { lbl:"CUSTO PARA VOCÊ", val:"Zero taxas", col:"#2BD9A6", sub:"sem taxa de entrada" }
+      ];
+      d.chartFloor={ pct:0, label:"PROTEÇÃO −"+rvCardFmtPct(pAte)+"%" };
+      d.cta = "Você não perde até <b>−"+rvCardFmtPct(pAte)+"%</b> de queda e participa <b>1:1</b> da alta até <b>+"+rvCardFmtPct(teto)+"%</b>.";
+    }
+    d.chartLabel = ativo+" (ilustrativo)";
+    // tabela de cenários — usa o payoff real (op.cen)
+    var prot = keyScenarios(op);
+    var protRows = prot.map(function(p){ return { ativoVar:p[0], recebe:p[1] }; });
+    // separa zona de proteção (você recebe <= ativo na queda) e zona de ganho
+    var zonaProt=[], zonaGanho=[];
+    protRows.forEach(function(r){ if(r.ativoVar<=0) zonaProt.push(r); else zonaGanho.push(r); });
+    if(!zonaGanho.length){ // garante ao menos a melhor linha de alta
+      var best=protRows[protRows.length-1]; if(best){ zonaGanho.push(best); zonaProt=zonaProt.filter(function(x){return x!==best;}); }
+    }
+    d.secoes=[
+      { titulo: protTotal? "ZONA DE PROTEÇÃO · PISO TRAVADO" : "ZONA DE PROTEÇÃO · QUEDA ABSORVIDA", cor:"#2BD9A6", rows:zonaProt },
+      { titulo:"ZONA DE GANHO · ACOMPANHA A ALTA", cor:ORANGE, rows:zonaGanho }
+    ];
+  }
+  else if(kind==="quanto"){
+    // Quanto payoff 1: capital protegido, multiplicador na alta
+    anos=rvCardAnos(op.fixing); prazoTxt=op.fixing||(anos+" anos"); venc=rvCardVencimento(anos);
+    var mult=op.mult||1;
+    d.mercado="Internacional · Quanto";
+    d.tipoLabel="QUANTO · CAPITAL PROTEGIDO · SEM RISCO CAMBIAL";
+    d.destaqueNum = mult.toFixed(2).replace(".",",")+"x";
+    d.destaqueLeg = "MULTIPLICADOR NA ALTA";
+    d.grafTitulo="Capital protegido — a alta do "+ativo+" multiplicada";
+    d.titulo = "Capital 100% protegido em dólar-sem-risco — e cada alta do "+ativo+" vale <b>"+mult.toFixed(2).replace(".",",")+"x</b>";
+    d.metric=[
+      { lbl:"CAPITAL", val:"100% protegido", col:"#2BD9A6", sub:"devolvido se o índice cair" },
+      { lbl:"MULTIPLICADOR", val:mult.toFixed(2).replace(".",",")+"x", col:ORANGE, sub:"sobre a alta, sem teto" },
+      { lbl:"PRAZO", val:prazoTxt, col:"#fff", sub:"vencimento em "+venc },
+      { lbl:"CÂMBIO", val:"Sem risco", col:"#2BD9A6", sub:"resultado em moeda local" }
+    ];
+    d.chartFloor={ pct:0, label:"PISO 0% (capital protegido)" };
+    d.chartLabel = ativo+" × "+mult.toFixed(2).replace(".",",")+" (ilustrativo)";
+    var qrows=keyScenarios(op).map(function(p){ return { ativoVar:p[0], recebe:p[1] }; });
+    var qProt=qrows.filter(function(r){return r.ativoVar<=0;});
+    var qGanho=qrows.filter(function(r){return r.ativoVar>0;});
+    d.secoes=[
+      { titulo:"ZONA DE PROTEÇÃO · CAPITAL DEVOLVIDO", cor:"#2BD9A6", rows:qProt },
+      { titulo:"ZONA DE GANHO · ALTA × "+mult.toFixed(2).replace(".",",")+" SEM TETO", cor:ORANGE, rows:qGanho }
+    ];
+    d.cta = "Se o "+ativo+" cair, você recebe <b>100% do capital</b> de volta. Se subir, ganha a alta multiplicada por <b>"+mult.toFixed(2).replace(".",",")+"x</b>, sem teto.";
+  }
+  else if(kind==="quantoTaxa"){
+    // Quanto payoff 2: taxa fixa OU alta 1:1
+    anos=rvCardAnos(op.fixing); prazoTxt=op.fixing||(anos+" anos"); venc=rvCardVencimento(anos);
+    var taxa=op.taxa||0;
+    d.mercado="Internacional · Quanto";
+    d.tipoLabel="QUANTO · RETORNO MÍNIMO · SEM RISCO CAMBIAL";
+    d.destaqueNum = rvCardFmtPct(taxa)+"%";
+    d.destaqueLeg = "RETORNO MÍNIMO NO PERÍODO";
+    d.grafTitulo="O piso é seu — o "+ativo+" se move por cima";
+    d.titulo = "Um retorno mínimo de <b>"+rvCardFmtPct(taxa)+"%</b> travado no vencimento — e ainda surfe a alta do "+ativo;
+    d.metric=[
+      { lbl:"RETORNO MÍNIMO", val:"+"+rvCardFmtPct(taxa)+"%", col:ORANGE, sub:"travado no vencimento" },
+      { lbl:"CAPITAL", val:"Protegido", col:"#2BD9A6", sub:"piso garantido no período" },
+      { lbl:"PRAZO", val:prazoTxt, col:"#fff", sub:"vencimento em "+venc },
+      { lbl:"CÂMBIO", val:"Sem risco", col:"#2BD9A6", sub:"resultado em moeda local" }
+    ];
+    d.chartFloor={ pct:taxa, label:"PISO +"+rvCardFmtPct(taxa)+"%" };
+    d.chartLabel = ativo+" (ilustrativo)";
+    var trows=keyScenarios(op).map(function(p){ return { ativoVar:p[0], recebe:p[1] }; });
+    var tProt=trows.filter(function(r){return r.recebe<=taxa+0.001;});
+    var tGanho=trows.filter(function(r){return r.recebe>taxa+0.001;});
+    d.secoes=[
+      { titulo:"ZONA DE PISO · RETORNO MÍNIMO TRAVADO", cor:"#2BD9A6", rows:tProt },
+      { titulo:"ZONA DE GANHO · ACOMPANHA 1:1 A ALTA", cor:ORANGE, rows:tGanho }
+    ];
+    d.cta = "Você ganha no mínimo <b>"+rvCardFmtPct(taxa)+"%</b> em qualquer cenário e, se o "+ativo+" subir além disso, seu retorno acompanha o índice <b>1 para 1</b>, sem teto.";
+  }
+  else if(kind==="cupom"){
+    // Rubi cupom pré-fixado com barreira de desarme
+    anos=2; prazoTxt="~2 anos"; venc=rvCardVencimento(anos);
+    var ct=op.taxa, cb=op.barreira;
+    d.tipoLabel="RUBI · CUPOM PRÉ-FIXADO";
+    d.destaqueNum = rvCardFmtPct(ct)+"%";
+    d.destaqueLeg = op.cdi!=null? ("≈ "+rvCardFmtPct(op.cdi)+"% DO CDI") : "CUPOM PRÉ-FIXADO";
+    d.grafTitulo="Cupom travado — enquanto o "+ativo+" não desarmar";
+    d.titulo = "Um cupom pré-fixado de <b>"+rvCardFmtPct(ct)+"%</b> — pago no vencimento se o "+ativo+" não cair além de <b>"+rvCardFmtPct(cb)+"%</b>";
+    d.metric=[
+      { lbl:"CUPOM", val:"+"+rvCardFmtPct(ct)+"%", col:ORANGE, sub:"pré-fixado no vencimento" },
+      { lbl:"BARREIRA", val:rvCardFmtPct(cb)+"%", col:"#2BD9A6", sub:"desarme se o ativo cair mais" },
+      { lbl:"PRAZO", val:prazoTxt, col:"#fff", sub:"vencimento em "+venc },
+      { lbl: op.cdi!=null?"EQUIVALE A":"CUSTO PARA VOCÊ", val: op.cdi!=null?(rvCardFmtPct(op.cdi)+"% CDI"):"Zero taxas", col: op.cdi!=null?"#36C5F0":"#2BD9A6", sub: op.cdi!=null?"em renda pré-fixada":"sem taxa de entrada" }
+    ];
+    d.chartFloor={ pct:ct, label:"CUPOM +"+rvCardFmtPct(ct)+"%" };
+    d.chartLabel = ativo+" (ilustrativo)";
+    d.tabTitulo="O que você recebe em cada cenário";
+    var crows=keyScenarios(op).map(function(p){ return { ativoVar:p[0], recebe:p[1] }; });
+    var cCupom=crows.filter(function(r){return Math.abs(r.recebe-ct)<0.01;});
+    var cDesarme=crows.filter(function(r){return Math.abs(r.recebe-ct)>=0.01;});
+    d.secoes=[
+      { titulo:"CUPOM PAGO · ENQUANTO NÃO DESARMA", cor:"#2BD9A6", rows:cCupom },
+      { titulo:"DESARME · ABAIXO DA BARREIRA "+rvCardFmtPct(cb)+"%", cor:"#FF5566", rows:cDesarme }
+    ];
+    d.cta = "Se o "+ativo+" não cair além de <b>"+rvCardFmtPct(cb)+"%</b>, você recebe um cupom de <b>"+rvCardFmtPct(ct)+"%</b> no vencimento, independente da alta.";
+  }
+  else {
+    // fallback genérico
+    anos=3; prazoTxt="3 anos"; venc=rvCardVencimento(anos);
+    d.tipoLabel="OPERAÇÃO ESTRUTURADA";
+    d.titulo = "Uma operação estruturada de "+ativo+" desenhada para o seu momento";
+    d.destaqueNum = ativo;
+    d.destaqueLeg = "OPERAÇÃO ESTRUTURADA";
+    d.metric=[
+      { lbl:"PRAZO", val:prazoTxt, col:"#fff", sub:"vencimento em "+venc },
+      { lbl:"CUSTO PARA VOCÊ", val:"Zero taxas", col:"#2BD9A6", sub:"sem taxa de entrada" }
+    ];
+    var grows=(op && op.cen? keyScenarios(op): []).map(function(p){ return { ativoVar:p[0], recebe:p[1] }; });
+    d.secoes=[{ titulo:"CENÁRIOS DA OPERAÇÃO", cor:ORANGE, rows:grows }];
+    d.cta = "Fale com seu assessor para entender como esta operação se encaixa na sua carteira.";
+  }
+  d.prazoAnos=anos; d.venc=venc;
+  return d;
+}
+
+/* SVG ilustrativo da linha do ativo subindo com volatilidade + piso tracejado. */
+function rvCardChartSVG(floorPct){
+  var W=520,H=210,pad=14;
+  // série ilustrativa subindo com ruído
+  var pts=[8,3,12,6,18,11,22,16,30,24,38,33,46];
+  var min=Math.min.apply(null,pts), max=Math.max.apply(null,pts);
+  var n=pts.length;
+  function px(i){ return pad + (i/(n-1))*(W-2*pad); }
+  function py(v){ return (H-26) - ((v-min)/((max-min)||1))*(H-2*pad-26); }
+  var path="";
+  pts.forEach(function(v,i){ path+=(i?"L":"M")+px(i).toFixed(1)+" "+py(v).toFixed(1)+" "; });
+  // área
+  var area=path+"L"+px(n-1).toFixed(1)+" "+(H-26)+" L"+px(0).toFixed(1)+" "+(H-26)+" Z";
+  // piso: posiciona ~38% da altura
+  var floorY=H-26-((H-2*pad-26)*0.34);
+  var svg='<svg viewBox="0 0 '+W+' '+H+'" width="100%" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">';
+  svg+='<defs><linearGradient id="rvcg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FF6B2C" stop-opacity="0.30"/><stop offset="1" stop-color="#FF6B2C" stop-opacity="0"/></linearGradient></defs>';
+  svg+='<path d="'+area+'" fill="url(#rvcg)"/>';
+  svg+='<path d="'+path+'" fill="none" stroke="#FF8B52" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>';
+  svg+='<line x1="'+pad+'" y1="'+floorY.toFixed(1)+'" x2="'+(W-pad)+'" y2="'+floorY.toFixed(1)+'" stroke="#2BD9A6" stroke-width="2" stroke-dasharray="7 6"/>';
+  svg+='<text x="'+(W-pad)+'" y="'+(floorY-7).toFixed(1)+'" text-anchor="end" fill="#2BD9A6" font-size="13" font-weight="700" font-family="Arial">'+esc(floorPct)+'</text>';
+  svg+='</svg>';
+  return svg;
+}
+
+/* Disclaimer reaproveitado do app. */
+var RV_CARD_DISCLAIMER = "Material de apoio comercial. Valores ilustrativos. Não constitui recomendação ou oferta. Sujeito à suitability e às condições de cada produto. Renda variável envolve risco de perda.";
+
+/* Monta o DIV HTML do card (1200x675). */
+function buildCardHTML(d){
+  var headLine = "OPERAÇÃO ESTRUTURADA · "+esc((d.ativo||"").toUpperCase())+" · "+esc(d.tipoLabel)+" · "+esc((d.mercado||"").toUpperCase());
+  var metricH="";
+  d.metric.forEach(function(m){
+    metricH+='<div class="rvc-metric"><div class="rvc-metric-lbl">'+esc(m.lbl)+'</div>'+
+      '<div class="rvc-metric-val" style="color:'+m.col+'">'+esc(m.val)+'</div>'+
+      '<div class="rvc-metric-sub">'+esc(m.sub)+'</div></div>';
+  });
+  // tabela
+  var tabH='<div class="rvc-tab">';
+  tabH+='<div class="rvc-tab-head"><span>'+esc(d.tabCols[0])+'</span><span>'+esc(d.tabCols[1])+'</span><span>VOCÊ RECEBE</span></div>';
+  d.secoes.forEach(function(sec){
+    if(!sec.rows || !sec.rows.length) return;
+    tabH+='<div class="rvc-tab-sec" style="color:'+sec.cor+'"><span class="rvc-secdot" style="background:'+sec.cor+'"></span>'+esc(sec.titulo)+'</div>';
+    sec.rows.forEach(function(r){
+      var recCol = r.recebe>0?"#2BD9A6":(r.recebe<0?"#FF5566":"#F5B63E");
+      tabH+='<div class="rvc-tab-row">'+
+        '<span class="rvc-cell rvc-cell-cen"><span class="rvc-rdot" style="background:'+sec.cor+'"></span>'+esc(rvCardCenLabel(r.ativoVar))+'</span>'+
+        '<span class="rvc-cell rvc-cell-mid">'+esc(rvCardSigned(r.ativoVar))+'</span>'+
+        '<span class="rvc-cell rvc-cell-rec" style="color:'+recCol+'">'+esc(rvCardSigned(r.recebe))+'</span>'+
+        '</div>';
+    });
+  });
+  tabH+='</div>';
+
+  var html=''+
+  '<div class="rvc-root">'+
+    '<div class="rvc-glow"></div>'+
+    '<div class="rvc-bar"></div>'+
+    '<div class="rvc-head">'+
+      '<div class="rvc-head-l">'+
+        '<div class="rvc-logo">rico<span>.</span></div>'+
+        '<div class="rvc-headline">'+headLine+'</div>'+
+      '</div>'+
+      '<div class="rvc-pill">OPORTUNIDADE</div>'+
+    '</div>'+
+    '<div class="rvc-titlerow">'+
+      '<div class="rvc-title">'+d.titulo+'</div>'+
+      '<div class="rvc-destaque">'+
+        '<div class="rvc-destaque-num">'+esc(d.destaqueNum)+'</div>'+
+        '<div class="rvc-destaque-leg">'+esc(d.destaqueLeg)+'</div>'+
+      '</div>'+
+    '</div>'+
+    '<div class="rvc-metrics">'+metricH+'</div>'+
+    '<div class="rvc-main">'+
+      '<div class="rvc-graf">'+
+        '<div class="rvc-cardtitle">'+esc(d.grafTitulo)+'</div>'+
+        '<div class="rvc-chart">'+rvCardChartSVG(d.chartFloor? d.chartFloor.label : "PISO")+'</div>'+
+        '<div class="rvc-leg">'+
+          '<span><span class="rvc-legdot" style="background:#2BD9A6"></span>'+(d.chartFloor? esc("Seu piso ("+d.chartFloor.label+")") : "Seu piso")+'</span>'+
+          '<span><span class="rvc-legdot" style="background:#FF8B52"></span>'+esc(d.chartLabel)+'</span>'+
+        '</div>'+
+      '</div>'+
+      '<div class="rvc-cen">'+
+        '<div class="rvc-cardtitle">'+esc(d.tabTitulo)+'</div>'+
+        tabH+
+      '</div>'+
+    '</div>'+
+    '<div class="rvc-cta">'+
+      '<div class="rvc-cta-txt">'+d.cta+'</div>'+
+      '<div class="rvc-cta-btn">Fale com o assessor</div>'+
+    '</div>'+
+    '<div class="rvc-disc">'+esc(RV_CARD_DISCLAIMER)+'</div>'+
+  '</div>';
+  return html;
+}
+function rvCardCenLabel(v){
+  if(Math.abs(v)<1e-9) return "Lateral";
+  if(v<=-30) return "Queda severa";
+  if(v<=-12) return "Queda moderada";
+  if(v<0) return "Queda leve";
+  if(v<=20) return "Alta moderada";
+  if(v<=40) return "Alta forte";
+  return "Alta expressiva";
+}
+
+/* CSS do card + modal (injeta uma vez). */
+function injectCardCSS(){
+  if(document.getElementById("rvCardCSS")) return;
+  var st=document.createElement("style"); st.id="rvCardCSS";
+  st.textContent = ''+
+  '#rvCardStage{position:fixed;left:-99999px;top:0;z-index:-1;}'+
+  '.rvc-root{width:1200px;height:675px;box-sizing:border-box;position:relative;overflow:hidden;'+
+    'font-family:Arial,Helvetica,sans-serif;color:#fff;padding:34px 40px 22px;'+
+    'background:linear-gradient(155deg,#0A0F38 0%,#070B2E 58%,#05081F 100%);}'+
+  '.rvc-glow{position:absolute;top:-160px;right:-120px;width:560px;height:560px;border-radius:50%;'+
+    'background:radial-gradient(circle,rgba(255,78,0,.22),rgba(255,78,0,0) 65%);pointer-events:none;}'+
+  '.rvc-bar{position:absolute;left:0;top:0;width:100%;height:7px;background:linear-gradient(90deg,#FF4E00,#FF6B2C);}'+
+  '.rvc-head{display:flex;justify-content:space-between;align-items:center;position:relative;}'+
+  '.rvc-head-l{display:flex;align-items:center;gap:18px;}'+
+  '.rvc-logo{font-size:34px;font-weight:800;letter-spacing:-1.5px;line-height:1;}'+
+  '.rvc-logo span{color:#FF4E00;}'+
+  '.rvc-headline{font-size:12px;letter-spacing:1.4px;color:#9AA2D0;font-weight:700;text-transform:uppercase;max-width:640px;line-height:1.3;}'+
+  '.rvc-pill{background:linear-gradient(90deg,#FF4E00,#FF6B2C);color:#fff;font-weight:800;font-size:13px;letter-spacing:1.5px;'+
+    'padding:9px 20px;border-radius:999px;box-shadow:0 6px 18px rgba(255,78,0,.35);}'+
+  '.rvc-titlerow{display:flex;justify-content:space-between;align-items:flex-start;gap:26px;margin-top:20px;}'+
+  '.rvc-title{font-size:33px;line-height:1.18;font-weight:800;max-width:740px;letter-spacing:-.5px;}'+
+  '.rvc-title b{color:#FF7A33;}'+
+  '.rvc-destaque{text-align:right;flex-shrink:0;min-width:200px;}'+
+  '.rvc-destaque-num{font-size:58px;font-weight:800;color:#FF7A33;line-height:.95;letter-spacing:-2px;}'+
+  '.rvc-destaque-leg{font-size:11px;font-weight:700;letter-spacing:1px;color:#A9B0D6;margin-top:8px;}'+
+  '.rvc-metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:22px;}'+
+  '.rvc-metric{background:rgba(28,36,112,.5);border:1px solid rgba(120,130,210,.22);border-radius:14px;padding:13px 15px;}'+
+  '.rvc-metric-lbl{font-size:10.5px;font-weight:700;letter-spacing:.8px;color:#8A93D8;text-transform:uppercase;}'+
+  '.rvc-metric-val{font-size:21px;font-weight:800;margin-top:5px;line-height:1;}'+
+  '.rvc-metric-sub{font-size:11px;color:#A9B0D6;margin-top:6px;line-height:1.25;}'+
+  '.rvc-main{display:grid;grid-template-columns:1fr 1.12fr;gap:16px;margin-top:18px;}'+
+  '.rvc-graf,.rvc-cen{background:rgba(12,17,66,.55);border:1px solid rgba(120,130,210,.2);border-radius:16px;padding:14px 16px;}'+
+  '.rvc-cardtitle{font-size:14px;font-weight:800;color:#fff;margin-bottom:10px;}'+
+  '.rvc-chart{height:150px;}'+
+  '.rvc-leg{display:flex;gap:18px;margin-top:8px;font-size:11px;color:#A9B0D6;font-weight:600;}'+
+  '.rvc-legdot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;vertical-align:0px;}'+
+  '.rvc-tab{font-size:12px;}'+
+  '.rvc-tab-head{display:grid;grid-template-columns:1.25fr .7fr .9fr;gap:6px;font-size:9.5px;font-weight:700;letter-spacing:.6px;color:#6F77A8;padding:0 2px 7px;border-bottom:1px solid rgba(120,130,210,.18);}'+
+  '.rvc-tab-head span:nth-child(2){text-align:center;}.rvc-tab-head span:nth-child(3){text-align:right;}'+
+  '.rvc-tab-sec{font-size:9.5px;font-weight:800;letter-spacing:.5px;margin:8px 0 3px;display:flex;align-items:center;}'+
+  '.rvc-secdot{width:8px;height:8px;border-radius:50%;margin-right:7px;}'+
+  '.rvc-tab-row{display:grid;grid-template-columns:1.25fr .7fr .9fr;gap:6px;padding:4px 2px;align-items:center;border-bottom:1px solid rgba(120,130,210,.08);}'+
+  '.rvc-cell{font-weight:700;color:#cfd4ef;}'+
+  '.rvc-cell-cen{display:flex;align-items:center;font-size:12px;}'+
+  '.rvc-rdot{width:7px;height:7px;border-radius:50%;margin-right:7px;flex-shrink:0;}'+
+  '.rvc-cell-mid{text-align:center;color:#A9B0D6;font-size:12px;}'+
+  '.rvc-cell-rec{text-align:right;font-size:13px;font-weight:800;}'+
+  '.rvc-cta{display:flex;justify-content:space-between;align-items:center;gap:20px;margin-top:16px;'+
+    'background:linear-gradient(90deg,rgba(255,78,0,.16),rgba(255,107,44,.08));border:1px solid rgba(255,78,0,.4);border-radius:14px;padding:14px 20px;}'+
+  '.rvc-cta-txt{font-size:14.5px;font-weight:600;color:#E7EAFb;line-height:1.4;max-width:840px;}'+
+  '.rvc-cta-txt b{color:#FF7A33;font-weight:800;}'+
+  '.rvc-cta-btn{background:linear-gradient(90deg,#FF4E00,#FF6B2C);color:#fff;font-weight:800;font-size:14px;'+
+    'padding:13px 26px;border-radius:11px;white-space:nowrap;box-shadow:0 6px 16px rgba(255,78,0,.4);}'+
+  '.rvc-disc{font-size:9.5px;color:#5F67A0;margin-top:10px;line-height:1.4;}'+
+  /* modal */
+  '#rvCardModal{position:fixed;inset:0;z-index:99999;background:rgba(5,8,24,.78);display:flex;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px);}'+
+  '#rvCardModal .rvm-box{width:100%;max-width:560px;max-height:86vh;overflow:auto;background:linear-gradient(160deg,#0E1450,#0A0F38);border:1px solid rgba(120,130,210,.3);border-radius:18px;padding:24px;font-family:Manrope,Arial,sans-serif;color:#fff;box-shadow:0 24px 60px rgba(0,0,0,.6);}'+
+  '#rvCardModal .rvm-title{font-size:19px;font-weight:800;}'+
+  '#rvCardModal .rvm-sub{font-size:13px;color:#A9B0D6;margin-top:5px;margin-bottom:16px;}'+
+  '#rvCardModal .rvm-count{font-size:12px;font-weight:700;color:#FF8B52;margin-bottom:10px;}'+
+  '#rvCardModal .rvm-list{display:flex;flex-direction:column;gap:8px;margin-bottom:18px;}'+
+  '#rvCardModal .rvm-item{display:flex;align-items:center;gap:12px;background:rgba(0,0,0,.22);border:1px solid rgba(120,130,210,.18);border-radius:11px;padding:11px 14px;cursor:pointer;transition:.12s;}'+
+  '#rvCardModal .rvm-item:hover{border-color:rgba(255,78,0,.45);}'+
+  '#rvCardModal .rvm-item.sel{border-color:#FF4E00;background:rgba(255,78,0,.1);}'+
+  '#rvCardModal .rvm-item.disabled{opacity:.4;cursor:not-allowed;}'+
+  '#rvCardModal .rvm-chk{width:20px;height:20px;border-radius:6px;border:2px solid rgba(120,130,210,.5);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;color:#fff;}'+
+  '#rvCardModal .rvm-item.sel .rvm-chk{background:#FF4E00;border-color:#FF4E00;}'+
+  '#rvCardModal .rvm-info{flex:1;min-width:0;}'+
+  '#rvCardModal .rvm-nome{font-size:14px;font-weight:700;}'+
+  '#rvCardModal .rvm-meta{font-size:11.5px;color:#8A93D8;margin-top:2px;}'+
+  '#rvCardModal .rvm-grp{font-size:10.5px;font-weight:800;letter-spacing:.8px;color:#6F77A8;text-transform:uppercase;margin:14px 0 4px;}'+
+  '#rvCardModal .rvm-actions{display:flex;gap:10px;justify-content:flex-end;align-items:center;}'+
+  '#rvCardModal .rvm-warn{font-size:12px;color:#FFB020;font-weight:600;margin-right:auto;opacity:0;transition:.2s;}'+
+  '#rvCardModal .rvm-warn.show{opacity:1;}'+
+  '#rvCardModal .rvm-btn{font-family:inherit;border:none;border-radius:10px;padding:11px 20px;font-size:14px;font-weight:700;cursor:pointer;}'+
+  '#rvCardModal .rvm-ghost{background:transparent;border:1px solid rgba(120,130,210,.35);color:#cfd4ef;}'+
+  '#rvCardModal .rvm-solid{background:#FF4E00;color:#fff;}'+
+  '#rvCardModal .rvm-solid:disabled{opacity:.45;cursor:not-allowed;}';
+  document.head.appendChild(st);
+}
+
+/* Garante o html2canvas carregado (lazy, defensivo). */
+function ensureHtml2Canvas(cb){
+  if(window.html2canvas){ cb(window.html2canvas); return; }
+  if(window.__h2cLoading){ window.__h2cLoading.push(cb); return; }
+  window.__h2cLoading=[cb];
+  var s=document.createElement("script");
+  s.src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js";
+  s.onload=function(){ var q=window.__h2cLoading||[]; window.__h2cLoading=null; q.forEach(function(f){ try{ f(window.html2canvas); }catch(_){} }); };
+  s.onerror=function(){ var q=window.__h2cLoading||[]; window.__h2cLoading=null; q.forEach(function(f){ try{ f(null); }catch(_){} }); };
+  document.head.appendChild(s);
+}
+
+/* Fallback: abre janela com o card e dispara impressão. */
+function cardPrintFallback(htmlList){
+  try{
+    var w=window.open("","_blank");
+    if(!w){ alert("Habilite pop-ups para gerar o card por impressão."); return; }
+    var css=document.getElementById("rvCardCSS"); var cssTxt=css?css.textContent:"";
+    var body=htmlList.map(function(h){ return '<div style="margin:0 auto 24px;">'+h+'</div>'; }).join("");
+    w.document.write('<!doctype html><html><head><meta charset="utf-8"><title>Card do cliente</title><style>body{margin:0;background:#05081F;}'+cssTxt+'</style></head><body>'+body+'<scr'+'ipt>setTimeout(function(){window.print();},400);</scr'+'ipt></body></html>');
+    w.document.close();
+  }catch(e){ alert("Não foi possível gerar o card: "+(e&&e.message?e.message:e)); }
+}
+
+/* Gera e oferece download em PNG para cada operação selecionada. */
+function gerarCardsSelecionados(entries){
+  injectCardCSS();
+  var stage=document.getElementById("rvCardStage");
+  if(!stage){ stage=document.createElement("div"); stage.id="rvCardStage"; document.body.appendChild(stage); }
+  var htmlList=[], dataList=[];
+  entries.forEach(function(e){
+    try{ var d=rvCardData(e); dataList.push({e:e,d:d}); htmlList.push(buildCardHTML(d)); }catch(err){ console.error("card data",err); }
+  });
+  if(!htmlList.length){ alert("Nenhuma operação válida selecionada."); return; }
+
+  ensureHtml2Canvas(function(h2c){
+    if(!h2c){ cardPrintFallback(htmlList); return; }
+    // renderiza um a um para extrair PNG
+    var idx=0;
+    function next(){
+      if(idx>=dataList.length){ stage.innerHTML=""; return; }
+      var item=dataList[idx];
+      stage.innerHTML=buildCardHTML(item.d);
+      var node=stage.querySelector(".rvc-root");
+      setTimeout(function(){
+        h2c(node,{backgroundColor:null,scale:2,width:1200,height:675,useCORS:true,logging:false}).then(function(canvas){
+          var url=canvas.toDataURL("image/png");
+          var fname="Card_"+rvCardSlug(item.e.ativo)+"_"+rvCardSlug(item.d.prazoAnos+"anos")+".png";
+          try{ window.mostrarPngModal(url,fname,{accent:"#FF4E00",hint:"Card do cliente — baixe ou copie para enviar pelo WhatsApp. ("+(idx+1)+" de "+dataList.length+")"}); }
+          catch(_){ var a=document.createElement("a"); a.href=url; a.download=fname; a.click(); }
+          idx++; setTimeout(next, 350);
+        }).catch(function(err){ console.error("h2c render",err); cardPrintFallback([buildCardHTML(item.d)]); idx++; setTimeout(next,200); });
+      }, 60);
+    }
+    next();
+  });
+}
+
+/* Modal de seleção (1 a 3 operações). */
+function abrirCardModal(){
+  injectCardCSS();
+  var antigo=document.getElementById("rvCardModal"); if(antigo) antigo.remove();
+  var cat=rvCardCatalog();
+  var sel={}; // key -> entry
+  var groups=[
+    { id:"protecao", titulo:"Proteção (Fence / Collar) · B3", items:cat.filter(function(c){return c.kind==="protecao";}) },
+    { id:"cupom", titulo:"Rubi · Cupom pré-fixado", items:cat.filter(function(c){return c.kind==="cupom";}) },
+    { id:"quanto", titulo:"Quanto Internacional", items:cat.filter(function(c){return c.kind==="quanto"||c.kind==="quantoTaxa";}) }
+  ];
+  var ov=document.createElement("div"); ov.id="rvCardModal";
+  var listH="";
+  groups.forEach(function(g){
+    if(!g.items.length) return;
+    listH+='<div class="rvm-grp">'+esc(g.titulo)+'</div><div class="rvm-list">';
+    g.items.forEach(function(c){
+      var meta=esc(c.ativo)+" · "+esc(c.mercado);
+      listH+='<div class="rvm-item" data-key="'+esc(c.key)+'"><div class="rvm-chk"></div>'+
+        '<div class="rvm-info"><div class="rvm-nome">'+esc(c.label)+'</div><div class="rvm-meta">'+meta+'</div></div></div>';
+    });
+    listH+='</div>';
+  });
+  ov.innerHTML=''+
+    '<div class="rvm-box">'+
+      '<div class="rvm-title">Card do cliente</div>'+
+      '<div class="rvm-sub">Selecione de 1 a 3 operações. Cada uma vira uma arte (PNG) pronta para enviar ao cliente.</div>'+
+      '<div class="rvm-count" id="rvmCount">0 de 3 selecionadas</div>'+
+      listH+
+      '<div class="rvm-actions">'+
+        '<span class="rvm-warn" id="rvmWarn">Máximo 3 operações.</span>'+
+        '<button class="rvm-btn rvm-ghost" data-act="cancel">Cancelar</button>'+
+        '<button class="rvm-btn rvm-solid" data-act="gen" disabled>Gerar</button>'+
+      '</div>'+
+    '</div>';
+  document.body.appendChild(ov);
+
+  var catByKey={}; cat.forEach(function(c){ catByKey[c.key]=c; });
+  var genBtn=ov.querySelector('[data-act="gen"]');
+  var countEl=ov.querySelector("#rvmCount");
+  var warnEl=ov.querySelector("#rvmWarn");
+  function refresh(){
+    var keys=Object.keys(sel); var n=keys.length;
+    countEl.textContent=n+" de 3 selecionadas";
+    genBtn.disabled = n===0;
+    ov.querySelectorAll(".rvm-item").forEach(function(it){
+      var k=it.getAttribute("data-key"); var on=!!sel[k];
+      it.classList.toggle("sel",on);
+      it.querySelector(".rvm-chk").textContent= on?"✓":"";
+      it.classList.toggle("disabled", !on && n>=3);
+    });
+  }
+  ov.querySelectorAll(".rvm-item").forEach(function(it){
+    it.onclick=function(){
+      var k=it.getAttribute("data-key");
+      if(sel[k]){ delete sel[k]; warnEl.classList.remove("show"); }
+      else {
+        if(Object.keys(sel).length>=3){ warnEl.classList.add("show"); setTimeout(function(){warnEl.classList.remove("show");},2200); return; }
+        sel[k]=catByKey[k];
+      }
+      refresh();
+    };
+  });
+  function fechar(){ if(ov&&ov.parentNode) ov.parentNode.removeChild(ov); }
+  ov.addEventListener("click",function(e){ if(e.target===ov) fechar(); });
+  ov.querySelector('[data-act="cancel"]').onclick=fechar;
+  genBtn.onclick=function(){
+    var entries=Object.keys(sel).map(function(k){return sel[k];});
+    if(!entries.length) return;
+    fechar();
+    try{ gerarCardsSelecionados(entries); }catch(e){ console.error(e); alert("Não foi possível gerar os cards: "+(e&&e.message?e.message:e)); }
+  };
+  refresh();
 }
 
 function gerarPNG(){
