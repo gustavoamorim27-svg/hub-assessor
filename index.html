@@ -8050,11 +8050,13 @@ window.__rvRender = render;
 </script>
 <script id="g-ticker-js">
 (function(){
-  // Ticker de cotacoes. Fonte PRIMARIA: Yahoo Finance via proxies CORS
-  // (mesmos endpoints/proxies da versao original que funcionava na rede do usuario).
-  // FALLBACK: AwesomeAPI (CORS-friendly) apenas para os pares que ela suporta
-  // (USD-BRL p/ Dolar, XAU-USD p/ Ouro, BTC-BRL p/ Bitcoin), usada so se o Yahoo falhar.
-  // Cada instrumento atualiza de forma independente: se uma fonte/proxy cair, os demais seguem.
+  // Ticker de cotacoes. Camada de DADOS prioriza APIs DIRETAS, CORS-nativas, SEM proxy:
+  //   - Dolar (USD/BRL): AwesomeAPI direto -> Frankfurter direto -> Yahoo via proxy.
+  //   - Bitcoin (BRL):   CoinGecko direto  -> AwesomeAPI direto  -> Yahoo via proxy.
+  //   - Ouro (XAU/USD):  AwesomeAPI direto -> Yahoo via proxy.
+  //   - S&P500 / Ibov / Brent: sem API CORS-nativa confiavel -> Yahoo via proxy (best-effort).
+  // Para cada instrumento paramos no primeiro que retornar valor valido.
+  // Tudo defensivo (try/catch): se uma fonte/proxy cair, os demais seguem.
   var TK = [
     {k:'dolar', sym:'BRL=X', dec:2, prefix:'R$ ',   awPair:'USD-BRL'},
     {k:'sp500', sym:'^GSPC', dec:0, prefix:''},
@@ -8066,9 +8068,61 @@ window.__rvRender = render;
 
   function fmt(v, dec){ return v.toLocaleString('pt-BR',{minimumFractionDigits:dec, maximumFractionDigits:dec}); }
 
-  // ---- Yahoo Finance via proxies CORS (caminho PRIMARIO) ----
-  // Mesmos proxies da versao original: corsproxy.io e api.allorigins.win.
-  // Tentamos varios em sequencia para robustez; o primeiro que responder valido vence.
+  // ---- AwesomeAPI DIRETO (sem proxy): uma chamada cobrindo os 3 pares ----
+  // Reaproveitada por Dolar, Ouro e Bitcoin no mesmo ciclo (1 requisicao).
+  var AWESOME_PAIRS = ['USD-BRL','XAU-USD','BTC-BRL'];
+  async function fetchAwesome(){
+    var url='https://economia.awesomeapi.com.br/json/last/'+AWESOME_PAIRS.join(',');
+    var out={};
+    try{
+      var r=await fetch(url,{cache:'no-store'});
+      if(!r.ok) return out;
+      var j=await r.json();
+      for(var key in j){
+        if(!Object.prototype.hasOwnProperty.call(j,key)) continue;
+        var d=j[key];
+        var price=parseFloat(d.bid);
+        var pct=parseFloat(d.pctChange);
+        if(!isNaN(price)){
+          var code=(d.code||'')+'-'+(d.codein||'');
+          out[code]={price:price, pct:isNaN(pct)?null:pct};
+        }
+      }
+    }catch(e){}
+    return out;
+  }
+
+  // ---- CoinGecko DIRETO (sem proxy): Bitcoin em BRL com variacao 24h ----
+  async function fetchCoinGeckoBTC(){
+    var url='https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=brl&include_24hr_change=true';
+    try{
+      var r=await fetch(url,{cache:'no-store'});
+      if(!r.ok) return null;
+      var j=await r.json();
+      var b=j && j.bitcoin;
+      if(b && b.brl!=null){
+        var pct=(b.brl_24h_change!=null)? b.brl_24h_change : null;
+        return {price:b.brl, pct:pct};
+      }
+    }catch(e){}
+    return null;
+  }
+
+  // ---- Frankfurter DIRETO (sem proxy): fallback do Dolar (sem variacao) ----
+  async function fetchFrankfurterUSDBRL(){
+    var url='https://api.frankfurter.app/latest?from=USD&to=BRL';
+    try{
+      var r=await fetch(url,{cache:'no-store'});
+      if(!r.ok) return null;
+      var j=await r.json();
+      if(j && j.rates && j.rates.BRL!=null){
+        return {price:j.rates.BRL, pct:null};
+      }
+    }catch(e){}
+    return null;
+  }
+
+  // ---- Yahoo Finance via proxies CORS (ULTIMO RECURSO) ----
   function proxies(u){
     return [
       'https://corsproxy.io/?url='+encodeURIComponent(u),
@@ -8093,30 +8147,6 @@ window.__rvRender = render;
       }catch(e){}
     }
     return null;
-  }
-
-  // ---- AwesomeAPI (FALLBACK): uma chamada para todos os pares suportados ----
-  var AWESOME_PAIRS = ['USD-BRL','XAU-USD','BTC-BRL'];
-  async function fetchAwesome(){
-    var url='https://economia.awesomeapi.com.br/json/last/'+AWESOME_PAIRS.join(',');
-    var out={};
-    try{
-      var r=await fetch(url,{cache:'no-store'});
-      if(!r.ok) return out;
-      var j=await r.json();
-      for(var key in j){
-        if(!Object.prototype.hasOwnProperty.call(j,key)) continue;
-        var d=j[key];
-        var price=parseFloat(d.bid);
-        var pct=parseFloat(d.pctChange);
-        // chave do retorno (ex: USDBRL) -> normaliza p/ casar com awPair (ex: USD-BRL)
-        if(!isNaN(price)){
-          var code=(d.code||'')+'-'+(d.codein||'');
-          out[code]={price:price, pct:isNaN(pct)?null:pct};
-        }
-      }
-    }catch(e){}
-    return out;
   }
 
   function render(it, q){
@@ -8152,25 +8182,35 @@ window.__rvRender = render;
   }
 
   async function load(){
-    // Contador de sucessos do ciclo (qualquer fonte conta).
+    // Contador de sucessos do ciclo (qualquer fonte/instrumento conta).
     var anyOk=false;
-    // Pre-busca AwesomeAPI uma unica vez (so sera usada como fallback de quem suportar).
+    // Pre-busca AwesomeAPI uma unica vez (cobre USD-BRL, XAU-USD, BTC-BRL).
     var awPromise=fetchAwesome();
 
-    // Cada instrumento e tratado de forma independente.
     var jobs=TK.map(function(it){
       return (async function(){
         var q=null;
-        // 1) Yahoo (PRIMARIO)
-        try{ q=await fetchYahoo(it.sym); }catch(e){ q=null; }
-        // 2) Fallback AwesomeAPI (so para os que ela suporta)
-        if((!q || q.price==null) && it.awPair){
-          try{
-            var aw=await awPromise;
-            var a=aw && aw[it.awPair];
-            if(a && a.price!=null) q=a;
-          }catch(e){}
-        }
+        try{
+          if(it.k==='dolar'){
+            // 1) AwesomeAPI direto -> 2) Frankfurter direto -> 3) Yahoo proxy
+            try{ var aw=await awPromise; var a=aw && aw[it.awPair]; if(a && a.price!=null) q=a; }catch(e){}
+            if(!q || q.price==null){ try{ q=await fetchFrankfurterUSDBRL(); }catch(e){ q=null; } }
+            if(!q || q.price==null){ try{ q=await fetchYahoo(it.sym); }catch(e){ q=null; } }
+          } else if(it.k==='btc'){
+            // 1) CoinGecko direto -> 2) AwesomeAPI direto -> 3) Yahoo proxy
+            try{ q=await fetchCoinGeckoBTC(); }catch(e){ q=null; }
+            if(!q || q.price==null){ try{ var aw2=await awPromise; var b=aw2 && aw2[it.awPair]; if(b && b.price!=null) q=b; }catch(e){} }
+            if(!q || q.price==null){ try{ q=await fetchYahoo(it.sym); }catch(e){ q=null; } }
+          } else if(it.k==='ouro'){
+            // 1) AwesomeAPI direto -> 2) Yahoo proxy
+            try{ var aw3=await awPromise; var o=aw3 && aw3[it.awPair]; if(o && o.price!=null) q=o; }catch(e){}
+            if(!q || q.price==null){ try{ q=await fetchYahoo(it.sym); }catch(e){ q=null; } }
+          } else {
+            // sp500 / ibov / brent: sem API CORS-nativa -> Yahoo proxy (best-effort)
+            try{ q=await fetchYahoo(it.sym); }catch(e){ q=null; }
+          }
+        }catch(e){ q=null; }
+
         if(q && q.price!=null){ anyOk=true; render(it, q); }
         else { render(it, null); }
       })();
