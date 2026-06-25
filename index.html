@@ -1740,11 +1740,11 @@ body.mm .ajbtn{ padding:11px 16px !important; font-size:14px !important; }
 
     /* Exporta o catálogo RV e a tabela de payoff para reuso no Propor Carteira */
     try{
-      window.__rvCatalog = { ops:OPERACOES, cupom:CUPOM, quanto:QUANTO, opDetalhe:opDetalhe, cupomDetalhe:cupomDetalhe, opDetalheQuanto:opDetalheQuanto };
+      window.__rvSyncCatalog = function(){ var cust=[]; try{ cust=JSON.parse(localStorage.getItem("hubRvCustomOps")||"[]")||[]; }catch(_){ cust=[]; } var cProt=cust.filter(function(x){return (x.kind||"protecao")==="protecao";}); var cCup=cust.filter(function(x){return x.kind==="cupom";}); var cQnt=cust.filter(function(x){return x.kind==="quanto";}); window.__rvCatalog = { ops:OPERACOES.concat(cProt), cupom:CUPOM.concat(cCup), quanto:QUANTO.concat(cQnt), custom:cust, opDetalhe:opDetalhe, cupomDetalhe:cupomDetalhe, opDetalheQuanto:opDetalheQuanto }; }; window.__rvSyncCatalog();
       window.__payoffTable = function(op,big){ try{ return payoffTable(op,!!big); }catch(e){ return ""; } };
     }catch(e){}
 
-    var customSeq=0; var CUSTOM=[]; var REG={};
+    var customSeq=0; var REG={}; var RV_CUSTOM_KEY="hubRvCustomOps"; var CUSTOM=[]; try{ CUSTOM=JSON.parse(localStorage.getItem(RV_CUSTOM_KEY)||"[]")||[]; }catch(_){ CUSTOM=[]; } CUSTOM.forEach(function(x){ var n=parseInt(String(x.id||"").replace("cust",""),10); if(!isNaN(n)&&n>customSeq) customSeq=n; }); function persistRvOps(){ try{ localStorage.setItem(RV_CUSTOM_KEY, JSON.stringify(CUSTOM)); }catch(_){ } if(window.__rvSyncCatalog) try{ window.__rvSyncCatalog(); }catch(_){ } }
     var currentTab="todos", editingId=null;
 
     function matches(op, term){ if(!term) return true; return ((op.nome||"")+" "+(op.ativo||"")+" "+(op.setor||"")+" "+(op.tipo||"")).toLowerCase().indexOf(term)>=0; }
@@ -1804,7 +1804,7 @@ body.mm .ajbtn{ padding:11px 16px !important; font-size:14px !important; }
       body.innerHTML=html;
       body.querySelectorAll("[data-add]").forEach(function(b){ b.onclick=function(){ addToCarteira(b.getAttribute("data-add")); }; });
       body.querySelectorAll("[data-edit]").forEach(function(b){ b.onclick=function(){ openForm(b.getAttribute("data-edit")); }; });
-      body.querySelectorAll("[data-del]").forEach(function(b){ b.onclick=function(){ var id=b.getAttribute("data-del"); CUSTOM=CUSTOM.filter(function(x){return x.id!==id;}); render(); }; });
+      body.querySelectorAll("[data-del]").forEach(function(b){ b.onclick=function(){ var id=b.getAttribute("data-del"); CUSTOM=CUSTOM.filter(function(x){return x.id!==id;}); persistRvOps(); render(); }; });
     }
     function addToCarteira(key){
       var e=REG[key]; if(!e) return; var op=e.op; var add=window.__drawerAdd||window.__ctorAddAtivo; if(!add) return;
@@ -1887,6 +1887,7 @@ body.mm .ajbtn{ padding:11px 16px !important; font-size:14px !important; }
       }
       if(editingId){ data.id=editingId; CUSTOM=CUSTOM.map(function(x){ return x.id===editingId?data:x; }); }
       else { data.id="cust"+(++customSeq); CUSTOM.unshift(data); }
+      persistRvOps();
       editingId=null; document.getElementById("ocForm").innerHTML=""; currentTab="custom"; tabs(); render();
     }
     function init(){
@@ -7531,7 +7532,7 @@ function buildCarteiraPNG(p){
     ctx.fillStyle=accentBg; rr(dx,y-22,dwB,dH,16); ctx.fill();
     ctx.strokeStyle=accentBorder; ctx.lineWidth=1; rr(dx,y-22,dwB,dH,16); ctx.stroke();
     T("DESTAQUE DA OPERAÇÃO",dx+24,y,14,accent,"700","left");
-    T(op.nome,dx+24,y+32,23,"#fff","800","left");
+    T((destaque && destaque.nome) ? destaque.nome : op.nome,dx+24,y+32,23,"#fff","800","left");
     var sub = fmtPct(destaque.pct)+"% da carteira  ·  R$ "+fmtBRL(patrimonio*(Number(destaque.pct)||0)/100);
     if(op.cupom){ sub += "  ·  desarme "+fmtPct(op.barreira)+"%"; if(op.cdi!=null) sub += "  ·  ≈"+fmtPct(op.cdi)+"% CDI"; }
     T(sub,dx+24,y+56,14,"#A9B0D6","600","left");
