@@ -1346,6 +1346,12 @@ body.mm .ajbtn{ padding:11px 16px !important; font-size:14px !important; }
       [data-tool="construtor"] .lib-form-acts{ display:flex; gap:9px; margin-top:2px; }
       [data-tool="construtor"] .lib-form .lf-save{ background:#FF4E00; color:#fff; border:none; font-weight:700; border-radius:9px; padding:8px 16px; cursor:pointer; font-family:inherit; }
       [data-tool="construtor"] .lib-form .lf-cancel{ background:transparent; color:#9AA2D0; border:1px solid rgba(120,130,210,.3); border-radius:9px; padding:8px 16px; cursor:pointer; font-family:inherit; }
+      [data-tool="construtor"] .lib-search{ position:relative; margin-bottom:12px; }
+      [data-tool="construtor"] .lib-search-ic{ position:absolute; left:12px; top:50%; transform:translateY(-50%); color:#6F77A8; pointer-events:none; display:inline-flex; }
+      [data-tool="construtor"] .lib-search-inp{ width:100%; background:rgba(0,0,0,.28); border:1px solid rgba(120,130,210,.25); border-radius:10px; color:#fff; font-family:inherit; font-size:13.5px; font-weight:600; padding:10px 12px 10px 36px; outline:none; }
+      [data-tool="construtor"] .lib-search-inp:focus{ border-color:rgba(255,78,0,.5); }
+      [data-tool="construtor"] .lib-search-inp::placeholder{ color:#6F77A8; font-weight:600; }
+      [data-tool="construtor"] .lib-nomatch{ color:#9AA2D0; font-size:13px; padding:14px 4px; text-align:center; }
       html.hide-drawers #simGavRail{ display:none !important; }
       </style>
       <div id="simGavRail">
@@ -1362,6 +1368,7 @@ body.mm .ajbtn{ padding:11px 16px !important; font-size:14px !important; }
         </div>
         <div style="font-size:12px;color:#9AA2D0;line-height:1.5;margin-bottom:10px;">Arraste um ativo para a carteira, ou clique para adicionar. Operações estruturadas ficam no catálogo, mais abaixo.</div>
         <button id="libNew" style="width:100%;margin-bottom:12px;background:#FF4E00;border:none;color:#fff;font-family:inherit;font-weight:700;font-size:13px;border-radius:10px;padding:10px 14px;cursor:pointer;">+ Novo ativo</button>
+        <div class="lib-search"><span class="lib-search-ic"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span><input id="libSearch" class="lib-search-inp" type="text" placeholder="Pesquisar ativo na gaveta..."></div>
         <div id="libForm"></div>
         <div id="libChips"></div>
       </div>
@@ -1407,9 +1414,36 @@ body.mm .ajbtn{ padding:11px 16px !important; font-size:14px !important; }
         var COL={"Renda Fixa":"#2BD9A6","Multimercados":"#7C8CFF","Renda Variável":"#FF8B52","Fundos Listados":"#FFB020","Alternativos":"#C77DFF","Internacional":"#36C5F0"};
         var ORDER=["Renda Fixa","Multimercados","Renda Variável","Fundos Listados","Alternativos","Internacional"];
         function esc(t){return (""+t).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
+        function libNorm(t){ return (t==null?"":String(t)).normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().trim(); }
+        function libFilter(){
+          var box=document.getElementById("libChips"); if(!box) return;
+          var inp=document.getElementById("libSearch");
+          var nq=libNorm(inp?inp.value:"");
+          var cards=box.querySelectorAll(".lib-card");
+          cards.forEach(function(card){
+            var hay=libNorm(card.getAttribute("data-libfind")||card.textContent);
+            card.style.display=(!nq || hay.indexOf(nq)>=0)?"":"none";
+          });
+          // esconde cabecalhos de secao (lib-sec) sem cards visiveis
+          box.querySelectorAll(".lib-sec").forEach(function(sec){
+            var anyVis=false, n=sec.nextElementSibling;
+            while(n && !(n.classList&&n.classList.contains("lib-sec"))){
+              if(n.classList&&n.classList.contains("lib-card")&&n.style.display!=="none"){ anyVis=true; break; }
+              n=n.nextElementSibling;
+            }
+            sec.style.display=anyVis?"":"none";
+          });
+          // mensagem "nenhum ativo encontrado"
+          var emp=box.querySelector(".lib-nomatch");
+          var anyCardVis=Array.prototype.some.call(cards,function(c){return c.style.display!=="none";});
+          if(nq && cards.length && !anyCardVis){
+            if(!emp){ emp=document.createElement("div"); emp.className="lib-nomatch"; emp.textContent="Nenhum ativo encontrado."; box.appendChild(emp); }
+            emp.style.display="";
+          } else if(emp){ emp.style.display="none"; }
+        }
         function render(){
           var box=document.getElementById("libChips"); if(!box) return; var h=""; var ALL=allItems(); window.__LIBDATA=ALL;
-          ORDER.forEach(function(cl){ var items=ALL.map(function(a,i){return {a:a,i:i};}).filter(function(o){return o.a.classe===cl;}); if(!items.length) return; var c=COL[cl]||"#9AA2D0"; h+='<div class="lib-sec" style="color:'+c+'">'+esc(cl)+'</div>'; items.forEach(function(o){ var a=o.a; var isC=!!a.custom; h+='<div class="lib-card" draggable="true" data-libcard="'+o.i+'" title="Arraste para a carteira ou clique em + Add" style="border-left:3px solid '+c+'">'+'<div class="lib-card-top"><div class="lib-card-name"><span style="color:'+c+'">●</span> '+esc(a.nome)+(isC?' <span style="font-size:9.5px;color:'+c+';border:1px solid '+c+';border-radius:5px;padding:1px 5px;margin-left:4px;vertical-align:middle;">MEU</span>':'')+'</div><button class="lib-add" data-libadd="'+o.i+'">+ Add</button></div>'+(a.detalhe?'<div class="lib-card-desc">'+esc(a.detalhe)+'</div>':'')+(a.liq?'<div class="lib-card-liq">Liquidez: '+esc(a.liq)+'</div>':'')+(isC?'<div style="display:flex;gap:8px;margin-top:8px"><button class="lib-mini" data-libedit="'+esc(a.id)+'">Editar</button><button class="lib-mini del" data-libdel="'+esc(a.id)+'">Excluir</button></div>':'')+'</div>'; }); });
+          ORDER.forEach(function(cl){ var items=ALL.map(function(a,i){return {a:a,i:i};}).filter(function(o){return o.a.classe===cl;}); if(!items.length) return; var c=COL[cl]||"#9AA2D0"; h+='<div class="lib-sec" style="color:'+c+'">'+esc(cl)+'</div>'; items.forEach(function(o){ var a=o.a; var isC=!!a.custom; h+='<div class="lib-card" draggable="true" data-libcard="'+o.i+'" data-libfind="'+esc((a.nome||"")+" "+(a.detalhe||"")+" "+(a.classe||"")+" "+(a.liq||""))+'" title="Arraste para a carteira ou clique em + Add" style="border-left:3px solid '+c+'">'+'<div class="lib-card-top"><div class="lib-card-name"><span style="color:'+c+'">●</span> '+esc(a.nome)+(isC?' <span style="font-size:9.5px;color:'+c+';border:1px solid '+c+';border-radius:5px;padding:1px 5px;margin-left:4px;vertical-align:middle;">MEU</span>':'')+'</div><button class="lib-add" data-libadd="'+o.i+'">+ Add</button></div>'+(a.detalhe?'<div class="lib-card-desc">'+esc(a.detalhe)+'</div>':'')+(a.liq?'<div class="lib-card-liq">Liquidez: '+esc(a.liq)+'</div>':'')+(isC?'<div style="display:flex;gap:8px;margin-top:8px"><button class="lib-mini" data-libedit="'+esc(a.id)+'">Editar</button><button class="lib-mini del" data-libdel="'+esc(a.id)+'">Excluir</button></div>':'')+'</div>'; }); });
           box.innerHTML=h;
           box.querySelectorAll(".lib-card").forEach(function(card){
             var idx=+card.getAttribute("data-libcard");
@@ -1422,6 +1456,7 @@ body.mm .ajbtn{ padding:11px 16px !important; font-size:14px !important; }
           });
           box.querySelectorAll("[data-libedit]").forEach(function(b){ b.onclick=function(e){ e.stopPropagation(); openLibForm(b.getAttribute("data-libedit")); }; });
           box.querySelectorAll("[data-libdel]").forEach(function(b){ b.onclick=function(e){ e.stopPropagation(); var id=b.getAttribute("data-libdel"); CUSTOMLIB=CUSTOMLIB.filter(function(x){return x.id!==id;}); persist(); render(); }; });
+          libFilter();
         }
         function openLibForm(id){
           var o=id?CUSTOMLIB.filter(function(x){return x.id===id;})[0]:{id:null,classe:"Renda Fixa",nome:"",detalhe:"",liq:""};
@@ -1440,7 +1475,7 @@ body.mm .ajbtn{ padding:11px 16px !important; font-size:14px !important; }
         }
         function open(){ var d=document.getElementById("libDrawer"), bd=document.getElementById("libBackdrop"); if(d) d.classList.add("open"); if(bd) bd.classList.add("open"); }
         function close(){ var d=document.getElementById("libDrawer"), bd=document.getElementById("libBackdrop"); if(d) d.classList.remove("open"); if(bd) bd.classList.remove("open"); }
-        function init(){ var t=document.getElementById("libTab"); if(!t) return; t.addEventListener("click",open); var c=document.getElementById("libClose"); if(c) c.addEventListener("click",close); var bd=document.getElementById("libBackdrop"); if(bd) bd.addEventListener("click",close); var nb=document.getElementById("libNew"); if(nb) nb.addEventListener("click",function(){ openLibForm(null); }); render(); }
+        function init(){ var t=document.getElementById("libTab"); if(!t) return; t.addEventListener("click",open); var c=document.getElementById("libClose"); if(c) c.addEventListener("click",close); var bd=document.getElementById("libBackdrop"); if(bd) bd.addEventListener("click",close); var nb=document.getElementById("libNew"); if(nb) nb.addEventListener("click",function(){ openLibForm(null); }); var sb=document.getElementById("libSearch"); if(sb) sb.addEventListener("input",libFilter); render(); }
         if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",init);}else{init();}
       })();
       </script>
@@ -7066,7 +7101,6 @@ function render(){
   });
 
   /* ADD + CATÁLOGOS */
-  h += '<div class="rv-catsearch"><span class="rv-catsearch-ic">'+ICON_SEARCH_RV+'</span><input id="rvCatSearch" class="inp rv-catsearch-inp" type="text" placeholder="Pesquisar ativo nas gavetas (proteção, cupom, Quanto)..." value="'+esc(state.rvCatSearch)+'"></div>';
   h += '<div class="addbtns">'+
     '<button class="addbtn" id="rvBtnAdd">'+ICON_PLUS+' Adicionar ativo</button>'+
     '<button class="addbtn" id="btnRubi" style="background:rgba(224,69,123,.12);border-color:rgba(224,69,123,.5);color:#F178A8">'+ICON_GEM+' Operação Cupom · pré-fixado '+(state.showRubi?"▴":"▾")+'</button>'+
@@ -7251,26 +7285,6 @@ function bind(d){
   document.querySelectorAll("[data-addq]").forEach(function(b){ b.onclick = function(){ addQuantoOp(b.getAttribute("data-addq")); }; });
   document.querySelectorAll("[data-addrubi]").forEach(function(b){ b.onclick = function(){ addRubiCatalogo(b.getAttribute("data-addrubi")); }; });
 
-  // ----- Busca nas gavetas/catálogos de RV -----
-  var rvSearchEl = document.getElementById("rvCatSearch");
-  if(rvSearchEl){
-    rvSearchEl.oninput = function(){
-      var q = rvSearchEl.value;
-      state.rvCatSearch = q;
-      var nq = rvNorm(q);
-      // se há texto e nem todos catálogos estão abertos, abre todos e re-renderiza (mantendo foco)
-      if(nq && (!state.showRubi || !state.showOps || !state.showQuanto)){
-        state.showRubi = true; state.showOps = true; state.showQuanto = true;
-        var pos = rvSearchEl.selectionStart;
-        render();
-        var el2 = document.getElementById("rvCatSearch");
-        if(el2){ el2.focus(); try{ el2.setSelectionRange(pos,pos); }catch(_){ } }
-        return; // o filtro já é aplicado no fim de render() via bind()
-      }
-      rvApplyCatFilter();
-    };
-    rvApplyCatFilter();
-  }
 
   // item rows
   document.querySelectorAll(".row[data-id]").forEach(function(rowEl){
