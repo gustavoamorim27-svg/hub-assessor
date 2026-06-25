@@ -8175,8 +8175,8 @@ window.__rvRender = render;
   // Cobre Bitcoin (US$), Dolar (via Tether/BRL) e Ouro (via PAX Gold/USD).
   // E a unica fonte liberada em redes corporativas (ex.: RICO), entao e a PRINCIPAL.
   async function fetchCoinGecko(){
-    var url='https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,tether,pax-gold&vs_currencies=usd,brl&include_24hr_change=true';
-    var out={btc:null, dolar:null, ouro:null};
+    var url='https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,tether,pax-gold,spdr-s-p-500-etf-ondo-tokenized-etf&vs_currencies=usd,brl&include_24hr_change=true';
+    var out={btc:null, dolar:null, ouro:null, sp500:null};
     try{
       var r=await fetch(url,{cache:'no-store'});
       if(!r.ok) return out;
@@ -8190,6 +8190,10 @@ window.__rvRender = render;
       // Ouro: PAXG/USD ~ onca de ouro em US$ (PAXG ~ 1oz)
       var g=j && j['pax-gold'];
       if(g && g.usd!=null){ out.ouro={price:g.usd, pct:(g.usd_24h_change!=null? g.usd_24h_change : null)}; }
+      // S&P500 (FALLBACK): ETF tokenizado SPYON (~SPY) ~ 1/10 do indice -> usd x10 aproxima o indice.
+      // Variacao % usa usd_24h_change (exata). So usado se o Yahoo (^GSPC, fonte primaria) falhar.
+      var sp=j && j['spdr-s-p-500-etf-ondo-tokenized-etf'];
+      if(sp && sp.usd!=null){ out.sp500={price:sp.usd*10, pct:(sp.usd_24h_change!=null? sp.usd_24h_change : null)}; }
     }catch(e){}
     return out;
   }
@@ -8277,8 +8281,12 @@ window.__rvRender = render;
             try{ var cg3=await cgPromise; if(cg3 && cg3.ouro && cg3.ouro.price!=null) q=cg3.ouro; }catch(e){}
             if(!q || q.price==null){ try{ var aw3=await awPromise; var o=aw3 && aw3[it.awPair]; if(o && o.price!=null) q=o; }catch(e){} }
             if(!q || q.price==null){ try{ q=await fetchYahoo(it.sym); }catch(e){ q=null; } }
+          } else if(it.k==='sp500'){
+            // 1) Yahoo (^GSPC, indice real) PRIMARIO -> 2) CoinGecko SPYON x10 (FALLBACK p/ RICO)
+            try{ q=await fetchYahoo(it.sym); }catch(e){ q=null; }
+            if(!q || q.price==null){ try{ var cg4=await cgPromise; if(cg4 && cg4.sp500 && cg4.sp500.price!=null) q=cg4.sp500; }catch(e){} }
           } else {
-            // sp500 / ibov / brent: sem API CORS-nativa -> Yahoo proxy (best-effort)
+            // ibov / brent: sem API CORS-nativa confiavel -> Yahoo proxy (best-effort)
             try{ q=await fetchYahoo(it.sym); }catch(e){ q=null; }
           }
         }catch(e){ q=null; }
