@@ -379,6 +379,11 @@ html, body {
 [data-tool="construtor-rv"] .cmpgrid{ display:flex; gap:10px; margin-top:10px; flex-wrap:wrap; }
 [data-tool="construtor-rv"] .cmpcard{ flex:1 1 150px; background:rgba(0,0,0,.28); border:1px solid rgba(120,130,210,.2); border-radius:10px; padding:10px 12px; }
 [data-tool="construtor-rv"] .addbtns{ display:flex; gap:10px; flex-wrap:wrap; }
+[data-tool="construtor-rv"] .rv-catsearch{ position:relative; margin:18px 0 12px; max-width:520px; }
+[data-tool="construtor-rv"] .rv-catsearch-ic{ position:absolute; left:14px; top:50%; transform:translateY(-50%); color:#6F77A8; pointer-events:none; display:inline-flex; }
+[data-tool="construtor-rv"] .rv-catsearch-inp{ padding-left:40px !important; font-size:14px !important; font-weight:600 !important; }
+[data-tool="construtor-rv"] .rv-catsearch-inp::placeholder{ color:#6F77A8; font-weight:600; }
+[data-tool="construtor-rv"] .rv-catempty{ font-size:13px; color:#9AA2D0; background:rgba(0,0,0,.18); border:1px solid rgba(120,130,210,.18); border-radius:10px; padding:12px 14px; margin-top:6px; }
 [data-tool="construtor-rv"] .addbtn{ display:inline-flex; align-items:center; gap:8px; background:rgba(255,78,0,.12); border:1px dashed rgba(255,78,0,.5);
     color:#FF6B2C; border-radius:12px; padding:12px 20px; font-weight:700; font-size:14px; cursor:pointer; }
 [data-tool="construtor-rv"] .card{ background:linear-gradient(160deg,rgba(28,36,112,.45),rgba(12,17,66,.65)); border:1px solid rgba(120,130,210,.18);
@@ -1069,6 +1074,12 @@ body.mm .ajbtn{ padding:11px 16px !important; font-size:14px !important; }
     @media (max-width:760px){ #p-ajustes .pc-board4{ grid-template-columns:1fr !important; } }
     #p-ajustes .pc-gav{ width:100%; min-width:0; }
     #p-ajustes .pc-gavtitle{ font-family:'Sora',sans-serif; font-weight:800; font-size:14px; color:#fff; margin-bottom:10px; }
+    #p-ajustes .pc-gavsearch{ position:relative; margin-bottom:12px; }
+    #p-ajustes .pc-gavsearch-ic{ position:absolute; left:11px; top:50%; transform:translateY(-50%); color:#6F77A8; pointer-events:none; display:inline-flex; }
+    #p-ajustes .pc-gavsearch-inp{ width:100%; box-sizing:border-box; background:rgba(255,255,255,.06); border:1px solid rgba(120,130,210,.25); color:#fff; border-radius:10px; padding:9px 12px 9px 33px; font-family:'Manrope',sans-serif; font-size:12.5px; font-weight:600; outline:none; }
+    #p-ajustes .pc-gavsearch-inp:focus{ border-color:rgba(255,139,82,.6); }
+    #p-ajustes .pc-gavsearch-inp::placeholder{ color:#6F77A8; }
+    #p-ajustes .pc-gavnomatch{ font-size:11.5px; color:#9AA2D0; background:rgba(0,0,0,.22); border:1px solid rgba(120,130,210,.18); border-radius:10px; padding:10px 12px; }
     #p-ajustes .pc-gavpill{ width:100%; display:flex; align-items:center; gap:10px; cursor:pointer; font-family:'Manrope',sans-serif; font-weight:800; font-size:13px; background:rgba(255,255,255,.04); border:1px solid; border-radius:12px; padding:12px 14px; margin-bottom:8px; transition:background .15s; }
     #p-ajustes .pc-gavpill:hover{ background:rgba(255,255,255,.08); }
     #p-ajustes .pc-gavpill.on{ background:rgba(255,255,255,.07); }
@@ -6759,7 +6770,8 @@ var state = {
   abertos:{},
   showRubi:false,
   showOps:false,
-  showQuanto:false
+  showQuanto:false,
+  rvCatSearch:""
 };
 
 function esc(t){ return (t==null?"":String(t)).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
@@ -7003,6 +7015,7 @@ var ICON_COPY = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" str
 var ICON_CHECK = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px"><polyline points="20 6 9 17 4 12"/></svg>';
 var ICON_ROTATE = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:6px"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>';
 var ICON_PLUS = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>';
+var ICON_SEARCH_RV = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>';
 
 /* ===== Render principal ===== */
 function render(){
@@ -7053,6 +7066,7 @@ function render(){
   });
 
   /* ADD + CATÁLOGOS */
+  h += '<div class="rv-catsearch"><span class="rv-catsearch-ic">'+ICON_SEARCH_RV+'</span><input id="rvCatSearch" class="inp rv-catsearch-inp" type="text" placeholder="Pesquisar ativo nas gavetas (proteção, cupom, Quanto)..." value="'+esc(state.rvCatSearch)+'"></div>';
   h += '<div class="addbtns">'+
     '<button class="addbtn" id="rvBtnAdd">'+ICON_PLUS+' Adicionar ativo</button>'+
     '<button class="addbtn" id="btnRubi" style="background:rgba(224,69,123,.12);border-color:rgba(224,69,123,.5);color:#F178A8">'+ICON_GEM+' Operação Cupom · pré-fixado '+(state.showRubi?"▴":"▾")+'</button>'+
@@ -7066,13 +7080,14 @@ function render(){
       '<div style="font-size:12.5px;color:#A9B0D6;margin-bottom:14px">Toque em "Add" para incluir uma operação de cupom pré-fixado pronta (entra com 0% — defina a alocação depois). Você pode editar taxa, barreira e equivalente em CDI de cada uma.</div>'+
       '<div class="opgrid">';
     RUBI_CATALOG.forEach(function(r){
-      h += '<div class="opcard"><div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px"><div>'+
+      var _sf = (r.ativo+' Cupom '+r.setor+' barreira de desarme pré-fixado '+(r.cdi!=null?'CDI':''));
+      h += '<div class="opcard" data-rvfind="'+esc(_sf)+'"><div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px"><div>'+
         '<div style="font-weight:800;font-size:15px">'+r.ativo+' · Cupom '+fmtPct(r.taxa)+'%</div>'+
         '<div style="font-size:11.5px;color:#A9B0D6;margin-top:2px">Cupom pré-fixado · barreira de desarme '+fmtPct(r.barreira)+'%'+(r.cdi!=null?' · ≈ '+fmtPct(r.cdi)+'% CDI':'')+'</div>'+
         '<span class="tag setor" style="margin-top:6px;display:inline-block;background:'+setorCor(r.setor)+'22;border-color:'+setorCor(r.setor)+'66;color:'+setorCor(r.setor)+'">'+r.setor+'</span>'+
         '</div><button class="minibtn" data-addrubi="'+r.id+'" style="white-space:nowrap;background:rgba(224,69,123,.14);border-color:rgba(224,69,123,.5);color:#F178A8">+ Add</button></div></div>';
     });
-    h += '</div></div>';
+    h += '</div><div class="rv-catempty" data-rvempty style="display:none">Nenhum ativo encontrado.</div></div>';
   }
 
   if(state.showOps){
@@ -7080,14 +7095,15 @@ function render(){
       '<div style="font-size:12.5px;color:#A9B0D6;margin-bottom:14px">Toque em "Add" para incluir na carteira (entra com 0% — defina a alocação depois). Cada operação leva junto o gráfico de payoff acessível pela seta "Como funciona".</div>'+
       '<div class="opgrid">';
     OPERACOES.forEach(function(op){
-      h += '<div class="opcard"><div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px"><div>'+
+      var _sf = (op.nome+' '+op.ativo+' '+op.tipo+' '+op.setor);
+      h += '<div class="opcard" data-rvfind="'+esc(_sf)+'"><div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px"><div>'+
         '<div style="font-weight:800;font-size:15px">'+op.nome+'</div>'+
         '<div style="font-size:11.5px;color:#A9B0D6;margin-top:2px">'+op.tipo+' · teto '+fmtPct(op.teto)+'% · barreira '+fmtPct(op.barreira)+'%</div>'+
         '<span class="tag setor" style="margin-top:6px;display:inline-block;background:'+setorCor(op.setor)+'22;border-color:'+setorCor(op.setor)+'66;color:'+setorCor(op.setor)+'">'+op.setor+'</span>'+
         '</div><button class="minibtn" data-addop="'+op.id+'" style="white-space:nowrap">+ Add</button></div>'+
         '<div style="margin-top:8px">'+payoffBarsSVG(op,true)+'</div></div>';
     });
-    h += '</div></div>';
+    h += '</div><div class="rv-catempty" data-rvempty style="display:none">Nenhum ativo encontrado.</div></div>';
   }
 
   if(state.showQuanto){
@@ -7095,11 +7111,12 @@ function render(){
       '<div style="font-size:12.5px;color:#A9B0D6;margin-bottom:6px">S&amp;P 500 e Nasdaq em moeda local (sem risco cambial). Toque em "Add" para incluir na carteira (entra com 0% — defina a alocação depois). A seta "Como funciona" mostra o payoff de cada operação.</div>'+
       '<div style="font-size:11.5px;color:#FFB020;background:rgba(255,176,32,.1);border:1px solid rgba(255,176,32,.3);border-radius:8px;padding:8px 11px;margin-bottom:16px">Payoff 2 (taxa fixa) está modelado como piso garantido + alta 1:1 ilimitada. Confirme as condições exatas de proteção de capital na lâmina antes de apresentar.</div>';
     [1,2].forEach(function(pf){
-      h += '<div style="margin-bottom:18px"><div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">'+
+      h += '<div data-rvqsec style="margin-bottom:18px"><div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">'+
         '<span style="background:'+ORANGE+';color:#fff;border-radius:6px;padding:3px 10px;font-weight:800;font-size:12px">PAYOFF '+pf+'</span>'+
         '<span style="font-weight:700;font-size:13.5px;color:#cfd4ef">'+(pf===1?"Capital Protegido + Alta Ilimitada":"Taxa Fixa ou Alta Ilimitada")+'</span></div><div class="opgrid">';
       QUANTO_OPS.filter(function(op){return op.payoff===pf;}).forEach(function(op){
-        h += '<div class="opcard"><div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px"><div>'+
+        var _sf = (op.ativo+' '+op.fixing+' '+(op.setor||'Internacional')+' Quanto '+(pf===1?'Multiplicador capital protegido':'Taxa fixa'));
+        h += '<div class="opcard" data-rvfind="'+esc(_sf)+'"><div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px"><div>'+
           '<div style="font-weight:800;font-size:15px">'+op.ativo+'</div>'+
           '<div style="font-size:11.5px;color:#A9B0D6;margin-top:2px">Prazo '+op.fixing+'</div>'+
           '<div style="margin-top:6px;display:inline-block;background:rgba(255,176,32,.14);border:1px solid rgba(255,176,32,.45);color:#FFB020;border-radius:7px;padding:3px 9px;font-weight:800;font-size:12px">'+(pf===1?"Multiplicador "+fmtMult(op.mult)+"x":"Taxa fixa "+fmtTaxa(op.taxa)+"%")+'</div>'+
@@ -7108,6 +7125,7 @@ function render(){
       });
       h += '</div></div>';
     });
+    h += '<div class="rv-catempty" data-rvempty style="display:none">Nenhum ativo encontrado.</div>';
     h += '</div>';
   }
 
@@ -7178,6 +7196,33 @@ function render(){
   bind(d);
 }
 
+/* ===== Busca nas gavetas/catálogos (RV) ===== */
+function rvNorm(t){ return (t==null?"":String(t)).normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().trim(); }
+function rvApplyCatFilter(){
+  var app = document.getElementById("rv-app"); if(!app) return;
+  var nq = rvNorm(state.rvCatSearch);
+  // filtra os cards de cada catálogo aberto
+  app.querySelectorAll(".opcard[data-rvfind]").forEach(function(card){
+    var hay = rvNorm(card.getAttribute("data-rvfind"));
+    var hit = !nq || hay.indexOf(nq) >= 0;
+    card.style.display = hit ? "" : "none";
+  });
+  // esconde seções PAYOFF do Quanto que ficarem sem cards visíveis
+  app.querySelectorAll("[data-rvqsec]").forEach(function(sec){
+    var vis = sec.querySelectorAll(".opcard[data-rvfind]");
+    var anyVis = Array.prototype.some.call(vis,function(c){ return c.style.display !== "none"; });
+    sec.style.display = anyVis ? "" : "none";
+  });
+  // mensagem "nenhum ativo" por catálogo
+  app.querySelectorAll(".card").forEach(function(cardBox){
+    var grids = cardBox.querySelectorAll(".opcard[data-rvfind]");
+    if(!grids.length) return;
+    var anyVis = Array.prototype.some.call(grids,function(c){ return c.style.display !== "none"; });
+    var emp = cardBox.querySelector("[data-rvempty]");
+    if(emp) emp.style.display = (nq && !anyVis) ? "" : "none";
+  });
+}
+
 /* ===== Eventos ===== */
 function bind(d){
   // header
@@ -7205,6 +7250,27 @@ function bind(d){
   document.querySelectorAll("[data-addop]").forEach(function(b){ b.onclick = function(){ addOperacao(b.getAttribute("data-addop")); }; });
   document.querySelectorAll("[data-addq]").forEach(function(b){ b.onclick = function(){ addQuantoOp(b.getAttribute("data-addq")); }; });
   document.querySelectorAll("[data-addrubi]").forEach(function(b){ b.onclick = function(){ addRubiCatalogo(b.getAttribute("data-addrubi")); }; });
+
+  // ----- Busca nas gavetas/catálogos de RV -----
+  var rvSearchEl = document.getElementById("rvCatSearch");
+  if(rvSearchEl){
+    rvSearchEl.oninput = function(){
+      var q = rvSearchEl.value;
+      state.rvCatSearch = q;
+      var nq = rvNorm(q);
+      // se há texto e nem todos catálogos estão abertos, abre todos e re-renderiza (mantendo foco)
+      if(nq && (!state.showRubi || !state.showOps || !state.showQuanto)){
+        state.showRubi = true; state.showOps = true; state.showQuanto = true;
+        var pos = rvSearchEl.selectionStart;
+        render();
+        var el2 = document.getElementById("rvCatSearch");
+        if(el2){ el2.focus(); try{ el2.setSelectionRange(pos,pos); }catch(_){ } }
+        return; // o filtro já é aplicado no fim de render() via bind()
+      }
+      rvApplyCatFilter();
+    };
+    rvApplyCatFilter();
+  }
 
   // item rows
   document.querySelectorAll(".row[data-id]").forEach(function(rowEl){
@@ -8221,6 +8287,38 @@ window.__rvRender = render;
   function fmtK(n){ n=Math.round(n||0); return n>=1000? "R$ "+(n/1000).toFixed(n%1000?1:0).replace(".",",")+"k" : "R$ "+n; }
   function fmtPct(n){ var v=Math.round((n||0)*10)/10; return (Number.isInteger(v)?v.toFixed(0):v.toFixed(1)).replace(".",",")+"%"; }
   function esc(s){ return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+  function pcNorm(t){ return (t==null?"":String(t)).normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().trim(); }
+  var PC_SEARCH_IC='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>';
+  function pcFilterGav(){
+    var root=document.getElementById("ajRoot"); if(!root) return;
+    var aside=root.querySelector(".pc-gav"); if(!aside) return;
+    var nq=pcNorm(state.gavQuery);
+    // filtra cada card (ativos gerais e RV estruturada)
+    aside.querySelectorAll("[data-gavfind]").forEach(function(card){
+      var hay=pcNorm(card.getAttribute("data-gavfind"));
+      card.style.display=(!nq || hay.indexOf(nq)>=0) ? "" : "none";
+    });
+    // esconde cabeçalhos de categoria que ficaram sem cards visíveis
+    aside.querySelectorAll(".pc-gavcat").forEach(function(cat){
+      var anyVis=false, n=cat.nextElementSibling;
+      while(n && !n.classList.contains("pc-gavcat")){
+        if((n.matches&&n.matches("[data-gavfind]")) && n.style.display!=="none"){ anyVis=true; break; }
+        n=n.nextElementSibling;
+      }
+      cat.style.display=anyVis ? "" : "none";
+    });
+    // mensagem "nenhum ativo encontrado" por lista
+    aside.querySelectorAll(".pc-gavlist").forEach(function(list){
+      var cards=list.querySelectorAll("[data-gavfind]");
+      if(!cards.length) return;
+      var anyVis=Array.prototype.some.call(cards,function(c){return c.style.display!=="none";});
+      var emp=list.querySelector(".pc-gavnomatch");
+      if(nq && !anyVis){
+        if(!emp){ emp=document.createElement("div"); emp.className="pc-gavnomatch"; emp.textContent="Nenhum ativo encontrado."; list.appendChild(emp); }
+        emp.style.display="";
+      } else if(emp){ emp.style.display="none"; }
+    });
+  }
   var CATCOL={"Renda Fixa":"#3DD68C","Previdência":"#E8709B","Multimercados":"#7C8CFF","Renda Variável":"#F26522","Fundos Listados":"#FFB020","Alternativos":"#C77DFF","Internacional":"#36C5F0"};
   var ORDER=["Renda Fixa","Previdência","Multimercados","Renda Variável","Fundos Listados","Alternativos","Internacional"];
   var LIB=[
@@ -8257,7 +8355,7 @@ window.__rvRender = render;
   function customLib(){ try{ return JSON.parse(localStorage.getItem("hubCustomLib")||"[]")||[]; }catch(e){ return []; } }
   function gavetas(){ return LIB.concat(customLib().map(function(x){return {classe:x.classe,nome:x.nome,detalhe:x.detalhe||""};})); }
 
-  var state={ origem:"import", cliente:"", atual:null, atualRaw:null, prev:[], vals:{}, removed:{}, added:[], libOpen:true, totalOverride:null, appliedModel:null, gavOpen:{geral:true,rv:false} };
+  var state={ origem:"import", cliente:"", atual:null, atualRaw:null, prev:[], vals:{}, removed:{}, added:[], libOpen:true, totalOverride:null, appliedModel:null, gavOpen:{geral:true,rv:false}, gavQuery:"" };
   var seq=0; function uid(){ return "e"+(++seq); }
   var drag=null;
   var rvReg={};
@@ -8415,16 +8513,19 @@ window.__rvRender = render;
       {key:"geral",icon:"📁",label:"Ativos gerais",color:"#FF8B52",classes:["Renda Fixa","Multimercados","Fundos Listados","Alternativos","Internacional"]},
       {key:"rv",icon:"🧰",label:"RV estruturada",color:"#7C8CFF",classes:["Renda Variável"]}
     ];
+    var nq=pcNorm(state.gavQuery);
     var h='<aside class="pc-gav'+(state.gavOpen.rv?" rvopen":"")+'"><div class="pc-gavtitle">Gavetas de ativos</div>';
+    h+='<div class="pc-gavsearch"><span class="pc-gavsearch-ic">'+PC_SEARCH_IC+'</span><input id="pcGavSearch" class="pc-gavsearch-inp" type="text" placeholder="Pesquisar ativo na gaveta..." value="'+esc(state.gavQuery)+'"></div>';
     groups.forEach(function(grp){
       var open=!!state.gavOpen[grp.key];
+      if(nq) open=true; // com busca ativa, mantém as gavetas abertas para mostrar resultados
       h+='<button class="pc-gavpill'+(open?" on":"")+'" data-gav="'+grp.key+'" style="border-color:'+grp.color+'66;color:'+grp.color+'"><span class="pc-gavico">'+grp.icon+'</span><span class="pc-gavlbl">'+grp.label+'</span><span class="pc-gavarrow">'+(open?"▴":"▾")+'</span></button>';
       if(!open) return;
       if(grp.key==="rv"){ h+=rvGavList(); return; }
       h+='<div class="pc-gavlist">';
       grp.classes.forEach(function(cl){ var items=G.map(function(a,i){return {a:a,i:i};}).filter(function(o){return o.a.classe===cl;}); if(!items.length)return; var c=CATCOL[cl]||"#9AA2D0";
         h+='<div class="pc-gavcat" style="color:'+c+'"><span style="background:'+c+'"></span>'+cl+'</div>';
-        items.forEach(function(o){ h+='<div class="pc-gavcard" draggable="true" data-dragidx="'+o.i+'"><div class="pc-gavinfo"><div class="pc-gavname">'+esc(o.a.nome)+'</div><div class="pc-gavdet">'+esc(o.a.detalhe||"")+'</div></div><button class="pc-add" data-addidx="'+o.i+'" title="Adicionar a Entrar">+</button></div>'; });
+        items.forEach(function(o){ h+='<div class="pc-gavcard" draggable="true" data-dragidx="'+o.i+'" data-gavfind="'+esc((o.a.nome||"")+" "+(o.a.detalhe||"")+" "+(o.a.classe||""))+'"><div class="pc-gavinfo"><div class="pc-gavname">'+esc(o.a.nome)+'</div><div class="pc-gavdet">'+esc(o.a.detalhe||"")+'</div></div><button class="pc-add" data-addidx="'+o.i+'" title="Adicionar a Entrar">+</button></div>'; });
       });
       h+='</div>';
     });
@@ -8442,7 +8543,7 @@ window.__rvRender = render;
       ops.forEach(function(op){ var key=kind+":"+op.id; rvReg[key]={op:op,kind:kind};
         var meta = kind==="quanto"?("Prazo "+esc(op.fixing)):(esc(op.ativo)+(op.setor?" · "+esc(op.setor):""));
         var pay = window.__payoffTable?window.__payoffTable(op,false):"";
-        h+='<div class="pc-rvcard"><div class="pc-rvtop"><div><div class="pc-rvname">'+esc(op.nome)+'</div><div class="pc-rvmeta">'+meta+'</div></div><button class="pc-add" data-addop="'+key+'" title="Adicionar a Entrar">+</button></div>'+(pay?'<div class="pc-rvpay">'+pay+'</div>':'')+'</div>';
+        h+='<div class="pc-rvcard" data-gavfind="'+esc((op.nome||"")+" "+(op.ativo||"")+" "+(op.setor||"")+" "+(op.fixing||"")+" "+title)+'"><div class="pc-rvtop"><div><div class="pc-rvname">'+esc(op.nome)+'</div><div class="pc-rvmeta">'+meta+'</div></div><button class="pc-add" data-addop="'+key+'" title="Adicionar a Entrar">+</button></div>'+(pay?'<div class="pc-rvpay">'+pay+'</div>':'')+'</div>';
       });
     }
     sub("Proteção (Collar / Fence)","#FF8B52",RC.ops,"protecao");
@@ -8469,6 +8570,23 @@ window.__rvRender = render;
     root.querySelectorAll("[data-model]").forEach(function(b){ b.onclick=function(){ applyModel(b.getAttribute("data-model")); }; });
     var lt=root.querySelector("[data-libtoggle]"); if(lt) lt.onclick=function(){ state.libOpen=!state.libOpen; render(); };
     root.querySelectorAll("[data-gav]").forEach(function(b){ b.onclick=function(){ var k=b.getAttribute("data-gav"); state.gavOpen[k]=!state.gavOpen[k]; render(); }; });
+    var gs=document.getElementById("pcGavSearch");
+    if(gs){
+      gs.oninput=function(){
+        var was=pcNorm(state.gavQuery), now=pcNorm(gs.value);
+        state.gavQuery=gs.value;
+        // só re-renderiza quando o estado vazio<->não-vazio muda (abre/fecha as gavetas); senão filtra ao vivo
+        if((!was)!==(!now)){
+          var pos=gs.selectionStart;
+          render();
+          var el2=document.getElementById("pcGavSearch");
+          if(el2){ el2.focus(); try{ el2.setSelectionRange(pos,pos); }catch(_){ } }
+        } else {
+          pcFilterGav();
+        }
+      };
+    }
+    pcFilterGav();
     root.querySelectorAll("[data-addidx]").forEach(function(b){ b.onclick=function(){ addLib(+b.getAttribute("data-addidx")); }; });
     root.querySelectorAll("[data-addop]").forEach(function(b){ b.onclick=function(){ addOp(b.getAttribute("data-addop")); }; });
     root.querySelectorAll("[data-dragidx]").forEach(function(e2){ e2.addEventListener("dragstart",function(ev){ drag="lib:"+e2.getAttribute("data-dragidx"); try{ev.dataTransfer.effectAllowed="copy";}catch(_){}}); e2.addEventListener("dragend",function(){ drag=null; }); });
