@@ -8274,6 +8274,43 @@ function rvCardScenTableHTML(d){
   return h;
 }
 
+/* Descricao da operacao para o card (mesma da secao "Como funciona a operacao").
+   Prefere descricao editada pelo usuario (op.descricao); senao usa a padrao por tipo. */
+function rvCardOpDescricao(d){
+  try{
+    var op = d && d.op;
+    if(!op) return "";
+    if(op.descricao && String(op.descricao).trim()) return String(op.descricao).trim();
+    var kind = d.kindResolved || d.kind;
+    if(kind==="quanto" || kind==="quantoTaxa"){
+      if(typeof opDetalheQuanto==="function") return opDetalheQuanto(op);
+    } else if(kind==="cupom"){
+      // mesma logica de cupomDetalhe (que vive noutro escopo)
+      var tx = (op.taxa!=null)? fmtPct(op.taxa) : "";
+      var bb = (op.barreira!=null)? fmtPct(op.barreira) : "";
+      var txt = "SmartCupom · cupom pré-fixado de "+tx+"% · barreira de desarme "+bb+"%";
+      if(op.cdi!=null) txt += " · ≈ "+fmtPct(op.cdi)+"% do CDI";
+      return txt;
+    } else {
+      if(typeof opDetalhe==="function") return opDetalhe(op);
+    }
+  }catch(_){}
+  return "";
+}
+
+/* Painel "Como funciona" exibido a DIREITA da tabela de cenarios no card. */
+function rvCardDescPanelHTML(d){
+  var txt = "";
+  try{ txt = rvCardOpDescricao(d); }catch(_){ txt=""; }
+  if(!txt) txt = (d && d.cta) ? String(d.cta).replace(/<[^>]+>/g,"") : "";
+  if(!txt) return '<div class="rvc-main-col rvc-main-desc"></div>';
+  return '<div class="rvc-main-col rvc-main-desc">'+
+           '<div class="rvc-desc-kicker">SOBRE A OPERAÇÃO</div>'+
+           '<div class="rvc-desc-title">Como funciona</div>'+
+           '<div class="rvc-desc-body">'+esc(txt)+'</div>'+
+         '</div>';
+}
+
 function buildCardHTML(d){
   var headLine = "OPERAÇÃO ESTRUTURADA · "+esc((d.ativo||"").toUpperCase())+" · "+esc(d.tipoLabel)+" · "+esc((d.mercado||"").toUpperCase());
   var metricH="";
@@ -8305,7 +8342,8 @@ function buildCardHTML(d){
     '</div>'+
     '<div class="rvc-metrics">'+metricH+'</div>'+
     '<div class="rvc-main">'+
-      rvCardScenTableHTML(d)+
+      '<div class="rvc-main-col rvc-main-tab">'+rvCardScenTableHTML(d)+'</div>'+
+      rvCardDescPanelHTML(d)+
     '</div>'+
     '<div class="rvc-cta">'+
       '<div class="rvc-cta-txt">'+d.cta+'</div>'+
@@ -8355,17 +8393,23 @@ function injectCardCSS(){
   '.rvc-metric-val{font-size:21px;font-weight:800;margin-top:5px;line-height:1;}'+
   '.rvc-metric-sub{font-size:11px;color:#A9B0D6;margin-top:6px;line-height:1.25;}'+
   '.rvc-title-ativo{font-size:54px;font-weight:800;color:#fff;letter-spacing:-1.5px;line-height:1;}'+
-  '.rvc-main{margin-top:18px;}'+
+  '.rvc-main{margin-top:18px;display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:18px;align-items:stretch;}'+
+  '.rvc-main-col{min-width:0;}'+
+  '.rvc-main-desc{background:rgba(12,17,66,.55);border:1px solid rgba(120,130,210,.2);border-radius:16px;padding:18px 22px;display:flex;flex-direction:column;}'+
+  '.rvc-desc-kicker{font-size:10px;font-weight:800;letter-spacing:1.2px;color:#8A93D8;text-transform:uppercase;margin-bottom:8px;}'+
+  '.rvc-desc-title{font-size:18px;font-weight:800;color:#fff;margin-bottom:12px;display:flex;align-items:center;gap:9px;}'+
+  '.rvc-desc-title::before{content:"";width:5px;height:20px;border-radius:3px;background:linear-gradient(180deg,#FF4E00,#FF6B2C);display:inline-block;}'+
+  '.rvc-desc-body{font-size:15.5px;line-height:1.62;color:#D7DBF4;font-weight:500;}'+
   /* tabela "R$ 100 em cada cenário" */
-  '.rvc-sc{background:rgba(12,17,66,.55);border:1px solid rgba(120,130,210,.2);border-radius:16px;padding:16px 20px 14px;}'+
+  '.rvc-sc{background:rgba(12,17,66,.55);border:1px solid rgba(120,130,210,.2);border-radius:16px;padding:16px 18px 14px;height:100%;box-sizing:border-box;}'+
   '.rvc-sc-title{font-size:15px;font-weight:800;color:#fff;margin-bottom:12px;}'+
-  '.rvc-sc-head{display:grid;grid-template-columns:1fr 1fr;gap:14px;font-size:10px;font-weight:800;letter-spacing:.6px;color:#8A93D8;padding:0 4px 8px;border-bottom:1px solid rgba(120,130,210,.18);}'+
-  '.rvc-sc-head span:nth-child(2){text-align:right;}'+
-  '.rvc-sc-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 14px;margin-top:4px;}'+
-  '.rvc-sc-col{display:flex;align-items:center;gap:10px;padding:6px 4px;border-bottom:1px solid rgba(120,130,210,.08);}'+
-  '.rvc-sc-right{justify-content:flex-end;}'+
+  '.rvc-sc-head{display:grid;grid-template-columns:1fr 1fr;gap:0;font-size:10px;font-weight:800;letter-spacing:.5px;color:#8A93D8;padding:0 8px 8px;border-bottom:1px solid rgba(120,130,210,.18);}'+
+  '.rvc-sc-head span:nth-child(2){text-align:left;}'+
+  '.rvc-sc-grid{display:grid;grid-template-columns:1fr 1fr;gap:0;margin-top:4px;}'+
+  '.rvc-sc-col{display:flex;align-items:center;gap:9px;padding:6px 8px;border-bottom:1px solid rgba(120,130,210,.08);}'+
+  '.rvc-sc-right{justify-content:flex-start;border-left:1px solid rgba(120,130,210,.12);}'+
   '.rvc-sc-dot{width:11px;height:11px;border-radius:50%;flex-shrink:0;}'+
-  '.rvc-sc-val{font-size:18px;font-weight:800;font-family:Arial,sans-serif;}'+
+  '.rvc-sc-val{font-size:16px;font-weight:800;font-family:Arial,sans-serif;}'+
   '.rvc-sc-leg{display:flex;gap:20px;margin-top:12px;font-size:11.5px;color:#A9B0D6;font-weight:700;}'+
   '.rvc-sc-ldot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:7px;vertical-align:-1px;}'+
   '.rvc-graf,.rvc-cen{background:rgba(12,17,66,.55);border:1px solid rgba(120,130,210,.2);border-radius:16px;padding:14px 16px;}'+
