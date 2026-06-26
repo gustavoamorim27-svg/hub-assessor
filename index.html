@@ -1016,7 +1016,7 @@ button, .g-tab, [onclick]{ touch-action:manipulation; }
           });
         });
         render("all");
-        try{ fetch("news.json?cb="+Date.now()).then(function(r){return r.ok?r.json():null;}).then(function(j){ if(!gotLive && j&&j.items&&j.items.length){ DATA=j; render(CURRENT); } }).catch(function(){}); }catch(e){}
+        try{ fetch("news.json?cb="+Date.now()).then(function(r){return r.ok?r.json():null;}).then(function(j){ if(!gotLive && j&&j.items&&j.items.length){ var fi=j.items.filter(function(x){ try{ return _relevante(x); }catch(_){ return true; } }); if(fi.length>=2){ j.items=fi; DATA=j; render(CURRENT); } } }).catch(function(){}); }catch(e){}
         var FEEDS={ nacional:["https://www.infomoney.com.br/mercados/feed/","https://g1.globo.com/rss/g1/economia/"], internacional:["https://www.cnbc.com/id/100003114/device/rss/rss.html"] };
         function _strip(h){ try{ var d=document.createElement("div"); d.innerHTML=h||""; var t=(d.textContent||"").replace(/\s+/g," ").trim(); return t.length>150?t.slice(0,148)+"…":t; }catch(e){ return ""; } }
         function _fdate(pd){ try{ var dt=new Date(pd); if(isNaN(dt.getTime())) return ""; var m=["jan","fev","mar","abr","mai","jun","jul","ago","set","out","nov","dez"]; return dt.getDate()+" "+m[dt.getMonth()]+" "+dt.getFullYear(); }catch(e){ return ""; } }
