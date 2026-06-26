@@ -9577,7 +9577,7 @@ window.__rvRender = render;
     h+=previewCol();
     h+='</div></div>';
 
-    h+='<div class="pc-actions"><button id="ajPNG" class="ajbtn primary">Gerar proposta (PNG antes/depois)</button><button id="ajXLS" class="ajbtn">Baixar Excel (execução)</button></div>';
+    h+='<div class="pc-actions"><button id="ajPNG" class="ajbtn primary">Gerar proposta (PNG antes/depois)</button><button id="ajPlano" class="ajbtn">Plano de Ajuste (PDF)</button><button id="ajXLS" class="ajbtn">Baixar Excel (execução)</button></div>';
     h+='<div class="pc-disc">Arraste um ativo de "Manter" para "Sair" para vendê-lo, ou use ✕. Edite o R$ de cada ativo para ajustar. Abra as gavetas na lateral esquerda (Ativos gerais / RV estruturada) e use + para adicionar à coluna Entrar. Previdência é mantida sem movimentação. Material de apoio interno — não constitui recomendação ou oferta.</div>';
 
     root.innerHTML=h; bind();
@@ -9672,6 +9672,7 @@ window.__rvRender = render;
     root.querySelectorAll("[data-libadd]").forEach(function(b){ b.onclick=function(){ addLib(+b.getAttribute("data-libadd")); }; });
     root.querySelectorAll(".pc-val").forEach(function(inp){ inp.onchange=function(){ var key=inp.getAttribute("data-val"),v=Number(inp.value)||0; if(key.indexOf("add:")===0){ var id=key.slice(4); var it=state.added.filter(function(x){return x.id===id;})[0]; if(it) it.valor=v; } else { var nm=key.slice(4); state.vals[nm]=v; } render(); }; });
     var png=document.getElementById("ajPNG"); if(png) png.onclick=genPNG;
+    var plano=document.getElementById("ajPlano"); if(plano) plano.onclick=genPlanoPDF;
     var xls=document.getElementById("ajXLS"); if(xls) xls.onclick=exportXLS;
     // importar excel
     var fi=document.getElementById("ajFile");
@@ -9737,6 +9738,191 @@ window.__rvRender = render;
     state.prev.forEach(function(a){ out.push({nome:a.name,classe:"Previdência",valor:a.valor,detalhe:"Previdência (mantida)"}); });
     return out;
   }
+  // ===================== PLANO DE AJUSTE DE CARTEIRA (PDF) =====================
+  function planoContaLabel(){
+    var c = (state.conta||"").trim();
+    var nome = (state.cliente||"").trim();
+    if(c && nome) return c+" · "+nome;
+    if(c) return c;
+    if(nome) return nome;
+    return "Cliente";
+  }
+  function planoFileSafe(s){ return String(s||"Cliente").normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[^A-Za-z0-9._-]+/g,"_").replace(/^_+|_+$/g,"").slice(0,60) || "Cliente"; }
+  function planoData(){
+    var b=board(), t=totals(b);
+    function rowsFrom(items){
+      var out=[];
+      items.forEach(function(x){
+        var v = (x.mov!=null? x.mov : (x.val||0));
+        out.push({nome:x.name, classe:x.categoria||"", valor:v});
+      });
+      return out;
+    }
+    return {
+      conta: planoContaLabel(),
+      data: new Date().toLocaleDateString("pt-BR",{day:"2-digit",month:"2-digit",year:"numeric"}),
+      patrim: t.patrim, vender: t.vender, comprar: t.comprar, giro: t.giro,
+      sair: rowsFrom(b.sair),
+      entrar: rowsFrom(b.entrar),
+      manter: b.manter.map(function(x){ return {nome:x.name, classe:x.categoria||"", valor:x.val||0}; })
+    };
+  }
+  function ensureJsPDF(cb){
+    if(window.jspdf && window.jspdf.jsPDF){ cb(window.jspdf.jsPDF); return; }
+    if(window.__planoJsPDFLoading){ window.__planoJsPDFLoading.push(cb); return; }
+    window.__planoJsPDFLoading=[cb];
+    var done=false;
+    function finish(ok){ if(done) return; done=true; var q=window.__planoJsPDFLoading||[]; window.__planoJsPDFLoading=null; q.forEach(function(f){ try{ f(ok&&window.jspdf?window.jspdf.jsPDF:null); }catch(_){ } }); }
+    var to=setTimeout(function(){ finish(false); }, 7000);
+    var s=document.createElement("script");
+    s.src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js";
+    s.onload=function(){ clearTimeout(to); finish(true); };
+    s.onerror=function(){ clearTimeout(to); finish(false); };
+    document.head.appendChild(s);
+  }
+  function genPlanoPDF(){
+    try{
+      if(!state.atual){ showToast("Monte a proposta do cliente primeiro."); return; }
+      var d=planoData();
+      var hasMov = d.sair.length || d.entrar.length;
+      if(!hasMov){ showToast("Monte a proposta (algo a vender ou comprar) antes de gerar o plano."); return; }
+      var btn=document.getElementById("ajPlano"); var orig=btn?btn.textContent:"";
+      if(btn){ btn.textContent="Gerando…"; }
+      ensureJsPDF(function(JsPDF){
+        try{
+          if(JsPDF){ planoBuildPDF(JsPDF, d); }
+          else { planoPrintFallback(d); }
+        }catch(e){ try{ planoPrintFallback(d); }catch(_){ showToast("Não foi possível gerar o plano."); } }
+        finally{ if(btn){ btn.textContent=orig; } }
+      });
+    }catch(e){ showToast("Não foi possível gerar o plano."); }
+  }
+  function planoTrunc(doc, txt, maxW){
+    txt=String(txt||"");
+    if(doc.getTextWidth(txt)<=maxW) return txt;
+    while(txt.length>1 && doc.getTextWidth(txt+"…")>maxW){ txt=txt.slice(0,-1); }
+    return txt+"…";
+  }
+  function planoBuildPDF(JsPDF, d){
+    var doc=new JsPDF({unit:"pt", format:"a4"});
+    var W=doc.internal.pageSize.getWidth();
+    var H=doc.internal.pageSize.getHeight();
+    var M=44, y=0;
+    var OR=[242,101,34], INK=[18,22,42], MUT=[130,138,170], RED=[214,74,74], GRN=[40,170,110], LINE=[222,226,238];
+    function fillRect(x,yy,w,h,c){ doc.setFillColor(c[0],c[1],c[2]); doc.rect(x,yy,w,h,"F"); }
+    function setF(weight,size,c){ doc.setFont("helvetica",weight); doc.setFontSize(size); if(c) doc.setTextColor(c[0],c[1],c[2]); }
+    function ensure(space){ if(y+space>H-58){ doc.addPage(); y=M; } }
+    fillRect(0,0,W,5,OR);
+    y=M+14;
+    setF("bold",26,OR); doc.text("rico",M,y);
+    setF("bold",20,INK); doc.text("Plano de Ajuste de Carteira",M+72,y);
+    y+=20;
+    setF("normal",10.5,MUT); doc.text("Conta "+d.conta+" · "+d.data, M, y);
+    y+=14;
+    doc.setDrawColor(LINE[0],LINE[1],LINE[2]); doc.setLineWidth(1); doc.line(M,y,W-M,y);
+    y+=24;
+    var metrics=[
+      {l:"Patrimônio", v:fmtBRL(d.patrim), c:INK},
+      {l:"A vender", v:fmtBRL(d.vender), c:RED},
+      {l:"A comprar", v:fmtBRL(d.comprar), c:GRN},
+      {l:"Giro", v:fmtPct(d.giro), c:OR}
+    ];
+    var gap=12, cw=(W-2*M-3*gap)/4, ch=58;
+    metrics.forEach(function(m,i){
+      var x=M+i*(cw+gap);
+      doc.setFillColor(247,248,252); doc.roundedRect(x,y,cw,ch,8,8,"F");
+      setF("bold",8.5,MUT); doc.text(m.l.toUpperCase(), x+12, y+20);
+      setF("bold",15,m.c); doc.text(m.v, x+12, y+42);
+    });
+    y+=ch+26;
+    function section(title,color,rows,signMode){
+      ensure(40);
+      setF("bold",12.5,color); doc.text(title, M, y);
+      y+=6; doc.setDrawColor(color[0],color[1],color[2]); doc.setLineWidth(1.4); doc.line(M,y,W-M,y);
+      y+=16;
+      if(!rows.length){ setF("normal",10,MUT); doc.text("—", M, y); y+=20; return; }
+      rows.forEach(function(r){
+        ensure(22);
+        var amount;
+        if(signMode==="neg"){ amount="-"+fmtBRL(Math.abs(r.valor)); }
+        else if(signMode==="pos"){ amount="+"+fmtBRL(Math.abs(r.valor)); }
+        else { amount="manter"; }
+        setF("bold",10.5,INK); doc.text(planoTrunc(doc, r.nome, W-2*M-150), M, y);
+        setF("normal",9,MUT); doc.text(r.classe||"", M, y+13);
+        setF("bold",10.5, signMode==="neg"?RED:(signMode==="pos"?GRN:MUT));
+        doc.text(amount, W-M, y, {align:"right"});
+        y+=24;
+        doc.setDrawColor(LINE[0],LINE[1],LINE[2]); doc.setLineWidth(0.5); doc.line(M,y-7,W-M,y-7);
+      });
+      y+=12;
+    }
+    section("SAIR / REDUZIR", RED, d.sair, "neg");
+    section("ENTRAR / AUMENTAR", GRN, d.entrar, "pos");
+    section("MANTER", MUT, d.manter, "keep");
+    var pages=doc.internal.getNumberOfPages();
+    for(var p=1;p<=pages;p++){
+      doc.setPage(p);
+      doc.setDrawColor(LINE[0],LINE[1],LINE[2]); doc.setLineWidth(0.5); doc.line(M,H-40,W-M,H-40);
+      setF("normal",8,MUT);
+      doc.text("Material de apoio interno · não constitui recomendação ou oferta · gerado pelo Hub do Assessor", W/2, H-26, {align:"center"});
+    }
+    doc.save("Plano_de_Ajuste_"+planoFileSafe(state.conta||state.cliente)+".pdf");
+  }
+  function planoPrintFallback(d){
+    function rowHTML(r,sign){
+      var amt = sign==="neg" ? '<span style="color:#d64a4a;font-weight:700">-'+fmtBRL(Math.abs(r.valor))+'</span>'
+              : sign==="pos" ? '<span style="color:#28aa6e;font-weight:700">+'+fmtBRL(Math.abs(r.valor))+'</span>'
+              : '<span style="color:#828aaa;font-weight:600">manter</span>';
+      return '<div class="row"><div class="rn"><div class="nm">'+esc(r.nome)+'</div><div class="cl">'+esc(r.classe||"")+'</div></div><div class="amt">'+amt+'</div></div>';
+    }
+    function sectionHTML(title,color,rows,sign){
+      var body = rows.length ? rows.map(function(r){return rowHTML(r,sign);}).join("") : '<div class="empty">—</div>';
+      return '<div class="sec"><div class="sh" style="color:'+color+';border-color:'+color+'">'+title+'</div>'+body+'</div>';
+    }
+    var html='<!doctype html><html><head><meta charset="utf-8"><title>Plano de Ajuste de Carteira</title>'
+      +'<style>'
+      +'*{box-sizing:border-box;-webkit-print-color-adjust:exact;print-color-adjust:exact}'
+      +'body{font-family:Arial,Helvetica,sans-serif;color:#12162a;margin:0;padding:38px 44px;}'
+      +'.bar{height:5px;background:#f26522;margin:-38px -44px 22px;}'
+      +'.hd{display:flex;align-items:baseline;gap:14px;}'
+      +'.logo{font-size:26px;font-weight:800;color:#f26522;}'
+      +'.ttl{font-size:20px;font-weight:800;}'
+      +'.sub{color:#828aaa;font-size:12px;margin:8px 0 16px;}'
+      +'hr{border:none;border-top:1px solid #dee2ee;margin:0 0 18px;}'
+      +'.mets{display:flex;gap:12px;margin-bottom:24px;}'
+      +'.met{flex:1;background:#f7f8fc;border-radius:8px;padding:12px 14px;}'
+      +'.ml{font-size:9px;font-weight:700;color:#828aaa;letter-spacing:.5px;}'
+      +'.mv{font-size:16px;font-weight:800;margin-top:5px;}'
+      +'.sec{margin-bottom:22px;}'
+      +'.sh{font-size:13px;font-weight:800;border-bottom:2px solid;padding-bottom:5px;margin-bottom:10px;}'
+      +'.row{display:flex;justify-content:space-between;align-items:flex-start;padding:7px 0;border-bottom:1px solid #eef0f6;}'
+      +'.nm{font-size:11px;font-weight:700;}'
+      +'.cl{font-size:9.5px;color:#828aaa;margin-top:2px;}'
+      +'.amt{font-size:11px;white-space:nowrap;padding-left:12px;text-align:right;}'
+      +'.empty{color:#828aaa;font-size:11px;padding:6px 0;}'
+      +'.ft{margin-top:26px;border-top:1px solid #dee2ee;padding-top:10px;color:#828aaa;font-size:9px;text-align:center;}'
+      +'@media print{.noprint{display:none}}'
+      +'</style></head><body>'
+      +'<div class="bar"></div>'
+      +'<div class="hd"><div class="logo">rico</div><div class="ttl">Plano de Ajuste de Carteira</div></div>'
+      +'<div class="sub">Conta '+esc(d.conta)+' · '+esc(d.data)+'</div><hr>'
+      +'<div class="mets">'
+        +'<div class="met"><div class="ml">PATRIMÔNIO</div><div class="mv">'+esc(fmtBRL(d.patrim))+'</div></div>'
+        +'<div class="met"><div class="ml">A VENDER</div><div class="mv" style="color:#d64a4a">'+esc(fmtBRL(d.vender))+'</div></div>'
+        +'<div class="met"><div class="ml">A COMPRAR</div><div class="mv" style="color:#28aa6e">'+esc(fmtBRL(d.comprar))+'</div></div>'
+        +'<div class="met"><div class="ml">GIRO</div><div class="mv" style="color:#f26522">'+esc(fmtPct(d.giro))+'</div></div>'
+      +'</div>'
+      +sectionHTML("SAIR / REDUZIR","#d64a4a",d.sair,"neg")
+      +sectionHTML("ENTRAR / AUMENTAR","#28aa6e",d.entrar,"pos")
+      +sectionHTML("MANTER","#828aaa",d.manter,"keep")
+      +'<div class="ft">Material de apoio interno · não constitui recomendação ou oferta · gerado pelo Hub do Assessor</div>'
+      +'<script>window.onload=function(){setTimeout(function(){window.print();},250);};<\/script>'
+      +'</body></html>';
+    var w=window.open("","_blank");
+    if(!w){ showToast("Permita pop-ups para gerar o plano em PDF."); return; }
+    w.document.open(); w.document.write(html); w.document.close();
+  }
+
   function genPNG(){
     var ORDER2=["Renda Fixa","Multimercados","Renda Variável","Fundos Listados","Alternativos","Internacional","Previdência"];
     var ph=proposedHoldings(); var propTotal=ph.reduce(function(s,x){return s+x.valor;},0)||1;
