@@ -1088,6 +1088,11 @@ body.mm .ajbtn{ padding:11px 16px !important; font-size:14px !important; }
     #p-ajustes .pc-basewrap>span{ position:absolute; left:12px; top:11px; color:#6F77A8; font-weight:700; font-size:13px; }
     #p-ajustes .pc-baseinp{ padding-left:36px; width:200px; min-width:0; }
     #p-ajustes .pc-models{ display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin:-4px 0 16px; }
+    #p-ajustes .pc-setup{ background:linear-gradient(160deg,rgba(28,36,112,.32),rgba(12,17,66,.48)); border:1px solid rgba(120,130,210,.18); border-radius:18px; padding:18px; margin-bottom:20px; }
+    #p-ajustes .pc-setup .pc-id{ margin-bottom:0; justify-content:flex-start; gap:18px; }
+    #p-ajustes .pc-setup .pc-chips{ margin-left:auto; }
+    #p-ajustes .pc-setup .pc-rfsum{ margin:16px 0 0; padding-top:15px; border-top:1px solid rgba(120,130,210,.14); }
+    #p-ajustes .pc-setup .pc-models{ margin:16px 0 0; padding-top:15px; border-top:1px solid rgba(120,130,210,.14); }
     #p-ajustes .pc-preview .pc-pvrow{ margin-bottom:10px; }
     #p-ajustes .pc-pvtop{ display:flex; justify-content:space-between; gap:8px; font-size:11.5px; font-weight:700; margin-bottom:4px; }
     #p-ajustes .pc-pvpct{ font-family:'Sora',sans-serif; }
@@ -1765,11 +1770,12 @@ body.mm .ajbtn{ padding:11px 16px !important; font-size:14px !important; }
 
     /* Exporta o catálogo RV e a tabela de payoff para reuso no Propor Carteira */
     try{
-      window.__rvSyncCatalog = function(){ var cust=[]; try{ cust=JSON.parse(localStorage.getItem("hubRvCustomOps")||"[]")||[]; }catch(_){ cust=[]; } var cProt=cust.filter(function(x){return (x.kind||"protecao")==="protecao";}); var cCup=cust.filter(function(x){return x.kind==="cupom";}); var cQnt=cust.filter(function(x){return x.kind==="quanto";}); window.__rvCatalog = { ops:OPERACOES.concat(cProt), cupom:CUPOM.concat(cCup), quanto:QUANTO.concat(cQnt), custom:cust, opDetalhe:opDetalhe, cupomDetalhe:cupomDetalhe, opDetalheQuanto:opDetalheQuanto }; }; window.__rvSyncCatalog();
+      window.__rvSyncCatalog = function(){ var cust=[]; try{ cust=JSON.parse(localStorage.getItem("hubRvCustomOps")||"[]")||[]; }catch(_){ cust=[]; } var cProt=cust.filter(function(x){return (x.kind||"protecao")==="protecao";}); var cCup=cust.filter(function(x){return x.kind==="cupom";}); var cQnt=cust.filter(function(x){return x.kind==="quanto";}); var hid=[]; try{ hid=JSON.parse(localStorage.getItem("hubRvHiddenOps")||"[]")||[]; }catch(_){ } function _vh(a){ return a.filter(function(o){return hid.indexOf(o.id)<0;}); } window.__rvCatalog = { ops:_vh(OPERACOES.concat(cProt)), cupom:_vh(CUPOM.concat(cCup)), quanto:_vh(QUANTO.concat(cQnt)), custom:cust, opDetalhe:opDetalhe, cupomDetalhe:cupomDetalhe, opDetalheQuanto:opDetalheQuanto }; }; window.__rvSyncCatalog();
       window.__payoffTable = function(op,big){ try{ return payoffTable(op,!!big); }catch(e){ return ""; } };
     }catch(e){}
 
     var customSeq=0; var REG={}; var RV_CUSTOM_KEY="hubRvCustomOps"; var CUSTOM=[]; try{ CUSTOM=JSON.parse(localStorage.getItem(RV_CUSTOM_KEY)||"[]")||[]; }catch(_){ CUSTOM=[]; } CUSTOM.forEach(function(x){ var n=parseInt(String(x.id||"").replace("cust",""),10); if(!isNaN(n)&&n>customSeq) customSeq=n; }); function persistRvOps(){ try{ localStorage.setItem(RV_CUSTOM_KEY, JSON.stringify(CUSTOM)); }catch(_){ } if(window.__rvSyncCatalog) try{ window.__rvSyncCatalog(); }catch(_){ } }
+    var RV_HIDDEN_KEY="hubRvHiddenOps"; var HIDDEN=[]; try{ HIDDEN=JSON.parse(localStorage.getItem(RV_HIDDEN_KEY)||"[]")||[]; }catch(_){ HIDDEN=[]; } function persistHidden(){ try{ localStorage.setItem(RV_HIDDEN_KEY, JSON.stringify(HIDDEN)); }catch(_){ } }
     var currentTab="todos", editingId=null;
 
     function matches(op, term){ if(!term) return true; return ((op.nome||"")+" "+(op.ativo||"")+" "+(op.setor||"")+" "+(op.tipo||"")).toLowerCase().indexOf(term)>=0; }
@@ -1790,7 +1796,7 @@ body.mm .ajbtn{ padding:11px 16px !important; font-size:14px !important; }
         +'<div style="margin-top:6px">'+badge+'</div></div>'
         +'<button class="minibtn" data-add="'+key+'">+ Add</button></div>'
         +'<div style="margin-top:9px">'+payoffTable(op)+'</div>';
-      if(op&&typeof op.id==="string"&&op.id.indexOf("cust")===0) h+='<div style="display:flex;gap:8px;margin-top:9px"><button class="oc-btn" data-edit="'+op.id+'">Editar</button><button class="oc-btn del" data-del="'+op.id+'">Excluir</button></div>';
+      if(op&&op.id) h+='<div style="display:flex;gap:8px;margin-top:9px"><button class="oc-btn" data-edit="'+op.id+'">Editar</button><button class="oc-btn del" data-del="'+op.id+'">Excluir</button></div>';
       return h+'</div>';
     }
     function section(title,desc,ops,cat,term){
@@ -1821,15 +1827,19 @@ body.mm .ajbtn{ padding:11px 16px !important; font-size:14px !important; }
       var cProt=CUSTOM.filter(function(x){return (x.kind||"protecao")==="protecao";});
       var cCup=CUSTOM.filter(function(x){return x.kind==="cupom";});
       var cQnt=CUSTOM.filter(function(x){return x.kind==="quanto";});
+      try{ HIDDEN=JSON.parse(localStorage.getItem(RV_HIDDEN_KEY)||"[]")||[]; }catch(_){ }
+      function vis(arr){ return arr.filter(function(o){return HIDDEN.indexOf(o.id)<0;}); }
       var html="";
-      if(currentTab==="todos"||currentTab==="protecao") html+=section("Catálogo de proteção XP","Operações de proteção (Collar e Fence) sobre ações e índices.",OPERACOES.concat(cProt),"protecao",term);
-      if(currentTab==="todos"||currentTab==="cupom") html+=section("Operação Cupom · pré-fixado","Cupom pré-fixado condicionado a uma barreira de desarme.",CUPOM.concat(cCup),"cupom",term);
+      if(HIDDEN.length) html+='<div style="margin-bottom:12px"><button class="oc-btn" id="ocRestore" style="color:#FF8B52;border-color:rgba(255,139,82,.45)">↺ Restaurar '+HIDDEN.length+' operação(ões) padrão oculta(s)</button></div>';
+      if(currentTab==="todos"||currentTab==="protecao") html+=section("Catálogo de proteção XP","Operações de proteção (Collar e Fence) sobre ações e índices.",vis(OPERACOES.concat(cProt)),"protecao",term);
+      if(currentTab==="todos"||currentTab==="cupom") html+=section("Operação Cupom · pré-fixado","Cupom pré-fixado condicionado a uma barreira de desarme.",vis(CUPOM.concat(cCup)),"cupom",term);
       if(currentTab==="todos"||currentTab==="quanto") html+=quantoSection(term,cQnt);
       if(!html) html='<div class="oc-empty">Nenhuma operação encontrada para a busca.</div>';
       body.innerHTML=html;
+      var rb=document.getElementById("ocRestore"); if(rb) rb.onclick=function(){ HIDDEN=[]; persistHidden(); if(window.__rvSyncCatalog) try{ window.__rvSyncCatalog(); }catch(_){ } render(); };
       body.querySelectorAll("[data-add]").forEach(function(b){ b.onclick=function(){ addToCarteira(b.getAttribute("data-add")); }; });
       body.querySelectorAll("[data-edit]").forEach(function(b){ b.onclick=function(){ openForm(b.getAttribute("data-edit")); }; });
-      body.querySelectorAll("[data-del]").forEach(function(b){ b.onclick=function(){ var id=b.getAttribute("data-del"); try{ CUSTOM=JSON.parse(localStorage.getItem(RV_CUSTOM_KEY)||"[]")||[]; }catch(_){ } CUSTOM=CUSTOM.filter(function(x){return x.id!==id;}); persistRvOps(); render(); }; });
+      body.querySelectorAll("[data-del]").forEach(function(b){ b.onclick=function(){ var id=b.getAttribute("data-del"); if(id.indexOf("cust")===0){ try{ CUSTOM=JSON.parse(localStorage.getItem(RV_CUSTOM_KEY)||"[]")||[]; }catch(_){ } CUSTOM=CUSTOM.filter(function(x){return x.id!==id;}); persistRvOps(); } else { try{ HIDDEN=JSON.parse(localStorage.getItem(RV_HIDDEN_KEY)||"[]")||[]; }catch(_){ } if(HIDDEN.indexOf(id)<0) HIDDEN.push(id); persistHidden(); if(window.__rvSyncCatalog) try{ window.__rvSyncCatalog(); }catch(_){ } } render(); }; });
     }
     function addToCarteira(key){
       var e=REG[key]; if(!e) return; var op=e.op; var add=window.__drawerAdd||window.__ctorAddAtivo; if(!add) return;
@@ -1886,11 +1896,19 @@ body.mm .ajbtn{ padding:11px 16px !important; font-size:14px !important; }
       document.getElementById("ocCancel").onclick=function(){ editingId=null; document.getElementById("ocForm").innerHTML=""; };
       var nm=document.getElementById("ocfNome"); if(nm) nm.focus();
     }
+    function findAnyOp(id){ var f=CUSTOM.filter(function(x){return x.id===id;})[0]; if(f) return f; f=OPERACOES.filter(function(x){return x.id===id;})[0]; if(f) return f; f=CUPOM.filter(function(x){return x.id===id;})[0]; if(f) return f; f=QUANTO.filter(function(x){return x.id===id;})[0]; return f||null; }
+    function opToForm(op,base){
+      var o=Object.assign({}, base);
+      if(op.cupom||op.kind==="cupom"){ o.kind="cupom"; o.ativo=op.ativo||""; o.setor=op.setor||""; o.taxa=(op.taxa!=null?op.taxa:15); o.cupBarreira=(op.cupBarreira!=null?op.cupBarreira:(op.barreira!=null?op.barreira:-20)); o.cdi=(op.cdi!=null?op.cdi:null); o.nome=op.nome||""; }
+      else if(op.quanto||op.kind==="quanto"){ o.kind="quanto"; o.ativo=op.ativo||""; o.setor=op.setor||""; o.payoff=op.payoff||1; o.mult=(op.mult!=null?op.mult:1.10); o.taxa=(op.taxa!=null?op.taxa:10); o.fixing=op.fixing||""; o.nome=op.nome||""; }
+      else { o.kind="protecao"; o.nome=op.nome||""; o.ativo=op.ativo||""; o.tipo=op.tipo||"Proteção parcial"; o.setor=op.setor||""; o.protegeAte=(op.protegeAte!=null?op.protegeAte:-20); o.teto=(op.teto!=null?op.teto:35); o.tetoBarreira=(op.tetoBarreira!=null?op.tetoBarreira:16); o.barreira=(op.barreira!=null?op.barreira:135); o.descricao=op.descricao||""; }
+      return o;
+    }
     function openForm(id){
       editingId=id||null;
       var base={kind:"protecao",nome:"",ativo:"",tipo:"Proteção parcial",setor:"",protegeAte:-20,teto:35,tetoBarreira:16,barreira:135,taxa:15,cupBarreira:-20,cdi:null,payoff:1,mult:1.10,fixing:"",descricao:""};
-      var o=id?Object.assign({}, base, CUSTOM.filter(function(x){return x.id===id;})[0]):base;
-      if(!o) return; if(!o.kind) o.kind="protecao";
+      var o=base; if(id){ var found=findAnyOp(id); o=found?opToForm(found,base):base; }
+      if(!o.kind) o.kind="protecao";
       renderForm(o);
     }
     function saveForm(o){
@@ -1911,8 +1929,8 @@ body.mm .ajbtn{ padding:11px 16px !important; font-size:14px !important; }
       }
       try{ CUSTOM=JSON.parse(localStorage.getItem(RV_CUSTOM_KEY)||"[]")||[]; }catch(_){ }
       customSeq=0; CUSTOM.forEach(function(x){ var n=parseInt(String(x.id||"").replace("cust",""),10); if(!isNaN(n)&&n>customSeq) customSeq=n; });
-      if(editingId){ data.id=editingId; CUSTOM=CUSTOM.map(function(x){ return x.id===editingId?data:x; }); }
-      else { data.id="cust"+(++customSeq); CUSTOM.unshift(data); }
+      if(editingId&&editingId.indexOf("cust")===0){ data.id=editingId; CUSTOM=CUSTOM.map(function(x){ return x.id===editingId?data:x; }); }
+      else { if(editingId){ try{ HIDDEN=JSON.parse(localStorage.getItem(RV_HIDDEN_KEY)||"[]")||[]; }catch(_){ } if(HIDDEN.indexOf(editingId)<0) HIDDEN.push(editingId); persistHidden(); } data.id="cust"+(++customSeq); CUSTOM.unshift(data); }
       persistRvOps();
       editingId=null; document.getElementById("ocForm").innerHTML=""; tabs(); render();
     }
@@ -9615,7 +9633,7 @@ window.__rvRender = render;
       root.innerHTML=h; bind(); return;
     }
     var b=board(), t=totals(b);
-    h+='<div class="pc-id"><div><label class="pc-flbl">Cliente</label><input id="ajCliente" class="pc-input" type="text" value="'+esc(state.cliente)+'" placeholder="Nome do cliente"></div>'+'<div><label class="pc-flbl">Valor total da carteira</label><div class="pc-basewrap"><span>R$</span><input id="ajBase" class="pc-input pc-baseinp" type="number" step="1000" min="0" value="'+Math.round(liquidAtual())+'"></div></div>'
+    h+='<div class="pc-setup">';h+='<div class="pc-id"><div><label class="pc-flbl">Cliente</label><input id="ajCliente" class="pc-input" type="text" value="'+esc(state.cliente)+'" placeholder="Nome do cliente"></div>'+'<div><label class="pc-flbl">Valor total da carteira</label><div class="pc-basewrap"><span>R$</span><input id="ajBase" class="pc-input pc-baseinp" type="number" step="1000" min="0" value="'+Math.round(liquidAtual())+'"></div></div>'
       +'<div class="pc-chips">'
       +chip("Patrimônio",fmtBRL(t.patrim),"#cfd4ef")
       +chip("A vender",fmtBRL(t.vender),"#FF6B6B")
@@ -9627,6 +9645,7 @@ window.__rvRender = render;
     if(rfb.t>0){ h+='<div class="pc-rfsum"><span class="pc-rfsum-lbl">Renda Fixa por indexador (atual):</span>'; RFGROUPS.forEach(function(s){ if((rfb.m[s]||0)>0.5){ var col=RFCOL[s]; h+='<span class="pc-rfpill" style="border-color:'+col+'66;color:'+col+'">'+s+' '+fmtPct(rfb.m[s]/rfb.t*100)+'</span>'; } }); h+='</div>'; }
 
     h+='<div class="pc-models"><span class="pc-lbl">Propor modelo sobre a atual:</span><button data-model="Conservadora" class="ajbtn">Conservadora</button><button data-model="Moderada" class="ajbtn">Moderada</button><button data-model="Sofisticada" class="ajbtn">Sofisticada</button><button data-model="__simulador" class="ajbtn">Carteira do Simulador</button><button data-model="__reset" class="ajbtn">Limpar proposta</button></div>';
+    h+='</div>';
     h+='<div class="pc-main'+(state.gavOpen.rv?" rvwide":"")+'">';
     h+=gavetaHTML();
     h+='<div class="pc-board pc-board4">';
