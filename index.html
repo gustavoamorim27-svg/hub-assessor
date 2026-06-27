@@ -2007,8 +2007,14 @@ body.mm .ajbtn{ padding:11px 16px !important; font-size:14px !important; }
 #p-comparador .qc-val.win{color:var(--orange)}
 #p-comparador .qc-val.lose{color:var(--muted)}
 #p-comparador .qc-foot{font-size:12px;font-weight:700;text-align:center;padding-top:10px;border-top:1px solid var(--border)}
+#p-comparador .cmp-bar{max-width:1200px;margin:0 auto;padding:18px 18px 0;display:flex;gap:8px;flex-wrap:wrap}
+#p-comparador .cmp-tab{cursor:pointer;font-family:inherit;font-weight:700;font-size:13.5px;color:var(--muted);background:var(--input);border:1px solid var(--border);border-radius:10px;padding:9px 16px;transition:all .15s}
+#p-comparador .cmp-tab:hover{color:var(--white)}
+#p-comparador .cmp-tab.on{color:var(--white);background:rgba(255,78,0,.16);border-color:rgba(255,78,0,.5)}
 </style>
-<div class="qc-wrap">
+<div class="cmp-bar"><button class="cmp-tab on" data-cmptab="root">Comparador de ativos</button><button class="cmp-tab" data-cmptab="rapido">LCI/LCA &times; CDB liquido</button><button class="cmp-tab" data-cmptab="juro">Juro Real</button></div>
+<div class="cmp-panel" data-cmppanel="root"><div class="wrap" id="root"></div></div>
+<div class="cmp-panel" data-cmppanel="rapido" style="display:none"><div class="qc-wrap">
   <div class="card" style="background:var(--navy2)">
     <div class="between" style="margin-bottom:6px">
       <div class="ttl" style="margin:0">Comparacao rapida &middot; LCI/LCA &times; CDB <span class="badge">liquido</span></div>
@@ -2023,29 +2029,47 @@ body.mm .ajbtn{ padding:11px 16px !important; font-size:14px !important; }
     <div class="qc-grid" id="qcGrid"></div>
     <div class="disc" style="margin-top:16px">Considera IR regressivo sobre o rendimento do CDB conforme o prazo de resgate, sem IOF/come-cotas. A LCI/LCA e isenta de IR para pessoa fisica. Confirme as taxas vigentes antes de apresentar ao cliente. Rico &mdash; Grupo XP.</div>
   </div>
-  <div class="card" style="background:var(--navy2);margin-top:16px">
+</div></div>
+<div class="cmp-panel" data-cmppanel="juro" style="display:none"><div class="qc-wrap">
+  <div class="card" style="background:var(--navy2)">
     <div class="between" style="margin-bottom:6px">
       <div class="ttl" style="margin:0">Calculadora de Juro Real <span class="badge">Fisher</span></div>
     </div>
-    <div class="muted" style="margin-bottom:8px;line-height:1.6">Quanto a aplicacao realmente rende <b>acima da inflacao</b>. Informe a taxa nominal (bruta, % a.a.) e a inflacao esperada (IPCA, % a.a.).</div>
+    <div class="muted" style="margin-bottom:10px;line-height:1.6">Quanto a aplicacao realmente rende <b>acima da inflacao</b>. Informe a taxa <b>nominal</b> direta, ou como <b>% do CDI</b> (ajustando o CDI atual).</div>
+    <div style="display:flex;gap:8px;margin-bottom:12px">
+      <button class="cmp-tab on" data-jrmode="nom">Taxa nominal</button>
+      <button class="cmp-tab" data-jrmode="cdi">% do CDI</button>
+    </div>
     <div class="qc-inputs">
-      <label class="qc-field"><span>Taxa nominal (% a.a.)</span>
+      <label class="qc-field" data-jrf="nom"><span>Taxa nominal (% a.a.)</span>
         <div class="qc-inp"><input id="jrNom" inputmode="decimal" value="14,25"><span class="suf">%</span></div></label>
+      <label class="qc-field" data-jrf="cdi" style="display:none"><span>CDI atual (% a.a.)</span>
+        <div class="qc-inp"><input id="jrCdi" inputmode="decimal" value="14,25"><span class="suf">%</span></div></label>
+      <label class="qc-field" data-jrf="cdi" style="display:none"><span>Taxa (% do CDI)</span>
+        <div class="qc-inp"><input id="jrPct" inputmode="decimal" value="100"><span class="suf">%</span></div></label>
       <label class="qc-field"><span>Inflacao &middot; IPCA (% a.a.)</span>
         <div class="qc-inp"><input id="jrInf" inputmode="decimal" value="4,5"><span class="suf">%</span></div></label>
     </div>
     <div class="qc-grid" id="jrGrid" style="grid-template-columns:1fr"></div>
-    <div class="disc" style="margin-top:16px">Juro real pela formula de Fisher: (1 + nominal) / (1 + inflacao) - 1. A aproximacao simples (nominal - inflacao) e mostrada como referencia. Material de apoio interno.</div>
+    <div class="disc" style="margin-top:16px">Juro real pela formula de Fisher: (1 + nominal) / (1 + inflacao) - 1. No modo "% do CDI", a taxa nominal = CDI &times; (% do CDI). A aproximacao simples (nominal - inflacao) e mostrada como referencia. Material de apoio interno.</div>
   </div>
-</div>
+</div></div>
 <script>
 (function(){
   function num(v){v=(""+v).replace(/[^0-9.,-]/g,"").replace(",",".");var n=parseFloat(v);return isFinite(n)?n:0;}
   function pp(n){return n.toLocaleString("pt-BR",{minimumFractionDigits:2,maximumFractionDigits:2});}
+  var mode="nom";
+  function applyMode(){
+    var inf=document.getElementById("jrInf"); if(!inf) return; var card=inf.closest(".card"); if(!card) return;
+    card.querySelectorAll("[data-jrmode]").forEach(function(b){ b.classList.toggle("on", b.getAttribute("data-jrmode")===mode); });
+    card.querySelectorAll("[data-jrf]").forEach(function(f){ f.style.display=(f.getAttribute("data-jrf")===mode)?"":"none"; });
+  }
   function render(){
-    var nomEl=document.getElementById("jrNom"),infEl=document.getElementById("jrInf"),grid=document.getElementById("jrGrid");
-    if(!grid)return;
-    var nom=num(nomEl.value),inf=num(infEl.value);
+    var grid=document.getElementById("jrGrid"); if(!grid) return;
+    var inf=num((document.getElementById("jrInf")||{}).value);
+    var nom, extra="";
+    if(mode==="cdi"){ var cdi=num((document.getElementById("jrCdi")||{}).value), pct=num((document.getElementById("jrPct")||{}).value); nom=cdi*pct/100; extra='<div style="font-size:11.5px;color:var(--muted);text-align:center;margin-top:8px">'+pp(pct)+'% do CDI ('+pp(cdi)+'% a.a.) = taxa nominal de '+pp(nom)+'% a.a.</div>'; }
+    else { nom=num((document.getElementById("jrNom")||{}).value); }
     var real=((1+nom/100)/(1+inf/100)-1)*100;
     var aprox=nom-inf;
     var col=real>=0?"var(--orange)":"var(--green)";
@@ -2057,9 +2081,16 @@ body.mm .ajbtn{ padding:11px 16px !important; font-size:14px !important; }
         +'<div class="qc-col"><div class="qc-lbl">Inflacao</div><div class="qc-val lose">'+pp(inf)+'%</div></div>'
       +'</div>'
       +'<div class="qc-foot"><span class="muted">Aproximacao simples (nominal - inflacao): '+pp(aprox)+' p.p.</span></div>'
+      +extra
     +'</div>';
   }
-  function init(){ var n=document.getElementById("jrNom"),i=document.getElementById("jrInf"); if(!n||!i)return; n.addEventListener("input",render); i.addEventListener("input",render); render(); }
+  function init(){
+    var inf=document.getElementById("jrInf"); if(!inf) return;
+    ["jrNom","jrInf","jrCdi","jrPct"].forEach(function(id){ var e=document.getElementById(id); if(e) e.addEventListener("input",render); });
+    var card=inf.closest(".card");
+    if(card) card.querySelectorAll("[data-jrmode]").forEach(function(b){ b.addEventListener("click",function(){ mode=b.getAttribute("data-jrmode"); applyMode(); render(); }); });
+    applyMode(); render();
+  }
   if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",init);}else{init();}
 })();
 </script>
@@ -2106,7 +2137,22 @@ body.mm .ajbtn{ padding:11px 16px !important; font-size:14px !important; }
   if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",init);}else{init();}
 })();
 </script>
-<div class="wrap" id="root"></div>
+<script>
+(function(){
+  function init(){
+    var bar=document.querySelector("#p-comparador .cmp-bar"); if(!bar) return;
+    var panels=document.querySelectorAll("#p-comparador .cmp-panel");
+    bar.querySelectorAll("[data-cmptab]").forEach(function(b){
+      b.addEventListener("click",function(){
+        var t=b.getAttribute("data-cmptab");
+        bar.querySelectorAll("[data-cmptab]").forEach(function(x){ x.classList.toggle("on", x===b); });
+        panels.forEach(function(pp){ pp.style.display=(pp.getAttribute("data-cmppanel")===t)?"":"none"; });
+      });
+    });
+  }
+  if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",init);}else{init();}
+})();
+</script>
   </div>
 
   <div class="g-panel" id="p-simulador" data-tool="simulador">
