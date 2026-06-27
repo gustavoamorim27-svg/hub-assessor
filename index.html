@@ -3609,6 +3609,8 @@ function renderTotal(D){
   };
 }
 
+function _parseNum(v){ var s=String(v==null?"":v).trim().replace(",", "."); var n=parseFloat(s); return isNaN(n)?0:n; }
+function _refreshRetSums(){ try{ S.items.forEach(function(it){ var s=document.querySelector('[data-retsum="'+it.id+'"]'); if(s) s.textContent=ativoRetSummary(it); }); }catch(_){ } }
 function renderRetorno(D){
   const el=document.getElementById("retornoCard");
   const isAtual = S.template==="Atual";
@@ -3617,17 +3619,32 @@ function renderRetorno(D){
   const usar = D.usarItens;
   const multShown = usar ? D.multItens : (Number(S.cdiMult)||0);
   const fonteTxt = usar ? "calculado pelo <b style=\"color:#2BD9A6\">Retorno por ativo</b>" : "definido manualmente (% do CDI)";
+  const _ex=document.getElementById("inpCdi");
+  if(_ex){
+    var _t=document.getElementById("retTitulo"); if(_t) _t.textContent=tituloRet;
+    var _a=document.getElementById("retAAval"); if(_a) _a.textContent=fmtPct(D.retAA)+"%";
+    var _m=document.getElementById("retMultlbl"); if(_m) _m.textContent="a.a. · "+fmtPct(multShown)+"% do CDI";
+    var _g=document.getElementById("retGanho"); if(_g) _g.textContent="≈ R$ "+fmtBRL(D.ganho12)+" em 12 meses";
+    var _f=document.getElementById("retFonte"); if(_f) _f.innerHTML="Retorno "+fonteTxt+".";
+    var _c=document.getElementById("retMultCap"); if(_c) _c.textContent="% do CDI "+(usar?"(auto)":"(manual)");
+    var _n=document.getElementById("retNota"); if(_n) _n.innerHTML=notaAtual;
+    var _u=document.getElementById("inpUsarRet"); if(_u) _u.checked=!!usar;
+    var _mi=document.getElementById("inpMult"); if(_mi){ _mi.disabled=!!usar; _mi.style.opacity=usar?".5":""; if(document.activeElement!==_mi) _mi.value=fmtPct(multShown); }
+    if(document.activeElement!==_ex) _ex.value=String(S.cdi).replace(".",",");
+    var _ip=document.getElementById("inpIpca"); if(_ip && document.activeElement!==_ip) _ip.value=String(CTOR_IPCA).replace(".",",");
+    return;
+  }
   el.innerHTML=`
     <div style="display:flex; align-items:center; gap:8px; margin-bottom:12px;">
       <svg class="icon" viewBox="0 0 24 24" style="color:#2BD9A6;"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
-      <span style="color:#A9B0D6; font-weight:700; font-size:13px; letter-spacing:1px;">${tituloRet}</span>
+      <span id="retTitulo" style="color:#A9B0D6; font-weight:700; font-size:13px; letter-spacing:1px;">${tituloRet}</span>
     </div>
     <div style="display:flex; align-items:baseline; gap:10px;">
-      <span style="font-weight:800; font-size:30px; color:#2BD9A6;">${fmtPct(D.retAA)}%</span>
-      <span style="color:#A9B0D6; font-size:14px; font-weight:700;">a.a. · ${fmtPct(multShown)}% do CDI</span>
+      <span id="retAAval" style="font-weight:800; font-size:30px; color:#2BD9A6;">${fmtPct(D.retAA)}%</span>
+      <span id="retMultlbl" style="color:#A9B0D6; font-size:14px; font-weight:700;">a.a. · ${fmtPct(multShown)}% do CDI</span>
     </div>
-    <div style="font-size:13px; color:#cfd4ef; margin-top:6px;">≈ R$ ${fmtBRL(D.ganho12)} em 12 meses</div>
-    <div style="font-size:11.5px; color:#8A93D8; margin-top:6px;">Retorno ${fonteTxt}.</div>
+    <div id="retGanho" style="font-size:13px; color:#cfd4ef; margin-top:6px;">≈ R$ ${fmtBRL(D.ganho12)} em 12 meses</div>
+    <div id="retFonte" style="font-size:11.5px; color:#8A93D8; margin-top:6px;">Retorno ${fonteTxt}.</div>
     <label style="display:flex; align-items:center; gap:9px; margin-top:12px; cursor:pointer;">
       <input type="checkbox" id="inpUsarRet" ${usar?"checked":""} style="width:16px;height:16px;accent-color:#2BD9A6;cursor:pointer;">
       <span style="font-size:12.5px; color:#cfd4ef; font-weight:700;">Calcular pelo "Retorno" de cada ativo</span>
@@ -3635,21 +3652,21 @@ function renderRetorno(D){
     <div style="display:flex; gap:10px; margin-top:14px;">
       <div style="flex:1;">
         <label class="mini-lbl">CDI (% a.a.)</label>
-        <input class="mini-input num" type="number" step="0.05" value="${S.cdi}" id="inpCdi">
+        <input class="mini-input num" type="text" inputmode="decimal" value="${String(S.cdi).replace(".",",")}" id="inpCdi">
       </div>
       <div style="flex:1;">
         <label class="mini-lbl">IPCA premissa (% a.a.)</label>
-        <input class="mini-input num" type="number" step="0.1" value="${CTOR_IPCA}" id="inpIpca">
+        <input class="mini-input num" type="text" inputmode="decimal" value="${String(CTOR_IPCA).replace(".",",")}" id="inpIpca">
       </div>
       <div style="flex:1;">
-        <label class="mini-lbl">% do CDI ${usar?'(auto)':'(manual)'}</label>
-        <input class="mini-input num" type="number" step="1" value="${fmtPct(multShown)}" id="inpMult" ${usar?'disabled style="opacity:.5"':''}>
+        <label class="mini-lbl" id="retMultCap">% do CDI ${usar?'(auto)':'(manual)'}</label>
+        <input class="mini-input num" type="text" inputmode="decimal" value="${fmtPct(multShown)}" id="inpMult" ${usar?'disabled style="opacity:.5"':''}>
       </div>
-    </div>${notaAtual}`;
-  document.getElementById("inpCdi").addEventListener("input",e=>{ S.cdi=Number(e.target.value); render(); });
-  document.getElementById("inpIpca").addEventListener("input",e=>{ CTOR_IPCA=Number(e.target.value)||0; render(); });
+    </div><div id="retNota">${notaAtual}</div>`;
+  document.getElementById("inpCdi").addEventListener("input",e=>{ S.cdi=_parseNum(e.target.value); updateLight(); _refreshRetSums(); });
+  document.getElementById("inpIpca").addEventListener("input",e=>{ CTOR_IPCA=_parseNum(e.target.value); updateLight(); _refreshRetSums(); });
   const um=document.getElementById("inpUsarRet"); if(um) um.addEventListener("change",e=>{ S.usarRetornoAtivo=!!e.target.checked; render(); });
-  const im=document.getElementById("inpMult"); if(im) im.addEventListener("input",e=>{ if(!S.usarRetornoAtivo){ S.cdiMult=Number(e.target.value); updateLight(); } });
+  const im=document.getElementById("inpMult"); if(im) im.addEventListener("input",e=>{ if(!S.usarRetornoAtivo){ S.cdiMult=_parseNum(e.target.value); updateLight(); } });
 }
 
 function alfaResultHTML(D){
