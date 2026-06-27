@@ -1166,6 +1166,70 @@ html.theme-light .pf, html.theme-light .lf-save, html.theme-light .oc-save,
 html.theme-light .ader-prof.on, html.theme-light .theme-opt.on,
 html.theme-light .rv-toggle-opt.active, html.theme-light .rent-mode-opt.active{ color:#fff !important; }
 </style>
+<style>
+/* ===== TEMA CLARO — round 5: cards brancos uniformes, sem branco/azul, sliders ===== */
+html.theme-light{
+  --navy:#EDF0F6; --azul-1:#EDF0F6;
+  --navy2:#FFFFFF; --azul-2:#FFFFFF; --azul-3:#FFFFFF;
+}
+/* Todas as caixas -> branco com borda sutil (uniforme entre abas) */
+html.theme-light .card, html.theme-light .tpl-btn, html.theme-light .pc-chip,
+html.theme-light .pc-col, html.theme-light .pc-drawer, html.theme-light .pc-setup,
+html.theme-light .pc-libcard, html.theme-light .pc-gavcard, html.theme-light .pcdr-card,
+html.theme-light .lib-card, html.theme-light .rvc-metric, html.theme-light .rvc-main-desc,
+html.theme-light .rvc-sc, html.theme-light .rvc-graf, html.theme-light .rvc-cen,
+html.theme-light .rv-catempty, html.theme-light .pc-gavnomatch, html.theme-light .pc-gavrv-empty{
+  background:#FFFFFF !important; border-color:rgba(11,16,51,.12) !important; }
+
+/* Fundos escuros/azuis inline -> branco */
+html.theme-light [style*="rgba(28,36,112"], html.theme-light [style*="rgba(12,17,66"],
+html.theme-light [style*="rgba(20,28,87"], html.theme-light [style*="rgba(0,0,0,.22"],
+html.theme-light [style*="rgba(0,0,0,.24"], html.theme-light [style*="rgba(0,0,0,.25"],
+html.theme-light [style*="rgba(0,0,0,.28"], html.theme-light [style*="rgba(0,0,0,.3"]{ background:#FFFFFF !important; }
+
+/* Texto branco (classes) -> navy escuro */
+html.theme-light .pcdr-name, html.theme-light .pcdr-title, html.theme-light .pc-input,
+html.theme-light .pc-drawerhead, html.theme-light .pc-val, html.theme-light .pc-pvtot,
+html.theme-light .pc-gavtitle, html.theme-light .pc-gavsearch-inp, html.theme-light .pc-rvname,
+html.theme-light .lib-card-name, html.theme-light .lib-search-inp, html.theme-light .oc-title,
+html.theme-light .oc-search, html.theme-light .oc-sec-t,
+html.theme-light .import-title, html.theme-light .ip-resumo,
+html.theme-light [data-tool="simulador"] .check.on .lbl-name,
+html.theme-light [data-tool="simulador"] .kpi.branco .v,
+html.theme-light [data-tool="simulador"] .alloc-cat .cat-name,
+html.theme-light [data-tool="simulador"] .alloc-row .name,
+html.theme-light [data-tool="simulador"] .donut-wrap .donut-center .val,
+html.theme-light [data-tool="simulador"] .im-info .im-tipo,
+html.theme-light [data-tool="simulador"] .im-tot .n,
+html.theme-light [data-tool="simulador"] .ie-row .ie-uf,
+html.theme-light .lib-form input, html.theme-light .lib-form select,
+html.theme-light .oc-form input, html.theme-light .oc-form select, html.theme-light .oc-form textarea,
+html.theme-light .patrimonio-total .pt-hoje strong, html.theme-light .pt-leg .pl b{ color:#0B1033 !important; }
+
+/* Inputs internos -> fundo branco, texto navy */
+html.theme-light .inp, html.theme-light .mini-input, html.theme-light .num-input,
+html.theme-light .pc-input, html.theme-light .pc-val, html.theme-light .pc-gavsearch-inp,
+html.theme-light .lib-search-inp, html.theme-light .oc-search, html.theme-light .lib-form input,
+html.theme-light .lib-form select, html.theme-light .oc-form input, html.theme-light .oc-form select,
+html.theme-light .oc-form textarea, html.theme-light [data-tool="simulador"] .rd-field .num-input,
+html.theme-light [data-tool="simulador"] .prazo-idade .num-input{
+  background:#FFFFFF !important; color:#0B1033 !important; border-color:rgba(11,16,51,.18) !important; }
+html.theme-light .inp::placeholder, html.theme-light .num-input::placeholder{ color:#7A82A6 !important; }
+
+/* Sliders (range) visiveis no claro: trilha cinza */
+html.theme-light input[type="range"]{ -webkit-appearance:none; appearance:none; background:transparent; }
+html.theme-light input[type="range"]::-webkit-slider-runnable-track{ background:#D7DCEA !important; height:6px; border-radius:6px; }
+html.theme-light input[type="range"]::-moz-range-track{ background:#D7DCEA !important; height:6px; border-radius:6px; }
+html.theme-light input[type="range"]::-webkit-slider-thumb{ -webkit-appearance:none; appearance:none; margin-top:-5px; }
+
+/* Re-afirma branco apenas sobre laranja */
+html.theme-light .btn-o, html.theme-light .badge, html.theme-light .g-badge,
+html.theme-light .tab.active, html.theme-light .ajbtn.on, html.theme-light .ajbtn.primary,
+html.theme-light .oc-new, html.theme-light .oc-save, html.theme-light .lf-save,
+html.theme-light .oc-payoffhdr .pf, html.theme-light .pf, html.theme-light .rhpm-primary,
+html.theme-light .ader-prof.on, html.theme-light .theme-opt.on,
+html.theme-light .rv-toggle-opt.active, html.theme-light [data-tool="simulador"] .rent-mode-opt.active{ color:#fff !important; }
+</style>
 </head>
 <body>
 
