@@ -1230,6 +1230,36 @@ html.theme-light .oc-payoffhdr .pf, html.theme-light .pf, html.theme-light .rhpm
 html.theme-light .ader-prof.on, html.theme-light .theme-opt.on,
 html.theme-light .rv-toggle-opt.active, html.theme-light [data-tool="simulador"] .rent-mode-opt.active{ color:#fff !important; }
 </style>
+<style>
+/* ===== TEMA CLARO — round 6: caixas brancas (benchmark Retorno Estimado), letras pretas ===== */
+/* Todas as caixas como o card de Retorno Estimado: branco + borda sutil */
+html.theme-light [data-tool="construtor"] .item, html.theme-light [data-tool="construtor-rv"] .item,
+html.theme-light .item, html.theme-light .ret-box, html.theme-light .ret-inner, html.theme-light .ret-card,
+html.theme-light .alloc-row, html.theme-light .check, html.theme-light .goal-card, html.theme-light .im-info{
+  background:#FFFFFF !important; border:1px solid rgba(11,16,51,.12) !important; }
+html.theme-light [style*="rgba(0,0,0,.12"], html.theme-light [style*="rgba(0,0,0,.14"],
+html.theme-light [style*="rgba(0,0,0,.16"], html.theme-light [style*="rgba(0,0,0,.18"],
+html.theme-light [style*="rgba(0,0,0,.2)"], html.theme-light [style*="rgba(0,0,0,.21"]{ background:#FFFFFF !important; }
+
+/* Letras pretas: nomes, valores, rotulos e textos secundarios */
+html.theme-light .lbl-name, html.theme-light .mini-input, html.theme-light .sub, html.theme-light .lbl,
+html.theme-light .mini-lbl, html.theme-light .ret-pre, html.theme-light .ret-suf, html.theme-light .ret-hint,
+html.theme-light .valhint, html.theme-light .det-input, html.theme-light .detinput, html.theme-light .estlabel,
+html.theme-light .valor-rs, html.theme-light .pct-suffix, html.theme-light .pctsym, html.theme-light .disclaimer,
+html.theme-light .tag-zone-hint, html.theme-light .item, html.theme-light .name, html.theme-light .cat-name,
+html.theme-light .pre, html.theme-light .legend{ color:#111111 !important; }
+
+/* Laranja como TEXTO nao funciona no claro -> preto (botoes laranja e logo continuam) */
+html.theme-light [style*="color:#FF4E00"], html.theme-light [style*="color: #FF4E00"],
+html.theme-light [style*="color:#F26522"], html.theme-light [style*="color: #F26522"],
+html.theme-light [style*="color:#FF6B2C"], html.theme-light [style*="color:#FF8A4C"],
+html.theme-light [style*="color:#FF8B52"], html.theme-light [style*="color:#FF6B6B"],
+html.theme-light [style*="color:#ff4e00"], html.theme-light [style*="color:#f26522"]{ color:#111111 !important; }
+
+/* Verde de retorno permanece (positivo, legivel) */
+html.theme-light .ret-lbl{ color:#067A53 !important; }
+html.theme-light .ret-summary{ color:#047857 !important; }
+</style>
 </head>
 <body>
 
