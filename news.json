@@ -1,85 +1,15 @@
 {
-  "updated": "26/06/2026 15:08",
+  "updated": "27/06/2026 09:08",
   "items": [
-    {
-      "region": "nacional",
-      "title": "Ibovespa fecha em alta com Vale e Petrobras; dolar recua",
-      "resumo": "Bolsa avanca puxada por bancos e mineradoras enquanto o dolar comercial cede apos dados de inflacao.",
-      "source": "InfoMoney",
-      "date": "25 jun 2026",
-      "url": "https://www.infomoney.com.br/mercados/ibovespa-hoje-bolsa-de-valores-ao-vivo-25062026/"
-    },
-    {
-      "region": "nacional",
-      "title": "Banco Central eleva projecao de PIB de 2026 para 2,0%",
-      "resumo": "Autoridade monetaria revisou o crescimento de 1,6% para 2,0%, citando aceleracao da atividade e mercado de trabalho resiliente.",
-      "source": "InfoMoney",
-      "date": "25 jun 2026",
-      "url": "https://www.infomoney.com.br/mercados/ibovespa-hoje-bolsa-de-valores-ao-vivo-25062026/"
-    },
-    {
-      "region": "nacional",
-      "title": "IPCA-15 sobe 0,41% em junho e desacelera ante maio",
-      "resumo": "Previa da inflacao avancou 0,41% no mes, ante 0,62% em maio, reforcando o alivio nos precos.",
-      "source": "InfoMoney",
-      "date": "25 jun 2026",
-      "url": "https://www.infomoney.com.br/mercados/ibovespa-hoje-bolsa-de-valores-ao-vivo-25062026/"
-    },
-    {
-      "region": "nacional",
-      "title": "Copom corta Selic para 14,25% e divulga ata da reuniao",
-      "resumo": "Comite reduziu a taxa basica em 0,25 ponto e detalhou o cenario na ata divulgada nesta semana.",
-      "source": "Banco Central",
-      "date": "24 jun 2026",
-      "url": "https://www.bcb.gov.br/"
-    },
-    {
-      "region": "nacional",
-      "title": "Ibovespa recua com Petrobras e Vale; dolar sobe a R$ 5,20",
-      "resumo": "Na vespera, o indice caiu pressionado por blue chips enquanto a moeda americana voltava aos R$ 5,20.",
-      "source": "Money Times",
-      "date": "24 jun 2026",
-      "url": "https://www.moneytimes.com.br/tempo-real-ibovespa-hoje-mercado-ao-vivo-24-06-2026-jals-lils-apsa/"
-    },
-    {
-      "region": "internacional",
-      "title": "Nasdaq caminha para queda de 4% na semana com fuga de chips",
-      "resumo": "Indice de tecnologia recua com temores sobre gastos em IA; KOSPI e Nikkei despencam na Asia.",
-      "source": "CNBC",
-      "date": "26 jun 2026",
-      "url": "https://www.cnbc.com/2026/06/25/stock-market-today-live-updates.html"
-    },
-    {
-      "region": "internacional",
-      "title": "Apple cai 6% apos elevar precos de iPads e MacBooks",
-      "resumo": "Companhia subiu precos para compensar a alta nos custos de chips de memoria e armazenamento.",
-      "source": "Reuters",
-      "date": "25 jun 2026",
-      "url": "https://www.investing.com/news/economy-news/nasdaq-futures-jump-2-as-micron-qualcomm-forecasts-relieve-investors-4759839"
-    },
-    {
-      "region": "internacional",
-      "title": "Micron dispara 15,7% apos balanco acima do esperado",
-      "resumo": "Resultados da fabricante de chips superaram Wall Street e impulsionaram o indice de semicondutores.",
-      "source": "CNBC",
-      "date": "24 jun 2026",
-      "url": "https://www.cnbc.com/2026/06/24/stock-market-today-live-updates.html"
-    },
-    {
-      "region": "internacional",
-      "title": "Petroleo cai mais de 4% com WTI e Brent em forte baixa",
-      "resumo": "WTI para agosto recuou 4,1% e o Brent 4,5%, pressionando o setor de energia.",
-      "source": "CNBC",
-      "date": "26 jun 2026",
-      "url": "https://www.cnbc.com/2026/06/25/stock-market-today-live-updates.html"
-    },
-    {
-      "region": "internacional",
-      "title": "Fed: Kashkari passa a prever uma alta de juros neste ano",
-      "resumo": "Presidente do Fed de Minneapolis revisou a perspectiva e agora espera elevacao da taxa em 2026.",
-      "source": "CNBC",
-      "date": "26 jun 2026",
-      "url": "https://www.cnbc.com/2026/06/25/stock-market-today-live-updates.html"
-    }
+    { "region": "nacional", "title": "Ibovespa sobe 0,76% e fecha a semana perto de zerar as perdas de junho", "resumo": "Indice encerrou sexta aos 173.295 pontos, com alta de 2,95% na semana e 7,55% no ano.", "source": "Suno", "date": "26 jun 2026", "url": "https://www.suno.com.br/noticias/ibovespa-hoje-26-junho-2026-alta-semana-mt/" },
+    { "region": "nacional", "title": "Boletim Focus eleva projecao da Selic para 14% em 2026", "resumo": "Mercado revisou os juros para cima pela terceira semana seguida, com Selic vista em 12% em 2027.", "source": "InfoMoney", "date": "22 jun 2026", "url": "https://www.infomoney.com.br/economia/boletim-focus-eleva-projecoes-de-inflacao-e-selic-para-14-em-2026/" },
+    { "region": "nacional", "title": "Mercado eleva projecao de inflacao e ve Selic em 14% ao ano", "resumo": "Analistas seguem preocupados com a pressao inflacionaria e esperam juros altos por mais tempo.", "source": "Agencia Brasil", "date": "23 jun 2026", "url": "https://agenciabrasil.ebc.com.br/economia/noticia/2026-06/mercado-eleva-projecao-de-inflacao-e-ve-selic-em-14-ao-ano-em-2026" },
+    { "region": "nacional", "title": "Dolar recua ante o real com dados benignos de inflacao nos EUA", "resumo": "Moeda americana cedeu na sexta, sustentada por fluxo cambial favoravel ao Brasil.", "source": "Investing.com", "date": "26 jun 2026", "url": "https://br.investing.com/currencies/usd-brl" },
+    { "region": "nacional", "title": "Focus: projecao do IPCA para 2026 sobe para 5,33%", "resumo": "Estimativa de inflacao acumula 15 semanas de revisoes para cima, acima do teto da meta.", "source": "ASA", "date": "22 jun 2026", "url": "https://www.asa.com.br/central-de-conteudos/macroeconomia/mercado-eleva-projecao-selic-2026" },
+    { "region": "internacional", "title": "Nasdaq cai pela 5a sessao seguida com tombo das acoes de chips", "resumo": "Investidores giraram para setores defensivos em meio a temores sobre custos de IA.", "source": "CNBC", "date": "26 jun 2026", "url": "https://www.cnbc.com/2026/06/25/stock-market-today-live-updates.html" },
+    { "region": "internacional", "title": "S&P 500 e Nasdaq de lado em meio a venda no setor de tecnologia", "resumo": "Nasdaq fechou a 25.297 e S&P 500 a 7.354; ambos recuaram na semana.", "source": "TheStreet", "date": "26 jun 2026", "url": "https://www.thestreet.com/stock-market-today/stock-market-today-dow-jones-sp-500-nasdaq-updates-june-26-2026" },
+    { "region": "internacional", "title": "Fed mantem juros em 3,50%-3,75% e adota tom mais duro", "resumo": "Primeira reuniao sob Kevin Warsh foi lida como hawkish e elevou juros de curto prazo.", "source": "T. Rowe Price", "date": "26 jun 2026", "url": "https://www.troweprice.com/personal-investing/resources/insights/global-markets-weekly-update.html" },
+    { "region": "internacional", "title": "Petroleo Brent recua ao menor nivel desde fevereiro", "resumo": "Brent caiu para cerca de US$ 72 com avanco de acordo EUA-Ira e retomada de exportacoes no Golfo.", "source": "Fortune", "date": "26 jun 2026", "url": "https://fortune.com/article/price-of-oil-06-26-2026/" },
+    { "region": "internacional", "title": "Mal-estar nas techs persiste com temores de custos e gastos em IA", "resumo": "Acoes de tecnologia seguem pressionadas por preocupacoes com gastos em data centers de IA.", "source": "Charles Schwab", "date": "26 jun 2026", "url": "https://www.schwab.com/learn/story/stock-market-update-open" }
   ]
 }
