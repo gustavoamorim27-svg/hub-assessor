@@ -1074,6 +1074,61 @@ html.theme-light .ajbtn{ color:#0B1033 !important; background:#FFFFFF !important
 /* Cartao interno de retorno: borda/fundo claros */
 html.theme-light .ret-box, html.theme-light .ret-inner, html.theme-light .ret-card{ background:#F4F6FB !important; }
 </style>
+<style>
+/* ===== TEMA CLARO — round 3: texto navy escuro, verdes escuros, caixas cinza ===== */
+html.theme-light{
+  --mu:#2A3658; --muted:#2A3658; --cinza:#2A3658; --cinza-2:#4A5578;
+  --navy2:#F2F4F8; --azul-2:#F2F4F8; --azul-3:#F2F4F8;
+}
+/* texto secundario -> navy escuro */
+html.theme-light .sub, html.theme-light .lbl, html.theme-light .mini-lbl, html.theme-light .ret-pre,
+html.theme-light .ret-suf, html.theme-light .ret-hint, html.theme-light .valhint, html.theme-light .estlabel,
+html.theme-light .det-input, html.theme-light .detinput, html.theme-light .pc-lbl, html.theme-light .pc-sub,
+html.theme-light .pc-flbl, html.theme-light .pc-prompt, html.theme-light .ad-sub, html.theme-light .ad-up-desc,
+html.theme-light .pc-rvmeta, html.theme-light .rvm-meta, html.theme-light .lib-card-desc, html.theme-light .lib-sec,
+html.theme-light .pc-libdet, html.theme-light .pc-gavdet, html.theme-light .lib-card-liq, html.theme-light .pct-suffix,
+html.theme-light .pctsym, html.theme-light .tag-zone-hint, html.theme-light .disclaimer, html.theme-light .valor-rs,
+html.theme-light .legend, html.theme-light .pre, html.theme-light .item-drag, html.theme-light .fp-drag,
+html.theme-light .del-btn, html.theme-light .delbtn, html.theme-light .mini-btn, html.theme-light .rent-mode-opt{ color:#243152 !important; }
+
+/* cores inline apagadas -> navy escuro */
+html.theme-light [style*="#A9B0D6"], html.theme-light [style*="#cfd4ef"], html.theme-light [style*="#6F77A8"],
+html.theme-light [style*="#9AA2D0"], html.theme-light [style*="#A9B4FF"], html.theme-light [style*="#B6BDF0"],
+html.theme-light [style*="#8A93D8"], html.theme-light [style*="#5A6294"], html.theme-light [style*="#7C8CFF"],
+html.theme-light [style*="#7E87BE"], html.theme-light [style*="#7F88B8"], html.theme-light [style*="#eef0fb"],
+html.theme-light [style*="#cdd2f0"], html.theme-light [style*="#D7DBF4"]{ color:#243152 !important; }
+
+/* verdes inline -> verde escuro */
+html.theme-light [style*="color:#2BD9A6"], html.theme-light [style*="color: #2BD9A6"],
+html.theme-light [style*="color:#8FE9CB"], html.theme-light [style*="color: #8FE9CB"],
+html.theme-light [style*="color:#34D399"], html.theme-light [style*="color:#3DD68C"]{ color:#067A53 !important; }
+html.theme-light .ret-lbl, html.theme-light .ret-summary{ color:#067A53 !important; }
+
+/* caixas: cinza claro, nunca azul */
+html.theme-light .card{ background:#F2F4F8 !important; border-color:rgba(11,16,51,.10) !important; }
+html.theme-light .pc-chip, html.theme-light .pc-drawer, html.theme-light .pc-col, html.theme-light .pc-setup,
+html.theme-light .pc-gavnomatch, html.theme-light .pc-gavrv-empty, html.theme-light .lib-card, html.theme-light .lib-chip,
+html.theme-light .rvc-metric, html.theme-light .rvc-main-desc, html.theme-light .rvc-sc, html.theme-light .rvc-graf,
+html.theme-light .rvc-cen, html.theme-light .rv-catempty{
+  background:#F2F4F8 !important; border-color:rgba(11,16,51,.12) !important; color:#0B1033 !important; }
+html.theme-light .pc-libcard, html.theme-light .pc-gavcard{ background:#FFFFFF !important; border-color:rgba(11,16,51,.10) !important; }
+html.theme-light .pc-drawerhead, html.theme-light .pc-gavtitle, html.theme-light .pc-libname, html.theme-light .pc-gavname,
+html.theme-light .lib-card-name{ color:#0B1033 !important; }
+
+/* fundos azuis/escuros inline -> cinza claro */
+html.theme-light [style*="rgba(28,36,112"], html.theme-light [style*="rgba(12,17,66"],
+html.theme-light [style*="rgba(20,28,87"], html.theme-light [style*="rgba(0,0,0,.22"],
+html.theme-light [style*="rgba(0,0,0,0.22"]{ background:#F2F4F8 !important; }
+/* overlays brancos translucidos -> cinza visivel */
+html.theme-light [style*="rgba(255,255,255,.08"], html.theme-light [style*="rgba(255,255,255,.06"],
+html.theme-light [style*="rgba(255,255,255,.05"], html.theme-light [style*="rgba(255,255,255,.04"]{ background:rgba(11,16,51,.07) !important; }
+
+/* gavetas / inputs internos */
+html.theme-light .pc-gavsearch-inp{ background:#FFFFFF !important; color:#0B1033 !important; border-color:rgba(11,16,51,.18) !important; }
+html.theme-light .pc-gavsearch-inp::placeholder{ color:#7A82A6 !important; }
+html.theme-light .sgv-lbl{ color:#0B1033 !important; }
+html.theme-light .pc-gavsearch-ic{ color:#5B6485 !important; }
+</style>
 </head>
 <body>
 
