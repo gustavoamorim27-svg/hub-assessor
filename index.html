@@ -1467,8 +1467,8 @@ body.mm .ajbtn{ padding:11px 16px !important; font-size:14px !important; }
           } else if(emp){ emp.style.display="none"; }
         }
         function render(){
-          var box=document.getElementById("libChips"); if(!box) return; var h=""; var ALL=allItems(); window.__LIBDATA=ALL;
-          ORDER.forEach(function(cl){ var items=ALL.map(function(a,i){return {a:a,i:i};}).filter(function(o){return o.a.classe===cl;}); if(!items.length) return; var c=COL[cl]||"#9AA2D0"; h+='<div class="lib-sec" style="color:'+c+'">'+esc(cl)+'</div>'; items.forEach(function(o){ var a=o.a; var isC=!!a.custom; h+='<div class="lib-card" draggable="true" data-libcard="'+o.i+'" data-libfind="'+esc((a.nome||"")+" "+(a.detalhe||"")+" "+(a.classe||"")+" "+(a.liq||""))+'" title="Arraste para a carteira ou clique em + Add" style="border-left:3px solid '+c+'">'+'<div class="lib-card-top"><div class="lib-card-name"><span style="color:'+c+'">●</span> '+esc(a.nome)+(isC?' <span style="font-size:9.5px;color:'+c+';border:1px solid '+c+';border-radius:5px;padding:1px 5px;margin-left:4px;vertical-align:middle;">MEU</span>':'')+'</div><button class="lib-add" data-libadd="'+o.i+'">+ Add</button></div>'+(a.detalhe?'<div class="lib-card-desc">'+esc(a.detalhe)+'</div>':'')+(a.liq?'<div class="lib-card-liq">Liquidez: '+esc(a.liq)+'</div>':'')+(isC?'<div style="display:flex;gap:8px;margin-top:8px"><button class="lib-mini" data-libedit="'+esc(a.id)+'">Editar</button><button class="lib-mini del" data-libdel="'+esc(a.id)+'">Excluir</button></div>':'')+'</div>'; }); });
+          var box=document.getElementById("libChips"); if(!box) return; try{ CUSTOMLIB=JSON.parse(localStorage.getItem("hubCustomLib")||"[]")||[]; }catch(_){ } var h=""; var ALL=allItems(); window.__LIBDATA=ALL;
+          ORDER.forEach(function(cl){ var items=ALL.map(function(a,i){return {a:a,i:i};}).filter(function(o){return o.a.classe===cl;}); if(!items.length) return; var c=COL[cl]||"#9AA2D0"; h+='<div class="lib-sec" style="color:'+c+'">'+esc(cl)+'</div>'; items.forEach(function(o){ var a=o.a; var isC=!!a.custom; h+='<div class="lib-card" draggable="true" data-libcard="'+o.i+'" data-libfind="'+esc((a.nome||"")+" "+(a.detalhe||"")+" "+(a.classe||"")+" "+(a.liq||""))+'" title="Arraste para a carteira ou clique em + Add" style="border-left:3px solid '+c+'">'+'<div class="lib-card-top"><div class="lib-card-name"><span style="color:'+c+'">●</span> '+esc(a.nome)+'</div><button class="lib-add" data-libadd="'+o.i+'">+ Add</button></div>'+(a.detalhe?'<div class="lib-card-desc">'+esc(a.detalhe)+'</div>':'')+(a.liq?'<div class="lib-card-liq">Liquidez: '+esc(a.liq)+'</div>':'')+(isC?'<div style="display:flex;gap:8px;margin-top:8px"><button class="lib-mini" data-libedit="'+esc(a.id)+'">Editar</button><button class="lib-mini del" data-libdel="'+esc(a.id)+'">Excluir</button></div>':'')+'</div>'; }); });
           box.innerHTML=h;
           box.querySelectorAll(".lib-card").forEach(function(card){
             var idx=+card.getAttribute("data-libcard");
@@ -1480,7 +1480,7 @@ body.mm .ajbtn{ padding:11px 16px !important; font-size:14px !important; }
             b.onclick=function(e){ e.stopPropagation(); var a=allItems()[idx]; var add=window.__drawerAdd||window.__ctorAddAtivo; if(add&&a){ var op=a.bova?window.__BOVA_OP:null; add(a.classe,a.nome,a.detalhe,a.liq,!!op,op); } };
           });
           box.querySelectorAll("[data-libedit]").forEach(function(b){ b.onclick=function(e){ e.stopPropagation(); openLibForm(b.getAttribute("data-libedit")); }; });
-          box.querySelectorAll("[data-libdel]").forEach(function(b){ b.onclick=function(e){ e.stopPropagation(); var id=b.getAttribute("data-libdel"); CUSTOMLIB=CUSTOMLIB.filter(function(x){return x.id!==id;}); persist(); render(); }; });
+          box.querySelectorAll("[data-libdel]").forEach(function(b){ b.onclick=function(e){ e.stopPropagation(); var id=b.getAttribute("data-libdel"); try{ CUSTOMLIB=JSON.parse(localStorage.getItem("hubCustomLib")||"[]")||[]; }catch(_){ } CUSTOMLIB=CUSTOMLIB.filter(function(x){return x.id!==id;}); persist(); render(); }; });
           libFilter();
         }
         function openLibForm(id){
@@ -1494,7 +1494,7 @@ body.mm .ajbtn{ padding:11px 16px !important; font-size:14px !important; }
             +'<label>Detalhe<input id="lfDet" value="'+esc(o.detalhe)+'" placeholder="Ex.: 110% do CDI · 2 anos"></label>'
             +'<label>Liquidez<input id="lfLiq" value="'+esc(o.liq)+'" placeholder="Ex.: No vencimento / D+0"></label>'
             +'<div class="lib-form-acts"><button class="lf-save" id="lfSave">Salvar</button><button class="lf-cancel" id="lfCancel">Cancelar</button></div></div>';
-          document.getElementById("lfSave").onclick=function(){ var nome=document.getElementById("lfNome").value.trim(); if(!nome){ document.getElementById("lfNome").focus(); return; } var data={ classe:document.getElementById("lfClasse").value, nome:nome, detalhe:document.getElementById("lfDet").value.trim(), liq:document.getElementById("lfLiq").value.trim(), custom:true }; if(editing){ data.id=o.id; CUSTOMLIB=CUSTOMLIB.map(function(x){return x.id===o.id?data:x;}); } else { data.id="u"+(++libSeq); CUSTOMLIB.push(data); } persist(); document.getElementById("libForm").innerHTML=""; render(); };
+          document.getElementById("lfSave").onclick=function(){ var nome=document.getElementById("lfNome").value.trim(); if(!nome){ document.getElementById("lfNome").focus(); return; } var data={ classe:document.getElementById("lfClasse").value, nome:nome, detalhe:document.getElementById("lfDet").value.trim(), liq:document.getElementById("lfLiq").value.trim(), custom:true }; try{ CUSTOMLIB=JSON.parse(localStorage.getItem("hubCustomLib")||"[]")||[]; }catch(_){ } libSeq=0; CUSTOMLIB.forEach(function(x){ var n=parseInt(String(x.id||"").replace("u",""),10); if(!isNaN(n)&&n>libSeq) libSeq=n; }); if(editing){ data.id=o.id; CUSTOMLIB=CUSTOMLIB.map(function(x){return x.id===o.id?data:x;}); } else { data.id="u"+(++libSeq); CUSTOMLIB.push(data); } persist(); document.getElementById("libForm").innerHTML=""; render(); };
           document.getElementById("lfCancel").onclick=function(){ document.getElementById("libForm").innerHTML=""; };
           document.getElementById("lfNome").focus();
         }
@@ -1790,7 +1790,7 @@ body.mm .ajbtn{ padding:11px 16px !important; font-size:14px !important; }
         +'<div style="margin-top:6px">'+badge+'</div></div>'
         +'<button class="minibtn" data-add="'+key+'">+ Add</button></div>'
         +'<div style="margin-top:9px">'+payoffTable(op)+'</div>';
-      if(cat==="custom") h+='<div style="display:flex;gap:8px;margin-top:9px"><button class="oc-btn" data-edit="'+op.id+'">Editar</button><button class="oc-btn del" data-del="'+op.id+'">Excluir</button></div>';
+      if(op&&typeof op.id==="string"&&op.id.indexOf("cust")===0) h+='<div style="display:flex;gap:8px;margin-top:9px"><button class="oc-btn" data-edit="'+op.id+'">Editar</button><button class="oc-btn del" data-del="'+op.id+'">Excluir</button></div>';
       return h+'</div>';
     }
     function section(title,desc,ops,cat,term){
@@ -1800,8 +1800,8 @@ body.mm .ajbtn{ padding:11px 16px !important; font-size:14px !important; }
         +(desc?'<div class="oc-sec-d">'+desc+'</div>':'')
         +'<div class="opgrid">'+list.map(function(o){return card(o,cat);}).join("")+'</div></div>';
     }
-    function quantoSection(term){
-      var list=QUANTO.filter(function(o){return matches(o,term);});
+    function quantoSection(term,extra){
+      var list=QUANTO.concat(extra||[]).filter(function(o){return matches(o,term);});
       if(!list.length) return "";
       var h='<div class="oc-sec"><div class="oc-sec-h"><span class="oc-sec-t">Derivativos Quanto · Internacional</span></div>'
         +'<div class="oc-sec-d">S&amp;P 500 e Nasdaq em moeda local (sem risco cambial). Payoff 2 (taxa fixa) modelado como piso garantido + alta 1:1 ilimitada — confirme as condições na lâmina.</div>';
@@ -1815,21 +1815,21 @@ body.mm .ajbtn{ padding:11px 16px !important; font-size:14px !important; }
     }
     function render(){
       REG={};
+      try{ CUSTOM=JSON.parse(localStorage.getItem(RV_CUSTOM_KEY)||"[]")||[]; }catch(_){ }
       var term=(document.getElementById("ocSearch").value||"").toLowerCase().trim();
       var body=document.getElementById("ocBody");
+      var cProt=CUSTOM.filter(function(x){return (x.kind||"protecao")==="protecao";});
+      var cCup=CUSTOM.filter(function(x){return x.kind==="cupom";});
+      var cQnt=CUSTOM.filter(function(x){return x.kind==="quanto";});
       var html="";
-      if(currentTab==="todos"||currentTab==="protecao") html+=section("Catálogo de proteção XP","Operações de proteção (Collar e Fence) sobre ações e índices.",OPERACOES,"protecao",term);
-      if(currentTab==="todos"||currentTab==="cupom") html+=section("Operação Cupom · pré-fixado","Cupom pré-fixado condicionado a uma barreira de desarme.",CUPOM,"cupom",term);
-      if(currentTab==="todos"||currentTab==="quanto") html+=quantoSection(term);
-      if(currentTab==="todos"||currentTab==="custom"){
-        if(CUSTOM.length) html+=section("Minhas operações","Operações que você criou. Editáveis e removíveis.",CUSTOM,"custom",term);
-        else if(currentTab==="custom") html+='<div class="oc-empty">Nenhuma operação criada ainda. Use “+ Nova operação”.</div>';
-      }
+      if(currentTab==="todos"||currentTab==="protecao") html+=section("Catálogo de proteção XP","Operações de proteção (Collar e Fence) sobre ações e índices.",OPERACOES.concat(cProt),"protecao",term);
+      if(currentTab==="todos"||currentTab==="cupom") html+=section("Operação Cupom · pré-fixado","Cupom pré-fixado condicionado a uma barreira de desarme.",CUPOM.concat(cCup),"cupom",term);
+      if(currentTab==="todos"||currentTab==="quanto") html+=quantoSection(term,cQnt);
       if(!html) html='<div class="oc-empty">Nenhuma operação encontrada para a busca.</div>';
       body.innerHTML=html;
       body.querySelectorAll("[data-add]").forEach(function(b){ b.onclick=function(){ addToCarteira(b.getAttribute("data-add")); }; });
       body.querySelectorAll("[data-edit]").forEach(function(b){ b.onclick=function(){ openForm(b.getAttribute("data-edit")); }; });
-      body.querySelectorAll("[data-del]").forEach(function(b){ b.onclick=function(){ var id=b.getAttribute("data-del"); CUSTOM=CUSTOM.filter(function(x){return x.id!==id;}); persistRvOps(); render(); }; });
+      body.querySelectorAll("[data-del]").forEach(function(b){ b.onclick=function(){ var id=b.getAttribute("data-del"); try{ CUSTOM=JSON.parse(localStorage.getItem(RV_CUSTOM_KEY)||"[]")||[]; }catch(_){ } CUSTOM=CUSTOM.filter(function(x){return x.id!==id;}); persistRvOps(); render(); }; });
     }
     function addToCarteira(key){
       var e=REG[key]; if(!e) return; var op=e.op; var add=window.__drawerAdd||window.__ctorAddAtivo; if(!add) return;
@@ -1839,7 +1839,7 @@ body.mm .ajbtn{ padding:11px 16px !important; font-size:14px !important; }
     }
     function tabs(){
       var box=document.getElementById("ocTabs");
-      var defs=[["todos","Todos"],["protecao","Proteção XP"],["cupom","Cupom"],["quanto","Quanto Internacional"],["custom","Minhas operações"]];
+      var defs=[["todos","Todos"],["protecao","Proteção XP"],["cupom","Cupom"],["quanto","Quanto Internacional"]];
       box.innerHTML=defs.map(function(d){ return '<button class="oc-tab'+(currentTab===d[0]?" on":"")+'" data-tab="'+d[0]+'">'+d[1]+'</button>'; }).join("");
       box.querySelectorAll("[data-tab]").forEach(function(b){ b.onclick=function(){ currentTab=b.getAttribute("data-tab"); tabs(); render(); }; });
     }
@@ -1891,7 +1891,6 @@ body.mm .ajbtn{ padding:11px 16px !important; font-size:14px !important; }
       var base={kind:"protecao",nome:"",ativo:"",tipo:"Proteção parcial",setor:"",protegeAte:-20,teto:35,tetoBarreira:16,barreira:135,taxa:15,cupBarreira:-20,cdi:null,payoff:1,mult:1.10,fixing:"",descricao:""};
       var o=id?Object.assign({}, base, CUSTOM.filter(function(x){return x.id===id;})[0]):base;
       if(!o) return; if(!o.kind) o.kind="protecao";
-      if(currentTab!=="custom"&&currentTab!=="todos"){ currentTab="custom"; tabs(); render(); }
       renderForm(o);
     }
     function saveForm(o){
@@ -1910,10 +1909,12 @@ body.mm .ajbtn{ padding:11px 16px !important; font-size:14px !important; }
         if(!o.nome){ document.getElementById("ocfNome").focus(); return; }
         data={ kind:"protecao", nome:o.nome, ativo:o.ativo, tipo:o.tipo||"Proteção parcial", setor:o.setor, protegeAte:o.protegeAte, teto:o.teto, tetoBarreira:o.tetoBarreira, barreira:o.barreira, descricao:o.descricao, cen:protCen(o.protegeAte,o.teto,o.tetoBarreira) };
       }
+      try{ CUSTOM=JSON.parse(localStorage.getItem(RV_CUSTOM_KEY)||"[]")||[]; }catch(_){ }
+      customSeq=0; CUSTOM.forEach(function(x){ var n=parseInt(String(x.id||"").replace("cust",""),10); if(!isNaN(n)&&n>customSeq) customSeq=n; });
       if(editingId){ data.id=editingId; CUSTOM=CUSTOM.map(function(x){ return x.id===editingId?data:x; }); }
       else { data.id="cust"+(++customSeq); CUSTOM.unshift(data); }
       persistRvOps();
-      editingId=null; document.getElementById("ocForm").innerHTML=""; currentTab="custom"; tabs(); render();
+      editingId=null; document.getElementById("ocForm").innerHTML=""; tabs(); render();
     }
     function init(){
       var sb=document.getElementById("ocSearch"); if(!sb) return;
@@ -2004,7 +2005,46 @@ body.mm .ajbtn{ padding:11px 16px !important; font-size:14px !important; }
     <div class="qc-grid" id="qcGrid"></div>
     <div class="disc" style="margin-top:16px">Considera IR regressivo sobre o rendimento do CDB conforme o prazo de resgate, sem IOF/come-cotas. A LCI/LCA e isenta de IR para pessoa fisica. Confirme as taxas vigentes antes de apresentar ao cliente. Rico &mdash; Grupo XP.</div>
   </div>
+  <div class="card" style="background:var(--navy2);margin-top:16px">
+    <div class="between" style="margin-bottom:6px">
+      <div class="ttl" style="margin:0">Calculadora de Juro Real <span class="badge">Fisher</span></div>
+    </div>
+    <div class="muted" style="margin-bottom:8px;line-height:1.6">Quanto a aplicacao realmente rende <b>acima da inflacao</b>. Informe a taxa nominal (bruta, % a.a.) e a inflacao esperada (IPCA, % a.a.).</div>
+    <div class="qc-inputs">
+      <label class="qc-field"><span>Taxa nominal (% a.a.)</span>
+        <div class="qc-inp"><input id="jrNom" inputmode="decimal" value="14,25"><span class="suf">%</span></div></label>
+      <label class="qc-field"><span>Inflacao &middot; IPCA (% a.a.)</span>
+        <div class="qc-inp"><input id="jrInf" inputmode="decimal" value="4,5"><span class="suf">%</span></div></label>
+    </div>
+    <div class="qc-grid" id="jrGrid" style="grid-template-columns:1fr"></div>
+    <div class="disc" style="margin-top:16px">Juro real pela formula de Fisher: (1 + nominal) / (1 + inflacao) - 1. A aproximacao simples (nominal - inflacao) e mostrada como referencia. Material de apoio interno.</div>
+  </div>
 </div>
+<script>
+(function(){
+  function num(v){v=(""+v).replace(/[^0-9.,-]/g,"").replace(",",".");var n=parseFloat(v);return isFinite(n)?n:0;}
+  function pp(n){return n.toLocaleString("pt-BR",{minimumFractionDigits:2,maximumFractionDigits:2});}
+  function render(){
+    var nomEl=document.getElementById("jrNom"),infEl=document.getElementById("jrInf"),grid=document.getElementById("jrGrid");
+    if(!grid)return;
+    var nom=num(nomEl.value),inf=num(infEl.value);
+    var real=((1+nom/100)/(1+inf/100)-1)*100;
+    var aprox=nom-inf;
+    var col=real>=0?"var(--orange)":"var(--green)";
+    grid.innerHTML='<div class="qc-card">'
+      +'<div class="qc-card-t" style="color:'+col+'">Juro real: '+pp(real)+'% a.a.</div>'
+      +'<div class="qc-card-d">acima da inflacao (Fisher)</div>'
+      +'<div class="qc-card-b">'
+        +'<div class="qc-col"><div class="qc-lbl">Nominal</div><div class="qc-val">'+pp(nom)+'%</div></div>'
+        +'<div class="qc-col"><div class="qc-lbl">Inflacao</div><div class="qc-val lose">'+pp(inf)+'%</div></div>'
+      +'</div>'
+      +'<div class="qc-foot"><span class="muted">Aproximacao simples (nominal - inflacao): '+pp(aprox)+' p.p.</span></div>'
+    +'</div>';
+  }
+  function init(){ var n=document.getElementById("jrNom"),i=document.getElementById("jrInf"); if(!n||!i)return; n.addEventListener("input",render); i.addEventListener("input",render); render(); }
+  if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",init);}else{init();}
+})();
+</script>
 <script>
 (function(){
   var PERIODS=[
@@ -3573,6 +3613,8 @@ function addTag(toId,label){
 window.__ctorAddAtivo = function(classe,nome,detalhe,liquidez,protecaoFlag,op){
   try{ var o = mk(classe||"Renda Variável", nome||"Operação", 0, detalhe||"", liquidez||"No vencimento", null, !!protecaoFlag); if(op){ o.catalogOp=op; o._howOpen=true; } S.items.push(o); render(); return true; }catch(e){ return false; }
 };
+window.__getSimCarteira = function(){ try{ return (S.items||[]).filter(function(i){return (Number(i.pct)||0)>0;}).map(function(i){ return {classe:i.classe, nome:i.nome, detalhe:i.detalhe||"", pct:Number(i.pct)||0}; }); }catch(e){ return []; } };
+window.__getSimNome = function(){ try{ return S.template==="Atual"?"Carteira do Simulador":(S.template+" (Simulador)"); }catch(e){ return "Carteira do Simulador"; } };
 
 /* atualiza apenas os cards derivados sem reconstruir o editor (mantém foco nos inputs) */
 function updateLight(){
@@ -9584,7 +9626,7 @@ window.__rvRender = render;
     var rfb=rfBreak();
     if(rfb.t>0){ h+='<div class="pc-rfsum"><span class="pc-rfsum-lbl">Renda Fixa por indexador (atual):</span>'; RFGROUPS.forEach(function(s){ if((rfb.m[s]||0)>0.5){ var col=RFCOL[s]; h+='<span class="pc-rfpill" style="border-color:'+col+'66;color:'+col+'">'+s+' '+fmtPct(rfb.m[s]/rfb.t*100)+'</span>'; } }); h+='</div>'; }
 
-    h+='<div class="pc-models"><span class="pc-lbl">Propor modelo sobre a atual:</span><button data-model="Conservadora" class="ajbtn">Conservadora</button><button data-model="Moderada" class="ajbtn">Moderada</button><button data-model="Sofisticada" class="ajbtn">Sofisticada</button><button data-model="__reset" class="ajbtn">Limpar proposta</button></div>';
+    h+='<div class="pc-models"><span class="pc-lbl">Propor modelo sobre a atual:</span><button data-model="Conservadora" class="ajbtn">Conservadora</button><button data-model="Moderada" class="ajbtn">Moderada</button><button data-model="Sofisticada" class="ajbtn">Sofisticada</button><button data-model="__simulador" class="ajbtn">Carteira do Simulador</button><button data-model="__reset" class="ajbtn">Limpar proposta</button></div>';
     h+='<div class="pc-main'+(state.gavOpen.rv?" rvwide":"")+'">';
     h+=gavetaHTML();
     h+='<div class="pc-board pc-board4">';
@@ -9706,10 +9748,10 @@ window.__rvRender = render;
   function findOrig(n){ var a=state.atual.filter(function(x){return x.aid===n;})[0]; return a?a.valor:0; }
   function applyModel(name){
     if(name==="__reset"){ state.appliedModel=null; state.vals={}; state.removed={}; state.added=[]; state.atual.forEach(function(a){ state.vals[a.aid]=a.valor; }); render(); return; }
-    var T=window.RICO_TEMPLATES; if(!T){ try{ if(window._toolInit&&window._toolInit['construtor']) window._toolInit['construtor'](); }catch(e){} T=window.RICO_TEMPLATES; }
-    if(!T||typeof T[name]!=="function"){ alert("Modelo indisponível."); return; }
-    state.appliedModel=name;
-    var base=liquidAtual(); var items=T[name]();
+    var items;
+    if(name==="__simulador"){ var sc=(window.__getSimCarteira?window.__getSimCarteira():[])||[]; if(!sc.length){ alert("Monte uma carteira no Simulador de Investimentos primeiro (com as alocações) e tente de novo."); return; } items=sc; state.appliedModel=name; }
+    else { var T=window.RICO_TEMPLATES; if(!T){ try{ if(window._toolInit&&window._toolInit['construtor']) window._toolInit['construtor'](); }catch(e){} T=window.RICO_TEMPLATES; } if(!T||typeof T[name]!=="function"){ alert("Modelo indisponível."); return; } state.appliedModel=name; items=T[name](); }
+    var base=liquidAtual();
     var tgt={},modByGrp={};
     items.forEach(function(it){ var g=grpOf(it.classe,it.nome,it.detalhe,""); var val=(Number(it.pct)||0)/100*base; tgt[g]=(tgt[g]||0)+val; (modByGrp[g]=modByGrp[g]||[]).push({nome:it.nome,classe:it.classe,detalhe:it.detalhe||"",pct:Number(it.pct)||0}); });
     var curByGrp={},curAssetsByGrp={};
