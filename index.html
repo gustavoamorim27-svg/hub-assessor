@@ -3227,17 +3227,18 @@ html.theme-light [data-tool="irpf"] .ir-g-pos{ color:#067A53 !important; } html.
     };
     rd.readAsArrayBuffer(f);
   }
-  window._toolInit=window._toolInit||{};
-  window._toolInit['irpf']=function(){
+  function irBind(){
     var drop=el('irDrop'), file=el('irFile'), pick=el('irPick');
-    if(!drop) return;
+    if(!drop || drop.__bound) return; drop.__bound=true;
     pick.onclick=function(){ file.click(); };
     file.onchange=function(){ if(file.files[0]) onFile(file.files[0]); };
     drop.ondragover=function(e){ e.preventDefault(); drop.classList.add('drag'); };
     drop.ondragleave=function(){ drop.classList.remove('drag'); };
     drop.ondrop=function(e){ e.preventDefault(); drop.classList.remove('drag'); if(e.dataTransfer.files&&e.dataTransfer.files[0]) onFile(e.dataTransfer.files[0]); };
     el('irPng').onclick=genPng;
-  };
+  }
+  if(document.readyState==='loading'){ document.addEventListener('DOMContentLoaded', irBind); } else { irBind(); }
+  window._toolInit=window._toolInit||{}; window._toolInit['irpf']=irBind;
 })();
 </script>
   <div class="g-panel" id="p-aderencia" data-tool="aderencia">
