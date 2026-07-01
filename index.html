@@ -3624,6 +3624,33 @@ Object.keys(TEMPLATES).forEach(function(k){ TEMPLATES_FACTORY[k] = TEMPLATES[k];
 
 /* serializa um item para JSON (mantem so campos de dados; descarta funcoes).
    Marca _bovaOp p/ re-anexar o catalogOp do BOVA ao restaurar. */
+/* limpa um valor recursivamente p/ garantir que seja JSON-serializavel
+   (descarta funcoes, DOM nodes, ops e quebra referencias circulares).
+   Isso blinda o JSON.stringify do save do modelo contra qualquer valor
+   nao-serializavel que por ventura entre num item. */
+function _cleanForJSON(v, seen, depth){
+  if(v==null) return v;
+  var t=typeof v;
+  if(t==="function"||t==="symbol"||t==="undefined") return undefined;
+  if(t!=="object") return v;                       // string/number/boolean
+  if(depth>6) return undefined;                    // limite de profundidade defensivo
+  seen=seen||[];
+  if(seen.indexOf(v)!==-1) return undefined;       // referencia circular
+  try{ if(typeof window!=="undefined" && window.Node && v instanceof window.Node) return undefined; }catch(_){}
+  seen=seen.concat([v]);
+  if(Array.isArray(v)){
+    var arr=[];
+    for(var i=0;i<v.length;i++){ var cv=_cleanForJSON(v[i], seen, (depth||0)+1); if(cv!==undefined) arr.push(cv); }
+    return arr;
+  }
+  var out={};
+  Object.keys(v).forEach(function(k){
+    if(k==="op"||k==="catalogOp") return;          // objetos derivados / operacoes (nao serializar)
+    var cv=_cleanForJSON(v[k], seen, (depth||0)+1);
+    if(cv!==undefined) out[k]=cv;
+  });
+  return out;
+}
 function serItem(it){
   if(!it || typeof it!=="object") return null;
   var o={};
@@ -3632,7 +3659,8 @@ function serItem(it){
     var v=it[k];
     var t=typeof v;
     if(t==="function") return;
-    o[k]=v;
+    var cv=_cleanForJSON(v, null, 0);              // limpa recursivamente (opcoes/tags/etc.)
+    if(cv!==undefined) o[k]=cv;
   });
   try{ if(it.catalogOp && it.catalogOp===window.__BOVA_OP) o._bovaOp=true; }catch(_){}
   // garante um id
@@ -3660,9 +3688,11 @@ function loadTplOverrides(){
   catch(_){ return {}; }
 }
 function saveTplOverrides(ov){
-  try{ localStorage.setItem(LS_TPL_OVERRIDE, JSON.stringify(ov||{})); }catch(_){}
+  try{ localStorage.setItem(LS_TPL_OVERRIDE, JSON.stringify(ov||{})); return true; }
+  catch(_){ return false; }
 }
 var __tplOverrides = loadTplOverrides();
+if(!__tplOverrides || typeof __tplOverrides!=="object") __tplOverrides={};
 
 /* Reescreve cada TEMPLATES[name] para devolver o override salvo (se houver)
    ou a fabrica original. Como window.RICO_TEMPLATES === TEMPLATES, todos os
@@ -3679,12 +3709,22 @@ function applyTplOverrideWrappers(){
 }
 applyTplOverrideWrappers();
 
-/* Grava um override (snapshot dos itens atuais) para um template e re-aplica wrappers */
+/* Grava um override (snapshot dos itens atuais) para um template e re-aplica wrappers.
+   Retorna true se persistiu com sucesso. Defensivo: serializa de forma segura
+   (serItems ja limpa funcoes/ops/circular) e verifica o resultado, de modo que
+   o override NUNCA fica vazio por causa de um item nao-serializavel. */
 function setTplOverride(name, items){
-  if(!TEMPLATES_FACTORY[name]) return;
-  __tplOverrides[name]=serItems(items);
-  saveTplOverrides(__tplOverrides);
+  if(!name || !TEMPLATES_FACTORY[name]) return false;
+  var ser;
+  try{ ser=serItems(items); }catch(_){ ser=null; }
+  if(!Array.isArray(ser) || !ser.length) return false;   // nada valido p/ salvar -> nao apaga nem grava vazio
+  // valida que o snapshot e realmente serializavel antes de mexer no estado
+  try{ JSON.stringify(ser); }catch(_){ return false; }
+  if(!__tplOverrides || typeof __tplOverrides!=="object") __tplOverrides={};
+  __tplOverrides[name]=ser;
+  var okSave=saveTplOverrides(__tplOverrides);
   applyTplOverrideWrappers();
+  return !!okSave;
 }
 /* Remove o override de um template (volta a fabrica) */
 function clearTplOverride(name){
@@ -3971,10 +4011,16 @@ function renderTabs(){
   if(bCancel) bCancel.onclick=()=>{ S.editandoTemplate=null; if(TEMPLATES_FACTORY[S.template]) loadTemplate(S.template); else render(); };
   var bSave=el.querySelector("[data-tplsave]");
   if(bSave) bSave.onclick=()=>{
+    if(bSave.disabled) return;                 // evita duplo-clique / reentrancia
+    bSave.disabled=true;
     var nome=S.template;
-    try{ setTplOverride(nome, S.items); }catch(_){}
+    var ok=false;
+    try{ ok=setTplOverride(nome, S.items); }catch(_){ ok=false; }
     S.editandoTemplate=null;
-    try{ alert("Modelo \""+nome+"\" salvo. Essa versao sera usada em todo o site neste navegador."); }catch(_){}
+    try{
+      if(ok){ alert("Modelo \""+nome+"\" salvo. Essa versao sera usada em todo o site neste navegador."); }
+      else { alert("Nao foi possivel salvar o modelo \""+nome+"\". Verifique os ativos e tente novamente."); }
+    }catch(_){}
     render();
   };
   var bFactory=el.querySelector("[data-tplfactory]");
