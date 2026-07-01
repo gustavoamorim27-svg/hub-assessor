@@ -4173,7 +4173,7 @@ function renderEditor(D){
         <div style="display:flex; gap:8px; align-items:center;">
           <span class="item-drag" draggable="true" data-itemdrag="${i.id}" title="Arraste para reordenar">⠿</span>
           <div class="pct-wrap">
-            <input class="pct-input num" type="number" step="0.5" value="${i.pct}" data-f="pct" data-id="${i.id}">
+            <input class="pct-input num" type="text" inputmode="decimal" value="${String(i.pct).replace('.',',')}" data-f="pct" data-id="${i.id}">
             <span class="pct-suffix">%</span>
           </div>
           <input class="name-input" value="${esc(i.nome)}" data-f="nome" data-id="${i.id}">
@@ -4197,7 +4197,7 @@ function renderEditor(D){
     const ev = (f==="classe")?"change":"input";
     inp.addEventListener(ev,()=>{
       const it=S.items.find(x=>x.id===id); if(!it) return;
-      it[f] = (f==="pct")?Number(inp.value):inp.value;
+      it[f] = (f==="pct")?_parseNum(inp.value):inp.value;
       if(f==="pct"){ updateLight(); }
       else if(f==="classe"){ render(); }
       else { /* nome/detalhe: só atualiza derivados leves sem reconstruir o input em foco */ updateLight(); }
