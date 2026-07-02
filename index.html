@@ -2080,6 +2080,7 @@ body.mm .ajbtn{ padding:11px 16px !important; font-size:14px !important; }
     function fmtMult(n){ return n.toFixed(2).replace(".",","); }
     function fmtTaxa(n){ return n.toFixed(2).replace(".",","); }
     function r1(n){ return Math.round(n*10)/10; }
+    function _qnum(v, def){ if(typeof v==="number") return isNaN(v)?def:v; var s=String(v==null?"":v).trim().replace(",", "."); var n=parseFloat(s); return isNaN(n)?def:n; }
 
     function protCen(protegeAte, teto, tetoBarreira){
       var cen=[];
@@ -2094,11 +2095,13 @@ body.mm .ajbtn{ padding:11px 16px !important; font-size:14px !important; }
     }
     function buildQuanto(o){
       var isP1=o.payoff===1;
-      var nome=o.ativo+" · "+(isP1?fmtMult(o.mult)+"x":fmtTaxa(o.taxa)+"%")+" · "+o.fixing;
+      // taxa/mult podem vir como string com virgula (op custom) -> coage p/ numero.
+      var mult=_qnum(o.mult,1), taxa=_qnum(o.taxa,0);
+      var nome=o.ativo+" · "+(isP1?fmtMult(mult)+"x":fmtTaxa(taxa)+"%")+" · "+o.fixing;
       var tipo=isP1?"Capital protegido · alta ilimitada":"Taxa fixa ou alta ilimitada";
-      var cen; if(isP1){ cen=[[-30,0],[-10,0],[0,0],[20,r1(20*o.mult)],[40,r1(40*o.mult)]]; }
-      else { var t=o.taxa,tr=Math.round(t); cen=[[-25,t],[-10,t],[0,t],[tr+15,tr+15],[tr+35,tr+35]]; }
-      return { id:o.id, payoff:o.payoff, ativo:o.ativo, fixing:o.fixing, mult:o.mult, taxa:o.taxa, setor:o.setor||"Internacional", nome:nome, tipo:tipo, cen:cen, quanto:true };
+      var cen; if(isP1){ cen=[[-30,0],[-10,0],[0,0],[20,r1(20*mult)],[40,r1(40*mult)]]; }
+      else { var t=taxa,tr=Math.round(t); cen=[[-25,t],[-10,t],[0,t],[tr+15,tr+15],[tr+35,tr+35]]; }
+      return { id:o.id, payoff:o.payoff, ativo:o.ativo, fixing:o.fixing, mult:mult, taxa:taxa, setor:o.setor||"Internacional", nome:nome, tipo:tipo, cen:cen, quanto:true };
     }
     function keyScenarios(op){
       if(op.quanto || op.cupom) return op.cen.slice().sort(function(a,b){return a[0]-b[0];});
@@ -4419,8 +4422,16 @@ function renderTotal(D){
   const bd=document.getElementById("btnDist");
   if(bd) bd.onclick=()=>{
     if(S.items.length===0) return;
-    const addv=D.restante/S.items.length;
-    S.items=S.items.map(i=>({...i,pct:Math.round(((Number(i.pct)||0)+addv)*10)/10}));
+    // Distribui 100% igualmente entre os ativos, com soma EXATA de 100,0%.
+    // Arredonda cada peso a 1 casa e o ULTIMO ativo absorve o resto.
+    const n=S.items.length;
+    const base=Math.round((100/n)*10)/10;   // ex.: 33,3
+    let acc=0;
+    S.items=S.items.map((i,idx)=>{
+      let v = (idx===n-1) ? Math.round((100-acc)*10)/10 : base;
+      acc = Math.round((acc+v)*10)/10;
+      return {...i, pct:v};
+    });
     render();
   };
 }
@@ -7827,15 +7838,21 @@ function opDetalhe(op){
 function fmtMult(n){ return n.toFixed(2).replace(".",","); }
 function fmtTaxa(n){ return n.toFixed(2).replace(".",","); }
 function r1(n){ return Math.round(n*10)/10; }
+// coage valor (aceita virgula) para numero; usa default se invalido
+function _qnum(v, def){ if(typeof v==="number") return isNaN(v)?def:v; var s=String(v==null?"":v).trim().replace(",", "."); var n=parseFloat(s); return isNaN(n)?def:n; }
 
 function buildQuanto(o){
   var isP1 = o.payoff === 1;
-  var nome = o.ativo+" · "+(isP1? fmtMult(o.mult)+"x": fmtTaxa(o.taxa)+"%")+" · "+o.fixing;
+  // BUG "Taxa fixa": taxa/mult podem chegar como string com virgula (op custom / import),
+  // gerando NaN nos cenarios de payoff 2. Coage para numero aceitando virgula decimal.
+  var mult = _qnum(o.mult, 1);
+  var taxa = _qnum(o.taxa, 0);
+  var nome = o.ativo+" · "+(isP1? fmtMult(mult)+"x": fmtTaxa(taxa)+"%")+" · "+o.fixing;
   var tipo = isP1? "Capital protegido · alta ilimitada": "Taxa fixa ou alta ilimitada";
   var cen;
-  if(isP1){ cen = [[-30,0],[-10,0],[0,0],[20,r1(20*o.mult)],[40,r1(40*o.mult)]]; }
-  else { var t=o.taxa, tr=Math.round(t); cen=[[-25,t],[-10,t],[0,t],[tr+15,tr+15],[tr+35,tr+35]]; }
-  return { id:o.id, payoff:o.payoff, ativo:o.ativo, fixing:o.fixing, mult:o.mult, taxa:o.taxa, setor:o.setor||"Internacional", nome:nome, tipo:tipo, cen:cen, quanto:true };
+  if(isP1){ cen = [[-30,0],[-10,0],[0,0],[20,r1(20*mult)],[40,r1(40*mult)]]; }
+  else { var t=taxa, tr=Math.round(t); cen=[[-25,t],[-10,t],[0,t],[tr+15,tr+15],[tr+35,tr+35]]; }
+  return { id:o.id, payoff:o.payoff, ativo:o.ativo, fixing:o.fixing, mult:mult, taxa:taxa, setor:o.setor||"Internacional", nome:nome, tipo:tipo, cen:cen, quanto:true };
 }
 
 var QUANTO_OPS = [
@@ -8088,7 +8105,7 @@ function itemRowHTML(i){
   var cur = st? st.kind : "none";
   var html = '<div class="row" data-id="'+i.id+'">';
   html += '<div class="rowtop">';
-  html += '<div class="pctwrap"><input class="pctinput" type="number" step="0.5" value="'+(i.pct)+'" data-act="pct"><span class="pctsym">%</span></div>';
+  html += '<div class="pctwrap"><input class="pctinput" type="text" inputmode="decimal" value="'+String(i.pct).replace(".",",")+'" data-act="pct"><span class="pctsym">%</span></div>';
   html += '<input class="nameinput" value="'+esc(i.nome)+'" data-act="nome">';
   html += '<select class="sel" data-act="classe">'+CLASSES.map(function(cl){return '<option'+(cl===i.classe?' selected':'')+'>'+cl+'</option>';}).join("")+'</select>';
   var setSel = i.setor||"Outros";
@@ -8417,9 +8434,9 @@ function render(){
   h += '<div class="card" style="border-color:'+(d.totalOk?"rgba(43,217,166,.5)":"rgba(255,78,0,.5)")+'">'+
     '<div style="display:flex;justify-content:space-between;align-items:baseline">'+
     '<span style="color:#A9B0D6;font-weight:700;font-size:13px;letter-spacing:1px">TOTAL ALOCADO</span>'+
-    '<span style="font-weight:800;font-size:30px;color:'+(d.totalOk?"#2BD9A6":ORANGE)+'">'+fmtPct(d.total)+'%</span></div>'+
+    '<span data-rvtotalval style="font-weight:800;font-size:30px;color:'+(d.totalOk?"#2BD9A6":ORANGE)+'">'+fmtPct(d.total)+'%</span></div>'+
     '<div style="height:8px;background:rgba(255,255,255,.08);border-radius:6px;margin-top:12px;overflow:hidden">'+
-    '<div style="width:'+Math.min(d.total,100)+'%;height:100%;background:'+(d.totalOk?"#2BD9A6":ORANGE)+'"></div></div>';
+    '<div data-rvtotalbar style="width:'+Math.min(d.total,100)+'%;height:100%;background:'+(d.totalOk?"#2BD9A6":ORANGE)+'"></div></div>';
   if(!d.totalOk){
     h += '<div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px">'+
       '<span style="font-size:13px;color:#A9B0D6">'+(d.restante>0?"Faltam "+fmtPct(d.restante)+"%":"Excedeu "+fmtPct(-d.restante)+"%")+'</span>'+
@@ -8537,7 +8554,7 @@ function bind(d){
     var id = rowEl.getAttribute("data-id");
     rowEl.querySelectorAll("[data-act]").forEach(function(el){
       var act = el.getAttribute("data-act");
-      if(act==="pct"){ el.oninput = function(){ update(id,"pct",Number(el.value)); softVal(id); }; }
+      if(act==="pct"){ el.oninput = function(){ update(id,"pct",_parseNum(el.value)); softVal(id); }; }
       else if(act==="nome"){ el.oninput = function(){ update(id,"nome",el.value); }; el.onchange = function(){ render(); }; }
       else if(act==="detalhe"){ el.oninput = function(){ update(id,"detalhe",el.value); }; }
       else if(act==="classe"){ el.onchange = function(){ update(id,"classe",el.value); render(); }; }
@@ -8557,6 +8574,8 @@ function bind(d){
   });
 }
 
+// aceita virgula decimal (espelha _parseNum do Simulador)
+function _parseNum(v){ var s=String(v==null?"":v).trim().replace(",", "."); var n=parseFloat(s); return isNaN(n)?0:n; }
 // atualizações leves sem re-render completo (mantém foco no input)
 function softVal(id){
   var d = calc();
@@ -8564,7 +8583,15 @@ function softVal(id){
   if(rowEl){ var vh = rowEl.querySelector(".valhint"); var i = state.items.filter(function(x){return x.id===id;})[0]; if(vh && i) vh.textContent = "≈ R$ "+fmtBRL(state.patrimonio*(Number(i.pct)||0)/100); }
   refreshResumoOnly(d);
 }
-function refreshResumoOnly(d){ /* render completo no change */ }
+function refreshResumoOnly(d){
+  // atualizacao "leve" do resumo (TOTAL) SEM reconstruir o editor/input (preserva foco).
+  try{
+    var val=document.querySelector("[data-rvtotalval]");
+    if(val){ val.textContent=fmtPct(d.total)+"%"; val.style.color=d.totalOk?"#2BD9A6":ORANGE; }
+    var bar=document.querySelector("[data-rvtotalbar]");
+    if(bar){ bar.style.width=Math.min(d.total,100)+"%"; bar.style.background=d.totalOk?"#2BD9A6":ORANGE; }
+  }catch(_){ }
+}
 
 function updateValHints(){
   state.items.forEach(function(i){
@@ -8585,9 +8612,16 @@ function remove(id){ state.items = state.items.filter(function(x){return x.id!==
 function loadTemplate(t){ state.template = t; state.items = TEMPLATES[t](); state.abertos = {}; render(); }
 function distribuirRestante(){
   if(state.items.length===0) return;
-  var d = calc();
-  var addv = d.restante/state.items.length;
-  state.items.forEach(function(i){ i.pct = Math.round(((Number(i.pct)||0)+addv)*10)/10; });
+  // Distribui 100% igualmente entre os ativos, com soma EXATA de 100,0%.
+  // Arredonda cada peso a 1 casa; o ULTIMO ativo absorve o resto (sem estourar).
+  var n=state.items.length;
+  var base=Math.round((100/n)*10)/10;
+  var acc=0;
+  state.items.forEach(function(i,idx){
+    var v = (idx===n-1) ? Math.round((100-acc)*10)/10 : base;
+    acc = Math.round((acc+v)*10)/10;
+    i.pct = v;
+  });
   render();
 }
 function addOperacao(opId){
@@ -10400,7 +10434,7 @@ window.__rvRender = render;
     var rfb=rfBreak();
     if(rfb.t>0){ h+='<div class="pc-rfsum"><span class="pc-rfsum-lbl">Renda Fixa por indexador (atual):</span>'; RFGROUPS.forEach(function(s){ if((rfb.m[s]||0)>0.5){ var col=RFCOL[s]; h+='<span class="pc-rfpill" style="border-color:'+col+'66;color:'+col+'">'+s+' '+fmtPct(rfb.m[s]/rfb.t*100)+'</span>'; } }); h+='</div>'; }
 
-    h+='<div class="pc-models"><span class="pc-lbl">Propor modelo sobre a atual:</span><button data-model="Conservadora" class="ajbtn">Conservadora</button><button data-model="Moderada" class="ajbtn">Moderada</button><button data-model="Sofisticada" class="ajbtn">Sofisticada</button><button data-model="__simulador" class="ajbtn">Carteira do Simulador</button><button data-model="__reset" class="ajbtn">Limpar proposta</button></div>';
+    h+='<div class="pc-models"><span class="pc-lbl">Propor modelo sobre a atual:</span><button data-model="Conservadora" class="ajbtn">Conservadora</button><button data-model="Moderada" class="ajbtn">Moderada</button><button data-model="Sofisticada" class="ajbtn">Sofisticada</button><button data-model="__simulador" class="ajbtn">Carteira do Simulador</button><button data-model="__reset" class="ajbtn">Limpar proposta</button><button id="ajDistribuir" class="ajbtn" title="Distribui o patrimonio igualmente entre os ativos da proposta">Distribuir</button></div>';
     h+='</div>';
     h+='<div class="pc-main'+(state.gavOpen.rv?" rvwide":"")+'">';
     h+=gavetaHTML();
@@ -10505,6 +10539,7 @@ window.__rvRender = render;
     root.querySelectorAll("[data-rmadd]").forEach(function(b){ b.onclick=function(){ var id=b.getAttribute("data-rmadd"); state.added=state.added.filter(function(x){return x.id!==id;}); render(); }; });
     root.querySelectorAll("[data-libadd]").forEach(function(b){ b.onclick=function(){ addLib(+b.getAttribute("data-libadd")); }; });
     root.querySelectorAll(".pc-val").forEach(function(inp){ inp.onchange=function(){ var key=inp.getAttribute("data-val"),v=Number(inp.value)||0; if(key.indexOf("add:")===0){ var id=key.slice(4); var it=state.added.filter(function(x){return x.id===id;})[0]; if(it) it.valor=v; } else { var nm=key.slice(4); state.vals[nm]=v; } render(); }; });
+    var dist=document.getElementById("ajDistribuir"); if(dist) dist.onclick=distribuirPropor;
     var png=document.getElementById("ajPNG"); if(png) png.onclick=genPNG;
     var plano=document.getElementById("ajPlano"); if(plano) plano.onclick=genPlanoPDF;
     var xls=document.getElementById("ajXLS"); if(xls) xls.onclick=exportXLS;
@@ -10521,6 +10556,31 @@ window.__rvRender = render;
     });
   }
   function findOrig(n){ var a=state.atual.filter(function(x){return x.aid===n;})[0]; return a?a.valor:0; }
+  // Distribui o patrimonio IGUALMENTE entre os ativos que permanecem na proposta
+  // (atuais nao-vendidos + adicionados). Soma EXATA = patrimonio (ultimo absorve o resto),
+  // entao Patrimonio/A vender/A comprar/Giro permanecem coerentes.
+  function distribuirPropor(){
+    try{
+      if(!state.atual){ return; }
+      var keep=[];
+      state.atual.forEach(function(a){ if(!state.removed[a.aid]) keep.push({t:"cur",aid:a.aid}); });
+      (state.added||[]).forEach(function(x){ keep.push({t:"add",id:x.id}); });
+      var n=keep.length;
+      if(n===0){ alert("Nao ha ativos para distribuir. Adicione ativos das gavetas ou nao remova todos."); return; }
+      var patrim=liquidAtual();
+      if(!(patrim>0)){ return; }
+      var base=Math.round(patrim/n);
+      var acc=0;
+      keep.forEach(function(k,idx){
+        var v = (idx===n-1) ? Math.round(patrim-acc) : base;
+        acc += v;
+        if(k.t==="cur"){ state.vals[k.aid]=v; }
+        else { var it=(state.added||[]).filter(function(x){return x.id===k.id;})[0]; if(it) it.valor=v; }
+      });
+      state.appliedModel=null;
+      render();
+    }catch(e){ try{ console.error(e); }catch(_){ } }
+  }
   function applyModel(name){
     if(name==="__reset"){ state.appliedModel=null; state.vals={}; state.removed={}; state.added=[]; state.atual.forEach(function(a){ state.vals[a.aid]=a.valor; }); render(); return; }
     var items;
