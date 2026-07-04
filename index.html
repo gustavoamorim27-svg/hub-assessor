@@ -3542,7 +3542,7 @@ html.theme-light .pm-chip{ background:#fff; }
       '<scr'+'ipt>setTimeout(function(){window.print();},350);</scr'+'ipt></body></html>';
     var w=window.open('','_blank'); w.document.write(html); w.document.close();
   }
-  function open(){ var m=el('proporModal'); m.classList.add('on'); document.body.style.overflow='hidden'; if(!Object.keys(PR.atual).length) seedSim(); else render(); }
+  function open(){ var m=el('proporModal'); m.classList.add('on'); document.body.style.overflow='hidden'; if(Object.keys(PR.atual).length){ render(); } else { seedSim(); if(!Object.keys(PR.atual).length){ PR.atual=emptyMap(); PR.prop=emptyMap(); render(); } } }
   function close(){ el('proporModal').classList.remove('on'); document.body.style.overflow=''; }
   function bind(){
     var b=el('btnPropor'); if(!b || b.__b) return; b.__b=1;
