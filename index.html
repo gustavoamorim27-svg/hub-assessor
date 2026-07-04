@@ -3560,18 +3560,30 @@ html.theme-light .pm-chip{ background:#fff; }
     });
   }
   function setStatus(t,c){ var s=el('pmStatus'); if(!s) return; s.className='pm-status'+(c?(' '+c):''); s.textContent=t; }
+  function canonCat(x){ var n=normCat(x); for(var i=0;i<CATS.length;i++){ if(normCat(CATS[i])===n) return CATS[i]; } return null; }
   function applyProfile(name){
-    var p=PROFILES[name]; if(!p) return; var lib=window.__LIBDATA||[]; PR.assets={}; var m=emptyMap();
+    var fn = window.RICO_TEMPLATES && window.RICO_TEMPLATES[name];
+    if(fn){
+      var items=[]; try{ items=fn()||[]; }catch(e){ items=[]; }
+      if(items.length){
+        PR.assets={}; var m=emptyMap();
+        items.forEach(function(it){ var c=canonCat(it.classe); if(!c) return;
+          var tg=(it.tags&&it.tags.length)?it.tags.slice():metaFromLib({classe:it.classe,nome:it.nome,detalhe:it.detalhe,liq:it.liquidez}).tags;
+          (PR.assets[c]=PR.assets[c]||[]).push({nome:it.nome,pct:Number(it.pct)||0,detalhe:it.detalhe||'',liq:it.liquidez||'',tags:tg,retCat:it.retCat||'mercado',retVal:Number(it.retVal)||0,retIsento:!!it.retIsento}); });
+        CATS.forEach(function(c){ if(!(PR.assets[c]&&PR.assets[c].length)) m[c]=(PROFILES[name]&&PROFILES[name][c])||0; });
+        PR.prop=m; render(); return;
+      }
+    }
+    var p=PROFILES[name]; if(!p) return; var lib=window.__LIBDATA||[]; PR.assets={}; var m2=emptyMap();
     CATS.forEach(function(c){
-      var target=p[c]||0; m[c]=target; if(target<=0) return;
-      var pool=lib.filter(function(x){ return normCat(x.classe)===normCat(c); });
-      if(!pool.length) return;
+      var target=p[c]||0; m2[c]=target; if(target<=0) return;
+      var pool=lib.filter(function(x){ return normCat(x.classe)===normCat(c); }); if(!pool.length) return;
       var n=Math.min(pool.length, target>=20?2:1); var per=Math.round((target/n)*10)/10; var arr=[];
       for(var i=0;i<n;i++){ var it=pool[i]; var meta=metaFromLib(it); var pct=(i===n-1)?(Math.round((target-per*(n-1))*10)/10):per;
         arr.push({nome:it.nome,pct:pct,detalhe:it.detalhe||'',liq:it.liq||'',tags:meta.tags,retCat:meta.retCat,retVal:meta.retVal,retIsento:meta.retIsento}); }
       PR.assets[c]=arr;
     });
-    PR.prop=m; render();
+    PR.prop=m2; render();
   }
   function effPct(c){ var a=PR.assets[c]; if(a&&a.length){ var t=0; a.forEach(function(x){ t+=(Number(x.pct)||0); }); return t; } return PR.prop[c]||0; }
   function render(){
