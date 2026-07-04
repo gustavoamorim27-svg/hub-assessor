@@ -3402,6 +3402,14 @@ html.theme-light .pm-rows{ background:#fff; }
 .pm-an{ background:var(--input,#10164A); border:1px solid var(--bd); border-radius:8px; color:var(--wh); font-weight:600; font-size:13px; padding:7px 10px; outline:none; }
 html.theme-light .pm-an{ background:#fff; color:#0B1033; border-color:rgba(11,16,51,.18); }
 .pm-arm{ background:none; border:none; color:#FF6B6B; font-size:18px; cursor:pointer; }
+.pm-prot{ font-size:13px; }
+.pm-saiu{ margin:2px 0 12px 30px; padding:10px 12px; background:rgba(255,107,107,.06); border:1px dashed rgba(255,107,107,.4); border-radius:10px; }
+html.theme-light .pm-saiu{ background:#FDF1F1; border-color:rgba(192,57,43,.35); }
+.pm-saiu-h{ font-size:10px; letter-spacing:.5px; text-transform:uppercase; font-weight:800; color:#FF6B6B; margin-bottom:6px; }
+html.theme-light .pm-saiu-h{ color:#C0392B; }
+.pm-saiu-row{ display:flex; justify-content:space-between; align-items:center; padding:4px 0; }
+.pm-saiu-nm{ font-size:12.5px; font-weight:700; text-decoration:line-through; color:var(--mu); }
+.pm-saiu-tag{ font-size:10px; font-weight:800; color:#FF6B6B; background:rgba(255,107,107,.14); border:1px solid rgba(255,107,107,.4); border-radius:6px; padding:2px 8px; }
 .pm-picker{ background:var(--navy3,#141C57); border:1px solid var(--bd); border-radius:12px; padding:12px; margin:2px 0 12px 30px; }
 html.theme-light .pm-picker{ background:#F4F6FB; }
 .pm-psearch{ width:100%; background:var(--input,#10164A); border:1px solid var(--bd); border-radius:8px; color:var(--wh); padding:8px 12px; font-size:13px; outline:none; margin-bottom:8px; }
@@ -3508,7 +3516,7 @@ html.theme-light .pm-chip{ background:#fff; }
   function pn(v){ if(v==null) return 0; var s=String(v).replace(/r\$/ig,'').replace(/\s/g,'').replace(/\./g,'').replace(',','.'); var n=parseFloat(s); return isNaN(n)?0:n; }
   function fmt(n){ n=Number(n)||0; return n.toLocaleString('pt-BR',{minimumFractionDigits:0,maximumFractionDigits:0}); }
   function fp(n){ n=Number(n)||0; return (Math.round(n*10)/10).toLocaleString('pt-BR',{maximumFractionDigits:1}); }
-  var PR={ cliente:'', patrim:0, atual:{}, prop:{}, assets:{}, picker:null };
+  var PR={ cliente:'', patrim:0, atual:{}, prop:{}, assets:{}, picker:null, atualAssets:[] };
   function esc2(t){ return String(t==null?'':t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\"/g,'&quot;'); }
   function tagClass(t){ t=String(t||'').toLowerCase(); if(t.indexOf('isento')>=0) return 'tag-isento'; if(t.indexOf('fgc')>=0) return 'tag-fgc'; if(t.indexOf('resgate')>=0) return 'tag-resgate'; if(t.indexOf('liquidez')>=0) return 'tag-liq'; if(t.indexOf('cetip')>=0) return 'tag-cetip'; if(t.indexOf('tesouro')>=0) return 'tag-tesouro'; if(t.indexOf('global')>=0) return 'tag-global'; if(t.indexOf('prote')>=0) return 'tag-protecao'; if(t.indexOf('cupom')>=0) return 'tag-cupom'; return 'tag-cetip'; }
   function normCat(x){ return String(x||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().trim(); }
@@ -3544,7 +3552,7 @@ html.theme-light .pm-chip{ background:#fff; }
       if(!b||!b.itens||!b.itens.length){ setStatus('Nenhuma carteira no Simulador. Monte uma ou importe o Excel.','err'); return; }
       var m=emptyMap();
       b.itens.forEach(function(it){ var c=CANON[it.classe]||null; if(c&&m.hasOwnProperty(c)) m[c]+=(Number(it.pct)||0); });
-      PR.atual=m; PR.prop=Object.assign({},m); PR.patrim=Number(b.patrimonio)||0; PR.cliente=b.cliente||'';
+      PR.atual=m; PR.prop=Object.assign({},m); PR.patrim=Number(b.patrimonio)||0; PR.cliente=b.cliente||''; PR.atualAssets=(b.itens||[]).map(function(it){ return {nome:it.nome, cat:(CANON[it.classe]||canonCat(it.classe)), pct:Number(it.pct)||0}; }).filter(function(x){return x.cat;});
       setStatus('Carteira do Simulador carregada.','ok'); render();
     }catch(e){ setStatus('Erro ao ler a carteira do Simulador.','err'); }
   }
@@ -3555,13 +3563,15 @@ html.theme-light .pm-chip{ background:#fff; }
       try{
         var m=emptyMap(), comp=parsed.comp||{};
         Object.keys(comp).forEach(function(k){ var c=CANON[k]||null; if(c&&m.hasOwnProperty(c)) m[c]+=(Number(comp[k])||0); });
-        PR.atual=m; PR.prop=Object.assign({},m); PR.patrim=Number(parsed.patrimonio)||0; PR.cliente=(parsed.conta?('Conta '+parsed.conta):'');
+        PR.atual=m; PR.prop=Object.assign({},m); PR.patrim=Number(parsed.patrimonio)||0; PR.cliente=(parsed.conta?('Conta '+parsed.conta):''); PR.atualAssets=(parsed.ativos||[]).map(function(z){ return {nome:z.name, cat:(CANON[z.categoria]||canonCat(z.categoria)), pct:Number(z.pct)||0}; }).filter(function(x){return x.cat;});
         setStatus('Posicao do cliente importada.','ok'); render();
       }catch(e){ setStatus('Erro ao interpretar o arquivo.','err'); }
     });
   }
   function setStatus(t,c){ var s=el('pmStatus'); if(!s) return; s.className='pm-status'+(c?(' '+c):''); s.textContent=t; }
   function canonCat(x){ var n=normCat(x); for(var i=0;i<CATS.length;i++){ if(normCat(CATS[i])===n) return CATS[i]; } return null; }
+  function isXP(n){ return /^\s*xp/i.test(String(n||'')); }
+  function keepXP(){ (PR.atualAssets||[]).forEach(function(a){ if(!isXP(a.nome)) return; var c=a.cat; if(!c) return; var arr=PR.assets[c]=PR.assets[c]||[]; var found=false; arr.forEach(function(x){ if(x.nome===a.nome){ x.protegido=true; found=true; } }); if(!found){ var meta=metaFromLib({classe:c,nome:a.nome,detalhe:'',liq:''}); arr.push({nome:a.nome,pct:Number(a.pct)||0,detalhe:'',liq:'',tags:meta.tags,retCat:meta.retCat,retVal:meta.retVal,retIsento:meta.retIsento,protegido:true}); } }); }
   var PR_TEMPLATES={
     "Conservadora":[
       ["Renda Fixa","LCD",72.5,"93% a 94% CDI · 1–5 anos","No vencimento"],
@@ -3633,6 +3643,7 @@ html.theme-light .pm-chip{ background:#fff; }
   function effPct(c){ var a=PR.assets[c]; if(a&&a.length){ var t=0; a.forEach(function(x){ t+=(Number(x.pct)||0); }); return t; } return PR.prop[c]||0; }
   function render(){
     if(!Object.keys(PR.atual).length){ PR.atual=emptyMap(); PR.prop=emptyMap(); }
+    keepXP();
     el('pmCli').value=PR.cliente||''; el('pmPat').value=fmt(PR.patrim);
     var h='';
     CATS.forEach(function(c){
@@ -3652,7 +3663,7 @@ html.theme-light .pm-chip{ background:#fff; }
             '<input class="pm-an" type="text" placeholder="Nome do ativo" value="'+esc2(a.nome)+'" data-an="'+c+'" data-ai="'+ai+'">'+
             '<div class="pm-pct"><input type="text" inputmode="decimal" value="'+fp(a.pct||0)+'" data-ap="'+c+'" data-ai="'+ai+'"><span class="pm-lbl">%</span></div>'+
             '<div class="pm-acrs">R$ '+fmt(PR.patrim*(a.pct||0)/100)+'</div>'+
-            '<button class="pm-arm" data-arm="'+c+'" data-ai="'+ai+'" title="Remover">&times;</button>'+
+            (a.protegido?'<span class="pm-prot" title="Ativo XP do cliente - nao pode ser vendido">🔒</span>':'<button class="pm-arm" data-arm="'+c+'" data-ai="'+ai+'" title="Remover">&times;</button>')+
           '</div>'+
           '<div class="pm-acret">'+esc2(retLabelOf(a))+'</div>'+
           ((a.tags&&a.tags.length)?'<div class="pm-actags">'+a.tags.map(function(t){ return '<span class="pm-tag '+tagClass(t)+'">'+esc2(t)+'</span>'; }).join('')+'</div>':'')+
@@ -3669,6 +3680,10 @@ html.theme-light .pm-chip{ background:#fff; }
           (libItems.length? libItems.map(function(it,pi){ return '<div class="pm-pitem" data-pick="'+c+'" data-pi="'+pi+'"><div class="pm-piname">'+esc2(it.nome)+'</div>'+(it.detalhe?'<div class="pm-pidesc">'+esc2(it.detalhe)+'</div>':'')+'</div>'; }).join('') : '<div class="pm-pidesc" style="padding:8px">Nenhum ativo desta classe na biblioteca.</div>')+
         '</div><button class="pm-pmanual" data-pmanual="'+c+'">+ Adicionar manualmente</button></div>';
       }
+      var _atualCat=(PR.atualAssets||[]).filter(function(x){return x.cat===c;});
+      var _pn={}; (PR.assets[c]||[]).forEach(function(x){ _pn[x.nome]=1; });
+      var _saiu=_atualCat.filter(function(x){ return !_pn[x.nome] && !isXP(x.nome); });
+      if(_saiu.length){ h+='<div class="pm-saiu"><div class="pm-saiu-h">Saiu da carteira</div>'+_saiu.map(function(x){ return '<div class="pm-saiu-row"><span class="pm-saiu-nm">'+esc2(x.nome)+'</span><span class="pm-saiu-tag">vendido</span></div>'; }).join('')+'</div>'; }
     });
     el('pmRows').innerHTML=h;
     var tot=0; CATS.forEach(function(c){ tot+=effPct(c); });
