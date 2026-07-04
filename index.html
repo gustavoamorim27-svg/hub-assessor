@@ -3402,6 +3402,17 @@ html.theme-light .pm-rows{ background:#fff; }
 .pm-an{ background:var(--input,#10164A); border:1px solid var(--bd); border-radius:8px; color:var(--wh); font-weight:600; font-size:13px; padding:7px 10px; outline:none; }
 html.theme-light .pm-an{ background:#fff; color:#0B1033; border-color:rgba(11,16,51,.18); }
 .pm-arm{ background:none; border:none; color:#FF6B6B; font-size:18px; cursor:pointer; }
+.pm-picker{ background:var(--navy3,#141C57); border:1px solid var(--bd); border-radius:12px; padding:12px; margin:2px 0 12px 30px; }
+html.theme-light .pm-picker{ background:#F4F6FB; }
+.pm-psearch{ width:100%; background:var(--input,#10164A); border:1px solid var(--bd); border-radius:8px; color:var(--wh); padding:8px 12px; font-size:13px; outline:none; margin-bottom:8px; }
+html.theme-light .pm-psearch{ background:#fff; color:#0B1033; border-color:rgba(11,16,51,.18); }
+.pm-plist{ max-height:230px; overflow:auto; display:flex; flex-direction:column; gap:6px; }
+.pm-pitem{ background:var(--navy2); border:1px solid var(--bd); border-radius:9px; padding:8px 11px; cursor:pointer; }
+html.theme-light .pm-pitem{ background:#fff; }
+.pm-pitem:hover{ border-color:var(--or); }
+.pm-piname{ font-weight:700; font-size:13px; }
+.pm-pidesc{ font-size:11px; color:var(--mu); margin-top:2px; }
+.pm-pmanual{ margin-top:8px; background:none; border:1px dashed var(--bd); color:var(--mu); border-radius:8px; padding:8px 12px; cursor:pointer; font-size:12px; width:100%; }
 .pm-cat{ display:flex; align-items:center; gap:9px; font-weight:700; font-size:13.5px; }
 .pm-dot{ width:11px; height:11px; border-radius:50%; flex-shrink:0; }
 .pm-row input[type=range]{ width:100%; accent-color:var(--or); }
@@ -3469,7 +3480,8 @@ html.theme-light .pm-chip{ background:#fff; }
   function pn(v){ if(v==null) return 0; var s=String(v).replace(/r\$/ig,'').replace(/\s/g,'').replace(/\./g,'').replace(',','.'); var n=parseFloat(s); return isNaN(n)?0:n; }
   function fmt(n){ n=Number(n)||0; return n.toLocaleString('pt-BR',{minimumFractionDigits:0,maximumFractionDigits:0}); }
   function fp(n){ n=Number(n)||0; return (Math.round(n*10)/10).toLocaleString('pt-BR',{maximumFractionDigits:1}); }
-  var PR={ cliente:'', patrim:0, atual:{}, prop:{}, assets:{} };
+  var PR={ cliente:'', patrim:0, atual:{}, prop:{}, assets:{}, picker:null };
+  function esc2(t){ return String(t==null?'':t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\"/g,'&quot;'); }
   function emptyMap(){ var m={}; CATS.forEach(function(c){ m[c]=0; }); return m; }
   function seedSim(){
     try{
@@ -3519,6 +3531,12 @@ html.theme-light .pm-chip{ background:#fff; }
           '<button class="pm-arm" data-arm="'+c+'" data-ai="'+ai+'" title="Remover">&times;</button>'+
         '</div>';
       });
+      if(PR.picker===c){
+        var libItems=(window.__LIBDATA||[]).filter(function(x){return x.classe===c;});
+        h+='<div class="pm-picker"><input class="pm-psearch" type="text" placeholder="Buscar ativo em '+c+'..." data-psearch="'+c+'"><div class="pm-plist">'+
+          (libItems.length? libItems.map(function(it,pi){ return '<div class="pm-pitem" data-pick="'+c+'" data-pi="'+pi+'"><div class="pm-piname">'+esc2(it.nome)+'</div>'+(it.detalhe?'<div class="pm-pidesc">'+esc2(it.detalhe)+'</div>':'')+'</div>'; }).join('') : '<div class="pm-pidesc" style="padding:8px">Nenhum ativo desta classe na biblioteca.</div>')+
+        '</div><button class="pm-pmanual" data-pmanual="'+c+'">+ Adicionar manualmente</button></div>';
+      }
     });
     el('pmRows').innerHTML=h;
     var tot=0; CATS.forEach(function(c){ tot+=effPct(c); });
@@ -3538,7 +3556,10 @@ html.theme-light .pm-chip{ background:#fff; }
   function bindRows(){
     Array.prototype.forEach.call(document.querySelectorAll('#pmRows [data-r]'),function(r){ r.oninput=function(){ if(r.disabled) return; PR.prop[r.getAttribute('data-r')]=parseFloat(r.value)||0; render(); }; });
     Array.prototype.forEach.call(document.querySelectorAll('#pmRows [data-p]'),function(i){ i.onchange=function(){ if(i.hasAttribute('readonly')) return; PR.prop[i.getAttribute('data-p')]=pn(i.value); render(); }; });
-    Array.prototype.forEach.call(document.querySelectorAll('#pmRows [data-add]'),function(b){ b.onclick=function(){ var c=b.getAttribute('data-add'); (PR.assets[c]=PR.assets[c]||[]).push({nome:'',pct:0}); render(); }; });
+    Array.prototype.forEach.call(document.querySelectorAll('#pmRows [data-add]'),function(b){ b.onclick=function(){ var c=b.getAttribute('data-add'); PR.picker=(PR.picker===c?null:c); render(); }; });
+    Array.prototype.forEach.call(document.querySelectorAll('#pmRows [data-psearch]'),function(i){ i.oninput=function(){ var q=String(i.value||'').toLowerCase(); var box=i.parentNode; box.querySelectorAll('.pm-pitem').forEach(function(it){ it.style.display=it.textContent.toLowerCase().indexOf(q)>=0?'':'none'; }); }; try{ i.focus(); }catch(_){ } });
+    Array.prototype.forEach.call(document.querySelectorAll('#pmRows [data-pick]'),function(x){ x.onclick=function(){ var c=x.getAttribute('data-pick'), pi=+x.getAttribute('data-pi'); var it=(window.__LIBDATA||[]).filter(function(y){return y.classe===c;})[pi]; if(it){ (PR.assets[c]=PR.assets[c]||[]).push({nome:it.nome,pct:0}); } PR.picker=null; render(); }; });
+    Array.prototype.forEach.call(document.querySelectorAll('#pmRows [data-pmanual]'),function(b){ b.onclick=function(){ var c=b.getAttribute('data-pmanual'); (PR.assets[c]=PR.assets[c]||[]).push({nome:'',pct:0}); PR.picker=null; render(); }; });
     Array.prototype.forEach.call(document.querySelectorAll('#pmRows [data-an]'),function(i){ i.oninput=function(){ PR.assets[i.getAttribute('data-an')][+i.getAttribute('data-ai')].nome=i.value; }; });
     Array.prototype.forEach.call(document.querySelectorAll('#pmRows [data-ap]'),function(i){ i.onchange=function(){ PR.assets[i.getAttribute('data-ap')][+i.getAttribute('data-ai')].pct=pn(i.value); render(); }; });
     Array.prototype.forEach.call(document.querySelectorAll('#pmRows [data-arm]'),function(b){ b.onclick=function(){ var c=b.getAttribute('data-arm'); PR.assets[c].splice(+b.getAttribute('data-ai'),1); if(!PR.assets[c].length) delete PR.assets[c]; render(); }; });
