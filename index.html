@@ -3606,6 +3606,19 @@ html.theme-light .pm-chip{ background:#fff; }
     ]
   };
   function applyProfile(name){
+    var _T=window.RICO_TEMPLATES;
+    if(!_T){ try{ if(window._toolInit&&window._toolInit['construtor']) window._toolInit['construtor'](); }catch(e){} _T=window.RICO_TEMPLATES; }
+    if(_T && typeof _T[name]==='function'){
+      var items=[]; try{ items=_T[name]()||[]; }catch(e){ items=[]; }
+      if(items.length){
+        PR.assets={}; var mL=emptyMap();
+        items.forEach(function(it){ var c=canonCat(it.classe); if(!c) return;
+          var tg=(it.tags&&it.tags.length)?it.tags.slice():metaFromLib({classe:it.classe,nome:it.nome,detalhe:it.detalhe,liq:it.liquidez}).tags;
+          (PR.assets[c]=PR.assets[c]||[]).push({nome:it.nome,pct:Number(it.pct)||0,detalhe:it.detalhe||'',liq:it.liquidez||'',tags:tg,retCat:it.retCat||'mercado',retVal:Number(it.retVal)||0,retIsento:!!it.retIsento}); });
+        CATS.forEach(function(c){ if(!(PR.assets[c]&&PR.assets[c].length)) mL[c]=(PROFILES[name]&&PROFILES[name][c])||0; });
+        PR.prop=mL; render(); return;
+      }
+    }
     var tpl=PR_TEMPLATES[name];
     if(tpl){
       PR.assets={}; var m=emptyMap();
@@ -4128,8 +4141,8 @@ function ativoRetSummary(it){
 const TEMPLATES = {
   Conservadora: ()=>[
     mk("Renda Fixa","LCD",72.5,"93% a 94% CDI · 1–5 anos","No vencimento"),
-    mk("Renda Fixa","LCA IPCA+",12.5,"IPCA + 6% a.a. · 1 a 3 anos",""),
-    mk("Renda Fixa","CDB Pré",5,"14,7% a.a. · 3 a 5 anos","No vencimento"),
+    mk("Renda Fixa","NTN-B (Tesouro IPCA+)",12.5,"IPCA + 7,8% a.a. · Tesouro Direto","D+1"),
+    mk("Renda Fixa","LTN (Tesouro Prefixado)",5,"14% a.a. · Tesouro Direto","No vencimento"),
     mk("Multimercados","ACE Multicenários",2.5,"Rentabilizou ~230% do CDI nos últimos anos","D+17"),
     mk("Fundos Listados","JHSF Capital Malls",2.5,"Shoppings premium da JHSF (Cidade Jardim, Catarina Outlet) · trophy assets de alta renda · opção p/ clientes sem FIIs"),
     mk("Internacional","Renda Fixa Global",2.5,"Crédito global em dólar · Certificate of Deposit","No vencimento"),
@@ -4137,8 +4150,8 @@ const TEMPLATES = {
   ],
   Moderada: ()=>[
     mk("Renda Fixa","LCD",35.5,"93/94% CDI · 1–5 anos","No vencimento"),
-    mk("Renda Fixa","LCI",22.5,"IPCA + 6% a.a. · 1 a 3 anos",""),
-    mk("Renda Fixa","CDB Pré",10,"14,7% a.a. · 3 a 5 anos","No vencimento"),
+    mk("Renda Fixa","NTN-B (Tesouro IPCA+)",22.5,"IPCA + 7,8% a.a. · Tesouro Direto","D+1"),
+    mk("Renda Fixa","LTN (Tesouro Prefixado)",10,"14% a.a. · Tesouro Direto","No vencimento"),
     mk("Multimercados","XP Forças Armadas",7,"Exposição a empresas americanas ligadas à defesa e forças armadas, como a Palantir · 5 anos","No vencimento",null,true),
     mk("Multimercados","ACE Multicenários",7,"Rentabilizou ~230% do CDI nos últimos anos","D+17"),
     Object.assign(mk("Renda Variável","BOVA11 Protegida",5,"Proteção total de capital · participa da alta até 28% (15% acima) · Collar UI de 2 anos","No vencimento"),{catalogOp:window.__BOVA_OP,_howOpen:false}),
@@ -4149,8 +4162,8 @@ const TEMPLATES = {
   ],
   Sofisticada: ()=>[
     mk("Renda Fixa","LCD",16,"Mesmo produto das demais carteiras","No vencimento"),
-    mk("Renda Fixa","LCI",27.5,"IPCA + 6% a.a.",""),
-    mk("Renda Fixa","CDB Pré",7.5,"14,7% a.a. · 3 a 5 anos","No vencimento"),
+    mk("Renda Fixa","NTN-B (Tesouro IPCA+)",27.5,"IPCA + 7,8% a.a. · Tesouro Direto","D+1"),
+    mk("Renda Fixa","LTN (Tesouro Prefixado)",7.5,"14% a.a. · Tesouro Direto","No vencimento"),
     mk("Multimercados","ACE Multicenários",7,"Rentabilizou ~230% do CDI nos últimos anos","D+17"),
     mk("Multimercados","XP Terras Raras",3,"Exposição ao tema de terras raras e minerais críticos (eletrificação, defesa e disputa geopolítica EUA–China)","No vencimento"),
     mk("Renda Variável","BOVA11",3,"ETF do Ibovespa — exposição ampla às maiores empresas da bolsa brasileira · Collar UI de 2 anos, proteção total com alta limitada","No vencimento"),
