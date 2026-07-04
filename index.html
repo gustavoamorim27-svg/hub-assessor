@@ -3465,6 +3465,7 @@ html.theme-light .pm-chip{ background:#fff; }
     <div class="pm-head">
       <div><div class="pm-logo">rico</div><div class="pm-sub">Propor carteira - alocacao alvo em % por classe, giro e proposta para o cliente</div></div>
       <div class="pm-actions">
+        <button class="pm-btn" id="pmProj">Projeção da carteira</button>
         <button class="pm-btn" id="pmPlano">Plano de ajuste (PDF)</button>
         <button class="pm-btn png" id="pmPng">Gerar PNG / PDF</button>
         <button class="pm-btn" id="pmClose">Fechar</button>
@@ -3707,6 +3708,35 @@ html.theme-light .pm-chip{ background:#fff; }
       '<scr'+'ipt>setTimeout(function(){window.print();},350);</scr'+'ipt></body></html>';
     var w=window.open('','_blank'); w.document.write(html); w.document.close();
   }
+  function genProj(){
+    var CDI=14.25, IPCA=4.5, MERC=12;
+    function retAA(a){ var v=Number(a.retVal)||0; if(a.retCat==='pos') return CDI*v/100; if(a.retCat==='pre') return v; if(a.retCat==='inflacao') return IPCA+v; return MERC; }
+    var r=0;
+    CATS.forEach(function(c){ var arr=PR.assets[c]||[]; if(arr.length){ arr.forEach(function(a){ r+=(Number(a.pct)||0)/100*retAA(a); }); } else { r+=((PR.prop[c]||0)/100)*MERC; } });
+    var pat=PR.patrim||0, years=5, vals=[]; for(var y=0;y<=years;y++){ vals.push(pat*Math.pow(1+r/100,y)); }
+    var maxV=vals[years]||1, bars=''; for(var y=0;y<=years;y++){ var h=Math.max(4,Math.round(vals[y]/maxV*150)); bars+='<div class="bcol"><div class="bval">R$ '+fmt(vals[y])+'</div><div class="bar" style="height:'+h+'px"></div><div class="byr">'+(y===0?'Hoje':('Ano '+y))+'</div></div>'; }
+    var rows=''; for(var y=1;y<=years;y++){ rows+='<tr><td>Ano '+y+'</td><td style="text-align:right">R$ '+fmt(vals[y])+'</td><td style="text-align:right;color:#0a7a45">+R$ '+fmt(vals[y]-pat)+'</td></tr>'; }
+    var html='<!doctype html><html><head><meta charset="utf-8"><title>Projeção da carteira</title><style>'+
+      '*{box-sizing:border-box;-webkit-print-color-adjust:exact;print-color-adjust:exact}'+
+      'body{font-family:Arial,Helvetica,sans-serif;color:#12162a;margin:0;padding:34px 40px;background:#fff}'+
+      'h1{font-family:Georgia,serif;color:#FF4E00;margin:0;font-size:24px}.sub{color:#5b6485;font-size:12px;margin:3px 0 4px}'+
+      '.mets{display:flex;gap:12px;margin:16px 0}.met{flex:1;background:#f7f8fc;border-radius:8px;padding:12px 14px}.ml{font-size:9px;font-weight:700;color:#828aaa;letter-spacing:.5px;text-transform:uppercase}.mv{font-size:18px;font-weight:800;margin-top:5px}'+
+      '.chart{display:flex;align-items:flex-end;gap:16px;height:210px;border-bottom:2px solid #e3e7f0;padding:10px 6px 0;margin:10px 0 6px}'+
+      '.bcol{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}'+
+      '.bar{width:66%;background:linear-gradient(180deg,#FF6B2C,#FF4E00);border-radius:6px 6px 0 0}'+
+      '.bval{font-size:10px;font-weight:700;margin-bottom:5px;white-space:nowrap}.byr{font-size:10.5px;color:#5b6485;font-weight:700;margin-top:6px}'+
+      'table{width:100%;border-collapse:collapse;font-size:12.5px;margin-top:14px}th{background:#0b1033;color:#fff;font-size:10px;text-transform:uppercase;padding:8px;text-align:right}th:first-child{text-align:left}td{padding:8px;border-bottom:1px solid #eee}td:first-child{font-weight:bold}'+
+      '.disc{font-size:10px;color:#7a82a6;line-height:1.5;margin-top:16px;border-top:1px solid #eee;padding-top:10px}</style></head><body>'+
+      '<h1>rico</h1><div class="sub">Projeção da carteira proposta'+(PR.cliente?(' · '+PR.cliente):'')+'</div>'+
+      '<div class="mets"><div class="met"><div class="ml">Patrimonio inicial</div><div class="mv">R$ '+fmt(pat)+'</div></div>'+
+      '<div class="met"><div class="ml">Retorno estimado</div><div class="mv" style="color:#0a7a45">'+fp(r)+'% a.a.</div></div>'+
+      '<div class="met"><div class="ml">Projecao em '+years+' anos</div><div class="mv">R$ '+fmt(vals[years])+'</div></div></div>'+
+      '<div class="chart">'+bars+'</div>'+
+      '<table><tr><th>Periodo</th><th>Valor projetado</th><th>Ganho acumulado</th></tr>'+rows+'</table>'+
+      '<div class="disc">Projecao ilustrativa (juros compostos) com base no retorno estimado da carteira proposta - premissas: CDI '+fp(CDI)+'%, IPCA '+fp(IPCA)+'%, mercado '+fp(MERC)+'% a.a. Nao considera impostos, custos, aportes nem volatilidade. Rentabilidade estimada nao garante resultados futuros. Material de apoio comercial - nao constitui recomendacao ou oferta.</div>'+
+      '<scr'+'ipt>setTimeout(function(){window.print();},350);</scr'+'ipt></body></html>';
+    var w=window.open('','_blank'); if(!w) return; w.document.write(html); w.document.close();
+  }
   function genPlano(){
     var red=[],up=[],keep=[],vender=0,comprar=0;
     CATS.forEach(function(c){ var ap=PR.atual[c]||0, pp=effPct(c); var d=PR.patrim*(pp-ap)/100; var nm=(PR.assets[c]||[]).map(function(a){return a.nome;}).filter(Boolean).join(', '); var sub=fp(ap)+'% -> '+fp(pp)+'%'+(nm?(' - '+nm):''); var it={c:c,sub:sub,d:d};
@@ -3754,7 +3784,7 @@ html.theme-light .pm-chip{ background:#fff; }
     el('pmCli').oninput=function(){ PR.cliente=el('pmCli').value; };
     el('pmPat').onchange=function(){ PR.patrim=pn(el('pmPat').value); render(); };
     el('pmPng').onclick=genPng;
-    el('pmPlano').onclick=genPlano;
+    el('pmPlano').onclick=genPlano; var _pj=el('pmProj'); if(_pj) _pj.onclick=genProj;
   }
   function setActive(id){ ['pmSrcSim','pmSrcXls'].forEach(function(x){ var e=el(x); if(e) e.classList.toggle('on', x===id); }); }
   if(document.readyState==='loading'){ document.addEventListener('DOMContentLoaded', bind); } else { bind(); }
