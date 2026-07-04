@@ -3497,6 +3497,23 @@ html.theme-light .pm-chip{ background:#fff; }
   var PR={ cliente:'', patrim:0, atual:{}, prop:{}, assets:{}, picker:null };
   function esc2(t){ return String(t==null?'':t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\"/g,'&quot;'); }
   function tagClass(t){ t=String(t||'').toLowerCase(); if(t.indexOf('isento')>=0) return 'tag-isento'; if(t.indexOf('fgc')>=0) return 'tag-fgc'; if(t.indexOf('resgate')>=0) return 'tag-resgate'; if(t.indexOf('liquidez')>=0) return 'tag-liq'; if(t.indexOf('cetip')>=0) return 'tag-cetip'; if(t.indexOf('tesouro')>=0) return 'tag-tesouro'; if(t.indexOf('global')>=0) return 'tag-global'; if(t.indexOf('prote')>=0) return 'tag-protecao'; if(t.indexOf('cupom')>=0) return 'tag-cupom'; return 'tag-cetip'; }
+  function metaFromLib(it){
+    var det=String(it.detalhe||''), nome=String(it.nome||''), cl=it.classe||'', liq=it.liq||'';
+    var low=(nome+' '+det).toLowerCase();
+    var segs=det.split(/[·]/).map(function(x){return x.trim();}).filter(Boolean);
+    var retLabel=''; for(var i=0;i<segs.length;i++){ if(/%|cdi|a\.a|ipca/i.test(segs[i])){ retLabel=segs[i]; break; } } if(!retLabel) retLabel=segs[0]||'';
+    var tags=[];
+    if(/collar|prote..o total/.test(low)) tags.push('Proteção total');
+    else if(/fence|prote..o parcial/.test(low)) tags.push('Proteção parcial');
+    if(/cupom/.test(low)) tags.push('Cupom');
+    if(cl==='Fundos Listados') tags.push('CETIPADO');
+    if(liq) tags.push('Liquidez · '+liq);
+    if(/isent/.test(low)) tags.push('Isento de IR');
+    if(/\b(lci|lca|lcd|cdb|rdb)\b/.test(low)) tags.push('FGC');
+    if(/tesouro|ntn|ltn/.test(low)) tags.push('Tesouro Direto');
+    if(cl==='Internacional' || /\bglobal\b/.test(low)) tags.push('Global');
+    return { tags:tags, retLabel:retLabel };
+  }
   function emptyMap(){ var m={}; CATS.forEach(function(c){ m[c]=0; }); return m; }
   function seedSim(){
     try{
@@ -3577,7 +3594,7 @@ html.theme-light .pm-chip{ background:#fff; }
     Array.prototype.forEach.call(document.querySelectorAll('#pmRows [data-p]'),function(i){ i.onchange=function(){ if(i.hasAttribute('readonly')) return; PR.prop[i.getAttribute('data-p')]=pn(i.value); render(); }; });
     Array.prototype.forEach.call(document.querySelectorAll('#pmRows [data-add]'),function(b){ b.onclick=function(){ var c=b.getAttribute('data-add'); PR.picker=(PR.picker===c?null:c); render(); }; });
     Array.prototype.forEach.call(document.querySelectorAll('#pmRows [data-psearch]'),function(i){ i.oninput=function(){ var q=String(i.value||'').toLowerCase(); var box=i.parentNode; box.querySelectorAll('.pm-pitem').forEach(function(it){ it.style.display=it.textContent.toLowerCase().indexOf(q)>=0?'':'none'; }); }; try{ i.focus(); }catch(_){ } });
-    Array.prototype.forEach.call(document.querySelectorAll('#pmRows [data-pick]'),function(x){ x.onclick=function(){ var c=x.getAttribute('data-pick'), pi=+x.getAttribute('data-pi'); var it=(window.__LIBDATA||[]).filter(function(y){return y.classe===c;})[pi]; if(it){ var m=(window.__assetMeta?window.__assetMeta(it.classe,it.nome,it.detalhe,it.liq):{tags:[],retLabel:''}); (PR.assets[c]=PR.assets[c]||[]).push({nome:it.nome,pct:0,detalhe:it.detalhe||'',liq:it.liq||'',tags:m.tags||[],retLabel:m.retLabel||''}); } PR.picker=null; render(); }; });
+    Array.prototype.forEach.call(document.querySelectorAll('#pmRows [data-pick]'),function(x){ x.onclick=function(){ var c=x.getAttribute('data-pick'), pi=+x.getAttribute('data-pi'); var it=(window.__LIBDATA||[]).filter(function(y){return y.classe===c;})[pi]; if(it){ var m=metaFromLib(it); (PR.assets[c]=PR.assets[c]||[]).push({nome:it.nome,pct:0,detalhe:it.detalhe||'',liq:it.liq||'',tags:m.tags||[],retLabel:m.retLabel||''}); } PR.picker=null; render(); }; });
     Array.prototype.forEach.call(document.querySelectorAll('#pmRows [data-pmanual]'),function(b){ b.onclick=function(){ var c=b.getAttribute('data-pmanual'); (PR.assets[c]=PR.assets[c]||[]).push({nome:'',pct:0}); PR.picker=null; render(); }; });
     Array.prototype.forEach.call(document.querySelectorAll('#pmRows [data-an]'),function(i){ i.oninput=function(){ PR.assets[i.getAttribute('data-an')][+i.getAttribute('data-ai')].nome=i.value; }; });
     Array.prototype.forEach.call(document.querySelectorAll('#pmRows [data-ap]'),function(i){ i.onchange=function(){ PR.assets[i.getAttribute('data-ap')][+i.getAttribute('data-ai')].pct=pn(i.value); render(); }; });
