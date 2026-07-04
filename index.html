@@ -1433,10 +1433,6 @@ body.mm .ajbtn{ padding:11px 16px !important; font-size:14px !important; }
       <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
       Comparador de Rentabilidade
     </button>
-    <button class="g-tab" data-panel="ajustes" onclick="showPanel('ajustes')">
-      <svg viewBox="0 0 24 24"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
-      Propor Carteira
-    </button>
     <button class="g-tab" data-panel="irpf" onclick="showPanel('irpf')">
       <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="8" y1="9" x2="16" y2="9"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="12" y2="17"/></svg>
       IR / DARF
@@ -1618,11 +1614,6 @@ body.mm .ajbtn{ padding:11px 16px !important; font-size:14px !important; }
           <div class="hcard-title">Comparador de Rentabilidade</div>
           <div class="hcard-desc">Compare múltiplos ativos com IR regressivo, gross-up CDI equivalente e evolução patrimonial.</div>
         </div>
-        <div class="hcard" onclick="showPanel('ajustes')">
-          <div class="hcard-ic"><svg viewBox="0 0 24 24"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg></div>
-          <div class="hcard-title">Propor Carteira</div>
-          <div class="hcard-desc">Proponha a nova carteira do cliente: arraste o que sai, adicione das gavetas, e gere a proposta em PNG.</div>
-        </div>
         <div class="hcard" onclick="showPanel('irpf')">
           <div class="hcard-ic"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="8" y1="9" x2="16" y2="9"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="12" y2="17"/></svg></div>
           <div class="hcard-title">IR / DARF Renda Variável</div>
@@ -1733,6 +1724,10 @@ body.mm .ajbtn{ padding:11px 16px !important; font-size:14px !important; }
       <div class="sub" id="construtorSub">Simulador de Investimentos · ajuste ao vivo durante a ligação</div>
     </div>
     <div style="display:flex; gap:10px;">
+      <button class="btn-ghost" id="btnPropor" style="border-color:rgba(255,78,0,.55);color:var(--or)">
+        <svg class="icon" viewBox="0 0 24 24"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+        Propor carteira
+      </button>
       <button class="btn-ghost" id="btnCopy">
         <svg class="icon" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
         <span id="copyLabel">Copiar resumo</span>
@@ -3367,6 +3362,202 @@ html.theme-light [data-tool="irpf"] .ir-g-pos{ color:#067A53 !important; } html.
   }
   if(document.readyState==='loading'){ document.addEventListener('DOMContentLoaded', irBind); } else { irBind(); }
   window._toolInit=window._toolInit||{}; window._toolInit['irpf']=irBind;
+})();
+</script>
+<style>
+#proporModal{ position:fixed; inset:0; z-index:3000; display:none; background:linear-gradient(160deg,#0A0F38,#070B2E 60%,#05081F); overflow:auto; color:var(--wh); }
+#proporModal.on{ display:block; }
+html.theme-light #proporModal{ background:#EDF0F6; color:#0B1033; }
+.pm-wrap{ max-width:1080px; margin:0 auto; padding:26px 22px 70px; }
+.pm-head{ display:flex; justify-content:space-between; align-items:flex-end; gap:14px; border-bottom:1px solid var(--bd); padding-bottom:16px; margin-bottom:20px; flex-wrap:wrap; }
+.pm-logo{ font-family:'Sora',sans-serif; font-weight:800; font-size:30px; letter-spacing:-1px; color:var(--or); line-height:1; }
+.pm-sub{ color:var(--mu); font-size:13.5px; margin-top:4px; }
+.pm-actions{ display:flex; gap:10px; }
+.pm-btn{ font-family:'Manrope',sans-serif; font-weight:800; font-size:13.5px; padding:10px 16px; border-radius:11px; cursor:pointer; border:1px solid var(--bd); background:transparent; color:var(--wh); }
+html.theme-light .pm-btn{ color:#0B1033; }
+.pm-btn.png{ background:var(--or); color:#fff; border-color:var(--or); }
+.pm-bar{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-bottom:16px; }
+.pm-lbl{ font-size:11px; letter-spacing:.5px; text-transform:uppercase; font-weight:700; color:var(--mu); }
+.pm-oi{ font-family:'Manrope',sans-serif; font-weight:700; font-size:13px; padding:9px 14px; border-radius:10px; cursor:pointer; border:1px solid var(--bd); background:transparent; color:var(--wh); }
+html.theme-light .pm-oi{ color:#0B1033; }
+.pm-oi.on{ background:var(--or); color:#fff; border-color:var(--or); }
+.pm-status{ font-size:12.5px; font-weight:600; }
+.pm-status.err{ color:#FF6B6B; } .pm-status.ok{ color:#3DD68C; }
+.pm-ids{ display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:14px; margin-bottom:18px; }
+.pm-fld{ background:var(--navy2); border:1px solid var(--bd); border-radius:12px; padding:10px 13px; }
+html.theme-light .pm-fld{ background:#fff; }
+.pm-fld label{ display:block; font-size:10.5px; letter-spacing:.5px; text-transform:uppercase; font-weight:700; color:var(--mu); margin-bottom:5px; }
+.pm-fld input{ width:100%; background:transparent; border:none; outline:none; color:var(--wh); font-family:'Sora',sans-serif; font-weight:800; font-size:17px; }
+html.theme-light .pm-fld input{ color:#0B1033; }
+.pm-prof{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-bottom:18px; }
+.pm-prof .pm-oi{ font-weight:800; }
+.pm-rows{ background:var(--navy2); border:1px solid var(--bd); border-radius:16px; padding:6px 16px; margin-bottom:18px; }
+html.theme-light .pm-rows{ background:#fff; }
+.pm-row{ display:grid; grid-template-columns:150px 1fr 92px 120px 118px; gap:14px; align-items:center; padding:12px 0; border-bottom:1px solid var(--bd); }
+.pm-row:last-child{ border-bottom:none; }
+.pm-cat{ display:flex; align-items:center; gap:9px; font-weight:700; font-size:13.5px; }
+.pm-dot{ width:11px; height:11px; border-radius:50%; flex-shrink:0; }
+.pm-row input[type=range]{ width:100%; accent-color:var(--or); }
+.pm-pct{ display:flex; align-items:center; gap:4px; }
+.pm-pct input{ width:58px; background:var(--input,#10164A); border:1px solid var(--bd); border-radius:8px; color:var(--wh); font-family:'Sora',sans-serif; font-weight:800; font-size:14px; padding:6px 8px; text-align:right; outline:none; }
+html.theme-light .pm-pct input{ background:#fff; color:#0B1033; }
+.pm-rs{ font-family:'Sora',sans-serif; font-weight:700; font-size:13px; color:var(--mu); text-align:right; }
+.pm-giro{ font-size:12px; font-weight:800; text-align:right; }
+.pm-giro.buy{ color:#3DD68C; } .pm-giro.sell{ color:#FF6B6B; } .pm-giro.keep{ color:var(--mu); }
+.pm-total{ display:flex; justify-content:flex-end; gap:8px; align-items:center; font-size:13px; font-weight:700; margin:2px 4px 0; }
+.pm-total b{ font-family:'Sora',sans-serif; }
+.pm-total .warn{ color:#FFB020; } .pm-total .ok{ color:#3DD68C; }
+.pm-chips{ display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:14px; }
+.pm-chip{ background:var(--navy2); border:1px solid var(--bd); border-radius:14px; padding:14px 16px; }
+html.theme-light .pm-chip{ background:#fff; }
+.pm-chip .k{ font-size:10.5px; letter-spacing:.5px; text-transform:uppercase; font-weight:700; color:var(--mu); }
+.pm-chip .v{ font-family:'Sora',sans-serif; font-weight:800; font-size:20px; margin-top:5px; }
+.pm-disc{ font-size:11px; color:var(--mu); line-height:1.6; margin-top:20px; border-top:1px solid var(--bd); padding-top:12px; }
+@media(max-width:760px){ .pm-row{ grid-template-columns:110px 1fr 74px; } .pm-rs,.pm-giro{ display:none; } }
+</style>
+<div id="proporModal">
+  <div class="pm-wrap">
+    <div class="pm-head">
+      <div><div class="pm-logo">rico</div><div class="pm-sub">Propor carteira - alocacao alvo em % por classe, giro e proposta para o cliente</div></div>
+      <div class="pm-actions">
+        <button class="pm-btn png" id="pmPng">Gerar PNG / PDF</button>
+        <button class="pm-btn" id="pmClose">Fechar</button>
+      </div>
+    </div>
+    <div class="pm-bar">
+      <span class="pm-lbl">Carteira atual do cliente:</span>
+      <button class="pm-oi" id="pmSrcSim">Carteira do Simulador</button>
+      <button class="pm-oi" id="pmSrcXls">Importar Excel do cliente</button>
+      <input type="file" id="pmFile" accept=".xlsx,.xls" style="display:none">
+      <span class="pm-status" id="pmStatus"></span>
+    </div>
+    <div class="pm-ids">
+      <div class="pm-fld"><label>Cliente</label><input id="pmCli" type="text" placeholder="Nome / conta"></div>
+      <div class="pm-fld"><label>Patrimonio (R$)</label><input id="pmPat" type="text" inputmode="decimal" value="0"></div>
+    </div>
+    <div class="pm-prof">
+      <span class="pm-lbl">Distribuir por perfil:</span>
+      <button class="pm-oi" data-prof="Conservadora">Conservadora</button>
+      <button class="pm-oi" data-prof="Moderada">Moderada</button>
+      <button class="pm-oi" data-prof="Sofisticada">Sofisticada</button>
+    </div>
+    <div class="pm-rows" id="pmRows"></div>
+    <div class="pm-total" id="pmTot"></div>
+    <div class="pm-chips" id="pmChips" style="margin-top:16px"></div>
+    <div class="pm-disc">Material de apoio comercial - alocacao alvo por classe em relacao a carteira atual do cliente. Giro estimado por diferenca de alocacao (a vender / a comprar). Nao constitui recomendacao; sujeito a suitability e as condicoes de cada produto.</div>
+  </div>
+</div>
+<script>
+(function(){
+  var CATS=["Renda Fixa","Previdencia","Multimercados","Renda Variavel","Fundos Listados","Alternativos","Internacional"];
+  var CANON={"Renda Fixa":"Renda Fixa","Previdência":"Previdencia","Previdencia":"Previdencia","Multimercados":"Multimercados","Renda Variável":"Renda Variavel","Renda Variavel":"Renda Variavel","Fundos Listados":"Fundos Listados","Alternativos":"Alternativos","Internacional":"Internacional"};
+  var COLORS={"Renda Fixa":"#3DD68C","Previdencia":"#E8709B","Multimercados":"#7C8CFF","Renda Variavel":"#F26522","Fundos Listados":"#FFB020","Alternativos":"#C77DFF","Internacional":"#36C5F0"};
+  var PROFILES={
+    "Conservadora":{"Renda Fixa":90,"Previdencia":0,"Multimercados":2.5,"Renda Variavel":0,"Fundos Listados":2.5,"Alternativos":0,"Internacional":5},
+    "Moderada":{"Renda Fixa":68,"Previdencia":0,"Multimercados":14,"Renda Variavel":5,"Fundos Listados":4,"Alternativos":3,"Internacional":6},
+    "Sofisticada":{"Renda Fixa":51,"Previdencia":0,"Multimercados":10,"Renda Variavel":15,"Fundos Listados":9.5,"Alternativos":7,"Internacional":7.5}
+  };
+  function el(id){ return document.getElementById(id); }
+  function pn(v){ if(v==null) return 0; var s=String(v).replace(/r\$/ig,'').replace(/\s/g,'').replace(/\./g,'').replace(',','.'); var n=parseFloat(s); return isNaN(n)?0:n; }
+  function fmt(n){ n=Number(n)||0; return n.toLocaleString('pt-BR',{minimumFractionDigits:0,maximumFractionDigits:0}); }
+  function fp(n){ n=Number(n)||0; return (Math.round(n*10)/10).toLocaleString('pt-BR',{maximumFractionDigits:1}); }
+  var PR={ cliente:'', patrim:0, atual:{}, prop:{} };
+  function emptyMap(){ var m={}; CATS.forEach(function(c){ m[c]=0; }); return m; }
+  function seedSim(){
+    try{
+      var b=window.RICO_BRIDGE&&window.RICO_BRIDGE.carteira;
+      if(!b||!b.itens||!b.itens.length){ setStatus('Nenhuma carteira no Simulador. Monte uma ou importe o Excel.','err'); return; }
+      var m=emptyMap();
+      b.itens.forEach(function(it){ var c=CANON[it.classe]||null; if(c&&m.hasOwnProperty(c)) m[c]+=(Number(it.pct)||0); });
+      PR.atual=m; PR.prop=Object.assign({},m); PR.patrim=Number(b.patrimonio)||0; PR.cliente=b.cliente||'';
+      setStatus('Carteira do Simulador carregada.','ok'); render();
+    }catch(e){ setStatus('Erro ao ler a carteira do Simulador.','err'); }
+  }
+  function seedXls(file){
+    setStatus('Lendo arquivo...','');
+    if(typeof window.RICO_importPosicaoFile!=='function'){ setStatus('Importador indisponivel; abra a aba de Aderencia uma vez.','err'); return; }
+    window.RICO_importPosicaoFile(file, function(parsed){
+      try{
+        var m=emptyMap(), comp=parsed.comp||{};
+        Object.keys(comp).forEach(function(k){ var c=CANON[k]||null; if(c&&m.hasOwnProperty(c)) m[c]+=(Number(comp[k])||0); });
+        PR.atual=m; PR.prop=Object.assign({},m); PR.patrim=Number(parsed.patrimonio)||0; PR.cliente=(parsed.conta?('Conta '+parsed.conta):'');
+        setStatus('Posicao do cliente importada.','ok'); render();
+      }catch(e){ setStatus('Erro ao interpretar o arquivo.','err'); }
+    });
+  }
+  function setStatus(t,c){ var s=el('pmStatus'); if(!s) return; s.className='pm-status'+(c?(' '+c):''); s.textContent=t; }
+  function applyProfile(name){ var p=PROFILES[name]; if(!p) return; var m=emptyMap(); CATS.forEach(function(c){ m[c]=p[c]||0; }); PR.prop=m; render(); }
+  function render(){
+    if(!Object.keys(PR.atual).length){ PR.atual=emptyMap(); PR.prop=emptyMap(); }
+    el('pmCli').value=PR.cliente||''; el('pmPat').value=fmt(PR.patrim);
+    var h='';
+    CATS.forEach(function(c){
+      var pct=PR.prop[c]||0, col=COLORS[c];
+      var propRs=PR.patrim*pct/100, atRs=PR.patrim*(PR.atual[c]||0)/100, d=propRs-atRs;
+      var gc=Math.abs(d)<1?'keep':(d>0?'buy':'sell'); var gt=Math.abs(d)<1?'manter':((d>0?'+':'-')+'R$ '+fmt(Math.abs(d)));
+      h+='<div class="pm-row">'+
+        '<div class="pm-cat"><span class="pm-dot" style="background:'+col+'"></span>'+c+'</div>'+
+        '<input type="range" min="0" max="100" step="0.5" value="'+pct+'" data-r="'+c+'">'+
+        '<div class="pm-pct"><input type="text" inputmode="decimal" value="'+fp(pct)+'" data-p="'+c+'"><span class="pm-lbl">%</span></div>'+
+        '<div class="pm-rs">R$ '+fmt(propRs)+'</div>'+
+        '<div class="pm-giro '+gc+'">'+gt+'</div>'+
+      '</div>';
+    });
+    el('pmRows').innerHTML=h;
+    var tot=0; CATS.forEach(function(c){ tot+=PR.prop[c]||0; });
+    var okc=(Math.abs(100-tot)<0.1)?'ok':'warn';
+    el('pmTot').innerHTML='Total alocado: <b class="'+okc+'">'+fp(tot)+'%</b>'+(okc==='warn'?' <span class="pm-lbl">(ajuste para 100%)</span>':'');
+    var vender=0,comprar=0; CATS.forEach(function(c){ var d=PR.patrim*((PR.prop[c]||0)-(PR.atual[c]||0))/100; if(d>0) comprar+=d; else vender+=-d; });
+    var saldo=comprar-vender, giro=PR.patrim>0?comprar/PR.patrim*100:0;
+    el('pmChips').innerHTML=
+      chip('Patrimonio','R$ '+fmt(PR.patrim),'var(--wh)')+
+      chip('A vender','R$ '+fmt(vender),'#FF6B6B')+
+      chip('A comprar','R$ '+fmt(comprar),'#3DD68C')+
+      chip('Giro',fp(giro)+'%','#FFB020')+
+      chip(saldo>=0?'Aporte':'Resgate','R$ '+fmt(Math.abs(saldo)),saldo>=0?'#3DD68C':'#FF6B6B');
+    bindRows();
+  }
+  function chip(k,v,col){ return '<div class="pm-chip"><div class="k">'+k+'</div><div class="v" style="color:'+col+'">'+v+'</div></div>'; }
+  function bindRows(){
+    Array.prototype.forEach.call(document.querySelectorAll('#pmRows [data-r]'),function(r){ r.oninput=function(){ PR.prop[r.getAttribute('data-r')]=parseFloat(r.value)||0; render(); }; });
+    Array.prototype.forEach.call(document.querySelectorAll('#pmRows [data-p]'),function(i){ i.onchange=function(){ PR.prop[i.getAttribute('data-p')]=pn(i.value); render(); }; });
+  }
+  function genPng(){
+    var rows=CATS.map(function(c){ var pp=PR.prop[c]||0, ap=PR.atual[c]||0; var propRs=PR.patrim*pp/100, atRs=PR.patrim*ap/100, d=propRs-atRs;
+      var dc=Math.abs(d)<1?'#5b6485':(d>0?'#0a7a45':'#c0392b'); var dt=Math.abs(d)<1?'manter':((d>0?'+':'-')+'R$ '+fmt(Math.abs(d)));
+      return '<tr><td><span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:'+COLORS[c]+';margin-right:7px"></span>'+c+'</td><td style="text-align:right">'+fp(ap)+'%</td><td style="text-align:right;font-weight:bold">'+fp(pp)+'%</td><td style="text-align:right">R$ '+fmt(propRs)+'</td><td style="text-align:right;color:'+dc+'">'+dt+'</td></tr>'; }).join('');
+    var vender=0,comprar=0; CATS.forEach(function(c){ var d=PR.patrim*((PR.prop[c]||0)-(PR.atual[c]||0))/100; if(d>0) comprar+=d; else vender+=-d; });
+    var html='<!doctype html><html><head><meta charset="utf-8"><title>Proposta de carteira</title><style>'+
+      'body{font-family:Arial,Helvetica,sans-serif;color:#12162a;margin:0;padding:34px 40px;background:#fff}'+
+      'h1{font-family:Georgia,serif;color:#FF4E00;margin:0;font-size:24px}.sub{color:#5b6485;font-size:12px;margin:3px 0 18px}'+
+      'table{width:100%;border-collapse:collapse;font-size:12.5px}th{background:#0b1033;color:#fff;font-size:10px;text-transform:uppercase;padding:8px;text-align:right}th:first-child{text-align:left}td{padding:8px;border-bottom:1px solid #eee}td:first-child{font-weight:bold}'+
+      '.cards{display:flex;gap:10px;margin:16px 0}.cd{flex:1;background:#f2f4f8;border:1px solid #e3e7f0;border-radius:10px;padding:12px 14px}.cd .k{font-size:10px;text-transform:uppercase;color:#5b6485;font-weight:bold}.cd .v{font-size:19px;font-weight:bold;margin-top:4px}'+
+      '.disc{font-size:10px;color:#7a82a6;line-height:1.5;margin-top:16px;border-top:1px solid #eee;padding-top:10px}</style></head><body>'+
+      '<h1>rico</h1><div class="sub">Proposta de carteira - '+(PR.cliente||'cliente')+' - Patrimonio R$ '+fmt(PR.patrim)+'</div>'+
+      '<table><tr><th>Classe</th><th>Atual</th><th>Proposta</th><th>Valor proposto</th><th>Movimento</th></tr>'+rows+'</table>'+
+      '<div class="cards"><div class="cd"><div class="k">A vender</div><div class="v" style="color:#c0392b">R$ '+fmt(vender)+'</div></div>'+
+      '<div class="cd"><div class="k">A comprar</div><div class="v" style="color:#0a7a45">R$ '+fmt(comprar)+'</div></div>'+
+      '<div class="cd"><div class="k">Giro</div><div class="v">'+fp(PR.patrim>0?comprar/PR.patrim*100:0)+'%</div></div></div>'+
+      '<div class="disc">Material de apoio comercial - alocacao alvo por classe x carteira atual do cliente. Nao constitui recomendacao ou oferta; sujeito a suitability e as condicoes de cada produto.</div>'+
+      '<scr'+'ipt>setTimeout(function(){window.print();},350);</scr'+'ipt></body></html>';
+    var w=window.open('','_blank'); w.document.write(html); w.document.close();
+  }
+  function open(){ var m=el('proporModal'); m.classList.add('on'); document.body.style.overflow='hidden'; if(!Object.keys(PR.atual).length) seedSim(); else render(); }
+  function close(){ el('proporModal').classList.remove('on'); document.body.style.overflow=''; }
+  function bind(){
+    var b=el('btnPropor'); if(!b || b.__b) return; b.__b=1;
+    b.onclick=open;
+    el('pmClose').onclick=close;
+    el('pmSrcSim').onclick=function(){ setActive('pmSrcSim'); seedSim(); };
+    el('pmSrcXls').onclick=function(){ setActive('pmSrcXls'); el('pmFile').click(); };
+    el('pmFile').onchange=function(){ if(el('pmFile').files[0]) seedXls(el('pmFile').files[0]); };
+    Array.prototype.forEach.call(document.querySelectorAll('#proporModal [data-prof]'),function(x){ x.onclick=function(){ applyProfile(x.getAttribute('data-prof')); }; });
+    el('pmCli').oninput=function(){ PR.cliente=el('pmCli').value; };
+    el('pmPat').onchange=function(){ PR.patrim=pn(el('pmPat').value); render(); };
+    el('pmPng').onclick=genPng;
+  }
+  function setActive(id){ ['pmSrcSim','pmSrcXls'].forEach(function(x){ var e=el(x); if(e) e.classList.toggle('on', x===id); }); }
+  if(document.readyState==='loading'){ document.addEventListener('DOMContentLoaded', bind); } else { bind(); }
 })();
 </script>
   <div class="g-panel" id="p-aderencia" data-tool="aderencia">
