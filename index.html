@@ -3520,11 +3520,11 @@ html.theme-light .pm-chip{ background:#fff; }
     if(/cupom/.test(low)) tags.push('Cupom');
     if(normCat(cl)==='fundos listados') tags.push('CETIPADO');
     if(liq) tags.push('Liquidez · '+liq);
-    if(/isent/.test(low)) tags.push('Isento de IR');
+    var isento=/isent/.test(low)||/\b(lci|lca|lcd)\b/.test(low); if(isento) tags.push('Isento de IR');
     if(/\b(lci|lca|lcd|cdb|rdb)\b/.test(low)) tags.push('FGC');
     if(/tesouro|ntn|ltn/.test(low)) tags.push('Tesouro Direto');
     if(normCat(cl)==='internacional' || /\bglobal\b/.test(low)) tags.push('Global');
-    var retCat='mercado', retVal=0, retIsento=/isent/.test(low);
+    var retCat='mercado', retVal=0, retIsento=isento;
     if(/ipca|ntn-b|inflaç/.test(low)){ retCat='inflacao'; var mi=low.match(/ipca\s*\+\s*([\d.,]+)/); retVal=mi?(parseFloat(mi[1].replace(',','.'))||6):6; }
     else { var mc=low.match(/([\d.,]+)\s*%?\s*(?:a\s*)?(?:do\s*)?cdi/); if(mc){ retCat='pos'; retVal=parseFloat(mc[1].replace(',','.'))||100; } else { var mp=low.match(/([\d.,]+)\s*%\s*a\.?\s*a/); if(mp){ retCat='pre'; retVal=parseFloat(mp[1].replace(',','.'))||14; } } }
     return { tags:tags, retCat:retCat, retVal:retVal, retIsento:retIsento };
@@ -3561,29 +3561,60 @@ html.theme-light .pm-chip{ background:#fff; }
   }
   function setStatus(t,c){ var s=el('pmStatus'); if(!s) return; s.className='pm-status'+(c?(' '+c):''); s.textContent=t; }
   function canonCat(x){ var n=normCat(x); for(var i=0;i<CATS.length;i++){ if(normCat(CATS[i])===n) return CATS[i]; } return null; }
+  var PR_TEMPLATES={
+    "Conservadora":[
+      ["Renda Fixa","LCD",72.5,"93% a 94% CDI · 1–5 anos","No vencimento"],
+      ["Renda Fixa","LCA IPCA+",12.5,"IPCA + 6% a.a. · 1 a 3 anos",""],
+      ["Renda Fixa","CDB Pré",5,"14,7% a.a. · 3 a 5 anos","No vencimento"],
+      ["Multimercados","ACE Multicenários",2.5,"Rentabilizou ~230% do CDI nos últimos anos","D+17"],
+      ["Fundos Listados","JHSF Capital Malls",2.5,"Shoppings premium da JHSF · trophy assets de alta renda",""],
+      ["Internacional","Renda Fixa Global",2.5,"Crédito global em dólar · Certificate of Deposit","No vencimento"],
+      ["Internacional","XP Global Ações",2.5,"Ações globais — EUA, Europa e Reino Unido","~D+5"]
+    ],
+    "Moderada":[
+      ["Renda Fixa","LCD",35.5,"93/94% CDI · 1–5 anos","No vencimento"],
+      ["Renda Fixa","LCI",22.5,"IPCA + 6% a.a. · 1 a 3 anos",""],
+      ["Renda Fixa","CDB Pré",10,"14,7% a.a. · 3 a 5 anos","No vencimento"],
+      ["Multimercados","XP Forças Armadas",7,"Defesa dos EUA (Palantir e afins) · 5 anos","No vencimento"],
+      ["Multimercados","ACE Multicenários",7,"Rentabilizou ~230% do CDI nos últimos anos","D+17"],
+      ["Renda Variável","BOVA11 Protegida",5,"Proteção total de capital · participa da alta até 28% (15% acima) · Collar UI de 2 anos","No vencimento"],
+      ["Fundos Listados","JHSF Capital Malls",4,"Shoppings premium · trophy assets de alta renda",""],
+      ["Alternativos","Ouro — Retorno Otimizado",3,"Exposição a ouro com estrutura otimizada · 3 a 5 anos","No vencimento"],
+      ["Internacional","Wellington Global Quality",3.5,"100% ações dos EUA, Europa e Reino Unido · +75% em 3 anos","D+5"],
+      ["Internacional","CD de 1 ano",2.5,"Certificate of Deposit · 1 ano pré-fixado em dólar","No vencimento"]
+    ],
+    "Sofisticada":[
+      ["Renda Fixa","LCD",16,"93/94% do CDI","No vencimento"],
+      ["Renda Fixa","LCI",27.5,"IPCA + 6% a.a.",""],
+      ["Renda Fixa","CDB Pré",7.5,"14,7% a.a. · 3 a 5 anos","No vencimento"],
+      ["Multimercados","ACE Multicenários",7,"Rentabilizou ~230% do CDI nos últimos anos","D+17"],
+      ["Multimercados","XP Terras Raras",3,"Terras raras e minerais críticos · eletrificação, defesa e disputa EUA–China","No vencimento"],
+      ["Renda Variável","BOVA11",3,"ETF do Ibovespa · Collar UI de 2 anos, proteção total com alta limitada","No vencimento"],
+      ["Renda Variável","BPAC11",3,"BTG Pactual · SmartCupom, cupom de 8% em 8 meses","No vencimento"],
+      ["Renda Variável","ITUB",3,"Itaú Unibanco · Fence de 1 ano, proteção parcial com alta limitada","No vencimento"],
+      ["Renda Variável","Microsoft",3,"Software e nuvem (Azure), líder em IA · Collar UI de 2 anos","No vencimento"],
+      ["Renda Variável","AXIA3",3,"Axia Energia (ex-Eletrobras) · Collar UI de 1 ano e meio","No vencimento"],
+      ["Fundos Listados","JHSF Capital Malls",3.5,"Shoppings premium da JHSF · trophy assets, DY de dois dígitos",""],
+      ["Fundos Listados","XP Logístico Prime",2,"Galpões logísticos de alto padrão · estruturado em balcão",""],
+      ["Fundos Listados","XPAG",2,"XP Crédito Agro (Fiagro) · renda mensal isenta de IR",""],
+      ["Fundos Listados","XP Habitat 2",2,"FII de papel · CRIs pulverizados de incorporação residencial",""],
+      ["Alternativos","XP Tecnologia",3,"QQQ protegido de 1 ano","No vencimento"],
+      ["Alternativos","Ouro Retorno Otimizado",4,"Exposição a ouro com estrutura otimizada","No vencimento"],
+      ["Internacional","Wellington Global Quality",5,"100% ações dos EUA, Europa e Reino Unido · +75% em 3 anos","D+5"],
+      ["Internacional","Renda Fixa Global",2.5,"Crédito global em dólar · Certificate of Deposit","No vencimento"]
+    ]
+  };
   function applyProfile(name){
-    var fn = window.RICO_TEMPLATES && window.RICO_TEMPLATES[name];
-    if(fn){
-      var items=[]; try{ items=fn()||[]; }catch(e){ items=[]; }
-      if(items.length){
-        PR.assets={}; var m=emptyMap();
-        items.forEach(function(it){ var c=canonCat(it.classe); if(!c) return;
-          var tg=(it.tags&&it.tags.length)?it.tags.slice():metaFromLib({classe:it.classe,nome:it.nome,detalhe:it.detalhe,liq:it.liquidez}).tags;
-          (PR.assets[c]=PR.assets[c]||[]).push({nome:it.nome,pct:Number(it.pct)||0,detalhe:it.detalhe||'',liq:it.liquidez||'',tags:tg,retCat:it.retCat||'mercado',retVal:Number(it.retVal)||0,retIsento:!!it.retIsento}); });
-        CATS.forEach(function(c){ if(!(PR.assets[c]&&PR.assets[c].length)) m[c]=(PROFILES[name]&&PROFILES[name][c])||0; });
-        PR.prop=m; render(); return;
-      }
+    var tpl=PR_TEMPLATES[name];
+    if(tpl){
+      PR.assets={}; var m=emptyMap();
+      tpl.forEach(function(row){ var cl=row[0],nome=row[1],pct=row[2],det=row[3],liq=row[4]; var c=canonCat(cl); if(!c) return;
+        var meta=metaFromLib({classe:cl,nome:nome,detalhe:det,liq:liq});
+        (PR.assets[c]=PR.assets[c]||[]).push({nome:nome,pct:pct,detalhe:det,liq:liq,tags:meta.tags,retCat:meta.retCat,retVal:meta.retVal,retIsento:meta.retIsento}); });
+      CATS.forEach(function(c){ if(!(PR.assets[c]&&PR.assets[c].length)) m[c]=(PROFILES[name]&&PROFILES[name][c])||0; });
+      PR.prop=m; render(); return;
     }
-    var p=PROFILES[name]; if(!p) return; var lib=window.__LIBDATA||[]; PR.assets={}; var m2=emptyMap();
-    CATS.forEach(function(c){
-      var target=p[c]||0; m2[c]=target; if(target<=0) return;
-      var pool=lib.filter(function(x){ return normCat(x.classe)===normCat(c); }); if(!pool.length) return;
-      var n=Math.min(pool.length, target>=20?2:1); var per=Math.round((target/n)*10)/10; var arr=[];
-      for(var i=0;i<n;i++){ var it=pool[i]; var meta=metaFromLib(it); var pct=(i===n-1)?(Math.round((target-per*(n-1))*10)/10):per;
-        arr.push({nome:it.nome,pct:pct,detalhe:it.detalhe||'',liq:it.liq||'',tags:meta.tags,retCat:meta.retCat,retVal:meta.retVal,retIsento:meta.retIsento}); }
-      PR.assets[c]=arr;
-    });
-    PR.prop=m2; render();
+    var p=PROFILES[name]; if(!p) return; var m2=emptyMap(); CATS.forEach(function(c){ m2[c]=p[c]||0; }); PR.assets={}; PR.prop=m2; render();
   }
   function effPct(c){ var a=PR.assets[c]; if(a&&a.length){ var t=0; a.forEach(function(x){ t+=(Number(x.pct)||0); }); return t; } return PR.prop[c]||0; }
   function render(){
