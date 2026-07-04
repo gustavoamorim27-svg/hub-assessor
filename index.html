@@ -3420,6 +3420,7 @@ html.theme-light .pm-chip{ background:#fff; }
     <div class="pm-head">
       <div><div class="pm-logo">rico</div><div class="pm-sub">Propor carteira - alocacao alvo em % por classe, giro e proposta para o cliente</div></div>
       <div class="pm-actions">
+        <button class="pm-btn" id="pmPlano">Plano de ajuste (PDF)</button>
         <button class="pm-btn png" id="pmPng">Gerar PNG / PDF</button>
         <button class="pm-btn" id="pmClose">Fechar</button>
       </div>
@@ -3542,6 +3543,40 @@ html.theme-light .pm-chip{ background:#fff; }
       '<scr'+'ipt>setTimeout(function(){window.print();},350);</scr'+'ipt></body></html>';
     var w=window.open('','_blank'); w.document.write(html); w.document.close();
   }
+  function genPlano(){
+    var red=[],up=[],keep=[],vender=0,comprar=0;
+    CATS.forEach(function(c){ var ap=PR.atual[c]||0, pp=PR.prop[c]||0; var d=PR.patrim*(pp-ap)/100; var sub=fp(ap)+'% -> '+fp(pp)+'%'; var it={c:c,sub:sub,d:d};
+      if(d>1){ up.push(it); comprar+=d; } else if(d<-1){ red.push(it); vender+=-d; } else keep.push(it); });
+    var giro=PR.patrim>0?comprar/PR.patrim*100:0;
+    var n=new Date(); var data=('0'+n.getDate()).slice(-2)+'/'+('0'+(n.getMonth()+1)).slice(-2)+'/'+n.getFullYear();
+    function sec(title,color,arr){ var body=arr.length?arr.map(function(it){ var amt=(it.d>=0?'+':'-')+'R$ '+fmt(Math.abs(it.d)); var col=it.d>=0?'#28aa6e':'#d64a4a'; return '<div class="row"><div><div class="nm">'+it.c+'</div><div class="cl">'+it.sub+'</div></div><div class="amt" style="color:'+col+'">'+amt+'</div></div>'; }).join(''):'<div class="empty">Nenhuma classe.</div>';
+      return '<div class="sec"><div class="sh" style="border-color:'+color+';color:'+color+'">'+title+'</div>'+body+'</div>'; }
+    var html='<!doctype html><html><head><meta charset="utf-8"><title>Plano de Ajuste de Carteira</title><style>'+
+      '*{box-sizing:border-box;-webkit-print-color-adjust:exact;print-color-adjust:exact}'+
+      'body{font-family:Arial,Helvetica,sans-serif;color:#12162a;margin:0;padding:38px 44px}'+
+      '.bar{height:5px;background:#f26522;margin:-38px -44px 22px}'+
+      '.hd{display:flex;align-items:baseline;gap:14px}.logo{font-size:26px;font-weight:800;color:#f26522}.ttl{font-size:20px;font-weight:800}'+
+      '.sub{color:#828aaa;font-size:12px;margin:8px 0 16px}hr{border:none;border-top:1px solid #dee2ee;margin:0 0 18px}'+
+      '.mets{display:flex;gap:12px;margin-bottom:24px}.met{flex:1;background:#f7f8fc;border-radius:8px;padding:12px 14px}'+
+      '.ml{font-size:9px;font-weight:700;color:#828aaa;letter-spacing:.5px}.mv{font-size:16px;font-weight:800;margin-top:5px}'+
+      '.sec{margin-bottom:22px}.sh{font-size:13px;font-weight:800;border-bottom:2px solid;padding-bottom:5px;margin-bottom:10px}'+
+      '.row{display:flex;justify-content:space-between;align-items:flex-start;padding:7px 0;border-bottom:1px solid #eef0f6}'+
+      '.nm{font-size:11px;font-weight:700}.cl{font-size:9.5px;color:#828aaa;margin-top:2px}.amt{font-size:11px;white-space:nowrap;padding-left:12px;text-align:right;font-weight:700}'+
+      '.empty{color:#828aaa;font-size:11px;padding:6px 0}.ft{margin-top:26px;border-top:1px solid #dee2ee;padding-top:10px;color:#828aaa;font-size:9px;text-align:center}'+
+      '</style></head><body><div class="bar"></div>'+
+      '<div class="hd"><div class="logo">rico</div><div class="ttl">Plano de Ajuste de Carteira</div></div>'+
+      '<div class="sub">'+(PR.cliente||'Cliente')+' - '+data+'</div><hr>'+
+      '<div class="mets">'+
+        '<div class="met"><div class="ml">PATRIMONIO</div><div class="mv">R$ '+fmt(PR.patrim)+'</div></div>'+
+        '<div class="met"><div class="ml">A VENDER</div><div class="mv" style="color:#d64a4a">R$ '+fmt(vender)+'</div></div>'+
+        '<div class="met"><div class="ml">A COMPRAR</div><div class="mv" style="color:#28aa6e">R$ '+fmt(comprar)+'</div></div>'+
+        '<div class="met"><div class="ml">GIRO</div><div class="mv" style="color:#f26522">'+fp(giro)+'%</div></div>'+
+      '</div>'+
+      sec('REDUZIR / SAIR','#d64a4a',red)+sec('AUMENTAR / ENTRAR','#28aa6e',up)+sec('MANTER','#828aaa',keep)+
+      '<div class="ft">Material de apoio interno - nao constitui recomendacao ou oferta - gerado pelo Hub do Assessor</div>'+
+      '<scr'+'ipt>window.onload=function(){setTimeout(function(){window.print();},250);};</scr'+'ipt></body></html>';
+    var w=window.open('','_blank'); if(!w) return; w.document.open(); w.document.write(html); w.document.close();
+  }
   function open(){ var m=el('proporModal'); m.classList.add('on'); document.body.style.overflow='hidden'; if(Object.keys(PR.atual).length){ render(); } else { seedSim(); if(!Object.keys(PR.atual).length){ PR.atual=emptyMap(); PR.prop=emptyMap(); render(); } } }
   function close(){ el('proporModal').classList.remove('on'); document.body.style.overflow=''; }
   function bind(){
@@ -3555,6 +3590,7 @@ html.theme-light .pm-chip{ background:#fff; }
     el('pmCli').oninput=function(){ PR.cliente=el('pmCli').value; };
     el('pmPat').onchange=function(){ PR.patrim=pn(el('pmPat').value); render(); };
     el('pmPng').onclick=genPng;
+    el('pmPlano').onclick=genPlano;
   }
   function setActive(id){ ['pmSrcSim','pmSrcXls'].forEach(function(x){ var e=el(x); if(e) e.classList.toggle('on', x===id); }); }
   if(document.readyState==='loading'){ document.addEventListener('DOMContentLoaded', bind); } else { bind(); }
