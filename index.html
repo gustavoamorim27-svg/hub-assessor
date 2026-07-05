@@ -3494,6 +3494,7 @@ html.theme-light .pm-chip{ background:#fff; }
         <button class="pm-btn" id="pmProj">Projeção da carteira</button>
         <button class="pm-btn" id="pmPlano">Plano de ajuste (PDF)</button>
         <button class="pm-btn png" id="pmPng">Gerar PNG / PDF</button>
+        <button class="pm-btn" id="pmClear">Limpar</button>
         <button class="pm-btn" id="pmClose">Fechar</button>
       </div>
     </div>
@@ -3593,7 +3594,7 @@ html.theme-light .pm-chip{ background:#fff; }
   function setStatus(t,c){ var s=el('pmStatus'); if(!s) return; s.className='pm-status'+(c?(' '+c):''); s.textContent=t; }
   function canonCat(x){ var n=normCat(x); for(var i=0;i<CATS.length;i++){ if(normCat(CATS[i])===n) return CATS[i]; } return null; }
   function isXP(n){ return /^\s*xp/i.test(String(n||'')); }
-  function keepXP(){ (PR.atualAssets||[]).forEach(function(a){ if(!isXP(a.nome)) return; var c=a.cat; if(!c) return; var arr=PR.assets[c]=PR.assets[c]||[]; var found=false; arr.forEach(function(x){ if(x.nome===a.nome){ x.protegido=true; found=true; } }); if(!found){ var meta=metaFromLib({classe:c,nome:a.nome,detalhe:'',liq:''}); arr.push({nome:a.nome,pct:Number(a.pct)||0,detalhe:'',liq:'',tags:meta.tags,retCat:meta.retCat,retVal:meta.retVal,retIsento:meta.retIsento,protegido:true}); } }); }
+  function keepXP(){ (PR.atualAssets||[]).forEach(function(a){ if(!isXP(a.nome)) return; var c=a.cat; if(!c) return; var arr=PR.assets[c]=PR.assets[c]||[]; var found=false; arr.forEach(function(x){ if(nkey(x.nome)===nkey(a.nome)){ x.protegido=true; found=true; } }); if(!found){ var meta=metaFromLib({classe:c,nome:a.nome,detalhe:'',liq:''}); arr.push({nome:a.nome,pct:Number(a.pct)||0,detalhe:'',liq:'',tags:meta.tags,retCat:meta.retCat,retVal:meta.retVal,retIsento:meta.retIsento,protegido:true}); } }); }
   var PR_TEMPLATES={
     "Conservadora":[
       ["Renda Fixa","LCD",72.5,"93% a 94% CDI · 1–5 anos","No vencimento"],
@@ -3718,10 +3719,12 @@ html.theme-light .pm-chip{ background:#fff; }
       chip(saldo>=0?'Aporte':'Resgate','R$ '+fmt(Math.abs(saldo)),saldo>=0?'#3DD68C':'#FF6B6B');
     bindRows();
   }
+  function nkey(n){ return String(n==null?'':n).trim().toLowerCase(); }
+  function clearAll(){ PR.cliente=''; PR.patrim=0; PR.atual={}; PR.prop={}; PR.assets={}; PR.picker=null; PR.atualAssets=[]; try{ setStatus('',''); }catch(e){} try{ setActive(''); }catch(e){} render(); }
   function renderSaindo(){
     var elp=document.getElementById('pmSaindo'); if(!elp) return;
-    var propNames={}; CATS.forEach(function(c){ (PR.assets[c]||[]).forEach(function(x){ propNames[x.nome]=1; }); });
-    var byCat={}; (PR.atualAssets||[]).forEach(function(a){ if(propNames[a.nome]||isXP(a.nome)) return; (byCat[a.cat]=byCat[a.cat]||[]).push(a); });
+    var propNames={}; CATS.forEach(function(c){ (PR.assets[c]||[]).forEach(function(x){ propNames[nkey(x.nome)]=1; }); });
+    var byCat={}; (PR.atualAssets||[]).forEach(function(a){ if(propNames[nkey(a.nome)]||isXP(a.nome)) return; (byCat[a.cat]=byCat[a.cat]||[]).push(a); });
     var cats=CATS.filter(function(c){ return byCat[c]&&byCat[c].length; });
     var h='<div class="pm-saindo-h">Saindo da carteira</div>';
     if(!cats.length){ h+='<div class="pm-saindo-empty">Importe a carteira atual do cliente (Carteira do Simulador ou Excel) para ver o que sai.</div>'; elp.innerHTML=h; return; }
@@ -3731,7 +3734,7 @@ html.theme-light .pm-chip{ background:#fff; }
         h+='<div class="pm-saindo-row"><div class="pm-saindo-nm"><span class="pm-sname">'+esc2(a.nome)+'</span><div class="pm-saindo-pct">'+fp(a.pct||0)+'% · R$ '+fmt(rs)+'</div></div><button class="pm-manter" data-manter="'+esc2(a.nome)+'" data-mcat="'+c+'" title="Devolver para a carteira">↩</button></div>'; }); });
     h+='<div class="pm-saindo-tot">Total saindo: <b>R$ '+fmt(totSai)+'</b></div>';
     elp.innerHTML=h;
-    Array.prototype.forEach.call(elp.querySelectorAll('[data-manter]'),function(b){ b.onclick=function(){ var nm=b.getAttribute('data-manter'), c=b.getAttribute('data-mcat'); var a=(PR.atualAssets||[]).filter(function(x){return x.nome===nm&&x.cat===c;})[0]; if(a){ var meta=metaFromLib({classe:c,nome:nm,detalhe:'',liq:''}); (PR.assets[c]=PR.assets[c]||[]).push({nome:nm,pct:Number(a.pct)||0,detalhe:'',liq:'',tags:meta.tags,retCat:meta.retCat,retVal:meta.retVal,retIsento:meta.retIsento}); } render(); }; });
+    Array.prototype.forEach.call(elp.querySelectorAll('[data-manter]'),function(b){ b.onclick=function(){ var nm=b.getAttribute('data-manter'), c=b.getAttribute('data-mcat'); var a=(PR.atualAssets||[]).filter(function(x){return nkey(x.nome)===nkey(nm)&&x.cat===c;})[0]; if(a){ var meta=metaFromLib({classe:c,nome:nm,detalhe:'',liq:''}); (PR.assets[c]=PR.assets[c]||[]).push({nome:nm,pct:Number(a.pct)||0,detalhe:'',liq:'',tags:meta.tags,retCat:meta.retCat,retVal:meta.retVal,retIsento:meta.retIsento}); } render(); }; });
   }
   function importSimProposta(){
     var b=window.RICO_BRIDGE&&window.RICO_BRIDGE.carteira;
@@ -3847,7 +3850,7 @@ html.theme-light .pm-chip{ background:#fff; }
   function bind(){
     var b=el('btnPropor'); if(!b || b.__b) return; b.__b=1;
     b.onclick=open;
-    el('pmClose').onclick=close;
+    el('pmClose').onclick=close; var _cl=el('pmClear'); if(_cl) _cl.onclick=clearAll;
     el('pmSrcSim').onclick=function(){ setActive('pmSrcSim'); seedSim(); };
     el('pmSrcXls').onclick=function(){ setActive('pmSrcXls'); el('pmFile').click(); };
     el('pmFile').onchange=function(){ if(el('pmFile').files[0]) seedXls(el('pmFile').files[0]); };
