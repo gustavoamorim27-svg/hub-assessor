@@ -1930,6 +1930,14 @@ body.mm .ajbtn{ padding:11px 16px !important; font-size:14px !important; }
       [data-tool="construtor"] .lib-search-inp::placeholder{ color:#6F77A8; font-weight:600; }
       [data-tool="construtor"] .lib-nomatch{ color:#9AA2D0; font-size:13px; padding:14px 4px; text-align:center; }
       html.hide-drawers #simGavRail{ display:none !important; }
+      /* === Gavetas inline: empurram o conteudo (estilo Propor), sem drawer lateral === */
+      [data-tool="construtor"] #simGavRail{ position:static !important; transform:none !important; z-index:auto !important; width:100% !important; flex-direction:row !important; flex-wrap:wrap !important; gap:10px !important; margin:0 0 6px !important; }
+      [data-tool="construtor"] #simGavRail .sgv-title{ width:100% !important; display:block !important; margin-bottom:0 !important; }
+      [data-tool="construtor"] #libTab, [data-tool="construtor"] #catTab{ flex:1 1 220px !important; box-shadow:none !important; }
+      [data-tool="construtor"] #libDrawer, [data-tool="construtor"] #opcat{ position:static !important; left:auto !important; top:auto !important; bottom:auto !important; width:100% !important; max-width:100% !important; z-index:auto !important; box-shadow:none !important; border:1px solid transparent !important; border-radius:16px !important; max-height:0 !important; overflow:hidden !important; padding:0 !important; margin:0 !important; transition:max-height .34s ease, padding .2s ease, margin .2s ease !important; }
+      [data-tool="construtor"] #libDrawer.open, [data-tool="construtor"] #opcat.open{ max-height:80vh !important; overflow-y:auto !important; padding:22px 22px 28px !important; margin:0 0 14px !important; border-color:rgba(120,130,210,.28) !important; }
+      [data-tool="construtor"] #libBackdrop, [data-tool="construtor"] #catBackdrop{ display:none !important; }
+      @media (max-width:1480px){ [data-tool="construtor"] #simGavRail{ width:100% !important; } [data-tool="construtor"] #libTab .sgv-lbl, [data-tool="construtor"] #catTab .sgv-lbl, [data-tool="construtor"] #libTab .sgv-arrow, [data-tool="construtor"] #catTab .sgv-arrow{ display:inline !important; } [data-tool="construtor"] #simGavRail .sgv-title{ display:block !important; } [data-tool="construtor"] #libTab, [data-tool="construtor"] #catTab{ justify-content:flex-start !important; padding:13px !important; } }
       </style>
       <div id="simGavRail">
         <div class="sgv-title">Gavetas de ativos</div>
@@ -2503,7 +2511,7 @@ body.mm .ajbtn{ padding:11px 16px !important; font-size:14px !important; }
 
   <script>
   (function(){
-    function relocate(){ var host=document.getElementById("p-construtor"); if(!host) return; ["simGavRail","libBackdrop","catBackdrop","libDrawer","opcat"].forEach(function(id){ var el=document.getElementById(id); if(el && el.parentElement!==host) host.appendChild(el); });
+    function relocate(){ var host=document.getElementById("p-construtor"); if(!host) return; var wrap=host.querySelector(".wrap")||host; var hdr=wrap.querySelector(".header"); var anchor=hdr?hdr.nextSibling:wrap.firstChild; ["simGavRail","libDrawer","opcat","libBackdrop","catBackdrop"].forEach(function(id){ var el=document.getElementById(id); if(el && el.parentElement!==wrap) wrap.insertBefore(el, anchor); });
       /* sincroniza estado on/seta das pílulas com a abertura das gavetas */
       try{
         var lib=document.getElementById("libDrawer"), oc=document.getElementById("opcat"), lt=document.getElementById("libTab"), ct=document.getElementById("catTab");
