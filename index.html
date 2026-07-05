@@ -6138,6 +6138,22 @@ const TEMPLATES = {
   ]),
 };
 function clonarTemplate(id){
+  // DINÂMICO: espelha 1:1 a carteira ideal do Montar a Carteira (RICO_TEMPLATES já aplica os overrides salvos pelo usuário)
+  try{
+    var nameMap={conservadora:'Conservadora',moderada:'Moderada',sofisticada:'Sofisticada'};
+    var pname=nameMap[id];
+    var T=window.RICO_TEMPLATES;
+    if(!T){ try{ if(window._toolInit&&window._toolInit['construtor']) window._toolInit['construtor'](); }catch(e){} T=window.RICO_TEMPLATES; }
+    if(T && pname && typeof T[pname]==='function'){
+      var arr=T[pname]()||[];
+      if(arr.length){
+        return arr.filter(function(it){ return (Number(it.pct)||0)>0; }).map(function(it){
+          return { cat: it.classe||'Renda Fixa', name: it.nome||'', descr: it.detalhe||'', pct: Number(it.pct)||0, color: corCat(it.classe||''), tags: (it.tags||[]).slice() };
+        });
+      }
+    }
+  }catch(e){}
+  // FALLBACK estático
   const t = TEMPLATES[id] || TEMPLATES.conservadora;
   return t.map(a => {
     const c = { cat:a.cat, name:a.name, descr:a.descr, pct:a.pct, color:a.color, tags:(a.tags||[]).slice() };
