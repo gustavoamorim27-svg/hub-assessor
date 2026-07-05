@@ -4192,6 +4192,12 @@ function ativoRetornoTotalAA(it){
   ensureRetorno(it);
   var base=ativoRetornoAA(it);
   if(it.retCat==="mercadoDiv") base+=Number(it.retDiv)||0;
+  // Gross-up dos isentos (RF pós/pré/inflação): compara em base BRUTA equivalente = líquido / (1 - IR)
+  // Sem isso, LCA/LCI/LCD e crédito isento ficam subvalorizados frente a ativos tributados.
+  if(it.retIsento && (it.retCat==="pos"||it.retCat==="pre"||it.retCat==="inflacao")){
+    var _ir=0.15; // IR de RF longo prazo (referência)
+    if(_ir>0 && _ir<1) base = base/(1-_ir);
+  }
   return base;
 }
 /* Texto-resumo do retorno do ativo */
@@ -5091,7 +5097,7 @@ function renderRetorno(D){
     var _a=document.getElementById("retAAval"); if(_a) _a.textContent=fmtPct(D.retAA)+"%";
     var _m=document.getElementById("retMultlbl"); if(_m) _m.textContent="a.a. · "+fmtPct(multShown)+"% do CDI";
     var _g=document.getElementById("retGanho"); if(_g) _g.textContent="≈ R$ "+fmtBRL(D.ganho12)+" em 12 meses";
-    var _f=document.getElementById("retFonte"); if(_f) _f.innerHTML="Retorno "+fonteTxt+".";
+    var _f=document.getElementById("retFonte"); if(_f) _f.innerHTML="Retorno "+fonteTxt+". <span style='display:block;margin-top:5px;color:#7E87BE;font-size:10.5px;line-height:1.45'>Isentos já com gross-up (líquido ÷ (1-IR)). Rentabilidade estimada — não é garantia de retorno futuro.</span>";
     var _c=document.getElementById("retMultCap"); if(_c) _c.textContent="% do CDI "+(usar?"(auto)":"(manual)");
     var _n=document.getElementById("retNota"); if(_n) _n.innerHTML=notaAtual;
     var _u=document.getElementById("inpUsarRet"); if(_u) _u.checked=!!usar;
@@ -5110,7 +5116,7 @@ function renderRetorno(D){
       <span id="retMultlbl" style="color:#A9B0D6; font-size:14px; font-weight:700;">a.a. · ${fmtPct(multShown)}% do CDI</span>
     </div>
     <div id="retGanho" style="font-size:13px; color:#cfd4ef; margin-top:6px;">≈ R$ ${fmtBRL(D.ganho12)} em 12 meses</div>
-    <div id="retFonte" style="font-size:11.5px; color:#8A93D8; margin-top:6px;">Retorno ${fonteTxt}.</div>
+    <div id="retFonte" style="font-size:11.5px; color:#8A93D8; margin-top:6px;">Retorno ${fonteTxt}. <span style="display:block;margin-top:5px;color:#7E87BE;font-size:10.5px;line-height:1.45">Isentos já com gross-up (líquido ÷ (1-IR)). Rentabilidade estimada — não é garantia de retorno futuro.</span></div>
     <label style="display:flex; align-items:center; gap:9px; margin-top:12px; cursor:pointer;">
       <input type="checkbox" id="inpUsarRet" ${usar?"checked":""} style="width:16px;height:16px;accent-color:#2BD9A6;cursor:pointer;">
       <span style="font-size:12.5px; color:#cfd4ef; font-weight:700;">Calcular pelo "Retorno" de cada ativo</span>
