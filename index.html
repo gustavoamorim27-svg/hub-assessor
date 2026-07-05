@@ -1419,7 +1419,7 @@ body.mm .ajbtn{ padding:11px 16px !important; font-size:14px !important; }
     </button>
     <button class="g-tab" data-panel="construtor" onclick="showPanel('construtor')">
       <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-      Simulador de Investimentos
+      Montar a Carteira
     </button>
     <button class="g-tab" data-panel="rv" onclick="showPanel('rv')">
       <svg viewBox="0 0 24 24"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
@@ -1596,7 +1596,7 @@ body.mm .ajbtn{ padding:11px 16px !important; font-size:14px !important; }
       <div class="home-grid">
         <div class="hcard" onclick="showPanel('construtor')">
           <div class="hcard-ic"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></div>
-          <div class="hcard-title">Simulador de Investimentos</div>
+          <div class="hcard-title">Montar a Carteira</div>
           <div class="hcard-desc">Monte alocações ao vivo com templates Conservadora, Moderada e Sofisticada. Gera PNG para WhatsApp.</div>
         </div>
         <div class="hcard" onclick="showPanel('rv')">
@@ -1721,7 +1721,7 @@ body.mm .ajbtn{ padding:11px 16px !important; font-size:14px !important; }
   <div class="header">
     <div>
       <div class="logo">rico</div>
-      <div class="sub" id="construtorSub">Simulador de Investimentos · ajuste ao vivo durante a ligação</div>
+      <div class="sub" id="construtorSub">Montar a Carteira · ajuste ao vivo durante a ligação</div>
     </div>
     <div style="display:flex; gap:10px;">
       <button class="btn-ghost" id="btnPropor" style="border-color:rgba(255,78,0,.55);color:var(--or)">
@@ -2017,7 +2017,7 @@ body.mm .ajbtn{ padding:11px 16px !important; font-size:14px !important; }
         }
         function render(){
           var box=document.getElementById("libChips"); if(!box) return; try{ CUSTOMLIB=JSON.parse(localStorage.getItem("hubCustomLib")||"[]")||[]; }catch(_){ } var h=""; var ALL=allItems(); window.__LIBDATA=ALL;
-          ORDER.forEach(function(cl){ var items=ALL.map(function(a,i){return {a:a,i:i};}).filter(function(o){return o.a.classe===cl;}); if(!items.length) return; var c=COL[cl]||"#9AA2D0"; h+='<div class="lib-sec" style="color:'+c+'">'+esc(cl)+'</div>'; items.forEach(function(o){ var a=o.a; var isC=!!a.custom; h+='<div class="lib-card" draggable="true" data-libcard="'+o.i+'" data-libfind="'+esc((a.nome||"")+" "+(a.detalhe||"")+" "+(a.classe||"")+" "+(a.liq||""))+'" title="Arraste para a carteira ou clique em + Add" style="border-left:3px solid '+c+'">'+'<div class="lib-card-top"><div class="lib-card-name"><span style="color:'+c+'">●</span> '+esc(a.nome)+'</div><button class="lib-add" data-libadd="'+o.i+'">+ Add</button></div>'+(a.detalhe?'<div class="lib-card-desc">'+esc(a.detalhe)+'</div>':'')+(a.liq?'<div class="lib-card-liq">Liquidez: '+esc(a.liq)+'</div>':'')+(isC?'<div style="display:flex;gap:8px;margin-top:8px"><button class="lib-mini" data-libedit="'+esc(a.id)+'">Editar</button><button class="lib-mini del" data-libdel="'+esc(a.id)+'">Excluir</button></div>':'')+'</div>'; }); });
+          ORDER.forEach(function(cl){ var items=ALL.map(function(a,i){return {a:a,i:i};}).filter(function(o){return o.a.classe===cl;}); if(!items.length) return; var c=COL[cl]||"#9AA2D0"; h+='<div class="lib-sec" style="color:'+c+'">'+({"Renda Fixa":"🏦 ","Previdência":"🕰️ ","Multimercados":"🌐 ","Renda Variável":"📈 ","Fundos Listados":"🏢 ","Alternativos":"🪙 ","Internacional":"🌎 "}[cl]||"")+esc(cl)+'</div>'; items.forEach(function(o){ var a=o.a; var isC=!!a.custom; h+='<div class="lib-card" draggable="true" data-libcard="'+o.i+'" data-libfind="'+esc((a.nome||"")+" "+(a.detalhe||"")+" "+(a.classe||"")+" "+(a.liq||""))+'" title="Arraste para a carteira ou clique em + Add" style="border-left:3px solid '+c+'">'+'<div class="lib-card-top"><div class="lib-card-name"><span style="color:'+c+'">●</span> '+esc(a.nome)+'</div><button class="lib-add" data-libadd="'+o.i+'">+ Add</button></div>'+(a.detalhe?'<div class="lib-card-desc">'+esc(a.detalhe)+'</div>':'')+(a.liq?'<div class="lib-card-liq">Liquidez: '+esc(a.liq)+'</div>':'')+(isC?'<div style="display:flex;gap:8px;margin-top:8px"><button class="lib-mini" data-libedit="'+esc(a.id)+'">Editar</button><button class="lib-mini del" data-libdel="'+esc(a.id)+'">Excluir</button></div>':'')+'</div>'; }); });
           box.innerHTML=h;
           box.querySelectorAll(".lib-card").forEach(function(card){
             var idx=+card.getAttribute("data-libcard");
@@ -2980,11 +2980,11 @@ body.mm .ajbtn{ padding:11px 16px !important; font-size:14px !important; }
     <div class="import-info">
       <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#FF4E00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
       <div>
-        <div class="import-title">Carteira disponível no Simulador de Investimentos</div>
-        <div class="import-sub" id="importSub">Importe a alocação montada na aba Simulador de Investimentos</div>
+        <div class="import-title">Carteira disponível no Montar a Carteira</div>
+        <div class="import-sub" id="importSub">Importe a alocação montada na aba Montar a Carteira</div>
       </div>
     </div>
-    <button class="btn import-btn" id="btnImportar" type="button">Importar do Simulador de Investimentos</button>
+    <button class="btn import-btn" id="btnImportar" type="button">Importar do Montar a Carteira</button>
   </div>
 
 
@@ -5569,7 +5569,7 @@ window.__setCtorMode = function(mode){
   } else {
     full.style.display = "block";
     rv.style.display = "none";
-    if(sub) sub.textContent = "Simulador de Investimentos · ajuste ao vivo durante a ligação";
+    if(sub) sub.textContent = "Montar a Carteira · ajuste ao vivo durante a ligação";
     if(btnCopy) btnCopy.style.display = "";
     if(btnPng) btnPng.style.display = "";
   }
@@ -6951,7 +6951,7 @@ function atualizarBarraImport(){
 function importarDoConstrutor(){
   const c = window.RICO_BRIDGE && window.RICO_BRIDGE.carteira;
   if(!c || !Array.isArray(c.itens) || !c.itens.length){
-    showToast('Nenhuma carteira encontrada no Simulador de Investimentos');
+    showToast('Nenhuma carteira encontrada no Montar a Carteira');
     return;
   }
   // Converte itens do Construtor para o formato do Simulador
@@ -6977,7 +6977,7 @@ function importarDoConstrutor(){
   renderAlocacao();
   drawChart();
   const soma = nova.reduce((s,a)=>s+a.pct,0);
-  showToast('Carteira do Simulador de Investimentos importada' + (Math.round(soma*10)!==1000 ? ' · soma ' + fmtPct(soma) + '%' : ''));
+  showToast('Carteira do Montar a Carteira importada' + (Math.round(soma*10)!==1000 ? ' · soma ' + fmtPct(soma) + '%' : ''));
 }
 
 /* Preenchimento automático do Simulador a partir da Aderência (composição da posição atual) */
@@ -10407,7 +10407,7 @@ window.__rvRender = render;
       recEl.innerHTML = barRows(rec.comp);
     } else {
       recEl.innerHTML = '<div style="color:#9AA2D0;font-size:13.5px;line-height:1.6;padding:8px 0">'
-        + 'Monte uma carteira no <b style="color:#FF8B52">Simulador de Investimentos</b> para comparar a aderência. '
+        + 'Monte uma carteira no <b style="color:#FF8B52">Montar a Carteira</b> para comparar a aderência. '
         + 'A carteira recomendada aparece aqui automaticamente.</div>';
     }
 
@@ -11047,7 +11047,7 @@ window.__rvRender = render;
       +'<button data-ajimport class="ajbtn">Importar Excel…</button></div>';
 
     if(!state.atual){
-      h+='<div class="pc-prompt">'+(state.origem==="sim"?'Monte uma carteira no <b>Simulador de Investimentos</b> para usá-la aqui.':'Importe a <b>Posição Consolidada</b> (.xlsx) do cliente.<div style="margin-top:16px"><button data-ajimport class="ajbtn primary">Importar Excel…</button></div>')+'</div>';
+      h+='<div class="pc-prompt">'+(state.origem==="sim"?'Monte uma carteira no <b>Montar a Carteira</b> para usá-la aqui.':'Importe a <b>Posição Consolidada</b> (.xlsx) do cliente.<div style="margin-top:16px"><button data-ajimport class="ajbtn primary">Importar Excel…</button></div>')+'</div>';
       root.innerHTML=h; bind(); return;
     }
     var b=board(), t=totals(b);
@@ -11096,7 +11096,7 @@ window.__rvRender = render;
       if(grp.key==="rv"){ h+=rvGavList(); return; }
       h+='<div class="pc-gavlist">';
       grp.classes.forEach(function(cl){ var items=G.map(function(a,i){return {a:a,i:i};}).filter(function(o){return o.a.classe===cl;}); if(!items.length)return; var c=CATCOL[cl]||"#9AA2D0";
-        h+='<div class="pc-gavcat" style="color:'+c+'"><span style="background:'+c+'"></span>'+cl+'</div>';
+        h+='<div class="pc-gavcat" style="color:'+c+'"><span style="background:'+c+'"></span>'+({"Renda Fixa":"🏦 ","Previdência":"🕰️ ","Multimercados":"🌐 ","Renda Variável":"📈 ","Fundos Listados":"🏢 ","Alternativos":"🪙 ","Internacional":"🌎 "}[cl]||"")+cl+'</div>';
         items.forEach(function(o){ h+='<div class="pc-gavcard" draggable="true" data-dragidx="'+o.i+'" data-gavfind="'+esc((o.a.nome||"")+" "+(o.a.detalhe||"")+" "+(o.a.classe||""))+'"><div class="pc-gavinfo"><div class="pc-gavname">'+esc(o.a.nome)+'</div><div class="pc-gavdet">'+esc(o.a.detalhe||"")+'</div></div><button class="pc-add" data-addidx="'+o.i+'" title="Adicionar a Entrar">+</button></div>'; });
       });
       h+='</div>';
@@ -11212,7 +11212,7 @@ window.__rvRender = render;
   function applyModel(name){
     if(name==="__reset"){ state.appliedModel=null; state.vals={}; state.removed={}; state.added=[]; state.atual.forEach(function(a){ state.vals[a.aid]=a.valor; }); render(); return; }
     var items;
-    if(name==="__simulador"){ var sc=(window.__getSimCarteira?window.__getSimCarteira():[])||[]; if(!sc.length){ alert("Monte uma carteira no Simulador de Investimentos primeiro (com as alocações) e tente de novo."); return; } items=sc; state.appliedModel=name; }
+    if(name==="__simulador"){ var sc=(window.__getSimCarteira?window.__getSimCarteira():[])||[]; if(!sc.length){ alert("Monte uma carteira no Montar a Carteira primeiro (com as alocações) e tente de novo."); return; } items=sc; state.appliedModel=name; }
     else { var T=window.RICO_TEMPLATES; if(!T){ try{ if(window._toolInit&&window._toolInit['construtor']) window._toolInit['construtor'](); }catch(e){} T=window.RICO_TEMPLATES; } if(!T||typeof T[name]!=="function"){ alert("Modelo indisponível."); return; } state.appliedModel=name; items=T[name](); }
     var base=liquidAtual();
     var tgt={},modByGrp={};
