@@ -3368,7 +3368,7 @@ html.theme-light [data-tool="irpf"] .ir-g-pos{ color:#067A53 !important; } html.
 #proporModal{ position:fixed; inset:0; z-index:3000; display:none; background:linear-gradient(160deg,#0A0F38,#070B2E 60%,#05081F); overflow:auto; color:var(--wh); }
 #proporModal.on{ display:block; }
 html.theme-light #proporModal{ background:#EDF0F6; color:#0B1033; }
-.pm-wrap{ max-width:1080px; margin:0 auto; padding:26px 22px 70px; }
+.pm-wrap{ max-width:940px; margin:0 auto; padding:26px 22px 70px; }
 .pm-head{ display:flex; justify-content:space-between; align-items:flex-end; gap:14px; border-bottom:1px solid var(--bd); padding-bottom:16px; margin-bottom:20px; flex-wrap:wrap; }
 .pm-logo{ font-family:'Sora',sans-serif; font-weight:800; font-size:30px; letter-spacing:-1px; color:var(--or); line-height:1; }
 .pm-sub{ color:var(--mu); font-size:13.5px; margin-top:4px; }
@@ -3594,7 +3594,8 @@ html.theme-light .pm-chip{ background:#fff; }
   function setStatus(t,c){ var s=el('pmStatus'); if(!s) return; s.className='pm-status'+(c?(' '+c):''); s.textContent=t; }
   function canonCat(x){ var n=normCat(x); for(var i=0;i<CATS.length;i++){ if(normCat(CATS[i])===n) return CATS[i]; } return null; }
   function isXP(n){ return /^\s*xp/i.test(String(n||'')); }
-  function keepXP(){ (PR.atualAssets||[]).forEach(function(a){ if(!isXP(a.nome)) return; var c=a.cat; if(!c) return; var arr=PR.assets[c]=PR.assets[c]||[]; var found=false; arr.forEach(function(x){ if(nkey(x.nome)===nkey(a.nome)){ x.protegido=true; found=true; } }); if(!found){ var meta=metaFromLib({classe:c,nome:a.nome,detalhe:'',liq:''}); arr.push({nome:a.nome,pct:Number(a.pct)||0,detalhe:'',liq:'',tags:meta.tags,retCat:meta.retCat,retVal:meta.retVal,retIsento:meta.retIsento,protegido:true}); } }); }
+  function isProtected(n,cat){ if(!isXP(n)) return false; var c=normCat(cat); return c==='renda fixa'||c==='renda variavel'; }
+  function keepXP(){ (PR.atualAssets||[]).forEach(function(a){ if(!isProtected(a.nome,a.cat)) return; var c=a.cat; if(!c) return; var arr=PR.assets[c]=PR.assets[c]||[]; var found=false; arr.forEach(function(x){ if(nkey(x.nome)===nkey(a.nome)){ x.protegido=true; found=true; } }); if(!found){ var meta=metaFromLib({classe:c,nome:a.nome,detalhe:'',liq:''}); arr.push({nome:a.nome,pct:Number(a.pct)||0,detalhe:'',liq:'',tags:meta.tags,retCat:meta.retCat,retVal:meta.retVal,retIsento:meta.retIsento,protegido:true}); } }); }
   var PR_TEMPLATES={
     "Conservadora":[
       ["Renda Fixa","LCD",72.5,"93% a 94% CDI · 1–5 anos","No vencimento"],
@@ -3724,7 +3725,7 @@ html.theme-light .pm-chip{ background:#fff; }
   function renderSaindo(){
     var elp=document.getElementById('pmSaindo'); if(!elp) return;
     var propNames={}; CATS.forEach(function(c){ (PR.assets[c]||[]).forEach(function(x){ propNames[nkey(x.nome)]=1; }); });
-    var byCat={}; (PR.atualAssets||[]).forEach(function(a){ if(propNames[nkey(a.nome)]||isXP(a.nome)) return; (byCat[a.cat]=byCat[a.cat]||[]).push(a); });
+    var byCat={}; (PR.atualAssets||[]).forEach(function(a){ if(propNames[nkey(a.nome)]||isProtected(a.nome,a.cat)) return; (byCat[a.cat]=byCat[a.cat]||[]).push(a); });
     var cats=CATS.filter(function(c){ return byCat[c]&&byCat[c].length; });
     var h='<div class="pm-saindo-h">Saindo da carteira</div>';
     if(!cats.length){ h+='<div class="pm-saindo-empty">Importe a carteira atual do cliente (Carteira do Simulador ou Excel) para ver o que sai.</div>'; elp.innerHTML=h; return; }
