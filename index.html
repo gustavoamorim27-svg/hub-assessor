@@ -6895,7 +6895,7 @@ function renderAlocacao() {
         ${infoPanel}
       </div>
       <div class="right-col">
-        <div class="pct-input"><input type="number" data-i="${i}" class="alloc-num" value="${a.pct}" min="0" max="100" step="0.5"/></div>
+        <div class="pct-input"><input type="text" inputmode="decimal" data-i="${i}" class="alloc-num" value="${String(a.pct).replace(".",",")}" /></div>
         <div class="valor-rs">R$ ${f(valorAtivo)}</div>
       </div>
       <input type="range" data-i="${i}" class="alloc-range" min="0" max="100" step="0.5" value="${a.pct}"
@@ -6907,7 +6907,8 @@ function renderAlocacao() {
   // Handlers atualizam no LUGAR (sem recriar os inputs) — evita perda de foco ao digitar
   cont.querySelectorAll('.alloc-num').forEach(el => el.addEventListener('input', e => {
     const i = +e.target.dataset.i;
-    const v = Math.max(0, Math.min(100, Number(e.target.value) || 0));
+    var _pv = parseFloat(String(e.target.value == null ? "" : e.target.value).trim().replace(",", ".")); if (isNaN(_pv)) _pv = 0;
+    const v = Math.max(0, Math.min(100, _pv));
     state.alocacao[i].pct = v;
     const rng = cont.querySelector('.alloc-range[data-i="' + i + '"]');
     if (rng) { rng.value = v; aplicarGradiente(rng, state.alocacao[i].shade || state.alocacao[i].color, v); }
@@ -6921,7 +6922,7 @@ function renderAlocacao() {
     state.alocacao[i].pct = v;
     aplicarGradiente(e.target, state.alocacao[i].shade || state.alocacao[i].color, v);
     const num = cont.querySelector('.alloc-num[data-i="' + i + '"]');
-    if (num) num.value = v;
+    if (num) num.value = String(v).replace(".", ",");
     state.template = ''; marcarTemplateAtivo();
     salvarEstado();
     atualizarResumoAlloc();
