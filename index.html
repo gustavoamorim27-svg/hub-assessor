@@ -15,6 +15,17 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 <script>
+/* ===== Taxonomia de classes: helpers globais (T1/T2) =====
+   - __hubClassLabel: mapeia o VALOR INTERNO da classe para o RÓTULO exibido.
+     O valor interno "Fundos Listados" continua salvo nos dados/nuvem/templates,
+     mas passa a ser EXIBIDO como "Fundos Imobiliários" (compatibilidade total). */
+(function(){
+  var LABELS = { "Fundos Listados":"Fundos Imobiliários" };
+  window.__hubClassLabel = function(cl){
+    if(cl==null) return cl;
+    try{ return LABELS[cl] || cl; }catch(_){ return cl; }
+  };
+})();
 /* HubCloud: camada opcional de nuvem por cima do localStorage.
    Se o SDK do Firebase nao carregar (rede corporativa bloqueando gstatic/firestore),
    o app segue 100% funcional so com localStorage. Nada aqui pode lancar erro fatal. */
@@ -385,6 +396,9 @@ html, body {
 [data-tool="construtor"] .ret-num::-webkit-inner-spin-button{ -webkit-appearance:none; margin:0; }
 [data-tool="construtor"] .ret-chip{ font-size:12px; font-weight:800; color:#FF8B52; background:rgba(255,107,44,.12);
     border:1px solid rgba(255,107,44,.3); border-radius:8px; padding:4px 11px; }
+[data-tool="construtor"] .ret-inp-user{ border-color:rgba(90,200,168,.45); }
+[data-tool="construtor"] .ret-inp-user.on{ background:rgba(90,200,168,.14); border-color:rgba(90,200,168,.8); box-shadow:0 0 0 1px rgba(90,200,168,.25) inset; }
+[data-tool="construtor"] .ret-inp-user .ret-pre{ color:#5AC8A8; }
 [data-tool="construtor"] .ret-hint{ font-size:11.5px; color:#6F77A8; }
 [data-tool="construtor"] .ret-isento{ display:inline-flex; align-items:center; gap:7px; background:rgba(0,0,0,.28);
     border:1px solid rgba(120,130,210,.25); color:#A9B0D6; border-radius:9px; padding:5px 11px; font-size:12px;
@@ -1796,8 +1810,8 @@ body.mm .ajbtn{ padding:11px 16px !important; font-size:14px !important; }
       "Moderada":{"Renda Fixa":68,"Previdência":0,"Multimercados":14,"Renda Variável":5,"Fundos Listados":4,"Alternativos":3,"Internacional":6},
       "Sofisticada":{"Renda Fixa":51,"Previdência":0,"Multimercados":10,"Renda Variável":15,"Fundos Listados":9.5,"Alternativos":7,"Internacional":7.5}
     };
-    var ORDER=["Renda Fixa","Previdência","Multimercados","Renda Variável","Fundos Listados","Alternativos","Internacional"];
-    var COL={"Renda Fixa":"#3DD68C","Previdência":"#E8709B","Multimercados":"#7C8CFF","Renda Variável":"#F26522","Fundos Listados":"#FFB020","Alternativos":"#C77DFF","Internacional":"#36C5F0"};
+    var ORDER=["Renda Fixa","Previdência","Multimercados","Fundo Aberto","Renda Variável","Fundos Listados","Alternativos","Internacional"];
+    var COL={"Renda Fixa":"#3DD68C","Previdência":"#E8709B","Multimercados":"#7C8CFF","Fundo Aberto":"#5AC8A8","Renda Variável":"#F26522","Fundos Listados":"#FFB020","Alternativos":"#C77DFF","Internacional":"#36C5F0"};
     var prof="Moderada", lastComp=null, lastInfo=null;
     function fp(n){ var v=Math.round(n*10)/10; return (Number.isInteger(v)?v.toFixed(0):v.toFixed(1)).replace(".",","); }
     function byId(i){ return document.getElementById(i); }
@@ -1820,7 +1834,7 @@ body.mm .ajbtn{ padding:11px 16px !important; font-size:14px !important; }
       h+='<div style="background:linear-gradient(160deg,rgba(28,36,112,.4),rgba(12,17,66,.6));border:1px solid rgba(120,130,210,.18);border-radius:16px;padding:18px;margin-bottom:18px;">';
       h+='<div style="font-weight:700;color:#cfd4ef;font-size:13px;margin-bottom:14px;">Atual (cliente) &times; Recomendada ('+prof+')</div>';
       ORDER.forEach(function(c){ var a=lastComp[c]||0, r=rec[c]||0; if(a<0.05&&r<0.05) return; var cc=COL[c];
-        h+='<div style="margin-bottom:13px;"><div style="display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:5px;"><span style="font-weight:700;color:#eef0fb;">'+c+'</span><span style="color:'+cc+';font-weight:700;">'+fp(a)+'% &rarr; '+fp(r)+'%</span></div>'
+        h+='<div style="margin-bottom:13px;"><div style="display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:5px;"><span style="font-weight:700;color:#eef0fb;">'+(window.__hubClassLabel?window.__hubClassLabel(c):c)+'</span><span style="color:'+cc+';font-weight:700;">'+fp(a)+'% &rarr; '+fp(r)+'%</span></div>'
           +'<div style="height:7px;background:rgba(255,255,255,.06);border-radius:5px;overflow:hidden;"><div style="height:100%;width:'+Math.min(100,a)+'%;background:'+cc+'88;border-radius:5px;"></div></div>'
           +'<div style="height:7px;background:rgba(255,255,255,.06);border-radius:5px;overflow:hidden;margin-top:3px;"><div style="height:100%;width:'+Math.min(100,r)+'%;background:'+cc+';border-radius:5px;"></div></div></div>';
       });
@@ -1993,8 +2007,8 @@ body.mm .ajbtn{ padding:11px 16px !important; font-size:14px !important; }
         function allItems(){ return LIB.concat(CUSTOMLIB); }
         var libSeq=0; CUSTOMLIB.forEach(function(x){ var n=parseInt(String(x.id||"").replace("u",""),10); if(!isNaN(n)&&n>libSeq) libSeq=n; });
         window.__LIBDATA=allItems();
-        var COL={"Renda Fixa":"#2BD9A6","Multimercados":"#7C8CFF","Renda Variável":"#FF8B52","Fundos Listados":"#FFB020","Alternativos":"#C77DFF","Internacional":"#36C5F0"};
-        var ORDER=["Renda Fixa","Multimercados","Renda Variável","Fundos Listados","Alternativos","Internacional"];
+        var COL={"Renda Fixa":"#2BD9A6","Multimercados":"#7C8CFF","Renda Variável":"#FF8B52","Fundo Aberto":"#5AC8A8","Fundos Listados":"#FFB020","Alternativos":"#C77DFF","Internacional":"#36C5F0"};
+        var ORDER=["Renda Fixa","Multimercados","Fundo Aberto","Renda Variável","Fundos Listados","Alternativos","Internacional"];
         function esc(t){return (""+t).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
         function libNorm(t){ return (t==null?"":String(t)).normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().trim(); }
         function libFilter(){
@@ -2025,7 +2039,7 @@ body.mm .ajbtn{ padding:11px 16px !important; font-size:14px !important; }
         }
         function render(){
           var box=document.getElementById("libChips"); if(!box) return; try{ CUSTOMLIB=JSON.parse(localStorage.getItem("hubCustomLib")||"[]")||[]; }catch(_){ } var h=""; var ALL=allItems(); window.__LIBDATA=ALL;
-          ORDER.forEach(function(cl){ var items=ALL.map(function(a,i){return {a:a,i:i};}).filter(function(o){return o.a.classe===cl;}); if(!items.length) return; var c=COL[cl]||"#9AA2D0"; h+='<div class="lib-sec" style="color:'+c+'">'+({"Renda Fixa":"🏦 ","Previdência":"🕰️ ","Multimercados":"🌐 ","Renda Variável":"📈 ","Fundos Listados":"🏢 ","Alternativos":"🪙 ","Internacional":"🌎 "}[cl]||"")+esc(cl)+'</div>'; items.forEach(function(o){ var a=o.a; var isC=!!a.custom; h+='<div class="lib-card" draggable="true" data-libcard="'+o.i+'" data-libfind="'+esc((a.nome||"")+" "+(a.detalhe||"")+" "+(a.classe||"")+" "+(a.liq||""))+'" title="Arraste para a carteira ou clique em + Add" style="border-left:3px solid '+c+'">'+'<div class="lib-card-top"><div class="lib-card-name"><span style="color:'+c+'">●</span> '+esc(a.nome)+'</div><button class="lib-add" data-libadd="'+o.i+'">+ Add</button></div>'+(a.detalhe?'<div class="lib-card-desc">'+esc(a.detalhe)+'</div>':'')+(a.liq?'<div class="lib-card-liq">Liquidez: '+esc(a.liq)+'</div>':'')+(isC?'<div style="display:flex;gap:8px;margin-top:8px"><button class="lib-mini" data-libedit="'+esc(a.id)+'">Editar</button><button class="lib-mini del" data-libdel="'+esc(a.id)+'">Excluir</button></div>':'')+'</div>'; }); });
+          ORDER.forEach(function(cl){ var items=ALL.map(function(a,i){return {a:a,i:i};}).filter(function(o){return o.a.classe===cl;}); if(!items.length) return; var c=COL[cl]||"#9AA2D0"; h+='<div class="lib-sec" style="color:'+c+'">'+({"Renda Fixa":"🏦 ","Previdência":"🕰️ ","Multimercados":"🌐 ","Fundo Aberto":"📂 ","Renda Variável":"📈 ","Fundos Listados":"🏢 ","Alternativos":"🪙 ","Internacional":"🌎 "}[cl]||"")+esc((window.__hubClassLabel?window.__hubClassLabel(cl):cl))+'</div>'; items.forEach(function(o){ var a=o.a; var isC=!!a.custom; h+='<div class="lib-card" draggable="true" data-libcard="'+o.i+'" data-libfind="'+esc((a.nome||"")+" "+(a.detalhe||"")+" "+(a.classe||"")+" "+(a.liq||""))+'" title="Arraste para a carteira ou clique em + Add" style="border-left:3px solid '+c+'">'+'<div class="lib-card-top"><div class="lib-card-name"><span style="color:'+c+'">●</span> '+esc(a.nome)+'</div><button class="lib-add" data-libadd="'+o.i+'">+ Add</button></div>'+(a.detalhe?'<div class="lib-card-desc">'+esc(a.detalhe)+'</div>':'')+(a.liq?'<div class="lib-card-liq">Liquidez: '+esc(a.liq)+'</div>':'')+(isC?'<div style="display:flex;gap:8px;margin-top:8px"><button class="lib-mini" data-libedit="'+esc(a.id)+'">Editar</button><button class="lib-mini del" data-libdel="'+esc(a.id)+'">Excluir</button></div>':'')+'</div>'; }); });
           box.innerHTML=h;
           box.querySelectorAll(".lib-card").forEach(function(card){
             var idx=+card.getAttribute("data-libcard");
@@ -2044,7 +2058,7 @@ body.mm .ajbtn{ padding:11px 16px !important; font-size:14px !important; }
           var o=id?CUSTOMLIB.filter(function(x){return x.id===id;})[0]:{id:null,classe:"Renda Fixa",nome:"",detalhe:"",liq:""};
           if(!o) return; var editing=!!id;
           var box=document.getElementById("libForm"); if(!box) return;
-          var opts=ORDER.map(function(cl){return '<option'+(o.classe===cl?" selected":"")+'>'+esc(cl)+'</option>';}).join("");
+          var opts=ORDER.map(function(cl){return '<option value="'+esc(cl)+'"'+(o.classe===cl?" selected":"")+'>'+esc((window.__hubClassLabel?window.__hubClassLabel(cl):cl))+'</option>';}).join("");
           box.innerHTML='<div class="lib-form">'
             +'<label>Classe<select id="lfClasse">'+opts+'</select></label>'
             +'<label>Nome do ativo<input id="lfNome" value="'+esc(o.nome)+'" placeholder="Ex.: CDB Banco X 110% CDI"></label>'
@@ -3532,9 +3546,9 @@ html.theme-light .pm-chip{ background:#fff; }
 </div>
 <script>
 (function(){
-  var CATS=["Renda Fixa","Previdencia","Multimercados","Renda Variavel","Fundos Listados","Alternativos","Internacional"];
-  var CANON={"Renda Fixa":"Renda Fixa","Previdência":"Previdencia","Previdencia":"Previdencia","Multimercados":"Multimercados","Renda Variável":"Renda Variavel","Renda Variavel":"Renda Variavel","Fundos Listados":"Fundos Listados","Alternativos":"Alternativos","Internacional":"Internacional"};
-  var COLORS={"Renda Fixa":"#3DD68C","Previdencia":"#E8709B","Multimercados":"#7C8CFF","Renda Variavel":"#F26522","Fundos Listados":"#FFB020","Alternativos":"#C77DFF","Internacional":"#36C5F0"};
+  var CATS=["Renda Fixa","Previdencia","Multimercados","Fundo Aberto","Renda Variavel","Fundos Listados","Alternativos","Internacional"];
+  var CANON={"Renda Fixa":"Renda Fixa","Previdência":"Previdencia","Previdencia":"Previdencia","Multimercados":"Multimercados","Renda Variável":"Renda Variavel","Renda Variavel":"Renda Variavel","Fundo Aberto":"Fundo Aberto","Fundos Listados":"Fundos Listados","Alternativos":"Alternativos","Internacional":"Internacional"};
+  var COLORS={"Renda Fixa":"#3DD68C","Previdencia":"#E8709B","Multimercados":"#7C8CFF","Fundo Aberto":"#5AC8A8","Renda Variavel":"#F26522","Fundos Listados":"#FFB020","Alternativos":"#C77DFF","Internacional":"#36C5F0"};
   var PROFILES={
     "Conservadora":{"Renda Fixa":90,"Previdencia":0,"Multimercados":2.5,"Renda Variavel":0,"Fundos Listados":2.5,"Alternativos":0,"Internacional":5},
     "Moderada":{"Renda Fixa":68,"Previdencia":0,"Multimercados":14,"Renda Variavel":5,"Fundos Listados":4,"Alternativos":3,"Internacional":6},
@@ -3571,6 +3585,7 @@ html.theme-light .pm-chip{ background:#fff; }
     if(a.retCat==='pos') return fp(v)+'% do CDI'+(a.retIsento?' · isento':'');
     if(a.retCat==='pre') return fp(v)+'% a.a.'+(a.retIsento?' · isento':'');
     if(a.retCat==='inflacao') return 'IPCA + '+fp(v)+'% a.a.'+(a.retIsento?' · isento':'');
+    if(a.retCat==='mercado' && v>0) return fp(v)+'% a.a. · informado';
     return 'A mercado';
   }
   function emptyMap(){ var m={}; CATS.forEach(function(c){ m[c]=0; }); return m; }
@@ -3680,7 +3695,7 @@ html.theme-light .pm-chip{ background:#fff; }
       var propRs=PR.patrim*eff/100, atRs=PR.patrim*(PR.atual[c]||0)/100, d=propRs-atRs;
       var gc=Math.abs(d)<1?'keep':(d>0?'buy':'sell'); var gt=Math.abs(d)<1?'manter':((d>0?'+':'-')+'R$ '+fmt(Math.abs(d)));
       h+='<div class="pm-row">'+
-        '<div class="pm-cat"><span class="pm-dot" style="background:'+col+'"></span>'+c+' <button class="pm-add" data-add="'+c+'" title="Adicionar ativo">+</button></div>'+
+        '<div class="pm-cat"><span class="pm-dot" style="background:'+col+'"></span>'+(window.__hubClassLabel?window.__hubClassLabel(c):c)+' <button class="pm-add" data-add="'+c+'" title="Adicionar ativo">+</button></div>'+
         '<input type="range" min="0" max="100" step="0.5" value="'+eff+'" data-r="'+c+'"'+(hasA?' disabled':'')+'>'+
         '<div class="pm-pct"><input type="text" inputmode="decimal" value="'+fp(eff)+'" data-p="'+c+'"'+(hasA?' readonly':'')+'><span class="pm-lbl">%</span></div>'+
         '<div class="pm-rs">R$ '+fmt(propRs)+'</div>'+
@@ -3705,7 +3720,7 @@ html.theme-light .pm-chip{ background:#fff; }
       });
       if(PR.picker===c){
         var libItems=(window.__LIBDATA||[]).filter(function(x){return normCat(x.classe)===normCat(c);});
-        h+='<div class="pm-picker"><input class="pm-psearch" type="text" placeholder="Buscar ativo em '+c+'..." data-psearch="'+c+'"><div class="pm-plist">'+
+        h+='<div class="pm-picker"><input class="pm-psearch" type="text" placeholder="Buscar ativo em '+(window.__hubClassLabel?window.__hubClassLabel(c):c)+'..." data-psearch="'+c+'"><div class="pm-plist">'+
           (libItems.length? libItems.map(function(it,pi){ return '<div class="pm-pitem" data-pick="'+c+'" data-pi="'+pi+'"><div class="pm-piname">'+esc2(it.nome)+'</div>'+(it.detalhe?'<div class="pm-pidesc">'+esc2(it.detalhe)+'</div>':'')+'</div>'; }).join('') : '<div class="pm-pidesc" style="padding:8px">Nenhum ativo desta classe na biblioteca.</div>')+
         '</div><button class="pm-pmanual" data-pmanual="'+c+'">+ Adicionar manualmente</button></div>';
       }
@@ -4037,7 +4052,7 @@ function drawRicoLogo(ctx,x,y,height,color){
 }
 const CLASS_COLORS = {
   "Renda Fixa":"#2BD9A6","Previdência":"#E8709B","Multimercados":"#7C8CFF","Renda Variável":"#FF4E00",
-  "Fundos Listados":"#FFB020","Alternativos":"#C77DFF","Internacional":"#36C5F0"
+  "Fundo Aberto":"#5AC8A8","Fundos Listados":"#FFB020","Alternativos":"#C77DFF","Internacional":"#36C5F0"
 };
 const CLASSES = Object.keys(CLASS_COLORS);
 const CDI_MULT = { Conservadora:108, Moderada:113, Sofisticada:120 };
@@ -4130,6 +4145,8 @@ function defaultRetorno(it){
     r.retDiv=mDy?parseFloat(mDy[1].replace(",","."))||9:9;
     return r;
   }
+  // Fundo Aberto (multimercado/RF aberta) -> A Mercado (retorno variável, informado pelo usuário)
+  if(it.classe==="Fundo Aberto"){ r.retCat="mercado"; return r; }
   // Renda Fixa genérica sem pista clara -> pós fixado 100% CDI
   if(it.classe==="Renda Fixa"){ r.retCat="pos"; r.retVal=100; return r; }
   return r; // demais: A Mercado
@@ -4169,9 +4186,9 @@ function ativoRetornoAA(it){
     case "pre": return Number(it.retVal)||0;
     case "pos": return cdi*(Number(it.retVal)||0)/100;
     case "inflacao": return (Number(CTOR_IPCA)||0)+(Number(it.retVal)||0);
-    case "mercado": return Number(CTOR_MERCADO)||0;
-    case "mercadoDiv": return (Number(CTOR_MERCADO)||0); // dividendo somado à parte no cálculo (já é parte do total esperado)
-    default: return Number(CTOR_MERCADO)||0;
+    case "mercado": return (it.retMercado!=null && it.retMercado!=="" && !isNaN(Number(it.retMercado))) ? (Number(it.retMercado)||0) : (Number(CTOR_MERCADO)||0);
+    case "mercadoDiv": return (it.retMercado!=null && it.retMercado!=="" && !isNaN(Number(it.retMercado))) ? (Number(it.retMercado)||0) : (Number(CTOR_MERCADO)||0); // dividendo somado à parte no cálculo (já é parte do total esperado)
+    default: return (it.retMercado!=null && it.retMercado!=="" && !isNaN(Number(it.retMercado))) ? (Number(it.retMercado)||0) : (Number(CTOR_MERCADO)||0);
   }
 }
 window.__assetMeta = function(classe,nome,detalhe,liq){
@@ -4204,8 +4221,9 @@ function ativoRetornoTotalAA(it){
 function ativoRetSummary(it){
   ensureRetorno(it);
   var aa=ativoRetornoAA(it), cat=it.retCat;
-  if(cat==="mercado") return "Mercado (≈ "+fmtPct(aa)+"% a.a.)";
-  if(cat==="mercadoDiv") return "Mercado + "+fmtPct(it.retDiv||0)+"% DY";
+  var _mInf=(it.retMercado!=null && it.retMercado!=="" && !isNaN(Number(it.retMercado)));
+  if(cat==="mercado") return _mInf ? (fmtPct(aa)+"% a.a. · informado") : ("Mercado (≈ "+fmtPct(aa)+"% a.a.)");
+  if(cat==="mercadoDiv") return (_mInf?(fmtPct(aa)+"% a.a."):"Mercado")+" + "+fmtPct(it.retDiv||0)+"% DY"+(_mInf?" · informado":"");
   if(cat==="inflacao") return "IPCA + "+fmtPct(it.retVal||0)+"% ≈ "+fmtPct(aa)+"% a.a."+(it.retIsento?" · isento":"");
   if(cat==="pos") return fmtPct(it.retVal||0)+"% do CDI ≈ "+fmtPct(aa)+"% a.a."+(it.retIsento?" · isento":"");
   return fmtPct(it.retVal||0)+"% a.a."+(it.retIsento?" · isento":"");
@@ -4465,7 +4483,7 @@ const CAT_ATUAL_NOMES = {
   "Renda Fixa":"Renda Fixa (posição atual)",
   "Multimercados":"Multimercados (posição atual)",
   "Renda Variável":"Renda Variável (posição atual)",
-  "Fundos Listados":"Fundos Listados / FIIs (posição atual)",
+  "Fundos Listados":"Fundos Imobiliários (posição atual)",
   "Alternativos":"Alternativos (posição atual)",
   "Internacional":"Internacional (posição atual)"
 };
@@ -4740,7 +4758,7 @@ function renderAderencia(D){
   let gapTxt="";
   if(maxCat && Math.abs(maxGap)>=1){
     const verbo = maxGap>0?"aumentar":"reduzir";
-    gapTxt = `<div style="margin-top:10px;font-size:12px;color:#9AA2D0;line-height:1.5">Maior ajuste p/ chegar na <b style="color:#cfd4ef">${recTpl}</b>: <b style="color:${CLASS_COLORS[maxCat]||"#fff"}">${verbo} ${maxCat}</b> em ${fmtPct(Math.abs(maxGap))} p.p.</div>`;
+    gapTxt = `<div style="margin-top:10px;font-size:12px;color:#9AA2D0;line-height:1.5">Maior ajuste p/ chegar na <b style="color:#cfd4ef">${recTpl}</b>: <b style="color:${CLASS_COLORS[maxCat]||"#fff"}">${verbo} ${window.__hubClassLabel?window.__hubClassLabel(maxCat):maxCat}</b> em ${fmtPct(Math.abs(maxGap))} p.p.</div>`;
   }
 
   // mini comparação por categoria (atual vs ideal)
@@ -4814,9 +4832,14 @@ function retornoSectionHTML(it){
       '<div class="ret-inp"><input class="ret-num num" type="number" step="1" value="'+(it.retVal||0)+'" data-retval="'+it.id+'"><span class="ret-suf">% do CDI</span></div>'+
       isentoToggle()+'</div>';
   } else if(cat==="mercado"){
-    cond='<div class="ret-row"><span class="ret-chip">Mercado</span><span class="ret-hint">retorno acompanha o mercado</span></div>';
-  } else if(cat==="mercadoDiv"){
+    var _hasM=(it.retMercado!=null && it.retMercado!=="");
     cond='<div class="ret-row"><span class="ret-chip">Mercado</span>'+
+      '<div class="ret-inp ret-inp-user'+(_hasM?" on":"")+'" title="Retorno informado por você (ativo a mercado)"><span class="ret-pre">Retorno</span><input class="ret-num num" type="number" step="0.1" placeholder="'+(Number(CTOR_MERCADO)||0)+'" value="'+(_hasM?it.retMercado:"")+'" data-retmercado="'+it.id+'"><span class="ret-suf">% a.a.</span></div>'+
+      '<span class="ret-hint">'+(_hasM?"valor informado por você":"em branco = premissa de mercado")+'</span></div>';
+  } else if(cat==="mercadoDiv"){
+    var _hasM2=(it.retMercado!=null && it.retMercado!=="");
+    cond='<div class="ret-row"><span class="ret-chip">Mercado</span>'+
+      '<div class="ret-inp ret-inp-user'+(_hasM2?" on":"")+'" title="Retorno informado por você (ativo a mercado)"><span class="ret-pre">Retorno</span><input class="ret-num num" type="number" step="0.1" placeholder="'+(Number(CTOR_MERCADO)||0)+'" value="'+(_hasM2?it.retMercado:"")+'" data-retmercado="'+it.id+'"><span class="ret-suf">% a.a.</span></div>'+
       '<div class="ret-inp"><span class="ret-pre">+ Dividendo</span><input class="ret-num num" type="number" step="0.1" value="'+(it.retDiv||0)+'" data-retdiv="'+it.id+'"><span class="ret-suf">% DY a.a.</span></div></div>';
   } else if(cat==="inflacao"){
     cond='<div class="ret-row">'+
@@ -4842,7 +4865,7 @@ function renderEditor(D){
     h+=`<div style="margin-bottom:18px;">
       <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
         <span style="width:12px; height:12px; border-radius:4px; background:${CLASS_COLORS[c]};"></span>
-        <span style="font-weight:700; font-size:15px;">${c}</span>
+        <span style="font-weight:700; font-size:15px;">${window.__hubClassLabel?window.__hubClassLabel(c):c}</span>
         <span style="color:#A9B0D6; font-weight:700; font-size:13px;">${fmtPct(D.byClass[c])}%</span>
       </div>`;
     list.forEach(i=>{
@@ -4862,7 +4885,7 @@ function renderEditor(D){
       let menuChips="";
       ALL_TAGS.forEach(lbl=>{ if(i.tags.indexOf(lbl)===-1){ menuChips+=`<button class="tag tag-${tagKind(lbl)} tag-menu-chip" data-addchip="${i.id}" data-label="${esc(lbl)}">+ ${esc(lbl)}</button>`; } });
       const tagsHtml=`<div class="tag-zone" data-tagzone="${i.id}" style="display:flex; gap:6px; margin-top:9px; flex-wrap:wrap; min-height:26px; align-items:center;">${tags}<span class="tag-add" data-addtag="${i.id}" title="Adicionar tag">+</span></div><div class="tag-menu" data-tagmenu="${i.id}" style="display:none; gap:6px; flex-wrap:wrap; margin-top:8px; padding:8px; border-radius:10px; background:rgba(10,14,50,.6); border:1px solid rgba(120,130,210,.18);">${menuChips || '<span style="color:#6F77A8;font-size:12px">Todas as tags já adicionadas</span>'}</div>`;
-      let selOpts=""; CLASSES.forEach(cl=>selOpts+=`<option value="${cl}" ${i.classe===cl?"selected":""}>${cl}</option>`);
+      let selOpts=""; CLASSES.forEach(cl=>selOpts+=`<option value="${cl}" ${i.classe===cl?"selected":""}>${window.__hubClassLabel?window.__hubClassLabel(cl):cl}</option>`);
       h+=`<div class="item" data-item="${i.id}">
         <div style="display:flex; gap:8px; align-items:center;">
           <span class="item-drag" draggable="true" data-itemdrag="${i.id}" title="Arraste para reordenar">⠿</span>
@@ -4928,6 +4951,8 @@ function renderEditor(D){
     if(v) v.addEventListener("input",function(){ it.retVal=Number(v.value)||0; const s=el.querySelector('[data-retsum="'+id+'"]'); if(s) s.textContent=ativoRetSummary(it); updateLight(); ctorPersist(); });
     const dv=el.querySelector('[data-retdiv="'+id+'"]');
     if(dv) dv.addEventListener("input",function(){ it.retDiv=Number(dv.value)||0; const s=el.querySelector('[data-retsum="'+id+'"]'); if(s) s.textContent=ativoRetSummary(it); updateLight(); ctorPersist(); });
+    const mv=el.querySelector('[data-retmercado="'+id+'"]');
+    if(mv) mv.addEventListener("input",function(){ var raw=mv.value.trim(); it.retMercado=(raw==="")?null:(Number(raw.replace(",","."))); var wr=mv.closest(".ret-inp-user"); if(wr){ if(raw==="") wr.classList.remove("on"); else wr.classList.add("on"); } var s=el.querySelector('[data-retsum="'+id+'"]'); if(s) s.textContent=ativoRetSummary(it); var hn=mv.closest(".ret-row"); if(hn){ var hint=hn.querySelector(".ret-hint"); if(hint) hint.textContent=(raw===""?"em branco = premissa de mercado":"valor informado por você"); } updateLight(); ctorPersist(); });
     const iso=el.querySelector('[data-retisento="'+id+'"]');
     if(iso) iso.onclick=function(){ it.retIsento=!it.retIsento; rebuildRetBox(it); ctorPersist(); };
   }
@@ -5319,7 +5344,7 @@ document.getElementById("btnCopy").onclick=()=>{
   txt+=`Retorno estimado (bruto): ${fmtPct(D.retAA)}% a.a. (${fmtPct(S.cdiMult)}% do CDI) ≈ R$ ${fmtBRL(D.ganho12)} em 12 meses\n\n`;
   CLASSES.forEach(c=>{
     const list=D.grouped[c]; if(!list||list.length===0) return;
-    txt+=`${c.toUpperCase()} (${fmtPct(D.byClass[c])}%)\n`;
+    txt+=`${(window.__hubClassLabel?window.__hubClassLabel(c):c).toUpperCase()} (${fmtPct(D.byClass[c])}%)\n`;
     list.forEach(i=>{
       const extra=[];
       if(isFII(i)) extra.push("CETIPADO");
@@ -5428,7 +5453,7 @@ function buildCarteiraPNG(){
   CLASSES.forEach(c=>{
     const list=grouped[c]; if(!list||list.length===0) return;
     ctx.fillStyle=CLASS_COLORS[c]; rr(60,y-16,6,22,3); ctx.fill();
-    T(c,80,y,19,"#fff","800","left");
+    T((window.__hubClassLabel?window.__hubClassLabel(c):c),80,y,19,"#fff","800","left");
     T(fmtPct(byClass[c])+"%",W-60,y,18,CLASS_COLORS[c],"800","right");
     y+=classGap+18;
     list.forEach(i=>{
@@ -6836,7 +6861,7 @@ function renderAlocacao() {
     if (a.cat !== lastCat) {
       html += `<div class="alloc-cat" data-cat="${escapeHtml(a.cat)}">
         <span class="cat-dot" style="background:${a.color}"></span>
-        <span class="cat-name">${escapeHtml(a.cat)}</span>
+        <span class="cat-name">${escapeHtml(window.__hubClassLabel?window.__hubClassLabel(a.cat):a.cat)}</span>
         <span class="cat-pct">${fmtPct(somaCat[a.cat])}%</span>
       </div>`;
       lastCat = a.cat;
@@ -7026,7 +7051,7 @@ window.__fillSimuladorFromAderencia = function(data){
     Object.keys(data.comp).forEach(function(cat){
       var pct = data.comp[cat];
       if(pct && pct >= 0.05){
-        nova.push({ cat:cat, name:cat+' (atual)', descr:DESCR[cat]||'', pct:Math.round(pct*10)/10, color:corCat(cat), tags:[] });
+        nova.push({ cat:cat, name:(window.__hubClassLabel?window.__hubClassLabel(cat):cat)+' (atual)', descr:DESCR[cat]||'', pct:Math.round(pct*10)/10, color:corCat(cat), tags:[] });
       }
     });
     if(nova.length){
@@ -9003,7 +9028,7 @@ function render(){
     var list = d.grouped[c];
     if(!list || list.length===0) return;
     h += '<div style="margin-bottom:18px"><div class="classhead"><span class="dot" style="background:'+CLASS_COLORS[c]+'"></span>'+
-      '<span style="font-weight:700;font-size:15px">'+c+'</span>'+
+      '<span style="font-weight:700;font-size:15px">'+(window.__hubClassLabel?window.__hubClassLabel(c):c)+'</span>'+
       '<span style="color:#A9B0D6;font-weight:700;font-size:13px">'+fmtPct(d.byClass[c])+'%</span></div>';
     if(c==="Renda Fixa"){
       var subs={"Pós-fixado":[],"Inflação":[],"Pré-fixado":[],"Outros":[]};
@@ -9305,7 +9330,7 @@ function copyResumo(){
   txt += "\n";
   CLASSES.forEach(function(c){
     var list = d.grouped[c]; if(!list || list.length===0) return;
-    txt += c.toUpperCase()+" ("+fmtPct(d.byClass[c])+"%)\n";
+    txt += (window.__hubClassLabel?window.__hubClassLabel(c):c).toUpperCase()+" ("+fmtPct(d.byClass[c])+"%)\n";
     list.forEach(function(i){
       var extra = [];
       if(i.setor && i.setor!=="Outros") extra.push(i.setor);
@@ -9422,7 +9447,7 @@ function buildCarteiraPNG(p){
   CLASSES.forEach(function(c){
     var list = grouped[c]; if(!list || list.length===0) return;
     ctx.fillStyle=CLASS_COLORS[c]; rr(60,y-16,6,22,3); ctx.fill();
-    T(c,80,y,19,"#fff","800","left");
+    T((window.__hubClassLabel?window.__hubClassLabel(c):c),80,y,19,"#fff","800","left");
     T(fmtPct(byClass[c])+"%",W-60,y,18,CLASS_COLORS[c],"800","right");
     y += 34;
     list.forEach(function(i){
@@ -10382,7 +10407,7 @@ window.__rvRender = render;
       if(pct < 0.05) return;
       var col = CAT_COLOR[cat];
       h += '<div class="ad-bar-row">'
-        + '<div class="ad-bar-top"><span class="ad-bar-name">'+cat+'</span>'
+        + '<div class="ad-bar-top"><span class="ad-bar-name">'+(window.__hubClassLabel?window.__hubClassLabel(cat):cat)+'</span>'
         + '<span class="ad-bar-pct" style="color:'+col+'">'+fmtPct(pct)+'%</span></div>'
         + '<div class="ad-bar-track"><div class="ad-bar-fill" style="width:'+Math.min(100,pct)+'%;background:'+col+'"></div></div>'
         + '</div>';
@@ -10477,7 +10502,7 @@ window.__rvRender = render;
     if(!maxCat || Math.abs(maxGap) < 1) return "";
     var verbo = maxGap>0 ? "aumentar" : "reduzir";
     return '<div style="margin-top:12px;font-size:13px;color:#9AA2D0">'
-      + 'Maior ajuste sugerido: <b style="color:'+CAT_COLOR[maxCat]+'">'+verbo+' '+maxCat+'</b> em '
+      + 'Maior ajuste sugerido: <b style="color:'+CAT_COLOR[maxCat]+'">'+verbo+' '+(window.__hubClassLabel?window.__hubClassLabel(maxCat):maxCat)+'</b> em '
       + fmtPct(Math.abs(maxGap))+' p.p.</div>';
   }
 
@@ -10915,7 +10940,7 @@ window.__rvRender = render;
       } else if(emp){ emp.style.display="none"; }
     });
   }
-  var CATCOL={"Renda Fixa":"#3DD68C","Previdência":"#E8709B","Multimercados":"#7C8CFF","Renda Variável":"#F26522","Fundos Listados":"#FFB020","Alternativos":"#C77DFF","Internacional":"#36C5F0"};
+  var CATCOL={"Renda Fixa":"#3DD68C","Previdência":"#E8709B","Multimercados":"#7C8CFF","Fundo Aberto":"#5AC8A8","Renda Variável":"#F26522","Fundos Listados":"#FFB020","Alternativos":"#C77DFF","Internacional":"#36C5F0"};
   var ORDER=["Renda Fixa","Previdência","Multimercados","Renda Variável","Fundos Listados","Alternativos","Internacional"];
   var LIB=[
     {classe:"Renda Fixa",nome:"LCD",detalhe:"93/94% do CDI · 1–5 anos · isento de IR"},
@@ -11104,7 +11129,7 @@ window.__rvRender = render;
     var G=gavetas();
     rvReg={};
     var groups=[
-      {key:"geral",icon:"📁",label:"Ativos gerais",color:"#FF8B52",classes:["Renda Fixa","Multimercados","Fundos Listados","Alternativos","Internacional"]},
+      {key:"geral",icon:"📁",label:"Ativos gerais",color:"#FF8B52",classes:["Renda Fixa","Multimercados","Fundo Aberto","Fundos Listados","Alternativos","Internacional"]},
       {key:"rv",icon:"🧰",label:"RV estruturada",color:"#7C8CFF",classes:["Renda Variável"]}
     ];
     var nq=pcNorm(state.gavQuery);
@@ -11118,7 +11143,7 @@ window.__rvRender = render;
       if(grp.key==="rv"){ h+=rvGavList(); return; }
       h+='<div class="pc-gavlist">';
       grp.classes.forEach(function(cl){ var items=G.map(function(a,i){return {a:a,i:i};}).filter(function(o){return o.a.classe===cl;}); if(!items.length)return; var c=CATCOL[cl]||"#9AA2D0";
-        h+='<div class="pc-gavcat" style="color:'+c+'"><span style="background:'+c+'"></span>'+({"Renda Fixa":"🏦 ","Previdência":"🕰️ ","Multimercados":"🌐 ","Renda Variável":"📈 ","Fundos Listados":"🏢 ","Alternativos":"🪙 ","Internacional":"🌎 "}[cl]||"")+cl+'</div>';
+        h+='<div class="pc-gavcat" style="color:'+c+'"><span style="background:'+c+'"></span>'+({"Renda Fixa":"🏦 ","Previdência":"🕰️ ","Multimercados":"🌐 ","Fundo Aberto":"📂 ","Renda Variável":"📈 ","Fundos Listados":"🏢 ","Alternativos":"🪙 ","Internacional":"🌎 "}[cl]||"")+(window.__hubClassLabel?window.__hubClassLabel(cl):cl)+'</div>';
         items.forEach(function(o){ h+='<div class="pc-gavcard" draggable="true" data-dragidx="'+o.i+'" data-gavfind="'+esc((o.a.nome||"")+" "+(o.a.detalhe||"")+" "+(o.a.classe||""))+'"><div class="pc-gavinfo"><div class="pc-gavname">'+esc(o.a.nome)+'</div><div class="pc-gavdet">'+esc(o.a.detalhe||"")+'</div></div><button class="pc-add" data-addidx="'+o.i+'" title="Adicionar a Entrar">+</button></div>'; });
       });
       h+='</div>';
@@ -11565,7 +11590,7 @@ window.__rvRender = render;
     var ti=document.getElementById("pcDrTitle"); if(ti) ti.textContent=cat==="rv"?"🧰 RV estruturada":"📁 Ativos gerais";
     var G=gavetas(); var h=""; var cats= cat==="rv"?["Renda Variável"]:["Renda Fixa","Multimercados","Fundos Listados","Alternativos","Internacional"];
     cats.forEach(function(cl){ var items=G.map(function(a,i){return {a:a,i:i};}).filter(function(o){return o.a.classe===cl;}); if(!items.length)return; var c=CATCOL[cl]||"#9AA2D0";
-      h+='<div class="pcdr-cat" style="color:'+c+'"><span style="background:'+c+'"></span>'+cl+'</div>';
+      h+='<div class="pcdr-cat" style="color:'+c+'"><span style="background:'+c+'"></span>'+(window.__hubClassLabel?window.__hubClassLabel(cl):cl)+'</div>';
       items.forEach(function(o){ h+='<div class="pcdr-card" draggable="true" data-dragidx="'+o.i+'"><div class="pcdr-info"><div class="pcdr-name">'+esc(o.a.nome)+'</div><div class="pcdr-det">'+esc(o.a.detalhe||"")+'</div></div><button class="pcdr-add" data-addidx="'+o.i+'" title="Adicionar a Entrar">+</button></div>'; });
     });
     body.innerHTML=h;
