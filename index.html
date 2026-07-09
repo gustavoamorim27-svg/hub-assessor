@@ -8442,6 +8442,8 @@ var SETOR_COLORS = {
   "Saneamento":"#36C5F0","Petróleo & Gás":"#7C8CFF","Mineração & Siderurgia":"#C77DFF",
   "Papel & Celulose":"#9ED36A","Tecnologia":"#5BC0EB","Consumo & Varejo":"#FF7AA2",
   "Locação & Logística":"#E8A04B","Industrial":"#8A93D8","Saúde":"#4FD1C5","Índice / ETF":"#B6BDF0",
+  "Energia":"#7C8CFF","Materiais":"#C77DFF","Cons. Disc.":"#FF7AA2","Industriais":"#8A93D8",
+  "Tec. Info.":"#5BC0EB","Imobiliário":"#E8A04B","Utilidade Pública":"#2BD9A6","Comunicações":"#36C5F0",
   "Internacional":"#A9B4FF","Outros":"#6F77A8"
 };
 var SETORES = Object.keys(SETOR_COLORS);
@@ -8559,24 +8561,105 @@ function mkQuanto(id, pct){
   it.op = op; return it;
 }
 
+/* ===== Ações com proteção — persistência de override e cotação (Tarefas 2 e 3) ===== */
+var LS_RV_STRUCT_OV = "hubRvStructOverride";
+var LS_RV_PRECO = "hubRvPrecoAtual";
+function rvLoadStructOv(){ try{ return JSON.parse(localStorage.getItem(LS_RV_STRUCT_OV)||"{}")||{}; }catch(_){ return {}; } }
+function rvSaveStructOv(map){ try{ localStorage.setItem(LS_RV_STRUCT_OV, JSON.stringify(map||{})); }catch(_){ } }
+function rvGetStructOv(ticker){ var m=rvLoadStructOv(); return m[ticker]||null; }
+function rvSetStructOv(ticker, obj){ var m=rvLoadStructOv(); m[ticker]=obj; rvSaveStructOv(m); }
+function rvClearStructOv(ticker){ var m=rvLoadStructOv(); delete m[ticker]; rvSaveStructOv(m); }
+function rvLoadPrecos(){ try{ return JSON.parse(localStorage.getItem(LS_RV_PRECO)||"{}")||{}; }catch(_){ return {}; } }
+function rvSavePrecos(map){ try{ localStorage.setItem(LS_RV_PRECO, JSON.stringify(map||{})); }catch(_){ } }
+function rvGetPreco(ticker){ var m=rvLoadPrecos(); var v=m[ticker]; return (typeof v==="number" && isFinite(v) && v>0)? v : null; }
+function rvSetPreco(ticker, val){ var m=rvLoadPrecos(); if(val==null||!(Number(val)>0)) delete m[ticker]; else m[ticker]=Number(val); rvSavePrecos(m); }
+
+function fmtPreco(n){ var v=Number(n); if(isNaN(v)) return "0,00"; return v.toFixed(2).replace(".",","); }
+
+/* cenários de payoff no MESMO formato dos itens de OPERACOES (Fence/Collar) */
+function _protCen(prot, teto, tetoB){
+  var t=Number(teto), tb=Number(tetoB), p=Number(prot);
+  if(isNaN(t)) t=34.99; if(isNaN(tb)) tb=Math.round(t*0.45*100)/100; if(isNaN(p)) p=-20;
+  function r2(x){ return Math.round(x*100)/100; }
+  if(p<=-100){
+    return [[-30,0],[-25,0],[-10,0],[-5,0],[0,0],[r2(tb/2),r2(tb/2)],[tb,tb],[t,t],[r2(t+0.01),tb],[r2(t+10),tb]];
+  }
+  return [[r2(p-20),-20],[r2(p-10),-10],[r2(p-5),-5],[p,0],[r2(p/2),0],[0,0],[r2(tb/2),r2(tb/2)],[tb,tb],[t,t],[r2(t+0.01),tb],[r2(t+10),tb]];
+}
+
+/* Operação de PROTEÇÃO padrão por ticker — mesma forma dos itens de OPERACOES.
+   Lê o override salvo em hubRvStructOverride (Tarefa 3) para persistir edições. */
+function defaultProt(ticker, nome, setor){
+  var base = { tipo:"Proteção parcial", protegeAte:-20, teto:34.99, tetoBarreira:15.75, barreira:135 };
+  var ov = rvGetStructOv(ticker);
+  if(ov && typeof ov==="object"){
+    ["protegeAte","teto","tetoBarreira","barreira"].forEach(function(k){ if(ov[k]!=null && !isNaN(Number(ov[k]))) base[k]=Number(ov[k]); });
+    if(ov.tipo) base.tipo=ov.tipo;
+  }
+  var prot=Number(base.protegeAte); if(isNaN(prot)) prot=-20;
+  var teto=Number(base.teto); if(isNaN(teto)) teto=34.99;
+  var tb=Number(base.tetoBarreira); if(isNaN(tb)) tb=Math.round(teto*0.45*100)/100;
+  var barreira=Number(base.barreira); if(isNaN(barreira)) barreira=135;
+  var tipo = prot<=-100 ? "Proteção total" : (base.tipo||"Proteção parcial");
+  return { id:"prot_"+ticker, ativo:ticker, nome:(nome||ticker)+" · "+(prot<=-100?"Collar":"Fence")+" "+fmtPct(teto)+"%",
+           setor:setor||"Outros", tipo:tipo, protegeAte:prot, teto:teto, tetoBarreira:tb, barreira:barreira, cen:_protCen(prot,teto,tb) };
+}
+
+/* Ação da carteira: papel brasileiro com estrutura de proteção obrigatória. */
+function mkAcao(ticker, nome, setor, pct, precoAlvo, rating){
+  var det = ticker+" · PA R$ "+fmtPreco(precoAlvo)+(rating?" · "+rating:"");
+  var it = mk("Renda Variável", nome, pct, det, "No vencimento", "protecao", null, setor);
+  it.ticker = ticker;
+  it.precoAlvo = Number(precoAlvo);
+  it.rating = rating||"";
+  it.precoAtual = rvGetPreco(ticker);
+  it.op = defaultProt(ticker, nome, setor);
+  return it;
+}
+
+/* retorno esperado de um ativo (precoAlvo/precoAtual - 1) em % */
+function holdingRet(i){
+  var pa=Number(i.precoAlvo), pc=Number(i.precoAtual);
+  if(!(pa>0) || !(pc>0)) return null;
+  return (pa/pc - 1)*100;
+}
+
 /* ===== Templates ===== */
 var TEMPLATES = {
-  "Protegida": function(){
-    var pesos = { "op-eqtl3-60":12,"op-smal11-cp":10,"op-nasd11-cp":10,"op-bpac11-80":12,"op-wege3-58":10,"op-sapr11-62":10,"op-axia3-20":8,"op-eqtl3-53":8,"op-smal11-80":10,"op-itub4-35":10 };
-    return OPERACOES.map(function(op){
-      var it = mk("Renda Variável", op.nome, pesos[op.id]||0, opDetalhe(op), "No vencimento", "protecao", null, op.setor);
-      it.op = op; return it;
-    });
-  },
-  "Rubi · Cupom pré-fixado": function(){
+  "Top Ações": function(){
     return [
-      mkRubi("BBAS3","Bancos",21.5,-20,147.71),
-      mkRubi("PETR4","Petróleo & Gás",18.0,-25,null),
-      mkRubi("VALE3","Mineração & Siderurgia",16.5,-20,null),
-      mkRubi("ITUB4","Bancos",15.0,-15,null)
-    ].map(function(it,idx){ it.pct = [30,25,25,20][idx]; return it; });
+      mkAcao("PETR4","Petrobras","Energia",5.0,63.00,"Compra"),
+      mkAcao("PRIO3","PRIO","Energia",5.0,78.00,"Compra"),
+      mkAcao("GGBR4","Gerdau","Materiais",5.0,25.00,"Compra"),
+      mkAcao("VALE3","Vale","Materiais",5.0,85.00,"Neutro"),
+      mkAcao("LREN3","Lojas Renner","Cons. Disc.",5.0,22.00,"Compra"),
+      mkAcao("RENT3","Localiza","Industriais",10.0,65.00,"Compra"),
+      mkAcao("EMBJ3","Embraer","Industriais",5.0,87.00,"Compra"),
+      mkAcao("TOTS3","TOTVS","Tec. Info.",5.0,50.50,"Compra"),
+      mkAcao("IGTI11","Iguatemi","Imobiliário",10.0,32.00,"Compra"),
+      mkAcao("RDOR3","Rede D'Or","Saúde",7.5,45.00,"Compra"),
+      mkAcao("SBSP3","Sabesp","Utilidade Pública",5.0,38.25,"Compra"),
+      mkAcao("ORVR3","Orizon","Utilidade Pública",5.0,97.48,"Compra"),
+      mkAcao("B3SA3","B3","Financeiro",7.5,16.00,"Neutro"),
+      mkAcao("ITUB4","Itaú Unibanco","Financeiro",10.0,51.00,"Compra"),
+      mkAcao("BPAC11","BTG Pactual","Financeiro",5.0,63.00,"Compra"),
+      mkAcao("ROXO34","Nubank","Financeiro",5.0,18.60,"Compra")
+    ];
   },
-  "Quanto Internacional": function(){ return [ mkQuanto("q-sp-3",30), mkQuanto("q-sp-fx3",25), mkQuanto("q-nq-3",25), mkQuanto("q-nq-fx2",20) ]; },
+  "Top Dividendos": function(){
+    return [
+      mkAcao("PETR4","Petrobras","Energia",10.0,63.00,"Compra"),
+      mkAcao("PRIO3","PRIO","Energia",5.0,78.00,"Compra"),
+      mkAcao("VALE3","Vale","Materiais",12.5,85.00,"Neutro"),
+      mkAcao("VIVT3","Telefônica Brasil (Vivo)","Comunicações",5.0,43.00,"Compra"),
+      mkAcao("ALOS3","Allos","Imobiliário",7.5,32.00,"Compra"),
+      mkAcao("AXIA3","Axia Energia","Utilidade Pública",12.5,63.32,"Compra"),
+      mkAcao("CPLE3","Copel","Utilidade Pública",15.0,19.87,"Compra"),
+      mkAcao("ITUB4","Itaú Unibanco","Financeiro",15.0,51.00,"Compra"),
+      mkAcao("B3SA3","B3","Financeiro",10.0,16.00,"Neutro"),
+      mkAcao("CXSE3","Caixa Seguridade","Financeiro",7.5,20.00,"Compra")
+    ];
+  },
   "Montar do zero": function(){ return []; }
 };
 
@@ -8737,8 +8820,8 @@ function payoffBarsSVG(op, compact){
 
 /* ===== Estado ===== */
 var state = {
-  template:"Protegida",
-  items: TEMPLATES["Protegida"](),
+  template:"Top Ações",
+  items: TEMPLATES["Top Ações"](),
   cliente:"",
   patrimonio:1000000,
   abertos:{},
@@ -8767,7 +8850,11 @@ function calc(){
   items.forEach(function(i){ if(!grouped[i.classe]) grouped[i.classe]=[]; grouped[i.classe].push(i); });
   var donut = []; var acc=0;
   Object.keys(bySetor).filter(function(s){return bySetor[s]>0;}).sort(function(a,b){return bySetor[b]-bySetor[a];}).forEach(function(s){ donut.push({s:s,v:bySetor[s],start:acc}); acc+=bySetor[s]; });
-  return { total:total, restante:restante, totalOk:totalOk, byClass:byClass, bySetor:bySetor, estruturaBreak:estruturaBreak, pctAcoes:pctAcoes, glossTerms:glossTerms, grouped:grouped, donut:donut };
+  // Retorno esperado ponderado (Tarefa 2): média de (PA/cotação-1) ponderada pelo peso, só sobre ativos precificados
+  var retWSum=0, retWRet=0, retN=0, retM=0;
+  items.forEach(function(i){ var pa=Number(i.precoAlvo); if(!(pa>0)) return; retM++; var pc=Number(i.precoAtual); if(pc>0){ var r=(pa/pc-1)*100; var w=Number(i.pct)||0; retWSum+=w; retWRet+=w*r; retN++; } });
+  var retEsp = retWSum>0 ? retWRet/retWSum : null;
+  return { total:total, restante:restante, totalOk:totalOk, byClass:byClass, bySetor:bySetor, estruturaBreak:estruturaBreak, pctAcoes:pctAcoes, glossTerms:glossTerms, grouped:grouped, donut:donut, retEsp:retEsp, retEspCobertura:{n:retN, m:retM} };
 }
 
 /* ===== Donut helpers ===== */
@@ -8832,6 +8919,20 @@ function itemRowHTML(i){
   if(i.liquidez) html += '<span class="tag liq">Liquidez · '+esc(i.liquidez)+'</span>';
   if(isIsento(i.nome)){ html += '<span class="tag resgate">Resgate trabalhado</span><span class="tag isento">Isento de IR</span>'; }
   html += '</div>';
+
+  if(i.precoAlvo!=null && !isNaN(Number(i.precoAlvo))){
+    var _ret = holdingRet(i);
+    var _rc = _ret==null ? "#8A93D8" : (_ret>=0? "#2BD9A6" : "#FF5566");
+    var _rt = _ret==null ? "—" : (_ret>0?"+":"")+fmtPct(_ret)+"%";
+    html += '<div class="tagsrow" style="align-items:center;gap:10px;margin-top:2px">';
+    html += '<span class="estlabel">Cotação atual</span>';
+    html += '<span style="color:#6F77A8;font-weight:800;font-size:13px">R$</span>';
+    html += '<input class="cotinput" type="text" inputmode="decimal" value="'+(i.precoAtual!=null?fmtPreco(i.precoAtual):"")+'" placeholder="—" data-act="precoAtual" style="width:88px;background:rgba(0,0,0,.3);border:1px solid rgba(120,130,210,.2);border-radius:9px;color:#fff;font-weight:700;font-size:14px;padding:7px 10px;text-align:right;outline:none">';
+    html += '<span class="estlabel">Preço-alvo R$ '+fmtPreco(i.precoAlvo)+'</span>';
+    html += '<span class="tag" data-rvrettag style="background:'+_rc+'22;border-color:'+_rc+'66;color:'+_rc+'">Retorno esperado '+_rt+'</span>';
+    if(i.op){ html += '<button class="estbtn" data-act="editstruct" title="Editar parâmetros da proteção" style="margin-left:auto;color:#FF8B52;border:1px solid rgba(255,139,82,.45);border-radius:8px;background:rgba(255,139,82,.12)">'+ICON_SHIELD+' Editar estrutura</button>'; }
+    html += '</div>';
+  }
 
   if((i.op && st) || cur==="cupom" || cur==="protecao"){
     var open = !!state.abertos[i.id];
@@ -9123,6 +9224,19 @@ function render(){
   }
   h += '</div>';
 
+  /* RETORNO ESPERADO (Tarefa 2) */
+  var _reColor = d.retEsp==null? "#A9B0D6" : (d.retEsp>=0? "#2BD9A6" : "#FF5566");
+  var _reTxt = d.retEsp==null? "—" : (d.retEsp>0?"+":"")+fmtPct(d.retEsp)+"%";
+  h += '<div class="card" style="margin-top:16px;border-color:rgba(255,139,82,.4)">'+
+    '<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">'+
+    '<span style="color:'+ORANGE+'">'+ICON_LAYERS+'</span>'+
+    '<span style="color:#A9B0D6;font-weight:700;font-size:13px;letter-spacing:1px">RETORNO ESPERADO</span></div>'+
+    '<div style="display:flex;justify-content:space-between;align-items:baseline">'+
+    '<span style="color:#A9B0D6;font-weight:700;font-size:13px">Upside ponderado (preço-alvo)</span>'+
+    '<span data-rvretval style="font-weight:800;font-size:30px;color:'+_reColor+'">'+_reTxt+'</span></div>'+
+    '<div data-rvretcov style="font-size:12px;color:#6F77A8;margin-top:8px">'+(d.retEspCobertura.n>0? d.retEspCobertura.n+' de '+d.retEspCobertura.m+' ativos precificados' : 'Defina as cotações atuais para calcular o retorno esperado')+'</div>'+
+    '</div>';
+
   /* COMPOSIÇÃO EM AÇÕES */
   h += '<div class="card" style="margin-top:16px"><div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">'+
     '<span style="color:'+ORANGE+'">'+ICON_LAYERS+'</span>'+
@@ -9248,6 +9362,8 @@ function bind(d){
       else if(act==="protTetoBarreira"){ el.oninput = function(){ update(id,"protTetoBarreira",el.value===""?"":Number(el.value)); redrawProtChart(id); }; el.onchange = function(){ render(); }; }
       else if(act==="protBarreira"){ el.oninput = function(){ update(id,"protBarreira",el.value===""?"":Number(el.value)); redrawProtChart(id); }; el.onchange = function(){ render(); }; }
       else if(act==="escolha"){ el.onclick = function(){ setEscolha(id, parseInt(el.getAttribute("data-idx"),10)); render(); }; }
+      else if(act==="precoAtual"){ el.oninput = function(){ var it=state.items.filter(function(x){return x.id===id;})[0]; if(!it) return; var raw=el.value.trim(); var v = raw===""? null : _parseNum(raw); if(v!=null && !(v>0)) v=null; it.precoAtual = v; if(it.ticker) rvSetPreco(it.ticker, v); softRetUpdate(id); }; el.onchange = function(){ render(); }; }
+      else if(act==="editstruct"){ el.onclick = function(){ openStructModal(id); }; }
       else if(act==="toggle"){ el.onclick = function(){ state.abertos[id] = !state.abertos[id]; render(); }; }
     });
   });
@@ -9279,6 +9395,76 @@ function updateValHints(){
   });
 }
 function updateDonutTitle(){ /* atualizado no próximo render */ }
+
+/* atualização leve do retorno esperado (mantém foco no input de cotação) */
+function softRetUpdate(id){
+  var it = state.items.filter(function(x){return x.id===id;})[0];
+  var rowEl = document.querySelector('.row[data-id="'+id+'"]');
+  if(it && rowEl){
+    var ret = holdingRet(it);
+    var rc = ret==null? "#8A93D8" : (ret>=0? "#2BD9A6":"#FF5566");
+    var rt = ret==null? "—" : (ret>0?"+":"")+fmtPct(ret)+"%";
+    var tg = rowEl.querySelector("[data-rvrettag]");
+    if(tg){ tg.textContent="Retorno esperado "+rt; tg.style.background=rc+"22"; tg.style.borderColor=rc+"66"; tg.style.color=rc; }
+  }
+  var d = calc();
+  var rv=document.querySelector("[data-rvretval]");
+  if(rv){ rv.textContent = d.retEsp==null? "—" : (d.retEsp>0?"+":"")+fmtPct(d.retEsp)+"%"; rv.style.color = d.retEsp==null?"#A9B0D6":(d.retEsp>=0?"#2BD9A6":"#FF5566"); }
+  var rcv=document.querySelector("[data-rvretcov]");
+  if(rcv){ rcv.textContent = d.retEspCobertura.n>0 ? (d.retEspCobertura.n+" de "+d.retEspCobertura.m+" ativos precificados") : "Defina as cotações atuais para calcular o retorno esperado"; }
+  refreshResumoOnly(d);
+}
+
+/* aplica o override/padrão de estrutura a TODOS os itens com o mesmo ticker */
+function applyStructTo(ticker){ state.items.forEach(function(x){ if(x.ticker===ticker && x.op){ x.op = defaultProt(ticker, x.nome, x.setor); } }); }
+
+/* Modal de edição de estrutura (Tarefa 3) — persiste em hubRvStructOverride */
+function openStructModal(id){
+  var it = state.items.filter(function(x){return x.id===id;})[0];
+  if(!it || !it.ticker) return;
+  var op = it.op || defaultProt(it.ticker, it.nome, it.setor);
+  var oldm=document.getElementById("rvStructModal"); if(oldm) oldm.remove();
+  var hasOv = !!rvGetStructOv(it.ticker);
+  var isTotal = Number(op.protegeAte)<=-100;
+  var ov=document.createElement("div"); ov.id="rvStructModal";
+  ov.setAttribute("style","position:fixed;inset:0;z-index:99999;background:rgba(4,6,20,.72);display:flex;align-items:center;justify-content:center;padding:20px");
+  function fld(label,act,val,color,hint){
+    return '<div style="margin-bottom:13px"><div class="estlabel" style="margin-bottom:6px">'+label+'</div>'+
+      '<input id="sm_'+act+'" type="text" inputmode="decimal" value="'+val+'" style="width:100%;box-sizing:border-box;background:rgba(0,0,0,.35);border:1px solid rgba(120,130,210,.25);border-radius:10px;color:'+(color||"#fff")+';font-weight:700;font-size:15px;padding:10px 12px;outline:none">'+
+      (hint?'<div style="font-size:10.5px;color:#6F77A8;margin-top:4px">'+hint+'</div>':'')+'</div>';
+  }
+  ov.innerHTML = '<div style="width:min(460px,100%);max-height:92vh;overflow:auto;background:linear-gradient(160deg,#0C1240,#070B2E);border:1px solid rgba(255,139,82,.35);border-radius:18px;padding:24px 24px 20px;box-shadow:0 24px 60px rgba(0,0,0,.55)">'+
+    '<div style="display:flex;align-items:center;gap:8px;margin-bottom:2px"><span style="color:#FF8B52">'+ICON_SHIELD+'</span><span style="font-weight:800;font-size:18px;color:#fff">Editar estrutura de proteção</span></div>'+
+    '<div style="font-size:12.5px;color:#A9B0D6;margin-bottom:18px">'+esc(it.nome)+' · '+esc(it.ticker)+' — parâmetros da operação estruturada (Fence / Collar).</div>'+
+    '<div style="margin-bottom:13px"><div class="estlabel" style="margin-bottom:6px">Tipo de proteção</div>'+
+      '<select id="sm_tipo" style="width:100%;box-sizing:border-box;background:rgba(0,0,0,.35);border:1px solid rgba(120,130,210,.25);border-radius:10px;color:#fff;font-weight:700;font-size:14px;padding:10px 12px;outline:none">'+
+      '<option value="Proteção parcial"'+(!isTotal?" selected":"")+'>Proteção parcial (Fence)</option>'+
+      '<option value="Proteção total"'+(isTotal?" selected":"")+'>Proteção total (Collar · capital protegido)</option></select></div>'+
+    fld("Protege até (queda; use -100 p/ proteção total)","protegeAte",op.protegeAte,"#FF8B52","Ex.: -20 protege os primeiros 20% de queda.")+
+    fld("Teto de alta (ganho máximo, %)","teto",op.teto,"#2BD9A6")+
+    fld("Teto se tocar a barreira (%)","tetoBarreira",op.tetoBarreira,"#FFB020")+
+    fld("Barreira (alta de desarme do teto, %)","barreira",op.barreira,"#7FD8F5")+
+    '<div style="display:flex;gap:10px;align-items:center;margin-top:8px">'+
+      (hasOv?'<button id="smRestore" style="background:transparent;border:1px solid rgba(120,130,210,.35);color:#A9B0D6;border-radius:10px;padding:9px 14px;font-weight:700;font-size:13px;cursor:pointer">Restaurar padrão</button>':'')+
+      '<button id="smCancel" style="margin-left:auto;background:transparent;border:1px solid rgba(120,130,210,.35);color:#A9B0D6;border-radius:10px;padding:9px 16px;font-weight:700;font-size:13px;cursor:pointer">Cancelar</button>'+
+      '<button id="smSave" style="background:'+ORANGE+';border:none;color:#fff;border-radius:10px;padding:9px 18px;font-weight:800;font-size:13px;cursor:pointer">Salvar</button>'+
+    '</div></div>';
+  document.body.appendChild(ov);
+  function close(){ if(ov.parentNode) ov.parentNode.removeChild(ov); }
+  ov.addEventListener("click",function(e){ if(e.target===ov) close(); });
+  ov.querySelector("#smCancel").onclick=close;
+  var rb=ov.querySelector("#smRestore"); if(rb) rb.onclick=function(){ rvClearStructOv(it.ticker); applyStructTo(it.ticker); close(); render(); };
+  ov.querySelector("#smSave").onclick=function(){
+    var tipo=ov.querySelector("#sm_tipo").value;
+    var obj={ tipo:tipo,
+      protegeAte:_parseNum(ov.querySelector("#sm_protegeAte").value),
+      teto:_parseNum(ov.querySelector("#sm_teto").value),
+      tetoBarreira:_parseNum(ov.querySelector("#sm_tetoBarreira").value),
+      barreira:_parseNum(ov.querySelector("#sm_barreira").value) };
+    if(tipo==="Proteção total" && obj.protegeAte>-100) obj.protegeAte=-100;
+    rvSetStructOv(it.ticker, obj); applyStructTo(it.ticker); close(); render();
+  };
+}
 
 /* re-render total ao mudar pct (no change/blur) */
 document.addEventListener("change", function(e){
@@ -9373,7 +9559,8 @@ function wrapText(ctx, text, x, y, maxW, lineH, color, size, FF){
 
 function buildCarteiraPNG(p){
   var template=p.template, cliente=p.cliente, patrimonio=p.patrimonio, byClass=p.byClass, total=p.total,
-      grouped=p.grouped, glossTerms=p.glossTerms, estruturaBreak=p.estruturaBreak, pctAcoes=p.pctAcoes, bySetor=p.bySetor;
+      grouped=p.grouped, glossTerms=p.glossTerms, estruturaBreak=p.estruturaBreak, pctAcoes=p.pctAcoes, bySetor=p.bySetor,
+      retEsp=p.retEsp, retEspCobertura=p.retEspCobertura||{n:0,m:0};
   var FF = "Arial, Helvetica, sans-serif";
   var nome = (cliente||"").trim();
   var W = 1080;
@@ -9429,6 +9616,16 @@ function buildCarteiraPNG(p){
   T("Patrimônio a alocar",60,300,14,"#A9B0D6","600","left");
   T("R$ "+fmtBRL(patrimonio),60,336,30,ORANGE,"800","left");
 
+  // Retorno esperado — bloco headline (Tarefa 4)
+  var reHasPrice = retEspCobertura && retEspCobertura.n>0 && retEsp!=null && isFinite(retEsp);
+  var reColor = reHasPrice ? (retEsp>=0? "#2BD9A6":"#FF5566") : "#A9B0D6";
+  var reTxt = reHasPrice ? ((retEsp>0?"+":"")+fmtPct(retEsp)+"%") : "defina as cotações";
+  T("Retorno esperado · upside ponderado",408,300,14,"#A9B0D6","600","left");
+  T(reTxt,408,336,30,reColor,"800","left");
+  var covTxt = reHasPrice ? ("com base em "+retEspCobertura.n+" de "+retEspCobertura.m+" ativos precificados")
+    : (retEspCobertura && retEspCobertura.m ? ("0 de "+retEspCobertura.m+" ativos precificados — informe as cotações atuais") : "");
+  if(covTxt) T(covTxt,408,356,11.5,"#6F77A8","600","left");
+
   T("COMPOSIÇÃO EM AÇÕES · "+fmtPct(pctAcoes)+"% da carteira",60,388,12.5,"#A9B0D6","700","left");
   var cbX=60, cbY=398, cbW=420, cbH=14, accx=cbX;
   ["protecao","none","cupom"].forEach(function(k){ var w=(estruturaBreak[k]/(pctAcoes||1))*cbW; if(w<=0) return; ctx.fillStyle=STRUCT_COLORS[k]; rr(accx,cbY,w,cbH,4); ctx.fill(); accx+=w; });
@@ -9467,6 +9664,11 @@ function buildCarteiraPNG(p){
       }
       if(i.liquidez) tag += (tag?"  ·  ":"")+"Liquidez "+i.liquidez;
       if(isIsento(i.nome)) tag += (tag?"  ·  ":"")+"Resgate trabalhado  ·  Isento de IR";
+      if(i.precoAlvo!=null && !isNaN(Number(i.precoAlvo))){
+        var _r = holdingRet(i);
+        var _rtxt = _r==null ? "Ret. esperado —" : ("Ret. esperado "+(_r>0?"+":"")+fmtPct(_r)+"%");
+        tag = _rtxt + (tag? "  ·  "+tag : "");
+      }
       var hasSecond = !!(i.detalhe || tag);
       T(fmtPct(i.pct)+"%",80,y,16,"#FF6B2C","800","left");
       T(i.nome,170,y,16,"#fff","700","left");
@@ -10155,7 +10357,7 @@ function abrirCardModal(){
 function gerarPNG(){
   try {
     var d = calc();
-    var url = buildCarteiraPNG({ template:state.template, cliente:state.cliente, patrimonio:state.patrimonio, byClass:d.byClass, total:d.total, grouped:d.grouped, glossTerms:d.glossTerms, estruturaBreak:d.estruturaBreak, pctAcoes:d.pctAcoes, bySetor:d.bySetor });
+    var url = buildCarteiraPNG({ template:state.template, cliente:state.cliente, patrimonio:state.patrimonio, byClass:d.byClass, total:d.total, grouped:d.grouped, glossTerms:d.glossTerms, estruturaBreak:d.estruturaBreak, pctAcoes:d.pctAcoes, bySetor:d.bySetor, retEsp:d.retEsp, retEspCobertura:d.retEspCobertura });
     var fname = "Carteira_RV_"+state.template+(state.cliente?"_"+state.cliente.replace(/[^a-zA-Z0-9]+/g,"_"):"")+".png";
     window.mostrarPngModal(url, fname, { accent:"#F26522" });
   } catch(e){ console.error(e); alert("Não foi possível gerar a imagem: "+(e&&e.message?e.message:e)); }
