@@ -8574,6 +8574,54 @@ function rvSavePrecos(map){ try{ localStorage.setItem(LS_RV_PRECO, JSON.stringif
 function rvGetPreco(ticker){ var m=rvLoadPrecos(); var v=m[ticker]; return (typeof v==="number" && isFinite(v) && v>0)? v : null; }
 function rvSetPreco(ticker, val){ var m=rvLoadPrecos(); if(val==null||!(Number(val)>0)) delete m[ticker]; else m[ticker]=Number(val); rvSavePrecos(m); }
 
+/* ===== Persistência dos MODELOS de carteira editáveis (Tarefa A) =====
+   hubRvTemplateOverride: objeto { "Top Ações":[linhas], "Top Dividendos":[linhas] }.
+   Cada linha é só dado (ticker,nome,setor,pct,precoAlvo,rating) — o objeto de
+   estrutura "op" é reconstruído por mkAcao/defaultProt no load (as estruturas
+   editadas continuam em hubRvStructOverride, por ticker). */
+var LS_RV_TPL_OV = "hubRvTemplateOverride";
+function rvLoadTplOv(){ try{ return JSON.parse(localStorage.getItem(LS_RV_TPL_OV)||"{}")||{}; }catch(_){ return {}; } }
+function rvSaveTplOv(map){ try{ localStorage.setItem(LS_RV_TPL_OV, JSON.stringify(map||{})); }catch(_){ } }
+function rvGetTplOv(name){ var m=rvLoadTplOv(); return (m && Array.isArray(m[name]))? m[name] : null; }
+function rvSetTplOv(name, rows){ var m=rvLoadTplOv(); m[name]=rows; rvSaveTplOv(m); }
+function rvClearTplOv(name){ var m=rvLoadTplOv(); delete m[name]; rvSaveTplOv(m); }
+/* serializa state.items -> só campos de dados (sem op/catalogOp runtime) */
+function rvSerializeItems(items){
+  return (items||[]).map(function(i){
+    if(i.ticker!==undefined){
+      return { kind:"acao", ticker:i.ticker||"", nome:i.nome||"", setor:i.setor||"Outros",
+               pct:Number(i.pct)||0, precoAlvo:(i.precoAlvo!=null&&!isNaN(Number(i.precoAlvo)))?Number(i.precoAlvo):null, rating:i.rating||"" };
+    }
+    var o={ kind:"raw" };
+    Object.keys(i).forEach(function(k){ if(k==="op"||k==="catalogOp"||k==="id") return; var v=i[k]; var t=typeof v; if(t==="function"||t==="object") return; o[k]=v; });
+    return o;
+  });
+}
+/* reconstrói holdings a partir das linhas salvas (ações via mkAcao) */
+function rvRebuildItems(rows){
+  var out=[];
+  (rows||[]).forEach(function(r){
+    if(!r) return;
+    if(r.kind==="acao" || (r.ticker!==undefined && r.precoAlvo!=null)){
+      var it=mkAcao(r.ticker||"", r.nome||"Ação", r.setor||"Outros", Number(r.pct)||0, (r.precoAlvo!=null?Number(r.precoAlvo):null), r.rating||"");
+      out.push(it);
+    } else {
+      var g=mk(r.classe||"Renda Variável", r.nome||"Ativo", Number(r.pct)||0, r.detalhe||"", r.liquidez||"", r.estrutura||null, null, r.setor||"Outros");
+      Object.keys(r).forEach(function(k){ if(k==="kind"||k==="id") return; if(g[k]===undefined || k==="pct"||k==="nome"||k==="setor") g[k]=r[k]; });
+      out.push(g);
+    }
+  });
+  return out;
+}
+/* resolve os itens de um template: override salvo tem prioridade sobre a fábrica */
+function resolveTemplateItems(t){
+  if(t!=="Montar do zero"){
+    var ov=rvGetTplOv(t);
+    if(ov && ov.length){ try{ var built=rvRebuildItems(ov); if(built && built.length) return built; }catch(_){ } }
+  }
+  return (TEMPLATES[t]? TEMPLATES[t]() : []);
+}
+
 function fmtPreco(n){ var v=Number(n); if(isNaN(v)) return "0,00"; return v.toFixed(2).replace(".",","); }
 
 /* cenários de payoff no MESMO formato dos itens de OPERACOES (Fence/Collar) */
@@ -8821,7 +8869,7 @@ function payoffBarsSVG(op, compact){
 /* ===== Estado ===== */
 var state = {
   template:"Top Ações",
-  items: TEMPLATES["Top Ações"](),
+  items: resolveTemplateItems("Top Ações"),
   cliente:"",
   patrimonio:1000000,
   abertos:{},
@@ -8920,15 +8968,23 @@ function itemRowHTML(i){
   if(isIsento(i.nome)){ html += '<span class="tag resgate">Resgate trabalhado</span><span class="tag isento">Isento de IR</span>'; }
   html += '</div>';
 
-  if(i.precoAlvo!=null && !isNaN(Number(i.precoAlvo))){
+  if(i.ticker!==undefined || (i.precoAlvo!=null && !isNaN(Number(i.precoAlvo)))){
     var _ret = holdingRet(i);
     var _rc = _ret==null ? "#8A93D8" : (_ret>=0? "#2BD9A6" : "#FF5566");
     var _rt = _ret==null ? "—" : (_ret>0?"+":"")+fmtPct(_ret)+"%";
+    var _inpS = 'background:rgba(0,0,0,.3);border:1px solid rgba(120,130,210,.2);border-radius:9px;color:#fff;font-weight:700;font-size:14px;padding:7px 10px;text-align:right;outline:none';
+    if(i.ticker!==undefined){
+      html += '<div class="tagsrow" style="align-items:center;gap:8px;margin-top:2px">';
+      html += '<span class="estlabel">Ticker</span>';
+      html += '<input class="cotinput" type="text" value="'+esc(i.ticker||"")+'" placeholder="TICKER" data-act="ticker" style="width:104px;background:rgba(0,0,0,.3);border:1px solid rgba(255,139,82,.3);border-radius:9px;color:#FF8B52;font-weight:800;font-size:14px;padding:7px 10px;text-align:left;text-transform:uppercase;letter-spacing:.5px;outline:none">';
+      html += '<span class="estlabel">Preço-alvo</span><span style="color:#6F77A8;font-weight:800;font-size:13px">R$</span>';
+      html += '<input class="cotinput" type="text" inputmode="decimal" value="'+((i.precoAlvo!=null&&!isNaN(Number(i.precoAlvo)))?fmtPreco(i.precoAlvo):"")+'" placeholder="—" data-act="precoAlvo" style="width:88px;'+_inpS+'">';
+      html += '</div>';
+    }
     html += '<div class="tagsrow" style="align-items:center;gap:10px;margin-top:2px">';
     html += '<span class="estlabel">Cotação atual</span>';
     html += '<span style="color:#6F77A8;font-weight:800;font-size:13px">R$</span>';
-    html += '<input class="cotinput" type="text" inputmode="decimal" value="'+(i.precoAtual!=null?fmtPreco(i.precoAtual):"")+'" placeholder="—" data-act="precoAtual" style="width:88px;background:rgba(0,0,0,.3);border:1px solid rgba(120,130,210,.2);border-radius:9px;color:#fff;font-weight:700;font-size:14px;padding:7px 10px;text-align:right;outline:none">';
-    html += '<span class="estlabel">Preço-alvo R$ '+fmtPreco(i.precoAlvo)+'</span>';
+    html += '<input class="cotinput" type="text" inputmode="decimal" value="'+(i.precoAtual!=null?fmtPreco(i.precoAtual):"")+'" placeholder="—" data-act="precoAtual" style="width:88px;'+_inpS+'">';
     html += '<span class="tag" data-rvrettag style="background:'+_rc+'22;border-color:'+_rc+'66;color:'+_rc+'">Retorno esperado '+_rt+'</span>';
     if(i.op){ html += '<button class="estbtn" data-act="editstruct" title="Editar parâmetros da proteção" style="margin-left:auto;color:#FF8B52;border:1px solid rgba(255,139,82,.45);border-radius:8px;background:rgba(255,139,82,.12)">'+ICON_SHIELD+' Editar estrutura</button>'; }
     html += '</div>';
@@ -9090,6 +9146,7 @@ var ICON_COPY = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" str
 var ICON_CHECK = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px"><polyline points="20 6 9 17 4 12"/></svg>';
 var ICON_ROTATE = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:6px"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>';
 var ICON_PLUS = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>';
+var ICON_SAVE = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:6px"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>';
 var ICON_SEARCH_RV = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>';
 var ICON_CARD = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px"><rect x="2" y="4" width="20" height="16" rx="3"/><path d="M2 9h20"/><path d="M6 14h6"/><path d="M16 14h2"/></svg>';
 
@@ -9109,9 +9166,17 @@ function render(){
     '</div></div>';
 
   /* TEMPLATES */
+  var _hasOv = !!rvGetTplOv(state.template);
+  var _isZero = state.template==="Montar do zero";
   h += '<div class="tabs">';
-  Object.keys(TEMPLATES).forEach(function(t){ h += '<button class="tab'+(state.template===t?' active':'')+'" data-tpl="'+esc(t)+'">'+esc(t)+'</button>'; });
-  h += '<button class="tab" id="rvBtnRestore" style="margin-left:auto">'+ICON_ROTATE+'Restaurar perfil</button>';
+  Object.keys(TEMPLATES).forEach(function(t){ var mod=(t!=="Montar do zero" && !!rvGetTplOv(t)); h += '<button class="tab'+(state.template===t?' active':'')+'" data-tpl="'+esc(t)+'">'+esc(t)+(mod?' <span style="font-size:10px;font-weight:800;color:#2BD9A6;letter-spacing:.3px">• EDITADO</span>':'')+'</button>'; });
+  if(!_isZero){
+    h += '<button class="tab" id="rvBtnSaveDefault" style="margin-left:auto;border-color:rgba(43,217,166,.5);color:#2BD9A6">'+ICON_SAVE+'Salvar carteira como padrão</button>';
+    h += '<button class="tab" id="rvBtnFactory" style="border-color:rgba(255,85,102,.45);color:#FF8B9A'+(_hasOv?'':';opacity:.5')+'" title="Remove as personalizações salvas deste modelo">'+ICON_ROTATE+'Restaurar padrão de fábrica</button>';
+    h += '<button class="tab" id="rvBtnRestore" title="Descarta edições não salvas e recarrega o padrão atual">'+ICON_ROTATE+'Recarregar</button>';
+  } else {
+    h += '<button class="tab" id="rvBtnRestore" style="margin-left:auto">'+ICON_ROTATE+'Restaurar perfil</button>';
+  }
   h += '</div>';
 
   /* CLIENTE + PATRIMONIO */
@@ -9144,7 +9209,8 @@ function render(){
 
   /* ADD + CATÁLOGOS */
   h += '<div class="addbtns">'+
-    '<button class="addbtn" id="rvBtnAdd">'+ICON_PLUS+' Adicionar ativo</button>'+
+    '<button class="addbtn" id="rvBtnAddAcao" style="border-color:rgba(255,139,82,.5);color:#FF8B52">'+ICON_PLUS+' Adicionar ação (ticker + preço-alvo)</button>'+
+    '<button class="addbtn" id="rvBtnAdd">'+ICON_PLUS+' Adicionar ativo genérico</button>'+
     '<button class="addbtn" id="btnRubi" style="background:rgba(224,69,123,.12);border-color:rgba(224,69,123,.5);color:#F178A8">'+ICON_GEM+' Operação Cupom · pré-fixado '+(state.showRubi?"▴":"▾")+'</button>'+
     '<button class="addbtn" id="btnProtCriar" style="background:rgba(255,139,82,.12);border-color:rgba(255,139,82,.5);color:#FF8B52">'+ICON_SHIELD+' Criar operação de proteção</button>'+
     '<button class="addbtn" id="rvBtnOps" style="background:rgba(54,197,240,.1);border-color:rgba(54,197,240,.5);color:#7FD8F5">'+ICON_LAYERS+' Catálogo de proteção XP '+(state.showOps?"▴":"▾")+'</button>'+
@@ -9320,13 +9386,16 @@ function bind(d){
   var _rvBtnCard=document.getElementById("rvBtnCard"); if(_rvBtnCard) _rvBtnCard.onclick = abrirCardModal;
   // templates
   document.querySelectorAll("[data-tpl]").forEach(function(b){ b.onclick = function(){ loadTemplate(b.getAttribute("data-tpl")); }; });
-  document.getElementById("rvBtnRestore").onclick = function(){ loadTemplate(state.template); };
+  var _br=document.getElementById("rvBtnRestore"); if(_br) _br.onclick = function(){ loadTemplate(state.template); };
+  var _bs=document.getElementById("rvBtnSaveDefault"); if(_bs) _bs.onclick = rvSaveAsDefault;
+  var _bf=document.getElementById("rvBtnFactory"); if(_bf) _bf.onclick = rvRestoreFactory;
   // cliente
   document.getElementById("inpCliente").oninput = function(e){ state.cliente = e.target.value; updateValHints(); updateDonutTitle(); };
   var pat = document.getElementById("inpPatrimonio");
   pat.oninput = function(e){ var digits = e.target.value.replace(/\D/g,""); state.patrimonio = digits? parseInt(digits,10):0; e.target.value = fmtBRL(state.patrimonio); render(); };
   // add buttons
   document.getElementById("rvBtnAdd").onclick = function(){ state.items.push(mk("Renda Variável","Nova ação",0,"","B3",null,null,"Outros")); render(); };
+  var _ba=document.getElementById("rvBtnAddAcao"); if(_ba) _ba.onclick = function(){ var it=mkAcao("","Nova ação","Outros",0,null,""); it.precoAlvo=null; state.items.push(it); state.abertos[it.id]=true; render(); };
   document.getElementById("btnRubi").onclick = function(){ state.showRubi = !state.showRubi; render(); };
   document.getElementById("btnProtCriar").onclick = function(){
     var it = mkProtecao("Nova ação protegida","Outros",-20,34.99,135);
@@ -9363,6 +9432,8 @@ function bind(d){
       else if(act==="protBarreira"){ el.oninput = function(){ update(id,"protBarreira",el.value===""?"":Number(el.value)); redrawProtChart(id); }; el.onchange = function(){ render(); }; }
       else if(act==="escolha"){ el.onclick = function(){ setEscolha(id, parseInt(el.getAttribute("data-idx"),10)); render(); }; }
       else if(act==="precoAtual"){ el.oninput = function(){ var it=state.items.filter(function(x){return x.id===id;})[0]; if(!it) return; var raw=el.value.trim(); var v = raw===""? null : _parseNum(raw); if(v!=null && !(v>0)) v=null; it.precoAtual = v; if(it.ticker) rvSetPreco(it.ticker, v); softRetUpdate(id); }; el.onchange = function(){ render(); }; }
+      else if(act==="ticker"){ el.oninput = function(){ update(id,"ticker",(el.value||"").toUpperCase()); }; el.onchange = function(){ render(); }; }
+      else if(act==="precoAlvo"){ el.oninput = function(){ var it=state.items.filter(function(x){return x.id===id;})[0]; if(!it) return; var raw=el.value.trim(); var v = raw===""? null : _parseNum(raw); if(v!=null && !(v>0)) v=null; it.precoAlvo = v; softRetUpdate(id); }; el.onchange = function(){ render(); }; }
       else if(act==="editstruct"){ el.onclick = function(){ openStructModal(id); }; }
       else if(act==="toggle"){ el.onclick = function(){ state.abertos[id] = !state.abertos[id]; render(); }; }
     });
@@ -9474,7 +9545,24 @@ document.addEventListener("change", function(e){
 function update(id, field, val){ var i = state.items.filter(function(x){return x.id===id;})[0]; if(i) i[field]=val; }
 function setEscolha(id, idx){ var i = state.items.filter(function(x){return x.id===id;})[0]; if(i && i.opcoes){ i.escolha=idx; i.nome=i.opcoes[idx].nome; i.detalhe=i.opcoes[idx].detalhe; i.liquidez=i.opcoes[idx].liquidez||""; } }
 function remove(id){ state.items = state.items.filter(function(x){return x.id!==id;}); render(); }
-function loadTemplate(t){ state.template = t; state.items = TEMPLATES[t](); state.abertos = {}; render(); }
+function loadTemplate(t){ state.template = t; state.items = resolveTemplateItems(t); state.abertos = {}; render(); }
+/* salva a composição atual como novo padrão do template ativo (Tarefa A) */
+function rvSaveAsDefault(){
+  if(state.template==="Montar do zero"){ flashBtn("rvBtnSaveDefault","Indisponível"); return; }
+  try{ rvSetTplOv(state.template, rvSerializeItems(state.items)); }catch(_){ }
+  render();
+  flashBtn("rvBtnSaveDefault","Salvo como padrão!");
+}
+/* remove o override e volta à carteira de fábrica */
+function rvRestoreFactory(){
+  if(!rvGetTplOv(state.template)){ flashBtn("rvBtnFactory","Já é de fábrica"); return; }
+  if(!confirm("Restaurar \""+state.template+"\" para o padrão de fábrica? As personalizações salvas deste modelo serão descartadas.")) return;
+  rvClearTplOv(state.template);
+  state.items = resolveTemplateItems(state.template);
+  state.abertos = {};
+  render();
+  flashBtn("rvBtnFactory","Padrão restaurado");
+}
 function distribuirRestante(){
   if(state.items.length===0) return;
   // Distribui 100% igualmente entre os ativos, com soma EXATA de 100,0%.
@@ -9559,192 +9647,190 @@ function wrapText(ctx, text, x, y, maxW, lineH, color, size, FF){
 
 function buildCarteiraPNG(p){
   var template=p.template, cliente=p.cliente, patrimonio=p.patrimonio, byClass=p.byClass, total=p.total,
-      grouped=p.grouped, glossTerms=p.glossTerms, estruturaBreak=p.estruturaBreak, pctAcoes=p.pctAcoes, bySetor=p.bySetor,
+      grouped=p.grouped, glossTerms=p.glossTerms, estruturaBreak=p.estruturaBreak||{protecao:0,none:0,cupom:0},
+      pctAcoes=p.pctAcoes||0, bySetor=p.bySetor||{},
       retEsp=p.retEsp, retEspCobertura=p.retEspCobertura||{n:0,m:0};
-  var FF = "Arial, Helvetica, sans-serif";
+  var FF   = "Arial, Helvetica, sans-serif";
+  var MONO = "'DejaVu Sans Mono','Menlo','Consolas','Liberation Mono','Courier New',monospace";
   var nome = (cliente||"").trim();
-  var W = 1080;
+  var W = 1080, MX = 60, CW = W-2*MX;
+  var ORG = ORANGE;
+
+  /* holdings achatados, maior peso primeiro (visual de "mesa") */
+  var holds=[];
+  CLASSES.forEach(function(c){ (grouped[c]||[]).forEach(function(it){ holds.push(it); }); });
+  holds.sort(function(a,b){ return (Number(b.pct)||0)-(Number(a.pct)||0); });
 
   var sortedSetores = Object.keys(bySetor).filter(function(s){return bySetor[s]>0;}).sort(function(a,b){return bySetor[b]-bySetor[a];});
+  var secTot = sortedSetores.reduce(function(a,s){return a+(bySetor[s]||0);},0);
+
+  var reHasPrice = retEspCobertura && retEspCobertura.n>0 && retEsp!=null && isFinite(retEsp);
+  var reColor = reHasPrice ? (retEsp>=0? "#2BD9A6":"#FF5566") : "#8A93D8";
+  var reTxt   = reHasPrice ? ((retEsp>0?"+":"")+fmtPct(retEsp)+"%") : "defina as cotações";
+  var covTxt  = reHasPrice ? ("com base em "+retEspCobertura.n+" de "+retEspCobertura.m+" ativos precificados")
+              : (retEspCobertura && retEspCobertura.m ? ("0 de "+retEspCobertura.m+" ativos precificados — informe as cotações") : "carteira ainda sem cotações");
 
   var mctx = document.createElement("canvas").getContext("2d");
-  mctx.font = "600 13px "+FF;
-  var setorRows=1, mcx=60;
-  sortedSetores.forEach(function(s){ var label=s+" "+fmtPct(bySetor[s])+"%"; var chipW=18+mctx.measureText(label).width+24; if(mcx+chipW>W-60){ setorRows++; mcx=60; } mcx+=chipW; });
-  var headH = 470 + setorRows*26 + 20;
+  function wrapCount(text,maxW,size){ mctx.font="400 "+size+"px "+FF; var words=String(text).split(" "),line="",n=0,k; for(k=0;k<words.length;k++){ var t=line?line+" "+words[k]:words[k]; if(mctx.measureText(t).width>maxW && line){ n++; line=words[k]; } else line=t; } if(line) n++; return n||1; }
+  mctx.font="600 13px "+FF;
+  var legRows=1, _lx=MX;
+  sortedSetores.forEach(function(s){ var label=s+" "+fmtPct(bySetor[s])+"%"; var chipW=18+mctx.measureText(label).width+22; if(_lx+chipW>W-MX){ legRows++; _lx=MX; } _lx+=chipW; });
 
-  var linhas=0, classCount=0;
-  CLASSES.forEach(function(c){ var list=grouped[c]; if(list && list.length){ classCount++; linhas += 1 + list.length; } });
-  var rowH=40;
-  var bodyH = linhas*(rowH+12) + classCount*36;
-  var glossH = (glossTerms && glossTerms.length)? (50 + glossTerms.length*78):0;
-
-  var destaque=null, destaqueOp=null;
-  CLASSES.forEach(function(c){ (grouped[c]||[]).forEach(function(it){ var eop=effectiveOp(it); if(eop && (!destaque || (Number(it.pct)||0)>(Number(destaque.pct)||0))){ destaque=it; destaqueOp=eop; } }); });
-  var destaqueH = destaque?400:0;
-
-  var H = Math.max(900, headH+bodyH+destaqueH+glossH+150);
+  /* plano vertical p/ dimensionar a altura */
+  var heroTop=170, heroH=182;
+  var secLabelY = heroTop+heroH+42;
+  var barY = secLabelY+16, barH=28;
+  var legY0 = barY+barH+30;
+  var legYend = legY0 + (legRows-1)*24;
+  var tblHeadY = legYend + 42;
+  var rowH = 46;
+  var tblBottom = tblHeadY + 14 + (holds.length||1)*rowH;
+  var glossTop = tblBottom + 22, glossH=0;
+  if(glossTerms && glossTerms.length){
+    glossTerms.forEach(function(k){ var ln=wrapCount(GLOSSARY[k].desc, CW-44, 13); glossH += 20+ln*18+16; });
+    glossH += 40;
+  }
+  var glossBottom = glossTop + glossH;
+  var footTop = glossBottom + (glossH?18:0) + 18;
+  var H = Math.max(720, footTop + 84);
 
   var scale=2;
-  var cv = document.createElement("canvas"); cv.width=W*scale; cv.height=H*scale;
-  var ctx = cv.getContext("2d"); ctx.scale(scale,scale);
+  var cv=document.createElement("canvas"); cv.width=W*scale; cv.height=H*scale;
+  var ctx=cv.getContext("2d"); ctx.scale(scale,scale);
 
-  function T(t,x,y,size,color,weight,align){ ctx.font=(weight||"400")+" "+size+"px "+FF; ctx.fillStyle=color; ctx.textAlign=align||"left"; ctx.textBaseline="alphabetic"; ctx.fillText(t,x,y); }
-  function rr(x,y,w,h,r){ r=Math.min(r,w/2,h/2); ctx.beginPath(); ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r); ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath(); }
+  function T(t,x,y,size,color,weight,align,ff){ ctx.font=(weight||"400")+" "+size+"px "+(ff||FF); ctx.fillStyle=color; ctx.textAlign=align||"left"; ctx.textBaseline="alphabetic"; ctx.fillText(t,x,y); }
+  function rr(x,y,w,h,r){ r=Math.min(r,w/2,h/2); if(r<0)r=0; ctx.beginPath(); ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r); ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath(); }
+  function clip(text,maxW,size,weight,ff){ ctx.font=(weight||"400")+" "+size+"px "+(ff||FF); var s=String(text==null?"":text); if(ctx.measureText(s).width<=maxW) return s; while(s.length>1 && ctx.measureText(s+"…").width>maxW) s=s.slice(0,-1); return s+"…"; }
 
-  var bg = ctx.createLinearGradient(0,0,W,H);
-  bg.addColorStop(0,"#0A0F38"); bg.addColorStop(0.55,"#070B2E"); bg.addColorStop(1,"#05081F");
+  /* fundo grafite */
+  var bg=ctx.createLinearGradient(0,0,0,H); bg.addColorStop(0,"#13161D"); bg.addColorStop(.45,"#0C0E14"); bg.addColorStop(1,"#070809");
   ctx.fillStyle=bg; ctx.fillRect(0,0,W,H);
-  var glow = ctx.createRadialGradient(W*0.82,90,0,W*0.82,90,W*0.5);
-  glow.addColorStop(0,"rgba(255,78,0,0.15)"); glow.addColorStop(1,"rgba(255,78,0,0)");
-  ctx.fillStyle=glow; ctx.fillRect(0,0,W,H);
-  ctx.fillStyle=ORANGE; ctx.fillRect(0,0,W,10);
+  ctx.strokeStyle="rgba(255,255,255,0.025)"; ctx.lineWidth=1;
+  for(var gx=MX; gx<=W-MX; gx+=45){ ctx.beginPath(); ctx.moveTo(gx,0); ctx.lineTo(gx,heroTop+heroH); ctx.stroke(); }
+  for(var gyy=40; gyy<heroTop+heroH; gyy+=45){ ctx.beginPath(); ctx.moveTo(MX,gyy); ctx.lineTo(W-MX,gyy); ctx.stroke(); }
+  var glow=ctx.createRadialGradient(W*0.5,0,0,W*0.5,0,W*0.7); glow.addColorStop(0,"rgba(255,78,0,0.10)"); glow.addColorStop(1,"rgba(255,78,0,0)");
+  ctx.fillStyle=glow; ctx.fillRect(0,0,W,heroTop+heroH);
+  ctx.fillStyle=ORG; ctx.fillRect(0,0,W,3);
 
-  ctx.font="800 46px "+FF; ctx.textAlign="left"; ctx.fillStyle="#fff"; ctx.fillText("rico",60,100);
-  ctx.fillStyle=ORANGE; ctx.fillText(".",60+ctx.measureText("rico").width,100);
-  T("PROPOSTA · RENDA VARIÁVEL",W-60,74,14,ORANGE,"700","right");
-  T("Perfil "+template,W-60,100,16,"#A9B0D6","500","right");
-  ctx.strokeStyle="rgba(120,130,210,0.22)"; ctx.lineWidth=1;
-  ctx.beginPath(); ctx.moveTo(60,134); ctx.lineTo(W-60,134); ctx.stroke();
+  /* motivo de candlesticks (header, à direita) */
+  (function(){
+    var cx0=W*0.42, cx1=W-MX, n=24, step=(cx1-cx0)/n, midY=54, span=34;
+    for(var k=0;k<n;k++){
+      var s1=Math.sin(k*12.9898)*43758.5453; s1=s1-Math.floor(s1);
+      var s2=Math.sin(k*4.1414+1.7)*24634.633; s2=s2-Math.floor(s2);
+      var up=s1>0.48;
+      var cxx=cx0+step*k+step*0.5;
+      var oy=midY-span/2+s1*span, cyy=midY-span/2+s2*span;
+      var hi=Math.min(oy,cyy)-3-s2*9, lo=Math.max(oy,cyy)+3+s1*9;
+      var col=up?"rgba(43,217,166,0.5)":"rgba(255,85,102,0.5)";
+      ctx.strokeStyle=col; ctx.lineWidth=1.3; ctx.beginPath(); ctx.moveTo(cxx,hi); ctx.lineTo(cxx,lo); ctx.stroke();
+      var bw=Math.max(3,step*0.46), bh=Math.max(3,Math.abs(oy-cyy));
+      ctx.fillStyle=col; rr(cxx-bw/2,Math.min(oy,cyy),bw,bh,1); ctx.fill();
+    }
+  })();
 
-  T("CARTEIRA PREPARADA PARA",60,188,15,"#A9B0D6","700","left");
-  var dn = nome||"Cliente";
-  ctx.font="800 50px "+FF;
-  while(ctx.measureText(dn).width>560 && dn.length>3) dn=dn.slice(0,-1);
-  if((nome||"Cliente")!==dn) dn = dn.trim()+"…";
-  T(dn,60,248,50,"#fff","800","left");
-  T("Patrimônio a alocar",60,300,14,"#A9B0D6","600","left");
-  T("R$ "+fmtBRL(patrimonio),60,336,30,ORANGE,"800","left");
+  /* marca + eyebrow */
+  ctx.font="800 44px "+FF; ctx.textAlign="left"; ctx.textBaseline="alphabetic";
+  ctx.fillStyle="#fff"; ctx.fillText("rico",MX,64);
+  ctx.fillStyle=ORG; ctx.fillText(".",MX+ctx.measureText("rico").width,64);
+  ctx.fillStyle=ORG; rr(MX,84,10,10,2); ctx.fill();
+  T("MESA DE RENDA VARIÁVEL",MX+18,93,13.5,ORG,"800","left",MONO);
+  var _hoje=""; try{ _hoje=new Date().toLocaleDateString("pt-BR",{day:"2-digit",month:"short",year:"numeric"}); }catch(_){}
+  T((_hoje||"").toUpperCase(),W-MX,100,11.5,"#6F77A8","700","right",MONO);
 
-  // Retorno esperado — bloco headline (Tarefa 4)
-  var reHasPrice = retEspCobertura && retEspCobertura.n>0 && retEsp!=null && isFinite(retEsp);
-  var reColor = reHasPrice ? (retEsp>=0? "#2BD9A6":"#FF5566") : "#A9B0D6";
-  var reTxt = reHasPrice ? ((retEsp>0?"+":"")+fmtPct(retEsp)+"%") : "defina as cotações";
-  T("Retorno esperado · upside ponderado",408,300,14,"#A9B0D6","600","left");
-  T(reTxt,408,336,30,reColor,"800","left");
-  var covTxt = reHasPrice ? ("com base em "+retEspCobertura.n+" de "+retEspCobertura.m+" ativos precificados")
-    : (retEspCobertura && retEspCobertura.m ? ("0 de "+retEspCobertura.m+" ativos precificados — informe as cotações atuais") : "");
-  if(covTxt) T(covTxt,408,356,11.5,"#6F77A8","600","left");
+  /* HERO */
+  var hx=MX, hy=heroTop, hw=CW, hh=heroH;
+  ctx.fillStyle="rgba(255,255,255,0.02)"; rr(hx,hy,hw,hh,18); ctx.fill();
+  ctx.strokeStyle="rgba(255,120,40,0.28)"; ctx.lineWidth=1.5; rr(hx,hy,hw,hh,18); ctx.stroke();
+  ctx.fillStyle=ORG; rr(hx,hy+22,5,hh-44,3); ctx.fill();
+  T("CARTEIRA MODELO",hx+28,hy+44,13,"#8A93D8","800","left",MONO);
+  T(clip(template||"Carteira", hw-360, 44, "800", FF),hx+26,hy+92,44,"#fff","800","left");
+  var sub=(nome? ("Para "+nome+"   ·   ") : "")+"Patrimônio R$ "+fmtBRL(patrimonio);
+  T(clip(sub,hw-360,15,"600",FF),hx+28,hy+124,15,"#A9B0D6","600","left");
+  T("Composição em ações "+fmtPct(pctAcoes)+"%   ·   protegido "+fmtPct(estruturaBreak.protecao||0)+"%   ·   "+holds.length+" ativos",hx+28,hy+150,12.5,"#6F77A8","700","left",MONO);
 
-  T("COMPOSIÇÃO EM AÇÕES · "+fmtPct(pctAcoes)+"% da carteira",60,388,12.5,"#A9B0D6","700","left");
-  var cbX=60, cbY=398, cbW=420, cbH=14, accx=cbX;
-  ["protecao","none","cupom"].forEach(function(k){ var w=(estruturaBreak[k]/(pctAcoes||1))*cbW; if(w<=0) return; ctx.fillStyle=STRUCT_COLORS[k]; rr(accx,cbY,w,cbH,4); ctx.fill(); accx+=w; });
-  var lx=60;
-  ["protecao","none","cupom"].forEach(function(k){ ctx.fillStyle=STRUCT_COLORS[k]; rr(lx,cbY+24,10,10,2); ctx.fill(); var txt=STRUCT_LABEL[k]+" "+fmtPct(estruturaBreak[k])+"%"; T(txt,lx+16,cbY+33,12.5,"#cfd4ef","600","left"); ctx.font="600 12.5px "+FF; lx += 26 + ctx.measureText(txt).width + 18; });
+  var tW=290, tX=hx+hw-tW-24, tY=hy+24, tH=hh-48;
+  var tBg = reHasPrice? (retEsp>=0?"rgba(43,217,166,0.09)":"rgba(255,85,102,0.09)") : "rgba(138,147,216,0.06)";
+  var tBd = reHasPrice? (retEsp>=0?"rgba(43,217,166,0.45)":"rgba(255,85,102,0.45)") : "rgba(138,147,216,0.28)";
+  ctx.fillStyle=tBg; rr(tX,tY,tW,tH,14); ctx.fill();
+  ctx.strokeStyle=tBd; ctx.lineWidth=1.5; rr(tX,tY,tW,tH,14); ctx.stroke();
+  T("RETORNO ESPERADO",tX+22,tY+32,12.5,"#A9B0D6","800","left",MONO);
+  T(clip(reTxt,tW-40,reHasPrice?46:26,"800",MONO),tX+22,tY+(reHasPrice?86:78),reHasPrice?46:26,reColor,"800","left",MONO);
+  T("upside ponderado por preço-alvo",tX+22,tY+108,11.5,"#8A93D8","600","left");
+  wrapText(ctx,covTxt,tX+22,tY+130,tW-40,15,"#6F77A8",11,FF);
 
-  var dcx=W-210, dcy=250, dr=92, dw=26, acc=0;
-  sortedSetores.forEach(function(s){ var v=bySetor[s]; var a0=(acc/100)*2*Math.PI-Math.PI/2; var a1=((acc+v)/100)*2*Math.PI-Math.PI/2; ctx.beginPath(); ctx.arc(dcx,dcy,dr,a0,a1); ctx.strokeStyle=setorCor(s); ctx.lineWidth=dw; ctx.stroke(); acc+=v; });
-  T("Alocado",dcx,dcy-4,13,"#A9B0D6","600","center");
-  T(fmtPct(total)+"%",dcx,dcy+24,26,"#fff","800","center");
+  /* DISTRIBUIÇÃO SETORIAL — barra horizontal empilhada */
+  T("DISTRIBUIÇÃO SETORIAL",MX,secLabelY,13,"#8A93D8","800","left",MONO);
+  ctx.fillStyle="rgba(255,255,255,0.05)"; rr(MX,barY,CW,barH,8); ctx.fill();
+  if(secTot>0){
+    ctx.save(); rr(MX,barY,CW,barH,8); ctx.clip();
+    var axA=MX;
+    sortedSetores.forEach(function(s){ var w=(bySetor[s]/secTot)*CW; ctx.fillStyle=setorCor(s); ctx.fillRect(axA,barY,w,barH); axA+=w; });
+    ctx.strokeStyle="rgba(7,8,9,0.55)"; ctx.lineWidth=1; var axB=MX;
+    sortedSetores.forEach(function(s){ var w=(bySetor[s]/secTot)*CW; axB+=w; if(axB<MX+CW-1){ ctx.beginPath(); ctx.moveTo(axB,barY); ctx.lineTo(axB,barY+barH); ctx.stroke(); } });
+    ctx.restore();
+  } else {
+    T("Defina as alocações para ver a distribuição",MX+14,barY+barH/2+5,12.5,"#6F77A8","600","left");
+  }
+  var lgy=legY0, lgx=MX; ctx.font="600 13px "+FF;
+  sortedSetores.forEach(function(s){ var label=s+" "+fmtPct(bySetor[s])+"%"; var chipW=18+mctx.measureText(label).width+22; if(lgx+chipW>W-MX){ lgx=MX; lgy+=24; } ctx.fillStyle=setorCor(s); rr(lgx,lgy-10,11,11,3); ctx.fill(); T(label,lgx+18,lgy,13,"#cfd4ef","600","left"); lgx+=chipW; });
 
-  T("DISTRIBUIÇÃO SETORIAL",60,458,12.5,"#A9B0D6","700","left");
-  var scx=60, scy=484;
-  sortedSetores.forEach(function(s){ var label=s+" "+fmtPct(bySetor[s])+"%"; ctx.font="600 13px "+FF; var chipW=18+ctx.measureText(label).width+24; if(scx+chipW>W-60){ scx=60; scy+=26; } ctx.fillStyle=setorCor(s); rr(scx,scy-10,11,11,3); ctx.fill(); T(label,scx+18,scy,13,"#cfd4ef","600","left"); scx+=chipW; });
-
-  var y = headH+8;
-  CLASSES.forEach(function(c){
-    var list = grouped[c]; if(!list || list.length===0) return;
-    ctx.fillStyle=CLASS_COLORS[c]; rr(60,y-16,6,22,3); ctx.fill();
-    T((window.__hubClassLabel?window.__hubClassLabel(c):c),80,y,19,"#fff","800","left");
-    T(fmtPct(byClass[c])+"%",W-60,y,18,CLASS_COLORS[c],"800","right");
-    y += 34;
-    list.forEach(function(i){
-      var valor = patrimonio*(Number(i.pct)||0)/100;
-      var tag="";
-      if(i.setor && i.setor!=="Outros") tag += i.setor;
-      if(isFII(i)) tag += (tag?"  ·  ":"")+"CETIPADO";
-      var st = structureTag(i);
-      if(st){
-        if(st.kind==="cupom" && i.cupomTaxa!=null && !isNaN(Number(i.cupomTaxa))){
-          var rt = "Rubi · cupom "+fmtPct(Number(i.cupomTaxa))+"%";
-          var bb = Number(i.cupomBarreira); if(!isNaN(bb)) rt += "  ·  desarme "+fmtPct(bb)+"%";
-          if(i.cupomCDI!=null && i.cupomCDI!=="" && !isNaN(Number(i.cupomCDI))) rt += "  ·  ≈"+fmtPct(Number(i.cupomCDI))+"% CDI";
-          tag += (tag?"  ·  ":"")+rt;
-        } else tag += (tag?"  ·  ":"")+st.label;
-      }
-      if(i.liquidez) tag += (tag?"  ·  ":"")+"Liquidez "+i.liquidez;
-      if(isIsento(i.nome)) tag += (tag?"  ·  ":"")+"Resgate trabalhado  ·  Isento de IR";
-      if(i.precoAlvo!=null && !isNaN(Number(i.precoAlvo))){
-        var _r = holdingRet(i);
-        var _rtxt = _r==null ? "Ret. esperado —" : ("Ret. esperado "+(_r>0?"+":"")+fmtPct(_r)+"%");
-        tag = _rtxt + (tag? "  ·  "+tag : "");
-      }
-      var hasSecond = !!(i.detalhe || tag);
-      T(fmtPct(i.pct)+"%",80,y,16,"#FF6B2C","800","left");
-      T(i.nome,170,y,16,"#fff","700","left");
-      if(i.detalhe) T(i.detalhe,170,y+18,12.5,"#A9B0D6","500","left");
-      T("R$ "+fmtBRL(valor),W-60,y,15,"#cfd4ef","600","right");
-      if(tag) T(tag,W-60,y+18,11.5,"#8A93D8","600","right");
-      var lineY = y+(hasSecond?30:14);
-      ctx.strokeStyle="rgba(120,130,210,0.12)"; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(80,lineY); ctx.lineTo(W-60,lineY); ctx.stroke();
-      y += hasSecond? rowH+8 : rowH;
-    });
-    y += 10;
+  /* TABELA de holdings */
+  var cPeso=690, cPA=858, cRet=W-MX;
+  T("ATIVO",MX+22,tblHeadY,11.5,"#6F77A8","800","left",MONO);
+  T("SETOR",470,tblHeadY,11.5,"#6F77A8","800","left",MONO);
+  T("PESO",cPeso,tblHeadY,11.5,"#6F77A8","800","right",MONO);
+  T("PREÇO-ALVO",cPA,tblHeadY,11.5,"#6F77A8","800","right",MONO);
+  T("RET. ESP.",cRet,tblHeadY,11.5,"#6F77A8","800","right",MONO);
+  ctx.strokeStyle="rgba(255,120,40,0.35)"; ctx.lineWidth=1.5; ctx.beginPath(); ctx.moveTo(MX,tblHeadY+12); ctx.lineTo(W-MX,tblHeadY+12); ctx.stroke();
+  var ry=tblHeadY+14;
+  holds.forEach(function(i,idx){
+    if(idx%2===1){ ctx.fillStyle="rgba(255,255,255,0.018)"; ctx.fillRect(MX,ry,CW,rowH); }
+    var setor=i.setor||"Outros";
+    var cyc=ry+22;
+    ctx.fillStyle=setorCor(setor); rr(MX+2,cyc-11,4,22,2); ctx.fill();
+    var tk=(i.ticker!==undefined && i.ticker)? i.ticker : (i.nome||"—");
+    var tkS=clip(tk,240,18,"800",MONO);
+    ctx.font="800 18px "+MONO; ctx.textAlign="left"; ctx.textBaseline="alphabetic"; ctx.fillStyle="#fff"; ctx.fillText(tkS,MX+22,cyc);
+    var tkW=ctx.measureText(tkS).width;
+    var st=structureTag(i);
+    if(st){
+      var plbl = st.kind==="cupom"?"CUPOM":(st.kind==="protecao"?"PROT":"AVULSA");
+      var pcol = STRUCT_COLORS[st.kind]||"#8A93D8";
+      ctx.font="800 10px "+MONO; var pw=ctx.measureText(plbl).width+16;
+      var pxx=MX+22+tkW+12, pyy=cyc-13;
+      ctx.fillStyle=pcol+"22"; rr(pxx,pyy,pw,17,5); ctx.fill();
+      ctx.strokeStyle=pcol+"88"; ctx.lineWidth=1; rr(pxx,pyy,pw,17,5); ctx.stroke();
+      T(plbl,pxx+8,pyy+12.5,10,pcol,"800","left",MONO);
+    }
+    if(i.nome && i.nome!==tk) T(clip(i.nome,380,11.5,"500",FF),MX+22,cyc+17,11.5,"#8A93D8","500","left");
+    T(clip(setor,180,13,"700",FF),470,cyc,13,setorCor(setor),"700","left");
+    T(fmtPct(i.pct)+"%",cPeso,cyc,17,ORG,"800","right",MONO);
+    var paTxt=(i.precoAlvo!=null && !isNaN(Number(i.precoAlvo)) && Number(i.precoAlvo)>0)? ("R$ "+fmtPreco(i.precoAlvo)) : "—";
+    T(paTxt,cPA,cyc,15,"#cfd4ef","600","right",MONO);
+    var r=holdingRet(i); var rc=r==null?"#6F77A8":(r>=0?"#2BD9A6":"#FF5566"); var rtxt=r==null?"—":((r>0?"+":"")+fmtPct(r)+"%");
+    T(rtxt,cRet,cyc,16,rc,"800","right",MONO);
+    ctx.strokeStyle="rgba(120,130,210,0.1)"; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(MX,ry+rowH); ctx.lineTo(W-MX,ry+rowH); ctx.stroke();
+    ry+=rowH;
   });
+  if(holds.length===0){ T("Nenhum ativo na carteira — adicione ações ao modelo.",MX+22,ry+28,13.5,"#6F77A8","600","left"); }
 
-  if(destaque && destaqueOp){
-    var op = destaqueOp;
-    var dH=372, dx=60, dwB=W-120;
-    y += 6;
-    var accent = op.cupom ? RUBI : ORANGE;
-    var accentBg = op.cupom ? "rgba(224,69,123,0.06)" : "rgba(255,78,0,0.06)";
-    var accentBorder = op.cupom ? "rgba(224,69,123,0.25)" : "rgba(255,78,0,0.25)";
-    ctx.fillStyle=accentBg; rr(dx,y-22,dwB,dH,16); ctx.fill();
-    ctx.strokeStyle=accentBorder; ctx.lineWidth=1; rr(dx,y-22,dwB,dH,16); ctx.stroke();
-    T("DESTAQUE DA OPERAÇÃO",dx+24,y,14,accent,"700","left");
-    T((destaque && destaque.nome) ? destaque.nome : op.nome,dx+24,y+32,23,"#fff","800","left");
-    var sub = fmtPct(destaque.pct)+"% da carteira  ·  R$ "+fmtBRL(patrimonio*(Number(destaque.pct)||0)/100);
-    if(op.cupom){ sub += "  ·  desarme "+fmtPct(op.barreira)+"%"; if(op.cdi!=null) sub += "  ·  ≈"+fmtPct(op.cdi)+"% CDI"; }
-    T(sub,dx+24,y+56,14,"#A9B0D6","600","left");
-
-    var lgy = y+82;
-    ctx.fillStyle="rgba(125,138,180,.45)"; rr(dx+24,lgy-11,13,13,3); ctx.fill();
-    ctx.strokeStyle="rgba(168,180,222,.55)"; ctx.lineWidth=1.2; rr(dx+24,lgy-11,13,13,3); ctx.stroke();
-    T(op.quanto?"Índice puro":(op.cupom?"Ação pura":"Ações puras"),dx+44,lgy,13,"#cfd4ef","600","left");
-    ctx.fillStyle="#2BD9A6"; rr(dx+168,lgy-11,13,13,3); ctx.fill();
-    T(op.cupom?"Com a operação Rubi":"Com operações estruturadas",dx+188,lgy,13,"#cfd4ef","600","left");
-
-    var scen = keyScenarios(op);
-    var gutL=92;
-    var cx0=dx+24+gutL, cyTop=y+108, cw=dwB-48-gutL-24;
-    var allVals=[]; scen.forEach(function(pp){ allVals.push(pp[0],pp[1]); });
-    var vmin=Math.min.apply(null,[0].concat(allVals)), vmax=Math.max.apply(null,[0].concat(allVals));
-    function csx(v){ return cx0 + ((v-vmin)/((vmax-vmin)||1))*cw; }
-    var cX0=csx(0);
-    var chTotal=226, rH=chTotal/scen.length, bH=Math.min(16,rH/2-6), gpp=5;
-    ctx.strokeStyle="rgba(120,130,210,.4)"; ctx.lineWidth=1.2; ctx.beginPath(); ctx.moveTo(cX0,cyTop); ctx.lineTo(cX0,cyTop+chTotal); ctx.stroke();
-    scen.forEach(function(pp,i){
-      var mid = cyTop+rH*(i+0.5);
-      var yA=mid-bH-gpp/2, yE=mid+gpp/2;
-      var xa=csx(pp[0]), xe=csx(pp[1]);
-      var aX=Math.min(cX0,xa), aW=Math.max(Math.abs(xa-cX0),2);
-      var eX=Math.min(cX0,xe), eW=Math.max(Math.abs(xe-cX0),2);
-      ctx.fillStyle="rgba(125,138,180,.32)"; rr(aX,yA,aW,bH,4); ctx.fill();
-      ctx.strokeStyle="rgba(168,180,222,.5)"; ctx.lineWidth=1; rr(aX,yA,aW,bH,4); ctx.stroke();
-      ctx.fillStyle=barCor(pp[1]); rr(eX,yE,eW,bH,4); ctx.fill();
-      var axisCol = pp[0]>0?"#2BD9A6":(pp[0]<0?"#FF5566":"#cfd4ef");
-      T(scenarioLabel(pp[0]),dx+24+gutL-12,mid+5,14,axisCol,"800","right");
-      var v=pp[1], txt=(v>0?"+":"")+fmtPct(v)+"%", yL=yE+bH-1;
-      if(v===0) T(txt,cX0+6,yL,12.5,"#F5B63E","800","left");
-      else if(v>0){ if(xe>cx0+cw-56) T(txt,xe-6,yL,12.5,"#06203a","800","right"); else T(txt,xe+6,yL,12.5,barCor(v),"800","left"); }
-      else { if(xe<cx0+56) T(txt,xe+6,yL,12.5,"#06203a","800","left"); else T(txt,xe-6,yL,12.5,barCor(v),"800","right"); }
-    });
-    y += dH+12;
-  }
-
+  /* GLOSSÁRIO compacto */
   if(glossTerms && glossTerms.length){
-    y += 8;
-    ctx.fillStyle="rgba(255,78,0,0.10)"; rr(60,y-22,W-120,30+glossTerms.length*74,14); ctx.fill();
-    T("ENTENDA AS ESTRUTURAS",84,y,14,ORANGE,"700","left");
-    y += 32;
-    glossTerms.forEach(function(k){ T(GLOSSARY[k].label,84,y,16,"#fff","800","left"); y+=22; var ln=wrapText(ctx,GLOSSARY[k].desc,84,y,W-168,20,"#A9B0D6",13.5,FF); y += ln*20+18; });
+    var gyt=glossTop;
+    ctx.fillStyle="rgba(255,78,0,0.07)"; rr(MX,gyt,CW,glossH,14); ctx.fill();
+    ctx.strokeStyle="rgba(255,120,40,0.22)"; ctx.lineWidth=1; rr(MX,gyt,CW,glossH,14); ctx.stroke();
+    var yy=gyt+30; T("ENTENDA AS ESTRUTURAS",MX+22,yy,13,ORG,"800","left",MONO); yy+=26;
+    glossTerms.forEach(function(k){ T(GLOSSARY[k].label,MX+22,yy,15,"#fff","800","left"); yy+=20; var ln=wrapText(ctx,GLOSSARY[k].desc,MX+22,yy,CW-44,18,"#A9B0D6",13,FF); yy+=ln*18+16; });
   }
 
-  var yF = H-86;
-  ctx.strokeStyle="rgba(120,130,210,0.22)"; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(60,yF); ctx.lineTo(W-60,yF); ctx.stroke();
-  T("Total alocado: "+fmtPct(total)+"%  ·  Carteira concentrada em renda variável · valores e liquidez ilustrativos. Renda variável envolve risco de perda.",60,yF+30,13,"#6F77A8","500","left");
-  T("Material de apoio comercial. Não constitui recomendação ou oferta. Sujeito à suitability e às condições de cada produto.",60,yF+52,13,"#6F77A8","500","left");
-  T("rico.",W-60,yF+52,15,ORANGE,"800","right");
+  /* rodapé */
+  var yF=footTop;
+  ctx.strokeStyle="rgba(120,130,210,0.22)"; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(MX,yF); ctx.lineTo(W-MX,yF); ctx.stroke();
+  T("Total alocado "+fmtPct(total)+"%   ·   Mesa de renda variável · ações com estrutura de proteção · preços-alvo e cotações ilustrativos · não constitui recomendação.",MX,yF+26,12,"#6F77A8","500","left");
+  T("Renda variável envolve risco de perda. Sujeito à suitability e às condições de cada produto.",MX,yF+46,12,"#6F77A8","500","left");
+  ctx.font="800 15px "+FF; ctx.textAlign="left"; var rw=ctx.measureText("rico").width; var rx=W-MX-rw-8;
+  ctx.fillStyle="#fff"; ctx.fillText("rico",rx,yF+47); ctx.fillStyle=ORG; ctx.fillText(".",rx+rw,yF+47);
 
   return cv.toDataURL("image/png");
 }
