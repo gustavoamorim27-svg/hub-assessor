@@ -9102,7 +9102,6 @@ function itemRowHTML(i){
     html += '<span class="estlabel">Cotação atual</span>';
     html += '<span style="color:#6F77A8;font-weight:800;font-size:13px">R$</span>';
     html += '<input class="cotinput" type="text" inputmode="decimal" value="'+(i.precoAtual!=null?fmtPreco(i.precoAtual):"")+'" placeholder="—" data-act="precoAtual" style="width:88px;'+_inpS+'">';
-    if(i.ticker){ html += '<button class="estbtn" data-act="fetchPreco" title="Buscar cotação na internet (brapi.dev)" style="color:#2BD9A6;border:1px solid rgba(43,217,166,.45);border-radius:8px;background:rgba(43,217,166,.12);padding:5px 9px;font-size:13px">🔄</button>'; }
     html += '<span class="tag" data-rvrettag style="background:'+_rc+'22;border-color:'+_rc+'66;color:'+_rc+'">Retorno esperado '+_rt+'</span>';
     if(i.op){ html += '<button class="estbtn" data-act="editstruct" title="Editar parâmetros da proteção" style="margin-left:auto;color:#FF8B52;border:1px solid rgba(255,139,82,.45);border-radius:8px;background:rgba(255,139,82,.12)">'+ICON_SHIELD+' Editar estrutura</button>'; }
     html += '</div>';
@@ -9337,7 +9336,7 @@ function render(){
 
   /* Feature 1: barra de cotações automáticas (brapi.dev) */
   h += '<div class="rv-cot-tools" style="display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-top:10px">'+
-    '<button class="addbtn" id="rvBtnFetchAll" style="background:rgba(43,217,166,.1);border-color:rgba(43,217,166,.5);color:#2BD9A6">\uD83D\uDD04 Atualizar cotações</button>'+
+    '<button class="addbtn" id="rvBtnFetchAll" style="background:rgba(43,217,166,.1);border-color:rgba(43,217,166,.5);color:#2BD9A6;font-weight:700">\uD83D\uDD04 Atualizar cotações de todos os ativos</button>'+
     '<span data-rvcotts style="font-size:12px;color:#8A93D8">'+esc(rvLastQuoteTs||"")+'</span>'+
     '</div>';
   h += '<div class="rv-brapi-row" style="display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:8px;font-size:11.5px;color:#8A93D8">'+
@@ -9565,7 +9564,6 @@ function bind(d){
       else if(act==="precoAtual"){ el.oninput = function(){ var it=state.items.filter(function(x){return x.id===id;})[0]; if(!it) return; var raw=el.value.trim(); var v = raw===""? null : _parseNum(raw); if(v!=null && !(v>0)) v=null; it.precoAtual = v; if(it.ticker) rvSetPreco(it.ticker, v); softRetUpdate(id); }; el.onchange = function(){ render(); }; }
       else if(act==="ticker"){ el.oninput = function(){ update(id,"ticker",(el.value||"").toUpperCase()); }; el.onchange = function(){ render(); }; }
       else if(act==="precoAlvo"){ el.oninput = function(){ var it=state.items.filter(function(x){return x.id===id;})[0]; if(!it) return; var raw=el.value.trim(); var v = raw===""? null : _parseNum(raw); if(v!=null && !(v>0)) v=null; it.precoAlvo = v; softRetUpdate(id); }; el.onchange = function(){ render(); }; }
-      else if(act==="fetchPreco"){ el.onclick = function(){ var it=state.items.filter(function(x){return x.id===id;})[0]; if(!it || !it.ticker) return; rvApplyQuotes([it], el); }; }
       else if(act==="editstruct"){ el.onclick = function(){ openStructModal(id); }; }
       else if(act==="toggle"){ el.onclick = function(){ state.abertos[id] = !state.abertos[id]; render(); }; }
     });
