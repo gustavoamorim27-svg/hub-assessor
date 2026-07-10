@@ -8696,16 +8696,51 @@ function rvSavePrecos(map){ try{ localStorage.setItem(LS_RV_PRECO, JSON.stringif
 function rvGetPreco(ticker){ var m=rvLoadPrecos(); var v=m[ticker]; return (typeof v==="number" && isFinite(v) && v>0)? v : null; }
 function rvSetPreco(ticker, val){ var m=rvLoadPrecos(); if(val==null||!(Number(val)>0)) delete m[ticker]; else m[ticker]=Number(val); rvSavePrecos(m); }
 
-/* ===== Feature 1: cotações automáticas por ticker (brapi.dev) =====
+/* ===== Feature 1: cotações automáticas por ticker (Yahoo Finance via proxy) =====
    Busca o preço atual na internet por ticker e preenche precoAtual.
-   Sem token cobre PETR4/VALE3/MGLU3/ITUB4; com token grátis cobre todos.
+   Fonte primária: Yahoo Finance (query1.finance.yahoo.com) via cadeia de
+   proxies CORS SEM token — cobre TODOS os tickers da B3 (sufixo .SA).
+   brapi.dev fica como fallback final opcional (só se houver token).
    Robusto: na rede RICO (bloqueio de APIs externas) NÃO quebra a UI — o
    input manual continua funcionando como fallback. */
 var LS_BRAPI_TOKEN = "hubBrapiToken";
 function rvGetBrapiToken(){ try{ return (localStorage.getItem(LS_BRAPI_TOKEN)||"").trim(); }catch(_){ return ""; } }
 function rvSetBrapiToken(t){ try{ t=String(t==null?"":t).trim(); if(t) localStorage.setItem(LS_BRAPI_TOKEN, t); else localStorage.removeItem(LS_BRAPI_TOKEN); }catch(_){ } }
 var rvLastQuoteTs = "";
-/* Busca cotações na brapi.dev. Retorna mapa {TICKER: preco|null}. try/catch total. */
+/* Sufixo .SA do Yahoo: acrescenta .SA se ainda não terminar em .SA (units/BDRs incluídos). */
+function rvYahooSym(t){
+  var u=String(t==null?"":t).trim().toUpperCase();
+  if(!u) return "";
+  return /\.SA$/.test(u) ? u : (u+".SA");
+}
+/* Cadeia de proxies CORS (sem token) para acessar o Yahoo Finance. */
+var RV_PROXIES=[
+  function(u){ return 'https://api.allorigins.win/raw?url='+encodeURIComponent(u); },
+  function(u){ return 'https://corsproxy.io/?url='+encodeURIComponent(u); },
+  function(u){ return 'https://api.codetabs.com/v1/proxy/?quest='+encodeURIComponent(u); }
+];
+/* Busca o preço de UM ticker no Yahoo via cadeia de proxies. Retorna número ou null. */
+async function rvFetchYahooPrice(ticker){
+  var sym=rvYahooSym(ticker);
+  if(!sym) return null;
+  var yahooUrl='https://query1.finance.yahoo.com/v8/finance/chart/'+encodeURIComponent(sym)+'?interval=1d&range=1d';
+  for(var i=0;i<RV_PROXIES.length;i++){
+    try{
+      var r=await fetch(RV_PROXIES[i](yahooUrl),{cache:'no-store'});
+      if(!r||!r.ok) continue;
+      var j=await r.json();
+      var meta=j && j.chart && Array.isArray(j.chart.result) && j.chart.result[0] && j.chart.result[0].meta;
+      if(!meta) continue;
+      var p=meta.regularMarketPrice;
+      if(p==null || isNaN(Number(p)) || !(Number(p)>0)) p=meta.chartPreviousClose;
+      if(p!=null && !isNaN(Number(p)) && Number(p)>0) return Number(p);
+    }catch(e){ /* tenta próximo proxy */ }
+  }
+  return null;
+}
+/* Busca cotações de TODOS os tickers (Yahoo via proxy, em paralelo). brapi = fallback
+   final opcional só p/ tickers ainda nulos e apenas se houver token. Retorna mapa
+   {TICKER_ORIGINAL: preco|null}. try/catch total — nunca lança. */
 async function rvFetchQuotes(tickers){
   var out={};
   try{
@@ -8714,21 +8749,34 @@ async function rvFetchQuotes(tickers){
     list.forEach(function(t){ if(!seen[t]){ seen[t]=1; uniq.push(t); } });
     uniq.forEach(function(t){ out[t]=null; });
     if(!uniq.length) return out;
-    var tok=rvGetBrapiToken();
-    var url='https://brapi.dev/api/quote/'+encodeURIComponent(uniq.join(','))+(tok?('?token='+encodeURIComponent(tok)):'');
-    var r=await fetch(url,{cache:'no-store'});
-    if(!r.ok) return out;
-    var j=await r.json();
-    var results=(j && Array.isArray(j.results))? j.results : [];
-    results.forEach(function(d){
-      if(!d) return;
-      var sym=String(d.symbol==null?"":d.symbol).trim().toUpperCase();
-      if(!sym) return;
-      var p=d.regularMarketPrice;
-      if(p==null || isNaN(Number(p)) || !(Number(p)>0)) p=d.regularMarketPreviousClose;
-      if(p!=null && !isNaN(Number(p)) && Number(p)>0) out[sym]=Number(p);
-    });
-  }catch(e){ /* rede bloqueada / erro brapi: mantém mapa (valores null) */ }
+    /* 1) Yahoo Finance via proxy — em paralelo, por ticker (chave = ticker original). */
+    await Promise.all(uniq.map(function(t){
+      return rvFetchYahooPrice(t).then(function(p){
+        if(p!=null && Number(p)>0) out[t]=Number(p);
+      }).catch(function(){ /* mantém null */ });
+    }));
+    /* 2) Fallback final opcional: brapi.dev — só p/ tickers ainda nulos e se houver token. */
+    try{
+      var tok=rvGetBrapiToken();
+      var missing=uniq.filter(function(t){ return out[t]==null; });
+      if(tok && missing.length){
+        var url='https://brapi.dev/api/quote/'+encodeURIComponent(missing.join(','))+'?token='+encodeURIComponent(tok);
+        var r=await fetch(url,{cache:'no-store'});
+        if(r && r.ok){
+          var j=await r.json();
+          var results=(j && Array.isArray(j.results))? j.results : [];
+          results.forEach(function(d){
+            if(!d) return;
+            var sym=String(d.symbol==null?"":d.symbol).trim().toUpperCase();
+            if(!sym) return;
+            var p=d.regularMarketPrice;
+            if(p==null || isNaN(Number(p)) || !(Number(p)>0)) p=d.regularMarketPreviousClose;
+            if(p!=null && !isNaN(Number(p)) && Number(p)>0 && out[sym]==null) out[sym]=Number(p);
+          });
+        }
+      }
+    }catch(_){ /* fallback brapi falhou: mantém o que já veio do Yahoo */ }
+  }catch(e){ /* rede bloqueada / erro geral: mantém mapa (valores null) */ }
   return out;
 }
 /* Aplica cotações a uma lista de itens (state.items). Atualiza DOM + retorno. */
@@ -9392,7 +9440,7 @@ function render(){
   h += '<div class="rv-brapi-row" style="display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:8px;font-size:11.5px;color:#8A93D8">'+
     '<span style="font-weight:700">Token brapi</span>'+
     '<input id="rvBrapiToken" type="text" placeholder="opcional (token grátis)" value="'+esc(rvGetBrapiToken())+'" style="width:190px;background:rgba(0,0,0,.3);border:1px solid rgba(120,130,210,.2);border-radius:8px;color:#cfd4ef;font-size:12px;padding:6px 9px;outline:none">'+
-    '<span>Sem token cobre PETR4, VALE3, MGLU3, ITUB4. <a href="https://brapi.dev" target="_blank" rel="noopener" style="color:#7FD8F5;text-decoration:underline">brapi.dev (token grátis)</a> cobre todos os tickers.</span>'+
+    '<span>Busca automática de todos os tickers (Yahoo Finance). O token <a href="https://brapi.dev" target="_blank" rel="noopener" style="color:#7FD8F5;text-decoration:underline">brapi</a> abaixo é opcional (fonte alternativa).</span>'+
     '</div>';
   h += '<div class="rv-atual-row" style="display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:8px;font-size:11.5px;color:#8A93D8">'+
     '<span style="font-weight:700">Ações atuais do cliente</span>'+
