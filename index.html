@@ -3541,6 +3541,10 @@ html.theme-light .pm-chip{ background:#fff; }
     </div>
     <div class="pm-total" id="pmTot"></div>
     <div class="pm-chips" id="pmChips" style="margin-top:16px"></div>
+    <div class="pm-adjust" id="pmAdjust" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">
+      <button class="pm-oi" id="pmFit100" style="border-color:rgba(61,214,140,.5);color:#3DD68C">Ajustar para 100%</button>
+      <button class="pm-oi" id="pmEqual">Distribuir igualmente</button>
+    </div>
     <div class="pm-disc">Material de apoio comercial - alocacao alvo por classe em relacao a carteira atual do cliente. Giro estimado por diferenca de alocacao (a vender / a comprar). Nao constitui recomendacao; sujeito a suitability e as condicoes de cada produto.</div>
   </div>
 </div>
@@ -3689,6 +3693,8 @@ html.theme-light .pm-chip{ background:#fff; }
     if(!Object.keys(PR.atual).length){ PR.atual=emptyMap(); PR.prop=emptyMap(); }
     keepXP();
     el('pmCli').value=PR.cliente||''; el('pmPat').value=fmt(PR.patrim);
+    /* Feature 3(a): conjunto de nomes das posições atuais do cliente p/ marcar Novo vs Mantido */
+    var curSet={}; (PR.atualAssets||[]).forEach(function(x){ curSet[nkey(x.nome)]=true; });
     var h='';
     CATS.forEach(function(c){
       var arr=PR.assets[c]||[]; var hasA=arr.length>0; var eff=effPct(c); var col=COLORS[c];
@@ -3705,6 +3711,7 @@ html.theme-light .pm-chip{ background:#fff; }
         h+='<div class="pm-acard" style="border-left:3px solid '+col+'">'+
           '<div class="pm-actop">'+
             '<input class="pm-an" type="text" placeholder="Nome do ativo" value="'+esc2(a.nome)+'" data-an="'+c+'" data-ai="'+ai+'">'+
+            (a.nome? (curSet[nkey(a.nome)]? '<span class="pm-nk kept" style="font-size:10px;font-weight:800;padding:2px 7px;border-radius:20px;letter-spacing:.4px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.16);color:#9AA2C0;white-space:nowrap">Mantido</span>' : '<span class="pm-nk novo" style="font-size:10px;font-weight:800;padding:2px 7px;border-radius:20px;letter-spacing:.4px;background:rgba(61,214,140,.16);border:1px solid rgba(61,214,140,.55);color:#3DD68C;white-space:nowrap">Novo</span>') : '')+
             '<div class="pm-pct"><input type="text" inputmode="decimal" value="'+fp(a.pct||0)+'" data-ap="'+c+'" data-ai="'+ai+'"><span class="pm-lbl">%</span></div>'+
             '<div class="pm-acrs">R$ '+fmt(PR.patrim*(a.pct||0)/100)+'</div>'+
             (a.protegido?'<span class="pm-prot" title="Ativo XP do cliente - nao pode ser vendido">🔒</span>':'<button class="pm-arm" data-arm="'+c+'" data-ai="'+ai+'" title="Remover">&times;</button>')+
@@ -3729,7 +3736,9 @@ html.theme-light .pm-chip{ background:#fff; }
     renderSaindo();
     var tot=0; CATS.forEach(function(c){ tot+=effPct(c); });
     var okc=(Math.abs(100-tot)<0.1)?'ok':'warn';
-    el('pmTot').innerHTML='Total alocado: <b class="'+okc+'">'+fp(tot)+'%</b>'+(okc==='warn'?' <span class="pm-lbl">(ajuste para 100%)</span>':'');
+    var _over=tot>100.0001, _barCol=(Math.abs(100-tot)<0.1)?'#3DD68C':(_over?'#FF6B6B':'#FFB020'), _barW=Math.max(0,Math.min(100,tot));
+    el('pmTot').innerHTML='<div style="display:flex;align-items:center;justify-content:space-between;gap:10px"><span>Total alocado: <b class="'+okc+'" style="color:'+_barCol+'">'+fp(tot)+'%</b>'+(okc==='warn'?' <span class="pm-lbl">('+(_over?'acima de 100%':'ajuste para 100%')+')</span>':'')+'</span></div>'+
+      '<div style="height:8px;background:rgba(255,255,255,.08);border-radius:6px;margin-top:8px;overflow:hidden"><div style="width:'+_barW+'%;height:100%;background:'+_barCol+';transition:width .15s"></div></div>';
     var vender=0,comprar=0; CATS.forEach(function(c){ var d=PR.patrim*(effPct(c)-(PR.atual[c]||0))/100; if(d>0) comprar+=d; else vender+=-d; });
     var saldo=comprar-vender, giro=PR.patrim>0?comprar/PR.patrim*100:0;
     el('pmChips').innerHTML=
@@ -3739,6 +3748,23 @@ html.theme-light .pm-chip{ background:#fff; }
       chip('Giro',fp(giro)+'%','#FFB020')+
       chip(saldo>=0?'Aporte':'Resgate','R$ '+fmt(Math.abs(saldo)),saldo>=0?'#3DD68C':'#FF6B6B');
     bindRows();
+    var _f=el('pmFit100'); if(_f) _f.onclick=function(){ ajustarPropor(false); };
+    var _eq=el('pmEqual'); if(_eq) _eq.onclick=function(){ ajustarPropor(true); };
+  }
+  /* Feature 3(c): escala os % dos ativos propostos para somar 100 (ou distribui igualmente).
+     Considera classes sem ativos (usam PR.prop) no total; arredonda a 1 casa e corrige o resto no maior. */
+  function ajustarPropor(equal){
+    var flat=[]; CATS.forEach(function(c){ (PR.assets[c]||[]).forEach(function(a){ flat.push(a); }); });
+    if(!flat.length){ return; }
+    var propOnly=0; CATS.forEach(function(c){ if(!(PR.assets[c]&&PR.assets[c].length)) propOnly+=(Number(PR.prop[c])||0); });
+    var target=Math.round((100-propOnly)*10)/10; if(target<0) target=0;
+    var sum=0; flat.forEach(function(a){ sum+=(Number(a.pct)||0); });
+    if(equal || sum<=0){ var each=target/flat.length; flat.forEach(function(a){ a.pct=Math.round(each*10)/10; }); }
+    else { var f=target/sum; flat.forEach(function(a){ a.pct=Math.round((Number(a.pct)||0)*f*10)/10; }); }
+    var newSum=0; flat.forEach(function(a){ newSum+=(Number(a.pct)||0); });
+    var rem=Math.round((target-newSum)*10)/10;
+    if(rem!==0){ var big=flat[0]; flat.forEach(function(a){ if((Number(a.pct)||0)>(Number(big.pct)||0)) big=a; }); big.pct=Math.round(((Number(big.pct)||0)+rem)*10)/10; }
+    render();
   }
   function nkey(n){ return String(n==null?'':n).trim().toLowerCase(); }
   function clearAll(){ PR.cliente=''; PR.patrim=0; PR.atual={}; PR.prop={}; PR.assets={}; PR.picker=null; PR.atualAssets=[]; try{ setStatus('',''); }catch(e){} try{ setActive(''); }catch(e){} render(); }
@@ -5634,7 +5660,8 @@ window.__setCtorMode = function(mode){
 /* ===================== Identidade ===================== */
 var RICO_SVG = 'rico';
 var LINE_COLORS = ["#F26522","#34D399","#38BDF8","#FBBF24","#A78BFA","#F472B6"];
-var HORIZONS = [1,2,3,5,10];
+var HORIZONS = [0.5,1,2,3,5,10]; /* anos (fracionário): 6m/1a/2a/3a/5a/10a — alcança todas as faixas de IR */
+function hzLabel(x){ if(x<1) return Math.round(x*12)+" meses"; return x===1? "1 ano" : (x+" anos"); }
 var PRESETS = [
   {label:"CDB 100% CDI", nome:"CDB 100% CDI", indexador:"cdi", taxa:100, tributacao:"tributado"},
   {label:"LCI/LCA 90% CDI", nome:"LCA 90% CDI", indexador:"cdi", taxa:90, tributacao:"isento"},
@@ -5662,7 +5689,7 @@ function pct(v,d){d=(d==null?2:d);return (v*100).toLocaleString("pt-BR",{minimum
 function n(v){var x=Number(String(v).replace(",","."));return isFinite(x)?x:0;}
 function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
 
-function irRate(years){var d=years*365;if(d<=180)return .225;if(d<=360)return .20;if(d<=720)return .175;return .15;}
+function irRate(days){if(days<=180)return .225;if(days<=360)return .20;if(days<=720)return .175;return .15;}
 function grossAnnual(a,cdi,ipca){
   if(a.indexador==="cdi")return (cdi/100)*(a.taxa/100);
   if(a.indexador==="cdimais")return cdi/100 + a.taxa/100;
@@ -5674,7 +5701,7 @@ function grossAnnual(a,cdi,ipca){
 function isIsento(a){return a.indexador==="poupanca"||a.tributacao==="isento";}
 function netFV(a,t,aporte,cdi,ipca){
   var g=grossAnnual(a,cdi,ipca);var fv=aporte*Math.pow(1+g,t);
-  var ir=isIsento(a)?0:irRate(t);return aporte+(fv-aporte)*(1-ir);
+  var ir=isIsento(a)?0:irRate(t*360);return aporte+(fv-aporte)*(1-ir);
 }
 function taxaLabel(a){
   if(a.indexador==="cdi")return n(a.taxa).toLocaleString("pt-BR")+"% do CDI";
@@ -5703,7 +5730,7 @@ function equivInsight(results){
   var isento=results.filter(function(r){return r.isento;})[0];
   var trib=results.filter(function(r){return !r.isento;})[0];
   if(!isento||!trib)return null;
-  var ir=irRate(state.horizon);
+  var ir=irRate(state.horizon*360);
   var grossNeeded=isento.netAnnual/(1-ir);
   return {isento:isento, ir:ir, equivPctCDI:(grossNeeded/(state.cdi/100))*100};
 }
@@ -5747,10 +5774,18 @@ function chartSVG(){
     svg+='<line x1="'+padL+'" y1="'+yy.toFixed(1)+'" x2="'+(VB_W-padR)+'" y2="'+yy.toFixed(1)+'" stroke="rgba(255,255,255,.06)"/>';
     svg+='<text x="'+(padL-8)+'" y="'+(yy+4).toFixed(1)+'" fill="#9AA2D0" font-size="11" text-anchor="end">R$ '+Math.round(vy/1000)+'k</text>';
   }
-  // ticks X
-  for(var k=0;k<=state.horizon;k++){
-    var xx=xAt(k);
-    svg+='<text x="'+xx.toFixed(1)+'" y="'+(VB_H-8)+'" fill="#9AA2D0" font-size="11" text-anchor="middle">'+k+'a</text>';
+  // ticks X (adaptativo: meses quando prazo < 1 ano, senão anos)
+  if(state.horizon<1){
+    var totM=Math.round(state.horizon*12), stp=Math.max(1,Math.round(totM/6));
+    for(var k=0;k<=totM;k+=stp){
+      var xxm=xAt(k/12);
+      svg+='<text x="'+xxm.toFixed(1)+'" y="'+(VB_H-8)+'" fill="#9AA2D0" font-size="11" text-anchor="middle">'+k+'m</text>';
+    }
+  } else {
+    for(var k=0;k<=state.horizon;k++){
+      var xx=xAt(k);
+      svg+='<text x="'+xx.toFixed(1)+'" y="'+(VB_H-8)+'" fill="#9AA2D0" font-size="11" text-anchor="middle">'+k+'a</text>';
+    }
   }
   // inflação tracejada
   svg+='<path d="'+path(data.infl.vals)+'" fill="none" stroke="#8A92C0" stroke-width="1.6" stroke-dasharray="5 5"/>';
@@ -5814,7 +5849,7 @@ function el(id){return document.getElementById(id);}
 function horizonteHTML(){
   var h='<div class="row" style="flex-wrap:wrap"><span class="eyebrow">Prazo</span>';
   HORIZONS.forEach(function(x){
-    h+='<button class="pill'+(state.horizon===x?' on':'')+'" data-h="'+x+'">'+x+(x===1?' ano':' anos')+'</button>';
+    h+='<button class="pill'+(state.horizon===x?' on':'')+'" data-h="'+x+'">'+hzLabel(x)+'</button>';
   });
   return h+'</div>';
 }
@@ -5839,14 +5874,14 @@ function tableHTML(){
   }).join("");
   return '<div class="card" style="padding:0;overflow:hidden"><div style="overflow-x:auto"><table>'
     +'<thead><tr><th style="text-align:left">Ativo</th><th style="text-align:right">Líq. a.a.</th>'
-    +'<th style="text-align:right">Equiv. CDI líq.</th><th style="text-align:right">Em '+state.horizon+'a</th></tr></thead>'
+    +'<th style="text-align:right">Equiv. CDI líq.</th><th style="text-align:right">Em '+hzLabel(state.horizon)+'</th></tr></thead>'
     +'<tbody>'+rows+'</tbody></table></div></div>';
 }
 function insightHTML(){
   var c=compute(), ins=equivInsight(c.results); if(!ins)return "";
   return '<div class="card" style="background:rgba(52,211,153,.08);border-color:rgba(52,211,153,.25)">'
     +'<div class="eyebrow green" style="margin-bottom:4px">Equivalência (gross-up)</div>'
-    +'<div style="line-height:1.6">Por ser <b>isento de IR</b>, o ativo <b>'+esc(ins.isento.nome)+'</b> ('+taxaLabel(ins.isento)+') rende como um título tributado de aproximadamente <b class="orange">'+ins.equivPctCDI.toLocaleString("pt-BR",{maximumFractionDigits:1})+'% do CDI</b> num resgate em '+state.horizon+' '+(state.horizon===1?'ano':'anos')+' (IR de '+pct(ins.ir,1)+').</div></div>';
+    +'<div style="line-height:1.6">Por ser <b>isento de IR</b>, o ativo <b>'+esc(ins.isento.nome)+'</b> ('+taxaLabel(ins.isento)+') rende como um título tributado de aproximadamente <b class="orange">'+ins.equivPctCDI.toLocaleString("pt-BR",{maximumFractionDigits:1})+'% do CDI</b> num resgate em '+hzLabel(state.horizon)+' (IR de '+pct(ins.ir,1)+').</div></div>';
 }
 
 function outEditHTML(){
@@ -5869,7 +5904,7 @@ function outClientHTML(){
       +'<div>'+chartCardHTML()+'</div>'
       +'<div class="col">'
         +'<div class="card" style="background:var(--orange)">'
-          +'<div class="eyebrow" style="color:rgba(255,255,255,.85);margin-bottom:4px">Melhor retorno em '+state.horizon+' '+(state.horizon===1?'ano':'anos')+'</div>'
+          +'<div class="eyebrow" style="color:rgba(255,255,255,.85);margin-bottom:4px">Melhor retorno em '+hzLabel(state.horizon)+'</div>'
           +'<div style="font-size:24px;font-weight:800">'+esc(best.nome)+'</div>'
           +'<div style="color:rgba(255,255,255,.92)">'+brl0(state.showReal?best.real:best.netFV)+' · '+pct(best.netAnnual)+' a.a. líq.</div>'
           +(diff>0?'<div style="font-size:12px;margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,.25);color:rgba(255,255,255,.92)">+'+brl0(diff)+' a mais que '+esc(worst.nome)+'</div>':'')
@@ -5877,7 +5912,7 @@ function outClientHTML(){
       +'</div>'
     +'</div>'
     +'<div class="card" style="padding:0;overflow:hidden;background:var(--navy3);margin-top:16px"><div style="overflow-x:auto"><table>'
-      +'<thead><tr><th style="text-align:left">Ativo</th>'+HORIZONS.map(function(h){return '<th style="text-align:right">'+h+'a</th>';}).join("")+'</tr></thead>'
+      +'<thead><tr><th style="text-align:left">Ativo</th>'+HORIZONS.map(function(h){return '<th style="text-align:right">'+hzLabel(h)+'</th>';}).join("")+'</tr></thead>'
       +'<tbody>'+mileRows+'</tbody></table></div></div>';
 }
 
@@ -8574,6 +8609,88 @@ function rvSavePrecos(map){ try{ localStorage.setItem(LS_RV_PRECO, JSON.stringif
 function rvGetPreco(ticker){ var m=rvLoadPrecos(); var v=m[ticker]; return (typeof v==="number" && isFinite(v) && v>0)? v : null; }
 function rvSetPreco(ticker, val){ var m=rvLoadPrecos(); if(val==null||!(Number(val)>0)) delete m[ticker]; else m[ticker]=Number(val); rvSavePrecos(m); }
 
+/* ===== Feature 1: cotações automáticas por ticker (brapi.dev) =====
+   Busca o preço atual na internet por ticker e preenche precoAtual.
+   Sem token cobre PETR4/VALE3/MGLU3/ITUB4; com token grátis cobre todos.
+   Robusto: na rede RICO (bloqueio de APIs externas) NÃO quebra a UI — o
+   input manual continua funcionando como fallback. */
+var LS_BRAPI_TOKEN = "hubBrapiToken";
+function rvGetBrapiToken(){ try{ return (localStorage.getItem(LS_BRAPI_TOKEN)||"").trim(); }catch(_){ return ""; } }
+function rvSetBrapiToken(t){ try{ t=String(t==null?"":t).trim(); if(t) localStorage.setItem(LS_BRAPI_TOKEN, t); else localStorage.removeItem(LS_BRAPI_TOKEN); }catch(_){ } }
+var rvLastQuoteTs = "";
+/* Busca cotações na brapi.dev. Retorna mapa {TICKER: preco|null}. try/catch total. */
+async function rvFetchQuotes(tickers){
+  var out={};
+  try{
+    var list=(tickers||[]).map(function(t){ return String(t==null?"":t).trim().toUpperCase(); }).filter(function(t){ return t; });
+    var seen={}, uniq=[];
+    list.forEach(function(t){ if(!seen[t]){ seen[t]=1; uniq.push(t); } });
+    uniq.forEach(function(t){ out[t]=null; });
+    if(!uniq.length) return out;
+    var tok=rvGetBrapiToken();
+    var url='https://brapi.dev/api/quote/'+encodeURIComponent(uniq.join(','))+(tok?('?token='+encodeURIComponent(tok)):'');
+    var r=await fetch(url,{cache:'no-store'});
+    if(!r.ok) return out;
+    var j=await r.json();
+    var results=(j && Array.isArray(j.results))? j.results : [];
+    results.forEach(function(d){
+      if(!d) return;
+      var sym=String(d.symbol==null?"":d.symbol).trim().toUpperCase();
+      if(!sym) return;
+      var p=d.regularMarketPrice;
+      if(p==null || isNaN(Number(p)) || !(Number(p)>0)) p=d.regularMarketPreviousClose;
+      if(p!=null && !isNaN(Number(p)) && Number(p)>0) out[sym]=Number(p);
+    });
+  }catch(e){ /* rede bloqueada / erro brapi: mantém mapa (valores null) */ }
+  return out;
+}
+/* Aplica cotações a uma lista de itens (state.items). Atualiza DOM + retorno. */
+async function rvApplyQuotes(items, btnEl){
+  items=(items||[]).filter(function(it){ return it && it.ticker; });
+  if(!items.length){ try{ showToast("Nenhum ticker para atualizar."); }catch(_){ } return; }
+  var oldTxt=null;
+  if(btnEl){ try{ oldTxt=btnEl.innerHTML; btnEl.disabled=true; btnEl.innerHTML="⏳"; }catch(_){ } }
+  var tickers=items.map(function(it){ return it.ticker; });
+  var map={}, threw=false;
+  try{ map=await rvFetchQuotes(tickers); }catch(e){ threw=true; map={}; }
+  if(btnEl){ try{ btnEl.disabled=false; btnEl.innerHTML=oldTxt; }catch(_){ } }
+  var n=0, m=0;
+  items.forEach(function(it){
+    m++;
+    var p=map[String(it.ticker).toUpperCase()];
+    var rowEl=document.querySelector('.row[data-id="'+it.id+'"]');
+    var inp=rowEl? rowEl.querySelector('[data-act="precoAtual"]') : null;
+    if(p!=null && Number(p)>0){
+      it.precoAtual=Number(p);
+      try{ rvSetPreco(it.ticker, Number(p)); }catch(_){ }
+      if(inp){ inp.value=fmtPreco(Number(p)); inp.title=""; }
+      try{ softRetUpdate(it.id); }catch(_){ }
+      n++;
+    } else {
+      if(inp) inp.title="não encontrado / rede bloqueada";
+    }
+  });
+  if(n>0){
+    var dt=new Date();
+    var hh=("0"+dt.getHours()).slice(-2), mm=("0"+dt.getMinutes()).slice(-2);
+    rvLastQuoteTs="cotações de "+hh+":"+mm;
+    try{ var ts=document.querySelector("[data-rvcotts]"); if(ts) ts.textContent=rvLastQuoteTs; }catch(_){ }
+  }
+  try{
+    if(threw || n===0){ showToast("Não foi possível buscar cotações (rede pode estar bloqueando). Digite manualmente."); }
+    else { showToast("Cotações atualizadas: "+n+" de "+m); }
+  }catch(_){ }
+  return {n:n, m:m};
+}
+/* Batch: atualiza TODAS as ações (com ticker) da carteira numa única chamada. */
+function rvFetchAllQuotes(btnEl){
+  try{
+    var items=(state.items||[]).filter(function(it){ return it && it.ticker; });
+    return rvApplyQuotes(items, btnEl);
+  }catch(e){ try{ showToast("Não foi possível buscar cotações (rede pode estar bloqueando). Digite manualmente."); }catch(_){ } }
+}
+
+
 /* ===== Persistência dos MODELOS de carteira editáveis (Tarefa A) =====
    hubRvTemplateOverride: objeto { "Top Ações":[linhas], "Top Dividendos":[linhas] }.
    Cada linha é só dado (ticker,nome,setor,pct,precoAlvo,rating) — o objeto de
@@ -8985,6 +9102,7 @@ function itemRowHTML(i){
     html += '<span class="estlabel">Cotação atual</span>';
     html += '<span style="color:#6F77A8;font-weight:800;font-size:13px">R$</span>';
     html += '<input class="cotinput" type="text" inputmode="decimal" value="'+(i.precoAtual!=null?fmtPreco(i.precoAtual):"")+'" placeholder="—" data-act="precoAtual" style="width:88px;'+_inpS+'">';
+    if(i.ticker){ html += '<button class="estbtn" data-act="fetchPreco" title="Buscar cotação na internet (brapi.dev)" style="color:#2BD9A6;border:1px solid rgba(43,217,166,.45);border-radius:8px;background:rgba(43,217,166,.12);padding:5px 9px;font-size:13px">🔄</button>'; }
     html += '<span class="tag" data-rvrettag style="background:'+_rc+'22;border-color:'+_rc+'66;color:'+_rc+'">Retorno esperado '+_rt+'</span>';
     if(i.op){ html += '<button class="estbtn" data-act="editstruct" title="Editar parâmetros da proteção" style="margin-left:auto;color:#FF8B52;border:1px solid rgba(255,139,82,.45);border-radius:8px;background:rgba(255,139,82,.12)">'+ICON_SHIELD+' Editar estrutura</button>'; }
     html += '</div>';
@@ -9217,6 +9335,17 @@ function render(){
     '<button class="addbtn" id="rvBtnQuanto" style="background:rgba(255,176,32,.1);border-color:rgba(255,176,32,.5);color:#FFB020">'+ICON_GLOBE+' Derivativos Quanto · Internacional '+(state.showQuanto?"▴":"▾")+'</button>'+
     '</div>';
 
+  /* Feature 1: barra de cotações automáticas (brapi.dev) */
+  h += '<div class="rv-cot-tools" style="display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-top:10px">'+
+    '<button class="addbtn" id="rvBtnFetchAll" style="background:rgba(43,217,166,.1);border-color:rgba(43,217,166,.5);color:#2BD9A6">\uD83D\uDD04 Atualizar cotações</button>'+
+    '<span data-rvcotts style="font-size:12px;color:#8A93D8">'+esc(rvLastQuoteTs||"")+'</span>'+
+    '</div>';
+  h += '<div class="rv-brapi-row" style="display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:8px;font-size:11.5px;color:#8A93D8">'+
+    '<span style="font-weight:700">Token brapi</span>'+
+    '<input id="rvBrapiToken" type="text" placeholder="opcional (token grátis)" value="'+esc(rvGetBrapiToken())+'" style="width:190px;background:rgba(0,0,0,.3);border:1px solid rgba(120,130,210,.2);border-radius:8px;color:#cfd4ef;font-size:12px;padding:6px 9px;outline:none">'+
+    '<span>Sem token cobre PETR4, VALE3, MGLU3, ITUB4. <a href="https://brapi.dev" target="_blank" rel="noopener" style="color:#7FD8F5;text-decoration:underline">brapi.dev (token grátis)</a> cobre todos os tickers.</span>'+
+    '</div>';
+
   if(state.showRubi){
     h += '<div class="card" style="margin-top:12px"><div style="font-weight:700;font-size:15px;margin-bottom:4px">Catálogo de operações Cupom</div>'+
       '<div style="font-size:12.5px;color:#A9B0D6;margin-bottom:14px">Toque em "Add" para incluir uma operação de cupom pré-fixado pronta (entra com 0% — defina a alocação depois). Você pode editar taxa, barreira e equivalente em CDI de cada uma.</div>'+
@@ -9397,6 +9526,8 @@ function bind(d){
   document.getElementById("rvBtnAdd").onclick = function(){ state.items.push(mk("Renda Variável","Nova ação",0,"","B3",null,null,"Outros")); render(); };
   var _ba=document.getElementById("rvBtnAddAcao"); if(_ba) _ba.onclick = function(){ var it=mkAcao("","Nova ação","Outros",0,null,""); it.precoAlvo=null; state.items.push(it); state.abertos[it.id]=true; render(); };
   document.getElementById("btnRubi").onclick = function(){ state.showRubi = !state.showRubi; render(); };
+  var _bfa=document.getElementById("rvBtnFetchAll"); if(_bfa) _bfa.onclick = function(){ rvFetchAllQuotes(_bfa); };
+  var _btk=document.getElementById("rvBrapiToken"); if(_btk){ _btk.onchange = function(){ rvSetBrapiToken(_btk.value); }; _btk.oninput = function(){ rvSetBrapiToken(_btk.value); }; }
   document.getElementById("btnProtCriar").onclick = function(){
     var it = mkProtecao("Nova ação protegida","Outros",-20,34.99,135);
     state.items.push(it); state.abertos[it.id]=true; render();
@@ -9434,6 +9565,7 @@ function bind(d){
       else if(act==="precoAtual"){ el.oninput = function(){ var it=state.items.filter(function(x){return x.id===id;})[0]; if(!it) return; var raw=el.value.trim(); var v = raw===""? null : _parseNum(raw); if(v!=null && !(v>0)) v=null; it.precoAtual = v; if(it.ticker) rvSetPreco(it.ticker, v); softRetUpdate(id); }; el.onchange = function(){ render(); }; }
       else if(act==="ticker"){ el.oninput = function(){ update(id,"ticker",(el.value||"").toUpperCase()); }; el.onchange = function(){ render(); }; }
       else if(act==="precoAlvo"){ el.oninput = function(){ var it=state.items.filter(function(x){return x.id===id;})[0]; if(!it) return; var raw=el.value.trim(); var v = raw===""? null : _parseNum(raw); if(v!=null && !(v>0)) v=null; it.precoAlvo = v; softRetUpdate(id); }; el.onchange = function(){ render(); }; }
+      else if(act==="fetchPreco"){ el.onclick = function(){ var it=state.items.filter(function(x){return x.id===id;})[0]; if(!it || !it.ticker) return; rvApplyQuotes([it], el); }; }
       else if(act==="editstruct"){ el.onclick = function(){ openStructModal(id); }; }
       else if(act==="toggle"){ el.onclick = function(){ state.abertos[id] = !state.abertos[id]; render(); }; }
     });
