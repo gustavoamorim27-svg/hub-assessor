@@ -8741,42 +8741,57 @@ async function rvFetchYahooPrice(ticker){
 /* Busca cotações de TODOS os tickers (Yahoo via proxy, em paralelo). brapi = fallback
    final opcional só p/ tickers ainda nulos e apenas se houver token. Retorna mapa
    {TICKER_ORIGINAL: preco|null}. try/catch total — nunca lança. */
+/* Uma requisição via um proxy; retorna Number(preço) ou null. Nunca lança. */
+function rvQuoteVia(proxyUrl){
+  var ctl=new AbortController(); var to=setTimeout(function(){ctl.abort();},12000);
+  return fetch(proxyUrl,{cache:'no-store',signal:ctl.signal})
+    .then(function(r){return r.text();})
+    .then(function(t){ clearTimeout(to); try{ var m=JSON.parse(t).chart.result[0].meta; var p=(m.regularMarketPrice!=null?m.regularMarketPrice:m.chartPreviousClose); return (typeof p==='number'&&isFinite(p))?p:null; }catch(e){ return null; } })
+    .catch(function(){ clearTimeout(to); return null; });
+}
+function rvYahooUrl(sym){ return 'https://query1.finance.yahoo.com/v8/finance/chart/'+sym+'?interval=1d&range=1d'; }
+var RV_PROXY_CORS = function(u){ return 'https://corsproxy.io/?url='+encodeURIComponent(u); };
+var RV_PROXY_ALLO = function(u){ return 'https://api.allorigins.win/raw?url='+encodeURIComponent(u); };
+/* Busca cotações de TODOS os tickers. corsproxy.io = primário (paralelo) + retry;
+   allorigins = fallback secundário; brapi.dev = fallback final opcional (só com token).
+   Chave = ticker ORIGINAL em maiúsculas (sem .SA). try/catch total — nunca lança. */
 async function rvFetchQuotes(tickers){
-  var out={};
+  var uniq=[]; var seen={};
+  (tickers||[]).forEach(function(t){ var k=String(t==null?"":t).trim().toUpperCase(); if(k&&!seen[k]){seen[k]=1;uniq.push(k);} });
+  var out={}; uniq.forEach(function(k){ out[k]=null; });
+  if(!uniq.length) return out;
+  function sym(k){ return rvYahooSym(k); }
+  /* uma passada com um proxy sobre os tickers ainda nulos (em paralelo) */
+  async function pass(proxyFn){
+    var pend=uniq.filter(function(k){ return out[k]==null; });
+    if(!pend.length) return;
+    var prices=await Promise.all(pend.map(function(k){ return rvQuoteVia(proxyFn(rvYahooUrl(sym(k)))); }));
+    pend.forEach(function(k,i){ if(prices[i]!=null) out[k]=prices[i]; });
+  }
+  try{ await pass(RV_PROXY_CORS); }catch(e){}     // primário, paralelo
+  try{ await pass(RV_PROXY_CORS); }catch(e){}     // retry corsproxy
+  try{ await pass(RV_PROXY_ALLO); }catch(e){}     // fallback allorigins
+  /* Fallback final opcional: brapi.dev — só p/ tickers ainda nulos e se houver token. */
   try{
-    var list=(tickers||[]).map(function(t){ return String(t==null?"":t).trim().toUpperCase(); }).filter(function(t){ return t; });
-    var seen={}, uniq=[];
-    list.forEach(function(t){ if(!seen[t]){ seen[t]=1; uniq.push(t); } });
-    uniq.forEach(function(t){ out[t]=null; });
-    if(!uniq.length) return out;
-    /* 1) Yahoo Finance via proxy — em paralelo, por ticker (chave = ticker original). */
-    await Promise.all(uniq.map(function(t){
-      return rvFetchYahooPrice(t).then(function(p){
-        if(p!=null && Number(p)>0) out[t]=Number(p);
-      }).catch(function(){ /* mantém null */ });
-    }));
-    /* 2) Fallback final opcional: brapi.dev — só p/ tickers ainda nulos e se houver token. */
-    try{
-      var tok=rvGetBrapiToken();
-      var missing=uniq.filter(function(t){ return out[t]==null; });
-      if(tok && missing.length){
-        var url='https://brapi.dev/api/quote/'+encodeURIComponent(missing.join(','))+'?token='+encodeURIComponent(tok);
-        var r=await fetch(url,{cache:'no-store'});
-        if(r && r.ok){
-          var j=await r.json();
-          var results=(j && Array.isArray(j.results))? j.results : [];
-          results.forEach(function(d){
-            if(!d) return;
-            var sym=String(d.symbol==null?"":d.symbol).trim().toUpperCase();
-            if(!sym) return;
-            var p=d.regularMarketPrice;
-            if(p==null || isNaN(Number(p)) || !(Number(p)>0)) p=d.regularMarketPreviousClose;
-            if(p!=null && !isNaN(Number(p)) && Number(p)>0 && out[sym]==null) out[sym]=Number(p);
-          });
-        }
+    var tok=(typeof rvGetBrapiToken==='function')?rvGetBrapiToken():"";
+    var missing=uniq.filter(function(t){ return out[t]==null; });
+    if(tok && missing.length){
+      var url='https://brapi.dev/api/quote/'+encodeURIComponent(missing.join(','))+'?token='+encodeURIComponent(tok);
+      var r=await fetch(url,{cache:'no-store'});
+      if(r && r.ok){
+        var j=await r.json();
+        var results=(j && Array.isArray(j.results))? j.results : [];
+        results.forEach(function(d){
+          if(!d) return;
+          var s=String(d.symbol==null?"":d.symbol).trim().toUpperCase();
+          if(!s) return;
+          var p=d.regularMarketPrice;
+          if(p==null || isNaN(Number(p)) || !(Number(p)>0)) p=d.regularMarketPreviousClose;
+          if(p!=null && !isNaN(Number(p)) && Number(p)>0 && out[s]==null) out[s]=Number(p);
+        });
       }
-    }catch(_){ /* fallback brapi falhou: mantém o que já veio do Yahoo */ }
-  }catch(e){ /* rede bloqueada / erro geral: mantém mapa (valores null) */ }
+    }
+  }catch(_){ /* fallback brapi falhou: mantém o que já veio do Yahoo */ }
   return out;
 }
 /* Aplica cotações a uma lista de itens (state.items). Atualiza DOM + retorno. */
