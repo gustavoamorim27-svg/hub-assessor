@@ -3807,90 +3807,177 @@ html.theme-light .pm-chip{ background:#fff; }
     Array.prototype.forEach.call(document.querySelectorAll('#pmRows [data-arval]'),function(x){ x.onchange=function(){ PR.assets[x.getAttribute('data-arval')][+x.getAttribute('data-ai')].retVal=pn(x.value); render(); }; });
     Array.prototype.forEach.call(document.querySelectorAll('#pmRows [data-arisento]'),function(x){ x.onclick=function(){ var a=PR.assets[x.getAttribute('data-arisento')][+x.getAttribute('data-ai')]; a.retIsento=!a.retIsento; render(); }; });
   }
+  /* ===== Exportação em PDF real (sem aba de impressão) ===== */
+  function prSan(name){ var s=String(name==null?'':name).replace(/[\\/:*?"<>|\r\n]+/g,'').replace(/\s+/g,'_').replace(/_+/g,'_').replace(/^_+|_+$/g,''); return s.slice(0,60)||'cliente'; }
+  function prClassLabel(c){ return window.__hubClassLabel?window.__hubClassLabel(c):c; }
+  function prClassVisible(c){ var arr=PR.assets[c]||[]; return (PR.atual[c]||0)>0 || effPct(c)>0 || arr.some(function(a){ return a && a.nome; }); }
+  function prDocDate(){ var n=new Date(); return ('0'+n.getDate()).slice(-2)+'/'+('0'+(n.getMonth()+1)).slice(-2)+'/'+n.getFullYear(); }
+  function prSaindoData(){
+    var propNames={}; CATS.forEach(function(c){ (PR.assets[c]||[]).forEach(function(x){ propNames[nkey(x.nome)]=1; }); });
+    var byCat={}; (PR.atualAssets||[]).forEach(function(a){ if(propNames[nkey(a.nome)]||isProtected(a.nome,a.cat)) return; (byCat[a.cat]=byCat[a.cat]||[]).push(a); });
+    var cats=CATS.filter(function(c){ return byCat[c]&&byCat[c].length; });
+    var total=0; cats.forEach(function(c){ byCat[c].forEach(function(a){ total+=PR.patrim*(a.pct||0)/100; }); });
+    return { byCat:byCat, cats:cats, total:total };
+  }
+  function prBaseCSS(){ return '<style>'+
+    '.ppdoc{font-family:Arial,Helvetica,sans-serif;color:#12162a;width:794px;margin:0 auto;background:#fff}'+
+    '.ppdoc *{box-sizing:border-box;-webkit-print-color-adjust:exact;print-color-adjust:exact}'+
+    '.ppdoc .hdr{background:#0b1033;color:#fff;padding:26px 40px 20px}'+
+    '.ppdoc .hdr .brand{font-family:Georgia,serif;font-size:30px;font-weight:700;color:#FF4E00;line-height:1}'+
+    '.ppdoc .hdr .doct{font-size:16px;font-weight:800;margin-top:3px;letter-spacing:.3px}'+
+    '.ppdoc .hdr .meta{font-size:11.5px;color:#c4c9e6;margin-top:13px;display:flex;gap:26px;flex-wrap:wrap}'+
+    '.ppdoc .hdr .meta b{color:#fff;font-weight:700}'+
+    '.ppdoc .accent{height:5px;background:#FF4E00}'+
+    '.ppdoc .body{padding:22px 40px 28px}'+
+    '.ppdoc .sect-t{font-size:11.5px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;color:#0b1033;margin:20px 0 9px;padding-bottom:6px;border-bottom:2px solid #eceef5}'+
+    '.ppdoc .sect-t.first{margin-top:0}'+
+    '.ppdoc table{width:100%;border-collapse:collapse;font-size:12.5px}'+
+    '.ppdoc th{background:#0b1033;color:#fff;font-size:10px;text-transform:uppercase;letter-spacing:.4px;padding:9px 10px;text-align:right}'+
+    '.ppdoc th:first-child{text-align:left}'+
+    '.ppdoc td{padding:8px 10px;border-bottom:1px solid #eee}'+
+    '.ppdoc td.cl{font-weight:700}'+
+    '.ppdoc .dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:7px;vertical-align:middle}'+
+    '.ppdoc tr.sub td{color:#5b6485;font-weight:400;border-bottom:1px solid #f4f5f9}'+
+    '.ppdoc .cards{display:flex;gap:10px;margin:12px 0 4px}'+
+    '.ppdoc .cd{flex:1;background:#f6f7fb;border:1px solid #e6e9f2;border-radius:10px;padding:12px 14px}'+
+    '.ppdoc .cd .k{font-size:9.5px;text-transform:uppercase;letter-spacing:.4px;color:#6b7392;font-weight:700}'+
+    '.ppdoc .cd .v{font-size:18px;font-weight:800;margin-top:5px}'+
+    '.ppdoc .allocbar{display:flex;height:24px;border-radius:6px;overflow:hidden;margin:4px 0;border:1px solid #e6e9f2}'+
+    '.ppdoc .allocbar .seg{height:100%}'+
+    '.ppdoc .leg{display:flex;flex-wrap:wrap;gap:7px 16px;margin-top:9px;font-size:10.5px;color:#4a5170}'+
+    '.ppdoc .leg .li{display:flex;align-items:center;gap:5px}'+
+    '.ppdoc .sai{margin-top:2px;border:1px solid #f2d0d0;background:#fdf5f5;border-radius:10px;padding:2px 16px 12px}'+
+    '.ppdoc .sai .cat{font-size:11.5px;font-weight:800;color:#12162a;margin-top:11px}'+
+    '.ppdoc .sai .row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid #f2e2e2;font-size:12px}'+
+    '.ppdoc .sai .nm{font-weight:600;color:#8a2a2a}'+
+    '.ppdoc .sai .val{color:#c0392b;font-weight:700;white-space:nowrap;padding-left:10px}'+
+    '.ppdoc .sai .tot{margin-top:9px;text-align:right;font-size:12.5px;font-weight:800;color:#c0392b}'+
+    '.ppdoc .note{font-size:11px;color:#828aaa;padding:8px 2px}'+
+    '.ppdoc .disc{font-size:9.5px;color:#8a90ad;line-height:1.5;margin-top:20px;border-top:1px solid #ececec;padding-top:10px}'+
+    '</style>'; }
+  function prShellOpen(docTitle, metaHTML){ return prBaseCSS()+'<div class="ppdoc"><div class="hdr"><div class="brand">rico</div><div class="doct">'+docTitle+'</div><div class="meta">'+metaHTML+'</div></div><div class="accent"></div><div class="body">'; }
+  function prShellClose(discHTML){ return '<div class="disc">'+discHTML+'</div></div></div>'; }
+  function prMeta(){ return '<span>Cliente: <b>'+esc2(PR.cliente||'cliente')+'</b></span><span>Patrimônio: <b>R$ '+fmt(PR.patrim)+'</b></span><span>Data: <b>'+prDocDate()+'</b></span>'; }
+  function prSaindoSection(){
+    var s=prSaindoData();
+    if(!(PR.atualAssets&&PR.atualAssets.length)) return '';
+    if(!s.cats.length){ return '<div class="sect-t">Saindo da carteira</div><div class="note">Nenhum ativo atual sai da carteira nesta proposta.</div>'; }
+    var h='<div class="sect-t">Saindo da carteira</div><div class="sai">';
+    s.cats.forEach(function(c){ h+='<div class="cat"><span class="dot" style="background:'+(COLORS[c]||'#888')+'"></span>'+prClassLabel(c)+'</div>';
+      s.byCat[c].forEach(function(a){ var rs=PR.patrim*(a.pct||0)/100; h+='<div class="row"><span class="nm">'+esc2(a.nome||'-')+'</span><span class="val">'+fp(a.pct||0)+'% · R$ '+fmt(rs)+'</span></div>'; }); });
+    h+='<div class="tot">Total saindo: R$ '+fmt(s.total)+'</div></div>';
+    return h;
+  }
+  function proporPrintFallback(fullHtml){ try{ var w=window.open('','_blank'); if(!w) return; w.document.open(); w.document.write(fullHtml); w.document.close(); }catch(_){ } }
+  function proporMakePDF(innerHTML, filename, opts){
+    opts=opts||{};
+    var fullHtml='<!doctype html><html><head><meta charset="utf-8"><title>'+(opts.title||'Documento')+'</title></head><body style="margin:0;background:#fff">'+innerHTML+'<scr'+'ipt>setTimeout(function(){window.print();},350);</scr'+'ipt></body></html>';
+    function fallback(){ proporPrintFallback(fullHtml); try{ if(typeof showToast==='function') showToast('Gerando via impressão (PDF direto indisponível)'); }catch(_){ } }
+    try{
+      var JsPDF=(window.jspdf&&window.jspdf.jsPDF)?window.jspdf.jsPDF:null;
+      var launched=false;
+      function go(h2c){
+        if(launched) return; launched=true;
+        var cont=null;
+        try{
+          if(!JsPDF || !h2c){ fallback(); return; }
+          cont=document.createElement('div');
+          cont.style.cssText='position:fixed;left:-10000px;top:0;width:794px;background:#fff;padding:0;z-index:-1';
+          cont.innerHTML=innerHTML;
+          document.body.appendChild(cont);
+          setTimeout(function(){
+            try{
+              h2c(cont,{scale:2,backgroundColor:'#fff',useCORS:true,logging:false,windowWidth:794,width:794}).then(function(canvas){
+                try{
+                  var doc=new JsPDF({unit:'pt',format:'a4'});
+                  var pw=doc.internal.pageSize.getWidth(), ph=doc.internal.pageSize.getHeight();
+                  var imgW=pw, imgH=canvas.height*imgW/canvas.width;
+                  var img=canvas.toDataURL('image/png');
+                  if(imgH<=ph){ doc.addImage(img,'PNG',0,0,imgW,imgH); }
+                  else { var pos=0, remaining=imgH; doc.addImage(img,'PNG',0,pos,imgW,imgH); remaining-=ph; while(remaining>0.5){ pos-=ph; doc.addPage(); doc.addImage(img,'PNG',0,pos,imgW,imgH); remaining-=ph; } }
+                  doc.save(filename);
+                }catch(e){ fallback(); }
+                finally{ try{ document.body.removeChild(cont); }catch(_){ } }
+              }).catch(function(){ try{ document.body.removeChild(cont); }catch(_){ } fallback(); });
+            }catch(e){ try{ document.body.removeChild(cont); }catch(_){ } fallback(); }
+          },60);
+        }catch(e){ try{ if(cont) document.body.removeChild(cont); }catch(_){ } fallback(); }
+      }
+      if(typeof ensureHtml2Canvas==='function'){ ensureHtml2Canvas(function(h2c){ go(h2c||window.html2canvas); }); }
+      else { go(window.html2canvas); }
+    }catch(e){ fallback(); }
+  }
   function genPng(){
-    var rows=CATS.map(function(c){ var pp=effPct(c), ap=PR.atual[c]||0; var propRs=PR.patrim*pp/100, atRs=PR.patrim*ap/100, d=propRs-atRs;
-      var dc=Math.abs(d)<1?'#5b6485':(d>0?'#0a7a45':'#c0392b'); var dt=Math.abs(d)<1?'manter':((d>0?'+':'-')+'R$ '+fmt(Math.abs(d)));
-      var tr='<tr><td><span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:'+COLORS[c]+';margin-right:7px"></span>'+c+'</td><td style="text-align:right">'+fp(ap)+'%</td><td style="text-align:right;font-weight:bold">'+fp(pp)+'%</td><td style="text-align:right">R$ '+fmt(propRs)+'</td><td style="text-align:right;color:'+dc+'">'+dt+'</td></tr>';
-      (PR.assets[c]||[]).forEach(function(a){ if(!a.nome&&!a.pct) return; tr+='<tr><td style="padding-left:24px;color:#5b6485;font-weight:normal">&#8627; '+(a.nome||'-')+(a.detalhe?' <span style="color:#9aa2c0">- '+a.detalhe+'</span>':'')+'</td><td></td><td style="text-align:right;color:#5b6485">'+fp(a.pct||0)+'%</td><td style="text-align:right;color:#5b6485">R$ '+fmt(PR.patrim*(a.pct||0)/100)+'</td><td></td></tr>'; });
-      return tr; }).join('');
-    var vender=0,comprar=0; CATS.forEach(function(c){ var d=PR.patrim*(effPct(c)-(PR.atual[c]||0))/100; if(d>0) comprar+=d; else vender+=-d; });
-    var html='<!doctype html><html><head><meta charset="utf-8"><title>Proposta de carteira</title><style>'+
-      'body{font-family:Arial,Helvetica,sans-serif;color:#12162a;margin:0;padding:34px 40px;background:#fff}'+
-      'h1{font-family:Georgia,serif;color:#FF4E00;margin:0;font-size:24px}.sub{color:#5b6485;font-size:12px;margin:3px 0 18px}'+
-      'table{width:100%;border-collapse:collapse;font-size:12.5px}th{background:#0b1033;color:#fff;font-size:10px;text-transform:uppercase;padding:8px;text-align:right}th:first-child{text-align:left}td{padding:8px;border-bottom:1px solid #eee}td:first-child{font-weight:bold}'+
-      '.cards{display:flex;gap:10px;margin:16px 0}.cd{flex:1;background:#f2f4f8;border:1px solid #e3e7f0;border-radius:10px;padding:12px 14px}.cd .k{font-size:10px;text-transform:uppercase;color:#5b6485;font-weight:bold}.cd .v{font-size:19px;font-weight:bold;margin-top:4px}'+
-      '.disc{font-size:10px;color:#7a82a6;line-height:1.5;margin-top:16px;border-top:1px solid #eee;padding-top:10px}</style></head><body>'+
-      '<h1>rico</h1><div class="sub">Proposta de carteira - '+(PR.cliente||'cliente')+' - Patrimonio R$ '+fmt(PR.patrim)+'</div>'+
-      '<table><tr><th>Classe</th><th>Atual</th><th>Proposta</th><th>Valor proposto</th><th>Movimento</th></tr>'+rows+'</table>'+
-      '<div class="cards"><div class="cd"><div class="k">A vender</div><div class="v" style="color:#c0392b">R$ '+fmt(vender)+'</div></div>'+
-      '<div class="cd"><div class="k">A comprar</div><div class="v" style="color:#0a7a45">R$ '+fmt(comprar)+'</div></div>'+
-      '<div class="cd"><div class="k">Giro</div><div class="v">'+fp(PR.patrim>0?comprar/PR.patrim*100:0)+'%</div></div></div>'+
-      '<div class="disc">Material de apoio comercial - alocacao alvo por classe x carteira atual do cliente. Nao constitui recomendacao ou oferta; sujeito a suitability e as condicoes de cada produto.</div>'+
-      '<scr'+'ipt>setTimeout(function(){window.print();},350);</scr'+'ipt></body></html>';
-    var w=window.open('','_blank'); w.document.write(html); w.document.close();
+    try{
+      var cats=CATS.filter(prClassVisible);
+      var rows=cats.map(function(c){ var pp=effPct(c), ap=PR.atual[c]||0; var propRs=PR.patrim*pp/100, atRs=PR.patrim*ap/100, d=propRs-atRs;
+        var dc=Math.abs(d)<1?'#5b6485':(d>0?'#0a7a45':'#c0392b'); var dt=Math.abs(d)<1?'manter':((d>0?'▲ +':'▼ -')+'R$ '+fmt(Math.abs(d)));
+        var tr='<tr><td class="cl"><span class="dot" style="background:'+(COLORS[c]||'#888')+'"></span>'+prClassLabel(c)+'</td><td style="text-align:right">'+fp(ap)+'%</td><td style="text-align:right;font-weight:bold">'+fp(pp)+'%</td><td style="text-align:right">R$ '+fmt(propRs)+'</td><td style="text-align:right;color:'+dc+'">'+dt+'</td></tr>';
+        (PR.assets[c]||[]).forEach(function(a){ if(!a.nome&&!a.pct) return; tr+='<tr class="sub"><td style="padding-left:26px">&#8627; '+esc2(a.nome||'-')+(a.detalhe?' <span style="color:#9aa2c0">- '+esc2(a.detalhe)+'</span>':'')+'</td><td></td><td style="text-align:right">'+fp(a.pct||0)+'%</td><td style="text-align:right">R$ '+fmt(PR.patrim*(a.pct||0)/100)+'</td><td></td></tr>'; });
+        return tr; }).join('');
+      var vender=0,comprar=0; CATS.forEach(function(c){ var d=PR.patrim*(effPct(c)-(PR.atual[c]||0))/100; if(d>0) comprar+=d; else vender+=-d; });
+      var saldo=comprar-vender, giro=PR.patrim>0?comprar/PR.patrim*100:0;
+      var totProp=0; cats.forEach(function(c){ totProp+=effPct(c); }); if(totProp<=0) totProp=100;
+      var segs='', leg=''; cats.forEach(function(c){ var pp=effPct(c); if(pp<=0) return; var w=pp/totProp*100; segs+='<div class="seg" style="width:'+w+'%;background:'+(COLORS[c]||'#888')+'"></div>'; leg+='<div class="li"><span class="dot" style="background:'+(COLORS[c]||'#888')+'"></span>'+prClassLabel(c)+' '+fp(pp)+'%</div>'; });
+      var inner=prShellOpen('Proposta de Carteira', prMeta())+
+        '<div class="sect-t first">Alocação por classe</div>'+
+        '<table><tr><th>Classe</th><th>Atual</th><th>Proposta</th><th>Valor proposto</th><th>Movimento</th></tr>'+rows+'</table>'+
+        (segs?('<div class="sect-t">Distribuição proposta</div><div class="allocbar">'+segs+'</div><div class="leg">'+leg+'</div>'):'')+
+        '<div class="sect-t">Resumo financeiro</div>'+
+        '<div class="cards"><div class="cd"><div class="k">A vender</div><div class="v" style="color:#c0392b">R$ '+fmt(vender)+'</div></div>'+
+        '<div class="cd"><div class="k">A comprar</div><div class="v" style="color:#0a7a45">R$ '+fmt(comprar)+'</div></div>'+
+        '<div class="cd"><div class="k">Giro</div><div class="v">'+fp(giro)+'%</div></div>'+
+        '<div class="cd"><div class="k">'+(saldo>=0?'Aporte':'Resgate')+'</div><div class="v" style="color:'+(saldo>=0?'#0a7a45':'#c0392b')+'">R$ '+fmt(Math.abs(saldo))+'</div></div></div>'+
+        prSaindoSection()+
+        prShellClose('Material de apoio comercial - alocação alvo por classe x carteira atual do cliente. Não constitui recomendação ou oferta; sujeito a suitability e às condições de cada produto.');
+      proporMakePDF(inner, 'Proposta_'+prSan(PR.cliente)+'.pdf', {title:'Proposta de carteira'});
+    }catch(e){ try{ if(typeof showToast==='function') showToast('Não foi possível gerar a proposta.'); }catch(_){ } }
   }
   function genProj(){
-    var CDI=14.25, IPCA=4.5, MERC=12;
-    function retAA(a){ var v=Number(a.retVal)||0; if(a.retCat==='pos') return CDI*v/100; if(a.retCat==='pre') return v; if(a.retCat==='inflacao') return IPCA+v; return MERC; }
-    var r=0;
-    CATS.forEach(function(c){ var arr=PR.assets[c]||[]; if(arr.length){ arr.forEach(function(a){ r+=(Number(a.pct)||0)/100*retAA(a); }); } else { r+=((PR.prop[c]||0)/100)*MERC; } });
-    var pat=PR.patrim||0, years=5, vals=[]; for(var y=0;y<=years;y++){ vals.push(pat*Math.pow(1+r/100,y)); }
-    var maxV=vals[years]||1, bars=''; for(var y=0;y<=years;y++){ var h=Math.max(4,Math.round(vals[y]/maxV*150)); bars+='<div class="bcol"><div class="bval">R$ '+fmt(vals[y])+'</div><div class="bar" style="height:'+h+'px"></div><div class="byr">'+(y===0?'Hoje':('Ano '+y))+'</div></div>'; }
-    var rows=''; for(var y=1;y<=years;y++){ rows+='<tr><td>Ano '+y+'</td><td style="text-align:right">R$ '+fmt(vals[y])+'</td><td style="text-align:right;color:#0a7a45">+R$ '+fmt(vals[y]-pat)+'</td></tr>'; }
-    var html='<!doctype html><html><head><meta charset="utf-8"><title>Projeção da carteira</title><style>'+
-      '*{box-sizing:border-box;-webkit-print-color-adjust:exact;print-color-adjust:exact}'+
-      'body{font-family:Arial,Helvetica,sans-serif;color:#12162a;margin:0;padding:34px 40px;background:#fff}'+
-      'h1{font-family:Georgia,serif;color:#FF4E00;margin:0;font-size:24px}.sub{color:#5b6485;font-size:12px;margin:3px 0 4px}'+
-      '.mets{display:flex;gap:12px;margin:16px 0}.met{flex:1;background:#f7f8fc;border-radius:8px;padding:12px 14px}.ml{font-size:9px;font-weight:700;color:#828aaa;letter-spacing:.5px;text-transform:uppercase}.mv{font-size:18px;font-weight:800;margin-top:5px}'+
-      '.chart{display:flex;align-items:flex-end;gap:16px;height:210px;border-bottom:2px solid #e3e7f0;padding:10px 6px 0;margin:10px 0 6px}'+
-      '.bcol{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}'+
-      '.bar{width:66%;background:linear-gradient(180deg,#FF6B2C,#FF4E00);border-radius:6px 6px 0 0}'+
-      '.bval{font-size:10px;font-weight:700;margin-bottom:5px;white-space:nowrap}.byr{font-size:10.5px;color:#5b6485;font-weight:700;margin-top:6px}'+
-      'table{width:100%;border-collapse:collapse;font-size:12.5px;margin-top:14px}th{background:#0b1033;color:#fff;font-size:10px;text-transform:uppercase;padding:8px;text-align:right}th:first-child{text-align:left}td{padding:8px;border-bottom:1px solid #eee}td:first-child{font-weight:bold}'+
-      '.disc{font-size:10px;color:#7a82a6;line-height:1.5;margin-top:16px;border-top:1px solid #eee;padding-top:10px}</style></head><body>'+
-      '<h1>rico</h1><div class="sub">Projeção da carteira proposta'+(PR.cliente?(' · '+PR.cliente):'')+'</div>'+
-      '<div class="mets"><div class="met"><div class="ml">Patrimonio inicial</div><div class="mv">R$ '+fmt(pat)+'</div></div>'+
-      '<div class="met"><div class="ml">Retorno estimado</div><div class="mv" style="color:#0a7a45">'+fp(r)+'% a.a.</div></div>'+
-      '<div class="met"><div class="ml">Projecao em '+years+' anos</div><div class="mv">R$ '+fmt(vals[years])+'</div></div></div>'+
-      '<div class="chart">'+bars+'</div>'+
-      '<table><tr><th>Periodo</th><th>Valor projetado</th><th>Ganho acumulado</th></tr>'+rows+'</table>'+
-      '<div class="disc">Projecao ilustrativa (juros compostos) com base no retorno estimado da carteira proposta - premissas: CDI '+fp(CDI)+'%, IPCA '+fp(IPCA)+'%, mercado '+fp(MERC)+'% a.a. Nao considera impostos, custos, aportes nem volatilidade. Rentabilidade estimada nao garante resultados futuros. Material de apoio comercial - nao constitui recomendacao ou oferta.</div>'+
-      '<scr'+'ipt>setTimeout(function(){window.print();},350);</scr'+'ipt></body></html>';
-    var w=window.open('','_blank'); if(!w) return; w.document.write(html); w.document.close();
+    try{
+      var CDI=14.25, IPCA=4.5, MERC=12;
+      function retAA(a){ var v=Number(a.retVal)||0; if(a.retCat==='pos') return CDI*v/100; if(a.retCat==='pre') return v; if(a.retCat==='inflacao') return IPCA+v; return MERC; }
+      var r=0;
+      CATS.forEach(function(c){ var arr=PR.assets[c]||[]; if(arr.length){ arr.forEach(function(a){ r+=(Number(a.pct)||0)/100*retAA(a); }); } else { r+=((PR.prop[c]||0)/100)*MERC; } });
+      var pat=PR.patrim||0, years=5, vals=[]; for(var y=0;y<=years;y++){ vals.push(pat*Math.pow(1+r/100,y)); }
+      var maxV=vals[years]||1, bars=''; for(var y=0;y<=years;y++){ var hh=Math.max(4,Math.round(vals[y]/maxV*150)); bars+='<div class="bcol"><div class="bval">R$ '+fmt(vals[y])+'</div><div class="bar" style="height:'+hh+'px"></div><div class="byr">'+(y===0?'Hoje':('Ano '+y))+'</div></div>'; }
+      var trows=''; for(var y=1;y<=years;y++){ trows+='<tr><td class="cl">Ano '+y+'</td><td style="text-align:right">R$ '+fmt(vals[y])+'</td><td style="text-align:right;color:#0a7a45">+R$ '+fmt(vals[y]-pat)+'</td></tr>'; }
+      var extraCSS='<style>.ppdoc .chart{display:flex;align-items:flex-end;gap:16px;height:200px;border-bottom:2px solid #e3e7f0;padding:10px 6px 0;margin:4px 0 6px}.ppdoc .bcol{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}.ppdoc .bar{width:64%;background:linear-gradient(180deg,#FF8A3D,#FF4E00);border-radius:6px 6px 0 0}.ppdoc .bval{font-size:10px;font-weight:700;margin-bottom:5px;white-space:nowrap}.ppdoc .byr{font-size:10.5px;color:#5b6485;font-weight:700;margin-top:6px}</style>';
+      var inner=prShellOpen('Projeção da Carteira', prMeta())+extraCSS+
+        '<div class="cards"><div class="cd"><div class="k">Patrimônio inicial</div><div class="v">R$ '+fmt(pat)+'</div></div>'+
+        '<div class="cd"><div class="k">Retorno estimado</div><div class="v" style="color:#0a7a45">'+fp(r)+'% a.a.</div></div>'+
+        '<div class="cd"><div class="k">Projeção em '+years+' anos</div><div class="v">R$ '+fmt(vals[years])+'</div></div></div>'+
+        '<div class="sect-t">Evolução projetada</div><div class="chart">'+bars+'</div>'+
+        '<table><tr><th>Período</th><th>Valor projetado</th><th>Ganho acumulado</th></tr>'+trows+'</table>'+
+        prShellClose('Projeção ilustrativa (juros compostos) com base no retorno estimado da carteira proposta - premissas: CDI '+fp(CDI)+'%, IPCA '+fp(IPCA)+'%, mercado '+fp(MERC)+'% a.a. Não considera impostos, custos, aportes nem volatilidade. Rentabilidade estimada não garante resultados futuros. Material de apoio comercial - não constitui recomendação ou oferta.');
+      proporMakePDF(inner, 'Projecao_'+prSan(PR.cliente)+'.pdf', {title:'Projeção da carteira'});
+    }catch(e){ try{ if(typeof showToast==='function') showToast('Não foi possível gerar a projeção.'); }catch(_){ } }
   }
   function genPlano(){
-    var red=[],up=[],keep=[],vender=0,comprar=0;
-    CATS.forEach(function(c){ var ap=PR.atual[c]||0, pp=effPct(c); var d=PR.patrim*(pp-ap)/100; var nm=(PR.assets[c]||[]).map(function(a){return a.nome;}).filter(Boolean).join(', '); var sub=fp(ap)+'% -> '+fp(pp)+'%'+(nm?(' - '+nm):''); var it={c:c,sub:sub,d:d};
-      if(d>1){ up.push(it); comprar+=d; } else if(d<-1){ red.push(it); vender+=-d; } else keep.push(it); });
-    var giro=PR.patrim>0?comprar/PR.patrim*100:0;
-    var n=new Date(); var data=('0'+n.getDate()).slice(-2)+'/'+('0'+(n.getMonth()+1)).slice(-2)+'/'+n.getFullYear();
-    function sec(title,color,arr){ var body=arr.length?arr.map(function(it){ var amt=(it.d>=0?'+':'-')+'R$ '+fmt(Math.abs(it.d)); var col=it.d>=0?'#28aa6e':'#d64a4a'; return '<div class="row"><div><div class="nm">'+it.c+'</div><div class="cl">'+it.sub+'</div></div><div class="amt" style="color:'+col+'">'+amt+'</div></div>'; }).join(''):'<div class="empty">Nenhuma classe.</div>';
-      return '<div class="sec"><div class="sh" style="border-color:'+color+';color:'+color+'">'+title+'</div>'+body+'</div>'; }
-    var html='<!doctype html><html><head><meta charset="utf-8"><title>Plano de Ajuste de Carteira</title><style>'+
-      '*{box-sizing:border-box;-webkit-print-color-adjust:exact;print-color-adjust:exact}'+
-      'body{font-family:Arial,Helvetica,sans-serif;color:#12162a;margin:0;padding:38px 44px}'+
-      '.bar{height:5px;background:#f26522;margin:-38px -44px 22px}'+
-      '.hd{display:flex;align-items:baseline;gap:14px}.logo{font-size:26px;font-weight:800;color:#f26522}.ttl{font-size:20px;font-weight:800}'+
-      '.sub{color:#828aaa;font-size:12px;margin:8px 0 16px}hr{border:none;border-top:1px solid #dee2ee;margin:0 0 18px}'+
-      '.mets{display:flex;gap:12px;margin-bottom:24px}.met{flex:1;background:#f7f8fc;border-radius:8px;padding:12px 14px}'+
-      '.ml{font-size:9px;font-weight:700;color:#828aaa;letter-spacing:.5px}.mv{font-size:16px;font-weight:800;margin-top:5px}'+
-      '.sec{margin-bottom:22px}.sh{font-size:13px;font-weight:800;border-bottom:2px solid;padding-bottom:5px;margin-bottom:10px}'+
-      '.row{display:flex;justify-content:space-between;align-items:flex-start;padding:7px 0;border-bottom:1px solid #eef0f6}'+
-      '.nm{font-size:11px;font-weight:700}.cl{font-size:9.5px;color:#828aaa;margin-top:2px}.amt{font-size:11px;white-space:nowrap;padding-left:12px;text-align:right;font-weight:700}'+
-      '.empty{color:#828aaa;font-size:11px;padding:6px 0}.ft{margin-top:26px;border-top:1px solid #dee2ee;padding-top:10px;color:#828aaa;font-size:9px;text-align:center}'+
-      '</style></head><body><div class="bar"></div>'+
-      '<div class="hd"><div class="logo">rico</div><div class="ttl">Plano de Ajuste de Carteira</div></div>'+
-      '<div class="sub">'+(PR.cliente||'Cliente')+' - '+data+'</div><hr>'+
-      '<div class="mets">'+
-        '<div class="met"><div class="ml">PATRIMONIO</div><div class="mv">R$ '+fmt(PR.patrim)+'</div></div>'+
-        '<div class="met"><div class="ml">A VENDER</div><div class="mv" style="color:#d64a4a">R$ '+fmt(vender)+'</div></div>'+
-        '<div class="met"><div class="ml">A COMPRAR</div><div class="mv" style="color:#28aa6e">R$ '+fmt(comprar)+'</div></div>'+
-        '<div class="met"><div class="ml">GIRO</div><div class="mv" style="color:#f26522">'+fp(giro)+'%</div></div>'+
-      '</div>'+
-      sec('REDUZIR / SAIR','#d64a4a',red)+sec('AUMENTAR / ENTRAR','#28aa6e',up)+sec('MANTER','#828aaa',keep)+
-      '<div class="ft">Material de apoio interno - nao constitui recomendacao ou oferta - gerado pelo Hub do Assessor</div>'+
-      '<scr'+'ipt>window.onload=function(){setTimeout(function(){window.print();},250);};</scr'+'ipt></body></html>';
-    var w=window.open('','_blank'); if(!w) return; w.document.open(); w.document.write(html); w.document.close();
+    try{
+      var red=[],up=[],keep=[],vender=0,comprar=0;
+      CATS.filter(prClassVisible).forEach(function(c){ var ap=PR.atual[c]||0, pp=effPct(c); var d=PR.patrim*(pp-ap)/100; var nm=(PR.assets[c]||[]).map(function(a){return a.nome;}).filter(Boolean).join(', '); var sub=fp(ap)+'% → '+fp(pp)+'%'+(nm?(' · '+nm):''); var it={c:c,sub:sub,d:d};
+        if(d>1){ up.push(it); comprar+=d; } else if(d<-1){ red.push(it); vender+=-d; } else keep.push(it); });
+      var giro=PR.patrim>0?comprar/PR.patrim*100:0;
+      var sai=prSaindoData();
+      function sec(title,color,arr){ var body=arr.length?arr.map(function(it){ var amt=(it.d>=0?'+':'-')+'R$ '+fmt(Math.abs(it.d)); var col=it.d>=0?'#28aa6e':'#d64a4a'; return '<div class="prow"><div><div class="nm"><span class="dot" style="background:'+(COLORS[it.c]||'#888')+'"></span>'+prClassLabel(it.c)+'</div><div class="cl">'+esc2(it.sub)+'</div></div><div class="amt" style="color:'+col+'">'+amt+'</div></div>'; }).join(''):'<div class="pempty">Nenhuma classe.</div>';
+        return '<div class="psec"><div class="psh" style="border-color:'+color+';color:'+color+'">'+title+'</div>'+body+'</div>'; }
+      var saiBlock='';
+      if(sai.cats.length){ saiBlock='<div class="sai">'; sai.cats.forEach(function(c){ saiBlock+='<div class="cat"><span class="dot" style="background:'+(COLORS[c]||'#888')+'"></span>'+prClassLabel(c)+'</div>'; sai.byCat[c].forEach(function(a){ saiBlock+='<div class="row"><span class="nm">'+esc2(a.nome||'-')+'</span><span class="val">'+fp(a.pct||0)+'% · R$ '+fmt(PR.patrim*(a.pct||0)/100)+'</span></div>'; }); }); saiBlock+='<div class="tot">Total saindo: R$ '+fmt(sai.total)+'</div></div>'; }
+      var extraCSS='<style>.ppdoc .psec{margin-bottom:18px}.ppdoc .psh{font-size:12.5px;font-weight:800;border-bottom:2px solid;padding-bottom:5px;margin-bottom:9px}.ppdoc .prow{display:flex;justify-content:space-between;align-items:flex-start;padding:7px 0;border-bottom:1px solid #eef0f6}.ppdoc .prow .nm{font-size:11.5px;font-weight:700}.ppdoc .prow .cl{font-size:9.5px;color:#828aaa;margin-top:2px;font-weight:400}.ppdoc .prow .amt{font-size:11.5px;white-space:nowrap;padding-left:12px;text-align:right;font-weight:700}.ppdoc .pempty{color:#828aaa;font-size:11px;padding:6px 0}.ppdoc .saihead{font-size:10.5px;font-weight:800;color:#8a2a2a;margin:2px 0 6px;text-transform:uppercase;letter-spacing:.4px}</style>';
+      var inner=prShellOpen('Plano de Ajuste de Carteira', prMeta())+extraCSS+
+        '<div class="cards"><div class="cd"><div class="k">Patrimônio</div><div class="v">R$ '+fmt(PR.patrim)+'</div></div>'+
+        '<div class="cd"><div class="k">A vender</div><div class="v" style="color:#d64a4a">R$ '+fmt(vender)+'</div></div>'+
+        '<div class="cd"><div class="k">A comprar</div><div class="v" style="color:#28aa6e">R$ '+fmt(comprar)+'</div></div>'+
+        '<div class="cd"><div class="k">Giro</div><div class="v" style="color:#FF4E00">'+fp(giro)+'%</div></div></div>'+
+        '<div class="sect-t first">Movimentações por classe</div>'+
+        sec('REDUZIR / SAIR','#d64a4a',red)+
+        (saiBlock?('<div class="saihead">Ativos saindo da carteira</div>'+saiBlock):'')+
+        sec('AUMENTAR / ENTRAR','#28aa6e',up)+
+        sec('MANTER','#828aaa',keep)+
+        prShellClose('Material de apoio interno - não constitui recomendação ou oferta - gerado pelo Hub do Assessor.');
+      proporMakePDF(inner, 'Plano_de_Ajuste_'+prSan(PR.cliente)+'.pdf', {title:'Plano de Ajuste de Carteira'});
+    }catch(e){ try{ if(typeof showToast==='function') showToast('Não foi possível gerar o plano.'); }catch(_){ } }
   }
   function open(){ var m=el('proporModal'); m.classList.add('on'); var _nv=document.querySelector('.g-nav'); if(_nv){ m.style.top=_nv.offsetHeight+'px'; m.style.height='auto'; } document.body.style.overflow='hidden'; if(Object.keys(PR.atual).length){ render(); } else { seedSim(); if(!Object.keys(PR.atual).length){ PR.atual=emptyMap(); PR.prop=emptyMap(); render(); } } }
   function close(){ el('proporModal').classList.remove('on'); document.body.style.overflow=''; }
