@@ -1,1 +1,85 @@
-{"updated":"08/07/2026 15:06","items":[{"region":"nacional","title":"Ibovespa volta aos 174 mil pontos com aposta na Selic e dolar cai","resumo":"Bolsa recupera folego apoiada na expectativa da politica monetaria enquanto o dolar recua ante o real.","source":"Agencia Brasil","date":"08 jul 2026","url":"https://agenciabrasil.ebc.com.br/economia/noticia/2026-07/ibovespa-volta-aos-174-mil-pontos-com-aposta-na-selic-e-dolar-cai"},{"region":"nacional","title":"Ibovespa sobe e dolar cai mesmo com EUA ameacando novas tarifas","resumo":"Mercado reage com resiliencia a ameaca de tarifaco americano de 25% sobre produtos brasileiros.","source":"InfoMoney","date":"08 jul 2026","url":"https://www.infomoney.com.br/mercados/eua-ameacam-brasil-com-novas-tarifas-mas-ibovespa-sobe-e-dolar-cai-o-que-explica/"},{"region":"nacional","title":"Mercado financeiro eleva previsao da Selic para 13,75% ao ano","resumo":"Boletim Focus mostra projecao de juros mais altos ate o fim de 2026 diante da pressao inflacionaria.","source":"Agencia Brasil","date":"08 jul 2026","url":"https://agenciabrasil.ebc.com.br/economia/noticia/2026-06/mercado-financeiro-eleva-previsao-da-selic-para-1375-ao-ano"},{"region":"nacional","title":"Focus eleva projecao do IPCA para 5,3% em 2026","resumo":"Analistas revisam para cima a estimativa de inflacao do ano, de 5,11% para 5,3%.","source":"Agencia Brasil","date":"08 jul 2026","url":"https://agenciabrasil.ebc.com.br/economia/noticia/2026-06/mercado-financeiro-eleva-previsao-da-selic-para-1375-ao-ano"},{"region":"nacional","title":"Tarifaco dos EUA de 25% sobre o Brasil segue no radar ate 15 de julho","resumo":"Investidores acompanham audiencia em Washington e negociacoes que podem definir novas tarifas.","source":"Money Times","date":"08 jul 2026","url":"https://www.moneytimes.com.br/ibovespa-5-coisas-6-7-26-apsa/"},{"region":"internacional","title":"Trump declara fim do cessar-fogo com o Ira e Dow cai mais de 800 pontos","resumo":"Escalada geopolitica derruba Wall Street e amplia a aversao ao risco global.","source":"TheStreet","date":"08 jul 2026","url":"https://www.thestreet.com/stock-market-today/stock-market-today-dow-jones-sp-500-nasdaq-updates-july-8-2026"},{"region":"internacional","title":"Petroleo Brent dispara rumo a US$ 80 com tensao no Estreito de Ormuz","resumo":"Ataques a navios e risco de disrupcao no fluxo de oferta impulsionam as cotacoes do petroleo.","source":"CNBC","date":"08 jul 2026","url":"https://www.cnbc.com/2026/07/07/oil-prices-iran-strait-hormuz.html"},{"region":"internacional","title":"S&P 500 recua 0,65% e Nasdaq perde 0,50% com escalada no Oriente Medio","resumo":"Principais indices de Nova York fecham em queda diante do agravamento do conflito com o Ira.","source":"TheStreet","date":"08 jul 2026","url":"https://www.thestreet.com/stock-market-today/stock-market-today-dow-jones-sp-500-nasdaq-updates-july-8-2026"},{"region":"internacional","title":"Juro do Treasury de 10 anos sobe a 4,59%, maior nivel desde maio","resumo":"Venda de titulos avanca com temor de que energia mais cara mantenha os juros altos por mais tempo.","source":"TheStreet","date":"08 jul 2026","url":"https://www.thestreet.com/stock-market-today/stock-market-today-dow-jones-sp-500-nasdaq-updates-july-8-2026"},{"region":"internacional","title":"Ata do Fed mostra membros favoraveis a alta de juros diante da inflacao","resumo":"Minutas da reuniao de junho revelam preocupacao com a inflacao alimentada pelo choque de energia.","source":"TheStreet","date":"08 jul 2026","url":"https://www.thestreet.com/stock-market-today/stock-market-today-dow-jones-sp-500-nasdaq-updates-july-8-2026"}]}
+{
+  "updated": "10/07/2026 09:07",
+  "items": [
+    {
+      "region": "nacional",
+      "title": "Ibovespa sobe 1,22% aos 172 mil pontos puxado por bancos",
+      "resumo": "Bolsa acompanha bom humor externo em pregao de liquidez reduzida pelo feriado de SP; dolar recua a R$ 5,12.",
+      "source": "B3 Bora Investir",
+      "date": "09 jul 2026",
+      "url": "https://borainvestir.b3.com.br/noticias/mercado/ibovespa-b3-fecha-em-alta-de-122-aos-172-mil-pontos-dolar-cai-a-r-512/"
+    },
+    {
+      "region": "nacional",
+      "title": "IPCA de junho deve desacelerar a 0,31% no radar do mercado",
+      "resumo": "Mediana das estimativas ve inflacao em 12 meses a 4,79%, ainda acima do teto da meta perseguida pelo Banco Central.",
+      "source": "Money Times",
+      "date": "09 jul 2026",
+      "url": "https://www.moneytimes.com.br/ibovespa-9-7-26-lils/"
+    },
+    {
+      "region": "nacional",
+      "title": "Petrobras recua com queda do petroleo e limita ganhos do Ibovespa",
+      "resumo": "PETR4 cai 1,11% e PETR3 perde 1,43% acompanhando o barril, apesar da alta geral da bolsa.",
+      "source": "Money Times",
+      "date": "09 jul 2026",
+      "url": "https://www.moneytimes.com.br/tempo-real-ibovespa-hoje-mercado-ao-vivo-07-07-2026-jals-lils-apsa/"
+    },
+    {
+      "region": "nacional",
+      "title": "Selic segue em 14,25% ao ano apos corte de 0,25 ponto",
+      "resumo": "Mercado projeta continuidade dos cortes e ve a taxa basica em 13,25% ate o fim de 2026.",
+      "source": "InfoMoney",
+      "date": "10 jul 2026",
+      "url": "https://www.infomoney.com.br/mercados/"
+    },
+    {
+      "region": "nacional",
+      "title": "Bolsa brasileira segue tregua no exterior com IPCA no radar",
+      "resumo": "Investidores avaliam alivio nas tensoes globais enquanto aguardam dados de inflacao domestica.",
+      "source": "Investing.com Brasil",
+      "date": "09 jul 2026",
+      "url": "https://br.investing.com/news/stock-market-news/ibovespa-e-dolar-hoje-bolsas-em-alta-com-tregua-no-exterior-e-ipca-no-radar-1997606"
+    },
+    {
+      "region": "internacional",
+      "title": "S&P 500 sobe 0,8% e Nasdaq avanca 1,3% com rali dos chips",
+      "resumo": "Produtoras de memoria disparam com forte demanda por ADRs da SK Hynix, sete vezes sobre-subscritos.",
+      "source": "Schwab",
+      "date": "09 jul 2026",
+      "url": "https://www.schwab.com/learn/story/stock-market-update-open"
+    },
+    {
+      "region": "internacional",
+      "title": "Petroleo dispara com ataques no Estreito de Ormuz",
+      "resumo": "Brent salta apos EUA revogarem isencao de sancoes ao Ira em meio a ataques a navios comerciais.",
+      "source": "NBC News",
+      "date": "08 jul 2026",
+      "url": "https://www.nbcnews.com/business/markets/oil-prices-strait-hormuz-chip-stocks-rcna353328"
+    },
+    {
+      "region": "internacional",
+      "title": "Fed mantem juros e sinaliza cautela sob novo presidente Warsh",
+      "resumo": "Comite deixa a taxa estavel na primeira reuniao liderada por Kevin Warsh, com divisao sobre proximos passos.",
+      "source": "CNBC",
+      "date": "08 jul 2026",
+      "url": "https://www.cnbc.com/2026/07/07/stock-market-today-live-updates.html"
+    },
+    {
+      "region": "internacional",
+      "title": "Treasury de 10 anos perto de 4,6% mantem credito caro",
+      "resumo": "Rendimento elevado sustenta custos de hipotecas e emprestimos e alimenta o debate sobre nova alta de juros.",
+      "source": "Yahoo Finance",
+      "date": "10 jul 2026",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/us-stock-market-today-p-081449137.html"
+    },
+    {
+      "region": "internacional",
+      "title": "Kospi da Coreia salta 2,6% liderando alta na Asia",
+      "resumo": "Indice sul-coreano dispara com demanda por chips de memoria, embora Asia-Pacifico ainda registre perda semanal.",
+      "source": "Schwab",
+      "date": "10 jul 2026",
+      "url": "https://www.schwab.com/learn/story/stock-market-update-open"
+    }
+  ]
+}
