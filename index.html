@@ -3713,7 +3713,7 @@ html.theme-light .pm-chip{ background:#fff; }
             '<input class="pm-an" type="text" placeholder="Nome do ativo" value="'+esc2(a.nome)+'" data-an="'+c+'" data-ai="'+ai+'">'+
             (a.nome? (curSet[nkey(a.nome)]? '<span class="pm-nk kept" style="font-size:10px;font-weight:800;padding:2px 7px;border-radius:20px;letter-spacing:.4px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.16);color:#9AA2C0;white-space:nowrap">Mantido</span>' : '<span class="pm-nk novo" style="font-size:10px;font-weight:800;padding:2px 7px;border-radius:20px;letter-spacing:.4px;background:rgba(61,214,140,.16);border:1px solid rgba(61,214,140,.55);color:#3DD68C;white-space:nowrap">Novo</span>') : '')+
             '<div class="pm-pct"><input type="text" inputmode="decimal" value="'+fp(a.pct||0)+'" data-ap="'+c+'" data-ai="'+ai+'"><span class="pm-lbl">%</span></div>'+
-            '<div class="pm-acrs">R$ '+fmt(PR.patrim*(a.pct||0)/100)+'</div>'+
+            '<div class="pm-acrs">R$ <input class="pm-arsi" type="text" inputmode="decimal" value="'+fmt(PR.patrim*(a.pct||0)/100)+'" data-ars="'+c+'" data-ai="'+ai+'" title="Digite o valor em R$ - a % e calculada automaticamente" style="width:96px;background:rgba(0,0,0,.22);border:1px solid rgba(120,130,210,.28);border-radius:7px;color:inherit;font:inherit;padding:3px 6px;text-align:right"></div>'+
             (a.protegido?'<span class="pm-prot" title="Ativo XP do cliente - nao pode ser vendido">🔒</span>':'<button class="pm-arm" data-arm="'+c+'" data-ai="'+ai+'" title="Remover">&times;</button>')+
           '</div>'+
           '<div class="pm-acret">'+esc2(retLabelOf(a))+'</div>'+
@@ -3747,6 +3747,12 @@ html.theme-light .pm-chip{ background:#fff; }
       chip('A comprar','R$ '+fmt(comprar),'#3DD68C')+
       chip('Giro',fp(giro)+'%','#FFB020')+
       chip(saldo>=0?'Aporte':'Resgate','R$ '+fmt(Math.abs(saldo)),saldo>=0?'#3DD68C':'#FF6B6B');
+    try{ var _falta=100-tot, _te=el('pmTot');
+      if(_te){ _te.insertAdjacentHTML('beforeend','<div style="margin-top:7px;font-size:12px;color:#9AA2D0">'+(Math.abs(_falta)<0.1
+        ? '<b style="color:#3DD68C">Carteira fechada em 100%</b>'
+        : (_falta>0 ? 'Falta alocar <b style="color:#FFB020">'+fp(_falta)+'%</b> &middot; R$ '+fmt(PR.patrim*_falta/100)
+                    : 'Passou <b style="color:#FF6B6B">'+fp(-_falta)+'%</b> &middot; R$ '+fmt(PR.patrim*(-_falta)/100)))+'</div>'); }
+    }catch(_){}
     bindRows();
     var _f=el('pmFit100'); if(_f) _f.onclick=function(){ ajustarPropor(false); };
     var _eq=el('pmEqual'); if(_eq) _eq.onclick=function(){ ajustarPropor(true); };
@@ -3802,6 +3808,7 @@ html.theme-light .pm-chip{ background:#fff; }
     Array.prototype.forEach.call(document.querySelectorAll('#pmRows [data-pmanual]'),function(b){ b.onclick=function(){ var c=b.getAttribute('data-pmanual'); (PR.assets[c]=PR.assets[c]||[]).push({nome:'',pct:0}); PR.picker=null; render(); }; });
     Array.prototype.forEach.call(document.querySelectorAll('#pmRows [data-an]'),function(i){ i.oninput=function(){ PR.assets[i.getAttribute('data-an')][+i.getAttribute('data-ai')].nome=i.value; }; });
     Array.prototype.forEach.call(document.querySelectorAll('#pmRows [data-ap]'),function(i){ i.onchange=function(){ PR.assets[i.getAttribute('data-ap')][+i.getAttribute('data-ai')].pct=pn(i.value); render(); }; });
+    Array.prototype.forEach.call(document.querySelectorAll('#pmRows [data-ars]'),function(i){ i.onchange=function(){ var _v=pn(i.value); var _P=Number(PR.patrim)||0; var _p=_P>0?(_v/_P*100):0; PR.assets[i.getAttribute('data-ars')][+i.getAttribute('data-ai')].pct=Math.round(_p*100)/100; render(); }; });
     Array.prototype.forEach.call(document.querySelectorAll('#pmRows [data-arm]'),function(b){ b.onclick=function(){ var c=b.getAttribute('data-arm'); PR.assets[c].splice(+b.getAttribute('data-ai'),1); if(!PR.assets[c].length) delete PR.assets[c]; render(); }; });
     Array.prototype.forEach.call(document.querySelectorAll('#pmRows [data-arcat]'),function(x){ x.onchange=function(){ PR.assets[x.getAttribute('data-arcat')][+x.getAttribute('data-ai')].retCat=x.value; render(); }; });
     Array.prototype.forEach.call(document.querySelectorAll('#pmRows [data-arval]'),function(x){ x.onchange=function(){ PR.assets[x.getAttribute('data-arval')][+x.getAttribute('data-ai')].retVal=pn(x.value); render(); }; });
@@ -9451,11 +9458,6 @@ function render(){
   h += '<div class="rv-cot-tools" style="display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-top:10px">'+
     '<button class="addbtn" id="rvBtnFetchAll" style="background:rgba(43,217,166,.1);border-color:rgba(43,217,166,.5);color:#2BD9A6;font-weight:700">\uD83D\uDD04 Atualizar cotações de todos os ativos</button>'+
     '<span data-rvcotts style="font-size:12px;color:#8A93D8">'+esc(rvLastQuoteTs||"")+'</span>'+
-    '</div>';
-  h += '<div class="rv-brapi-row" style="display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:8px;font-size:11.5px;color:#8A93D8">'+
-    '<span style="font-weight:700">Token brapi</span>'+
-    '<input id="rvBrapiToken" type="text" placeholder="opcional (token grátis)" value="'+esc(rvGetBrapiToken())+'" style="width:190px;background:rgba(0,0,0,.3);border:1px solid rgba(120,130,210,.2);border-radius:8px;color:#cfd4ef;font-size:12px;padding:6px 9px;outline:none">'+
-    '<span>Busca automática de todos os tickers (Yahoo Finance). O token <a href="https://brapi.dev" target="_blank" rel="noopener" style="color:#7FD8F5;text-decoration:underline">brapi</a> abaixo é opcional (fonte alternativa).</span>'+
     '</div>';
   /* CLIENTE + PATRIMONIO */
   h += '<div class="topinputs">'+
