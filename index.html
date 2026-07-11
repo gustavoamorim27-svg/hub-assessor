@@ -5910,6 +5910,7 @@ window.__setCtorMode = function(mode){
   var sub = document.getElementById("construtorSub");
   var btnCopy = document.getElementById("btnCopy");
   var btnPng = document.getElementById("btnPng");
+  var btnProj = document.getElementById("btnProj");
   if(!full || !rv) return;
   if(toggle) toggle.querySelectorAll(".rv-toggle-opt").forEach(function(x){ x.classList.toggle("active", x.getAttribute("data-mode")===mode); });
   if(mode==="rv"){
@@ -5918,6 +5919,7 @@ window.__setCtorMode = function(mode){
     if(sub) sub.textContent = "Construtor · Renda Variável · ações, operações estruturadas e Quanto";
     if(btnCopy) btnCopy.style.display = "none";
     if(btnPng) btnPng.style.display = "none";
+    if(btnProj) btnProj.style.display = "none";
     if(typeof window.__rvInit === "function"){ window.__rvInit(); }
     else if(typeof window.__rvRender === "function"){ window.__rvRender(); }
   } else {
@@ -5926,6 +5928,7 @@ window.__setCtorMode = function(mode){
     if(sub) sub.textContent = "Montar a Carteira · ajuste ao vivo durante a ligação";
     if(btnCopy) btnCopy.style.display = "";
     if(btnPng) btnPng.style.display = "";
+    if(btnProj) btnProj.style.display = "";
   }
 };
 (function(){
