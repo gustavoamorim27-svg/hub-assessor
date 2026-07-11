@@ -5955,21 +5955,21 @@ var LINE_COLORS = ["#F26522","#34D399","#38BDF8","#FBBF24","#A78BFA","#F472B6"];
 var HORIZONS = [0.5,1,2,3,5,10]; /* anos (fracionário): 6m/1a/2a/3a/5a/10a — alcança todas as faixas de IR */
 function hzLabel(x){ if(x<1) return Math.round(x*12)+" meses"; return x===1? "1 ano" : (x+" anos"); }
 var PRESETS = [
-  {label:"CDB 100% CDI", nome:"CDB 100% CDI", indexador:"cdi", taxa:100, tributacao:"tributado"},
-  {label:"LCI/LCA 90% CDI", nome:"LCA 90% CDI", indexador:"cdi", taxa:90, tributacao:"isento"},
-  {label:"Caixinha Nubank", nome:"Caixinha Nubank", indexador:"cdi", taxa:100, tributacao:"tributado"},
-  {label:"Tesouro Selic", nome:"Tesouro Selic", indexador:"cdi", taxa:100, tributacao:"tributado"},
-  {label:"Prefixado", nome:"CDB Prefixado", indexador:"pre", taxa:14.2, tributacao:"tributado"},
-  {label:"IPCA+", nome:"Tesouro IPCA+", indexador:"ipca", taxa:6.5, tributacao:"tributado"},
+  {label:"CDB 100% CDI", g:"rf", nome:"CDB 100% CDI", indexador:"cdi", taxa:100, tributacao:"tributado"},
+  {label:"LCI/LCA 90% CDI", g:"rf", nome:"LCA 90% CDI", indexador:"cdi", taxa:90, tributacao:"isento"},
+  {label:"Caixinha Nubank", g:"rf", nome:"Caixinha Nubank", indexador:"cdi", taxa:100, tributacao:"tributado"},
+  {label:"Tesouro Selic", g:"rf", nome:"Tesouro Selic", indexador:"cdi", taxa:100, tributacao:"tributado"},
+  {label:"Prefixado", g:"rf", nome:"CDB Prefixado", indexador:"pre", taxa:14.2, tributacao:"tributado"},
+  {label:"IPCA+", g:"rf", nome:"Tesouro IPCA+", indexador:"ipca", taxa:6.5, tributacao:"tributado"},
   /* Indices de mercado — media historica NOMINAL (a.a.). Valores editaveis: confira antes de usar com cliente. */
-  {label:"Ibovespa (hist.)", nome:"Ibovespa · hist. ~10% a.a. nominal", indexador:"pre", taxa:10, tributacao:"tributado"},
-  {label:"S&P 500 (hist.)", nome:"S&P 500 · hist. ~10% a.a. (US$, sem câmbio)", indexador:"pre", taxa:10, tributacao:"tributado"},
-  {label:"IFIX (hist.)", nome:"IFIX · hist. ~10,5% a.a. (retorno total)", indexador:"pre", taxa:10.5, tributacao:"isento"},
+  {label:"Ibovespa (hist.)", g:"rv", nome:"Ibovespa · hist. ~10% a.a. nominal", indexador:"pre", taxa:10, tributacao:"tributado"},
+  {label:"S&P 500 (hist.)", g:"rv", nome:"S&P 500 · 11,85% a.a. (50 anos, div. reinvestidos, US$)", indexador:"pre", taxa:11.85, tributacao:"tributado"},
+  {label:"IFIX (hist.)", g:"rv", nome:"IFIX · hist. ~10,5% a.a. (retorno total)", indexador:"pre", taxa:10.5, tributacao:"isento"},
   /* Carteiras do proprio Hub — usa o % do CDI estimado de cada perfil */
-  {label:"Carteira Conservadora", nome:"Carteira Conservadora", indexador:"cdi", taxa:108, tributacao:"isento"},
-  {label:"Carteira Moderada", nome:"Carteira Moderada", indexador:"cdi", taxa:113, tributacao:"isento"},
-  {label:"Carteira Sofisticada", nome:"Carteira Sofisticada", indexador:"cdi", taxa:120, tributacao:"isento"},
-  {label:"Poupança", nome:"Poupança", indexador:"poupanca", taxa:0, tributacao:"isento"},
+  {label:"Carteira Conservadora", g:"cart", nome:"Carteira Conservadora", indexador:"cdi", taxa:108, tributacao:"isento"},
+  {label:"Carteira Moderada", g:"cart", nome:"Carteira Moderada", indexador:"cdi", taxa:113, tributacao:"isento"},
+  {label:"Carteira Sofisticada", g:"cart", nome:"Carteira Sofisticada", indexador:"cdi", taxa:120, tributacao:"isento"},
+  {label:"Poupança", g:"rf", nome:"Poupança", indexador:"poupanca", taxa:0, tributacao:"isento"},
 ];
 
 /* ===================== Estado ===================== */
@@ -6263,9 +6263,26 @@ function assetsHTML(){
     h+='</div>';
   });
   h+='</div><div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border)">'
-    +'<div class="eyebrow" style="margin-bottom:8px">Adicionar rápido</div><div class="row" style="flex-wrap:wrap">';
-  PRESETS.forEach(function(p,idx){h+='<button class="chip" data-preset="'+idx+'">+ '+p.label+'</button>';});
-  h+='</div></div></div>';
+    +'<div class="eyebrow" style="margin-bottom:10px">Adicionar rápido</div>';
+  var GRUPOS=[
+    {k:"rf",   t:"Renda Fixa",               c:"#3DD68C"},
+    {k:"rv",   t:"Renda Variável · Índices", c:"#FF8B52"},
+    {k:"cart", t:"Carteiras Rico",           c:"#7C8CFF"}
+  ];
+  GRUPOS.forEach(function(G){
+    var tem=PRESETS.some(function(p){ return (p.g||"rf")===G.k; });
+    if(!tem) return;
+    h+='<div style="margin-bottom:11px">'
+      +'<div style="display:flex;align-items:center;gap:7px;font-size:10px;font-weight:800;letter-spacing:.7px;text-transform:uppercase;color:'+G.c+';margin-bottom:7px">'
+      +'<span style="width:8px;height:8px;border-radius:2px;background:'+G.c+'"></span>'+G.t+'</div>'
+      +'<div class="row" style="flex-wrap:wrap;gap:7px">';
+    PRESETS.forEach(function(p,idx){
+      if((p.g||"rf")!==G.k) return;
+      h+='<button class="chip" data-preset="'+idx+'" style="border-color:'+G.c+'66;color:'+G.c+'">+ '+p.label+'</button>';
+    });
+    h+='</div></div>';
+  });
+  h+='</div></div>';
   return h;
 }
 function opt(v,l,cur){return '<option value="'+v+'"'+(cur===v?' selected':'')+'>'+l+'</option>';}
