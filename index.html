@@ -1746,6 +1746,7 @@ body.mm .ajbtn{ padding:11px 16px !important; font-size:14px !important; }
         <svg class="icon" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
         <span id="copyLabel">Copiar resumo</span>
       </button>
+      <button class="btn-ghost" id="btnProj" style="border-color:rgba(61,214,140,.55);color:#3DD68C">Projeção</button>
       <button class="btn-solid" id="btnPng">
         <svg class="icon" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
         Gerar PNG
@@ -8683,6 +8684,7 @@ if (restaurado) {
 <script>
 (function(){
   var _rvDone = false;
+  window.__rvProjData = function(){ try{ return { patrimonio: Number(state.patrimonio)||0, cliente: state.cliente||'' }; }catch(e){ return {patrimonio:0,cliente:''}; } };
   window.__rvInit = function(){
     if(_rvDone) return; _rvDone = true;
     (function(){
@@ -9566,6 +9568,7 @@ function render(){
     '<div class="sub" style="font-size:13px">Selecione um perfil ou monte do zero · operações estruturadas e Quanto</div>'+
     '</div><div class="hbtns">'+
     '<button class="btn-ghost" id="rvBtnCard" style="border-color:rgba(255,78,0,.5);color:#FF8B52">'+ICON_CARD+' Visualizar operação</button>'+
+    '<button class="btn-ghost" id="rvBtnProj" style="border-color:rgba(61,214,140,.55);color:#3DD68C">Projeção</button>'+
     '<button class="btn-solid" id="rvBtnPng">'+ICON_DOWNLOAD+' Gerar PNG</button>'+
     '</div></div>';
 
@@ -12532,4 +12535,138 @@ window.__rvRender = render;
 })();
 </script>
 
+
+<script>
+/* ===== Projecao de carteira (juros compostos + aporte mensal) — Montar a Carteira e RV ===== */
+(function(){
+  function fmtBR(n){ n=Math.round(Number(n)||0); try{ return n.toLocaleString('pt-BR'); }catch(e){ return String(n); } }
+  function pn(v){ var t=String(v==null?'':v).trim().replace(/\./g,'').replace(',','.').replace(/[^0-9.\-]/g,''); var n=parseFloat(t); return isNaN(n)?0:n; }
+
+  /* Juros compostos, aporte no FIM de cada mes.
+     Taxa anual i -> mensal equivalente im=(1+i)^(1/12)-1 (NAO i/12, que superestima). */
+  function projetar(P, taxaAA, aporte, anos){
+    var i=(Number(taxaAA)||0)/100, im=Math.pow(1+i,1/12)-1, out=[];
+    P=Number(P)||0; aporte=Number(aporte)||0;
+    for(var a=1;a<=anos;a++){
+      var m=a*12, f=Math.pow(1+im,m);
+      var saldo = P*f + (Math.abs(im)>1e-9 ? aporte*((f-1)/im) : aporte*m);
+      var aportado = P + aporte*m;
+      out.push({ano:a, aportado:aportado, saldo:saldo, juros:saldo-aportado});
+    }
+    return out;
+  }
+  window.__hubProjCalc = projetar;
+
+  function campo(lbl,id,val){
+    return '<div style="flex:1 1 200px"><div style="font-size:10.5px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;color:#8A93D8;margin-bottom:5px">'+lbl+'</div>'+
+      '<input id="'+id+'" type="text" inputmode="decimal" value="'+val+'" style="width:100%;background:rgba(0,0,0,.3);border:1px solid rgba(120,130,210,.3);border-radius:9px;color:#fff;font-family:Sora,sans-serif;font-weight:700;font-size:15px;padding:9px 11px;outline:none"></div>';
+  }
+
+  window.__hubProjecao = function(cfg){
+    cfg=cfg||{};
+    var old=document.getElementById('hubProjModal'); if(old){ try{ old.remove(); }catch(_){ } }
+    var m=document.createElement('div'); m.id='hubProjModal';
+    m.style.cssText='position:fixed;inset:0;z-index:5200;background:rgba(5,8,31,.88);display:flex;align-items:flex-start;justify-content:center;padding:24px;overflow:auto;';
+    var box=document.createElement('div');
+    box.style.cssText='background:#0B1033;border:1px solid rgba(120,130,210,.3);border-radius:16px;padding:18px;max-width:860px;width:100%;color:#fff;font-family:Manrope,sans-serif;';
+    var anos=[2,3,4,5], sel=5;
+    box.innerHTML=
+      '<div style="display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:6px;flex-wrap:wrap">'+
+        '<div style="font-family:Sora,sans-serif;font-weight:800;font-size:18px">Projeção da carteira'+(cfg.cliente?' &middot; <span style="color:#9AA2D0;font-size:14px">'+String(cfg.cliente)+'</span>':'')+'</div>'+
+        '<div style="display:flex;gap:8px">'+
+          '<button id="hpCopy" style="background:#FF4E00;border:none;color:#fff;font-weight:700;font-size:13px;border-radius:9px;padding:8px 14px;cursor:pointer;font-family:inherit">Copiar imagem</button>'+
+          '<button id="hpClose" style="background:transparent;border:1px solid rgba(120,130,210,.42);color:#9AA2D0;font-weight:700;font-size:13px;border-radius:9px;padding:8px 14px;cursor:pointer;font-family:inherit">Fechar</button>'+
+        '</div>'+
+      '</div>'+
+      '<div style="font-size:11.5px;color:#8A93D8;margin-bottom:14px">Juros compostos, aporte no fim de cada mês. Taxa anual convertida para mensal equivalente.</div>'+
+      '<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px">'+
+        campo('Patrimônio inicial (R$)','hpP',fmtBR(cfg.patrimonio))+
+        campo('Retorno estimado (% a.a.)','hpT',String((Math.round((Number(cfg.taxaAA)||0)*10)/10)).replace('.',','))+
+        campo('Aporte mensal (R$)','hpA','0')+
+      '</div>'+
+      '<div id="hpAnos" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px"></div>'+
+      '<div id="hpOut"></div>';
+    m.appendChild(box); document.body.appendChild(m);
+
+    function btnAno(a){
+      return '<button data-ano="'+a+'" style="font-family:inherit;font-weight:700;font-size:13px;border-radius:9px;padding:7px 15px;cursor:pointer;'+
+        (a===sel?'background:rgba(255,78,0,.18);border:1px solid rgba(255,78,0,.55);color:#fff;':'background:transparent;border:1px solid rgba(120,130,210,.3);color:#cfd4ef;')+'">'+a+' anos</button>';
+    }
+    function render(){
+      document.getElementById('hpAnos').innerHTML=anos.map(btnAno).join('');
+      Array.prototype.forEach.call(box.querySelectorAll('[data-ano]'),function(b){
+        b.onclick=function(){ sel=+b.getAttribute('data-ano'); render(); };
+      });
+      var P=pn(document.getElementById('hpP').value);
+      var T=pn(document.getElementById('hpT').value);
+      var A=pn(document.getElementById('hpA').value);
+      var linhas=projetar(P,T,A,sel);
+      var fim=linhas[linhas.length-1]||{saldo:0,aportado:0,juros:0};
+      var h='<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px">'+
+        card('Investido total','R$ '+fmtBR(fim.aportado),'#cfd4ef')+
+        card('Juros acumulados','R$ '+fmtBR(fim.juros),'#FFB020')+
+        card('Saldo em '+sel+' anos','R$ '+fmtBR(fim.saldo),'#3DD68C')+
+      '</div>';
+      h+='<div style="border:1px solid rgba(120,130,210,.2);border-radius:12px;overflow:hidden">'+
+        '<table style="width:100%;border-collapse:collapse;font-size:13px">'+
+        '<thead><tr style="background:rgba(255,255,255,.04);color:#8A93D8;font-size:11px;text-transform:uppercase;letter-spacing:.5px">'+
+        '<th style="text-align:left;padding:9px 12px">Ano</th><th style="text-align:right;padding:9px 12px">Investido</th>'+
+        '<th style="text-align:right;padding:9px 12px">Juros</th><th style="text-align:right;padding:9px 12px">Saldo projetado</th></tr></thead><tbody>';
+      linhas.forEach(function(l){
+        h+='<tr style="border-top:1px solid rgba(120,130,210,.14)">'+
+          '<td style="padding:9px 12px;font-weight:700">'+l.ano+'</td>'+
+          '<td style="padding:9px 12px;text-align:right;color:#cfd4ef">R$ '+fmtBR(l.aportado)+'</td>'+
+          '<td style="padding:9px 12px;text-align:right;color:#FFB020">R$ '+fmtBR(l.juros)+'</td>'+
+          '<td style="padding:9px 12px;text-align:right;font-family:Sora,sans-serif;font-weight:800;color:#3DD68C">R$ '+fmtBR(l.saldo)+'</td></tr>';
+      });
+      h+='</tbody></table></div>'+
+        '<div style="font-size:10.5px;color:#7E87BE;margin-top:10px;line-height:1.5">Projeção estimada com base no retorno da carteira. <b>Não é garantia de retorno futuro</b>; rentabilidade passada não garante resultados futuros.</div>';
+      document.getElementById('hpOut').innerHTML=h;
+    }
+    function card(k,v,col){
+      return '<div style="flex:1 1 180px;background:rgba(255,255,255,.04);border:1px solid rgba(120,130,210,.2);border-radius:12px;padding:11px 14px">'+
+        '<div style="font-size:10.5px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;color:#8A93D8">'+k+'</div>'+
+        '<div style="font-family:Sora,sans-serif;font-weight:800;font-size:19px;color:'+col+';margin-top:3px">'+v+'</div></div>';
+    }
+    ['hpP','hpT','hpA'].forEach(function(id){ var e=document.getElementById(id); if(e) e.onchange=render; });
+    document.getElementById('hpClose').onclick=function(){ try{ m.remove(); }catch(_){ } };
+    m.onclick=function(e){ if(e.target===m){ try{ m.remove(); }catch(_){ } } };
+    document.getElementById('hpCopy').onclick=function(){
+      var b=document.getElementById('hpCopy'); var alvo=box;
+      function shot(h2c){
+        if(!h2c){ b.textContent='Indisponível'; return; }
+        h2c(alvo,{backgroundColor:'#0B1033',scale:2,logging:false}).then(function(cv){
+          cv.toBlob(function(blob){
+            if(blob && navigator.clipboard && window.ClipboardItem){
+              navigator.clipboard.write([new ClipboardItem({'image/png':blob})]).then(function(){
+                b.textContent='Copiado!'; setTimeout(function(){ b.textContent='Copiar imagem'; },1600);
+              }).catch(function(){ baixar(cv); });
+            } else { baixar(cv); }
+          },'image/png');
+        }).catch(function(){ b.textContent='Falhou'; });
+      }
+      function baixar(cv){ try{ var a=document.createElement('a'); a.download='Projecao.png'; a.href=cv.toDataURL('image/png'); a.click(); b.textContent='Baixado!'; setTimeout(function(){ b.textContent='Copiar imagem'; },1600); }catch(_){ } }
+      if(window.html2canvas){ shot(window.html2canvas); return; }
+      var sc=document.createElement('script'); sc.src='https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+      sc.onload=function(){ shot(window.html2canvas); }; sc.onerror=function(){ shot(null); };
+      document.head.appendChild(sc);
+    };
+    render();
+  };
+
+  /* Botoes: Montar a Carteira e Renda Variavel */
+  document.addEventListener('click', function(ev){
+    var t=ev.target.closest ? ev.target.closest('#btnProj,#rvBtnProj') : null;
+    if(!t) return;
+    ev.preventDefault();
+    var c=(window.RICO_BRIDGE&&window.RICO_BRIDGE.carteira)||{};
+    if(t.id==='rvBtnProj'){
+      var rv=(typeof window.__rvProjData==='function')?window.__rvProjData():{};
+      window.__hubProjecao({ patrimonio: rv.patrimonio||c.patrimonio||0, taxaAA: (c.retAA||12), cliente: rv.cliente||c.cliente||'' });
+    } else {
+      window.__hubProjecao({ patrimonio: c.patrimonio||0, taxaAA: c.retAA||0, cliente: c.cliente||'' });
+    }
+  });
+})();
+</script>
 </body>
