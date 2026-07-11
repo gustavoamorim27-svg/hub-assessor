@@ -3483,6 +3483,7 @@ html.theme-light .pm-acard .pm-an{ color:#0B1033; }
 .pm-acliq{ display:inline-block; font-size:10.5px; font-weight:700; color:var(--mu); background:rgba(120,130,210,.12); border:1px solid var(--bd); border-radius:6px; padding:3px 9px; margin-top:8px; text-transform:uppercase; letter-spacing:.3px; }
 html.theme-light .pm-acliq{ background:#F0F2F8; }
 .pm-acret{ font-family:'Sora',sans-serif; font-weight:700; font-size:13px; color:#3DD68C; margin-top:7px; }
+    .pm-acent{ font-size:11.5px; font-weight:700; color:#FFB020; margin-top:5px; }
 html.theme-light .pm-acret{ color:#067A53; }
 .pm-actags{ display:flex; flex-wrap:wrap; gap:6px; margin-top:9px; }
 .pm-tag{ display:inline-block; font-size:10.5px; font-weight:700; padding:3px 9px; border-radius:7px; }
@@ -3711,6 +3712,14 @@ html.theme-light .pm-chip{ background:#fff; }
     el('pmCli').value=PR.cliente||''; el('pmPat').value=fmt(PR.patrim);
     /* Feature 3(a): conjunto de nomes das posições atuais do cliente p/ marcar Novo vs Mantido */
     var curSet={}; (PR.atualAssets||[]).forEach(function(x){ curSet[famKey(x.nome)]=true; });
+    /* Quanto o cliente JA TEM (e sera mantido) em cada familia de ativo.
+       Serve para mostrar o que realmente ENTRA = alvo - ja mantido. */
+    var _propFam={}; CATS.forEach(function(c){ (PR.assets[c]||[]).forEach(function(x){ _propFam[famKey(x.nome)]=1; }); });
+    var keptFam={};
+    (PR.atualAssets||[]).forEach(function(x){
+      var k=famKey(x.nome);
+      if(_propFam[k] || isProtected(x.nome,x.cat)){ keptFam[k]=(keptFam[k]||0)+PR.patrim*(Number(x.pct)||0)/100; }
+    });
     var h='';
     CATS.forEach(function(c){
       var arr=PR.assets[c]||[]; var hasA=arr.length>0; var eff=effPct(c); var col=COLORS[c];
@@ -3733,6 +3742,11 @@ html.theme-light .pm-chip{ background:#fff; }
             (a.protegido?'<span class="pm-prot" title="Ativo XP do cliente - nao pode ser vendido">🔒</span>':'<button class="pm-arm" data-arm="'+c+'" data-ai="'+ai+'" title="Remover">&times;</button>')+
           '</div>'+
           '<div class="pm-acret">'+esc2(retLabelOf(a))+'</div>'+
+          (function(){ var _k=famKey(a.nome), _kr=keptFam[_k]||0;
+            if(_kr<=0.5) return '';
+            var _tgt=PR.patrim*(Number(a.pct)||0)/100, _ent=Math.max(0,_tgt-_kr);
+            return '<div class="pm-acent">Ja mantido R$ '+fmt(_kr)+' &middot; <b>Entra R$ '+fmt(_ent)+'</b></div>';
+          })()+
           ((a.tags&&a.tags.length)?'<div class="pm-actags">'+a.tags.map(function(t){ return '<span class="pm-tag '+tagClass(t)+'">'+esc2(t)+'</span>'; }).join('')+'</div>':'')+
           '<div class="pm-acret2"><span class="pm-acretlbl">Retorno</span>'+
             '<select class="pm-arcat" data-arcat="'+c+'" data-ai="'+ai+'"><option value="pos"'+(a.retCat==='pos'?' selected':'')+'>Pós Fixado</option><option value="pre"'+(a.retCat==='pre'?' selected':'')+'>Pré Fixado</option><option value="inflacao"'+(a.retCat==='inflacao'?' selected':'')+'>Inflação</option><option value="mercado"'+((!a.retCat||a.retCat==='mercado')?' selected':'')+'>A mercado</option></select>'+
