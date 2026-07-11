@@ -1746,7 +1746,10 @@ body.mm .ajbtn{ padding:11px 16px !important; font-size:14px !important; }
         <svg class="icon" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
         <span id="copyLabel">Copiar resumo</span>
       </button>
-      <button class="btn-ghost" id="btnProj" style="border-color:rgba(61,214,140,.55);color:#3DD68C">Projeção</button>
+      <button class="btn-solid" id="btnProj" style="background:linear-gradient(135deg,#2BD9A6,#12A87B);border:none;color:#06251C;font-weight:800;box-shadow:0 4px 14px rgba(43,217,166,.32)">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+        Projeção da carteira
+      </button>
       <button class="btn-solid" id="btnPng">
         <svg class="icon" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
         Gerar PNG
@@ -2002,6 +2005,13 @@ body.mm .ajbtn{ padding:11px 16px !important; font-size:14px !important; }
         var CUSTOMLIB=[]; try{ CUSTOMLIB=JSON.parse(localStorage.getItem("hubCustomLib")||"[]")||[]; }catch(_){ CUSTOMLIB=[]; }
         function persist(){ try{ localStorage.setItem("hubCustomLib", JSON.stringify(CUSTOMLIB)); }catch(_){ } }
         function allItems(){ return LIB.concat(CUSTOMLIB); }
+        /* Fonte unica da biblioteca de ativos. Recarrega do localStorage a cada chamada,
+           que e onde o HubCloud (Firebase) grava os ativos vindos de outros usuarios. */
+        try{ window.__hubLibData = function(){
+          try{ CUSTOMLIB=JSON.parse(localStorage.getItem("hubCustomLib")||"[]")||[]; }catch(_){ }
+          try{ window.__LIBDATA=allItems(); }catch(_){ }
+          return window.__LIBDATA||[];
+        }; }catch(_){ }
         var libSeq=0; CUSTOMLIB.forEach(function(x){ var n=parseInt(String(x.id||"").replace("u",""),10); if(!isNaN(n)&&n>libSeq) libSeq=n; });
         window.__LIBDATA=allItems();
         var COL={"Renda Fixa":"#2BD9A6","Multimercados":"#7C8CFF","Renda Variável":"#FF8B52","Fundo Aberto":"#5AC8A8","Fundos Listados":"#FFB020","Alternativos":"#C77DFF","Internacional":"#36C5F0"};
@@ -3753,7 +3763,12 @@ html.theme-light .pm-chip{ background:#fff; }
         '</div>';
       });
       if(PR.picker===c){
-        var libItems=(window.__LIBDATA||[]).filter(function(x){return normCat(x.classe)===normCat(c);});
+        var _LD = (typeof window.__hubLibData==='function') ? window.__hubLibData() : (window.__LIBDATA||[]);
+        if(!_LD || !_LD.length){
+          try{ if(window._toolInit && window._toolInit['construtor']) window._toolInit['construtor'](); }catch(e){}
+          _LD = (typeof window.__hubLibData==='function') ? window.__hubLibData() : (window.__LIBDATA||[]);
+        }
+        var libItems=(_LD||[]).filter(function(x){return normCat(x.classe)===normCat(c);});
         h+='<div class="pm-picker"><input class="pm-psearch" type="text" placeholder="Buscar ativo em '+(window.__hubClassLabel?window.__hubClassLabel(c):c)+'..." data-psearch="'+c+'"><div class="pm-plist">'+
           (libItems.length? libItems.map(function(it,pi){ return '<div class="pm-pitem" data-pick="'+c+'" data-pi="'+pi+'"><div class="pm-piname">'+esc2(it.nome)+'</div>'+(it.detalhe?'<div class="pm-pidesc">'+esc2(it.detalhe)+'</div>':'')+'</div>'; }).join('') : '<div class="pm-pidesc" style="padding:8px">Nenhum ativo desta classe na biblioteca.</div>')+
         '</div><button class="pm-pmanual" data-pmanual="'+c+'">+ Adicionar manualmente</button></div>';
@@ -9568,7 +9583,7 @@ function render(){
     '<div class="sub" style="font-size:13px">Selecione um perfil ou monte do zero · operações estruturadas e Quanto</div>'+
     '</div><div class="hbtns">'+
     '<button class="btn-ghost" id="rvBtnCard" style="border-color:rgba(255,78,0,.5);color:#FF8B52">'+ICON_CARD+' Visualizar operação</button>'+
-    '<button class="btn-ghost" id="rvBtnProj" style="border-color:rgba(61,214,140,.55);color:#3DD68C">Projeção</button>'+
+    '<button class="btn-solid" id="rvBtnProj" style="background:linear-gradient(135deg,#2BD9A6,#12A87B);border:none;color:#06251C;font-weight:800;box-shadow:0 4px 14px rgba(43,217,166,.32)">\u{1F4C8} Projeção da carteira</button>'+
     '<button class="btn-solid" id="rvBtnPng">'+ICON_DOWNLOAD+' Gerar PNG</button>'+
     '</div></div>';
 
