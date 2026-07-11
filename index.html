@@ -3984,6 +3984,17 @@ html.theme-light .pm-chip{ background:#fff; }
       }catch(_){ }
     };
   }
+  /* Carregador proprio: ensureHtml2Canvas vive em outro escopo (IIFE), nao da pra confiar nele aqui. */
+  function prEnsureH2C(cb){
+    if(window.html2canvas){ cb(window.html2canvas); return; }
+    if(window.__prH2CQ){ window.__prH2CQ.push(cb); return; }
+    window.__prH2CQ=[cb];
+    var sc=document.createElement('script');
+    sc.src='https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+    sc.onload=function(){ var q=window.__prH2CQ||[]; window.__prH2CQ=null; q.forEach(function(fn){ try{ fn(window.html2canvas); }catch(_){ } }); };
+    sc.onerror=function(){ var q=window.__prH2CQ||[]; window.__prH2CQ=null; q.forEach(function(fn){ try{ fn(null); }catch(_){ } }); };
+    document.head.appendChild(sc);
+  }
   function proporPreviewPNG(innerHTML, filename, opts){
     opts=opts||{};
     function fallbackP(){ proporPrintFallback('<!doctype html><html><head><meta charset="utf-8"><title>'+(opts.title||'Documento')+'</title></head><body style="margin:0;background:#fff">'+innerHTML+'</body></html>'); }
@@ -4007,8 +4018,7 @@ html.theme-light .pm-chip{ background:#fff; }
         },60);
       }catch(e){ try{ if(cont) document.body.removeChild(cont); }catch(_){ } fallbackP(); }
     }
-    if(typeof ensureHtml2Canvas==='function'){ ensureHtml2Canvas(function(h2c){ goP(h2c||window.html2canvas); }); }
-    else { goP(window.html2canvas); }
+    prEnsureH2C(function(h2c){ goP(h2c||window.html2canvas); });
   }
   function proporMakePDF(innerHTML, filename, opts){
     opts=opts||{};
