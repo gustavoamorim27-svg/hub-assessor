@@ -3951,6 +3951,65 @@ html.theme-light .pm-chip{ background:#fff; }
     return h;
   }
   function proporPrintFallback(fullHtml){ try{ var w=window.open('','_blank'); if(!w) return; w.document.open(); w.document.write(fullHtml); w.document.close(); }catch(_){ } }
+  /* Preview do documento na TELA + Copiar imagem (igual ao espirito do Montar a Carteira) */
+  function prShowCanvas(canvas, filename, title){
+    var old=document.getElementById('prPngModal'); if(old){ try{ old.remove(); }catch(_){ } }
+    var m=document.createElement('div'); m.id='prPngModal';
+    m.style.cssText='position:fixed;inset:0;z-index:5000;background:rgba(5,8,31,.85);display:flex;align-items:center;justify-content:center;padding:22px;';
+    var box=document.createElement('div');
+    box.style.cssText='background:#0B1033;border:1px solid rgba(120,130,210,.3);border-radius:16px;padding:14px;max-width:94vw;max-height:94vh;display:flex;flex-direction:column;gap:11px;';
+    var head=document.createElement('div');
+    head.style.cssText='display:flex;align-items:center;justify-content:space-between;gap:14px;color:#fff;font-family:Sora,sans-serif;font-weight:800;font-size:15px;';
+    var t=document.createElement('span'); t.textContent=title||'Documento'; head.appendChild(t);
+    var btns=document.createElement('div'); btns.style.cssText='display:flex;gap:8px;flex-wrap:wrap;';
+    function mkb(txt,primary){ var b=document.createElement('button'); b.textContent=txt; b.style.cssText='font-family:inherit;font-weight:700;font-size:13px;border-radius:9px;padding:8px 14px;cursor:pointer;'+(primary?'background:#FF4E00;border:none;color:#fff;':'background:transparent;border:1px solid rgba(120,130,210,.42);color:#cfd4ef;'); return b; }
+    var bCopy=mkb('Copiar imagem',true), bDl=mkb('Baixar PNG',false), bX=mkb('Fechar',false);
+    btns.appendChild(bCopy); btns.appendChild(bDl); btns.appendChild(bX); head.appendChild(btns);
+    var scroll=document.createElement('div'); scroll.style.cssText='overflow:auto;border-radius:10px;background:#fff;';
+    canvas.style.cssText='display:block;max-width:100%;height:auto;';
+    scroll.appendChild(canvas);
+    box.appendChild(head); box.appendChild(scroll); m.appendChild(box); document.body.appendChild(m);
+    function closeM(){ try{ m.remove(); }catch(_){ } }
+    bX.onclick=closeM; m.onclick=function(e){ if(e.target===m) closeM(); };
+    bDl.onclick=function(){ try{ var a=document.createElement('a'); a.download=(filename||'proposta')+'.png'; a.href=canvas.toDataURL('image/png'); a.click(); }catch(_){ } };
+    bCopy.onclick=function(){
+      try{
+        canvas.toBlob(function(blob){
+          if(blob && navigator.clipboard && window.ClipboardItem){
+            navigator.clipboard.write([new ClipboardItem({'image/png':blob})]).then(function(){
+              bCopy.textContent='Copiado!'; setTimeout(function(){ bCopy.textContent='Copiar imagem'; },1600);
+            }).catch(function(){ bCopy.textContent='Use Baixar PNG'; setTimeout(function(){ bCopy.textContent='Copiar imagem'; },2200); });
+          } else { bCopy.textContent='Use Baixar PNG'; setTimeout(function(){ bCopy.textContent='Copiar imagem'; },2200); }
+        },'image/png');
+      }catch(_){ }
+    };
+  }
+  function proporPreviewPNG(innerHTML, filename, opts){
+    opts=opts||{};
+    function fallbackP(){ proporPrintFallback('<!doctype html><html><head><meta charset="utf-8"><title>'+(opts.title||'Documento')+'</title></head><body style="margin:0;background:#fff">'+innerHTML+'</body></html>'); }
+    var launched=false;
+    function goP(h2c){
+      if(launched) return; launched=true;
+      if(!h2c){ fallbackP(); return; }
+      var cont=null;
+      try{
+        cont=document.createElement('div');
+        cont.style.cssText='position:fixed;left:-10000px;top:0;width:794px;background:#fff;z-index:-1';
+        cont.innerHTML=innerHTML;
+        document.body.appendChild(cont);
+        setTimeout(function(){
+          try{
+            h2c(cont,{scale:2,backgroundColor:'#fff',useCORS:true,logging:false,windowWidth:794,width:794}).then(function(canvas){
+              try{ document.body.removeChild(cont); }catch(_){ }
+              prShowCanvas(canvas, filename, opts.title);
+            }).catch(function(){ try{ document.body.removeChild(cont); }catch(_){ } fallbackP(); });
+          }catch(e){ try{ document.body.removeChild(cont); }catch(_){ } fallbackP(); }
+        },60);
+      }catch(e){ try{ if(cont) document.body.removeChild(cont); }catch(_){ } fallbackP(); }
+    }
+    if(typeof ensureHtml2Canvas==='function'){ ensureHtml2Canvas(function(h2c){ goP(h2c||window.html2canvas); }); }
+    else { goP(window.html2canvas); }
+  }
   function proporMakePDF(innerHTML, filename, opts){
     opts=opts||{};
     var fullHtml='<!doctype html><html><head><meta charset="utf-8"><title>'+(opts.title||'Documento')+'</title></head><body style="margin:0;background:#fff">'+innerHTML+'<scr'+'ipt>setTimeout(function(){window.print();},350);</scr'+'ipt></body></html>';
@@ -4012,7 +4071,7 @@ html.theme-light .pm-chip{ background:#fff; }
         '<div class="cd"><div class="k">'+(saldo>=0?'Aporte':'Resgate')+'</div><div class="v" style="color:'+(saldo>=0?'#0a7a45':'#c0392b')+'">R$ '+fmt(Math.abs(saldo))+'</div></div></div>'+
         prSaindoSection()+
         prShellClose('Material de apoio comercial - alocação alvo por classe x carteira atual do cliente. Não constitui recomendação ou oferta; sujeito a suitability e às condições de cada produto.');
-      proporMakePDF(inner, 'Proposta_'+prSan(PR.cliente)+'.pdf', {title:'Proposta de carteira'});
+      proporPreviewPNG(inner, 'Proposta_'+prSan(PR.cliente), {title:'Proposta de carteira'});
     }catch(e){ try{ if(typeof showToast==='function') showToast('Não foi possível gerar a proposta.'); }catch(_){ } }
   }
   function genProj(){
@@ -4032,7 +4091,7 @@ html.theme-light .pm-chip{ background:#fff; }
         '<div class="sect-t">Evolução projetada</div><div class="chart">'+bars+'</div>'+
         '<table><tr><th>Período</th><th>Valor projetado</th><th>Ganho acumulado</th></tr>'+trows+'</table>'+
         prShellClose('Projeção ilustrativa (juros compostos) com base no retorno estimado da carteira proposta - premissas: CDI '+fp(CDI)+'%, IPCA '+fp(IPCA)+'%, mercado '+fp(MERC)+'% a.a. Não considera impostos, custos, aportes nem volatilidade. Rentabilidade estimada não garante resultados futuros. Material de apoio comercial - não constitui recomendação ou oferta.');
-      proporMakePDF(inner, 'Projecao_'+prSan(PR.cliente)+'.pdf', {title:'Projeção da carteira'});
+      proporPreviewPNG(inner, 'Projecao_'+prSan(PR.cliente), {title:'Projeção da carteira'});
     }catch(e){ try{ if(typeof showToast==='function') showToast('Não foi possível gerar a projeção.'); }catch(_){ } }
   }
   function genPlano(){
@@ -4058,7 +4117,7 @@ html.theme-light .pm-chip{ background:#fff; }
         sec('AUMENTAR / ENTRAR','#28aa6e',up)+
         sec('MANTER','#828aaa',keep)+
         prShellClose('Material de apoio interno - não constitui recomendação ou oferta - gerado pelo Hub do Assessor.');
-      proporMakePDF(inner, 'Plano_de_Ajuste_'+prSan(PR.cliente)+'.pdf', {title:'Plano de Ajuste de Carteira'});
+      proporPreviewPNG(inner, 'Plano_de_Ajuste_'+prSan(PR.cliente), {title:'Plano de Ajuste de Carteira'});
     }catch(e){ try{ if(typeof showToast==='function') showToast('Não foi possível gerar o plano.'); }catch(_){ } }
   }
   function open(){ var m=el('proporModal'); m.classList.add('on'); var _nv=document.querySelector('.g-nav'); if(_nv){ m.style.top=_nv.offsetHeight+'px'; m.style.height='auto'; } document.body.style.overflow='hidden'; if(Object.keys(PR.atual).length){ render(); } else { seedSim(); if(!Object.keys(PR.atual).length){ PR.atual=emptyMap(); PR.prop=emptyMap(); render(); } } }
