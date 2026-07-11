@@ -9457,11 +9457,6 @@ function render(){
     '<input id="rvBrapiToken" type="text" placeholder="opcional (token grátis)" value="'+esc(rvGetBrapiToken())+'" style="width:190px;background:rgba(0,0,0,.3);border:1px solid rgba(120,130,210,.2);border-radius:8px;color:#cfd4ef;font-size:12px;padding:6px 9px;outline:none">'+
     '<span>Busca automática de todos os tickers (Yahoo Finance). O token <a href="https://brapi.dev" target="_blank" rel="noopener" style="color:#7FD8F5;text-decoration:underline">brapi</a> abaixo é opcional (fonte alternativa).</span>'+
     '</div>';
-  h += '<div class="rv-atual-row" style="display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:8px;font-size:11.5px;color:#8A93D8">'+
-    '<span style="font-weight:700">Ações atuais do cliente</span>'+
-    '<input id="rvClienteAtual" type="text" placeholder="PETR4, VALE3, BBAS3" value="'+esc(rvGetClienteAtual())+'" style="flex:1 1 260px;min-width:200px;background:rgba(0,0,0,.3);border:1px solid rgba(120,130,210,.2);border-radius:8px;color:#cfd4ef;font-size:12px;padding:6px 9px;outline:none">'+
-    '<span>Usado na proposta para calcular quais ações estão entrando e saindo.</span>'+
-    '</div>';
   /* CLIENTE + PATRIMONIO */
   h += '<div class="topinputs">'+
     '<div style="flex:1 1 320px"><label class="lbl">Nome do cliente</label><input id="inpCliente" class="inp" placeholder="Ex.: João Andrade" value="'+esc(state.cliente)+'"></div>'+
