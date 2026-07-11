@@ -3543,15 +3543,16 @@ html.theme-light .pm-chip{ background:#fff; }
       <button class="pm-oi" data-prof="Moderada">Moderada</button>
       <button class="pm-oi" data-prof="Sofisticada">Sofisticada</button>
     </div>
+    <div class="pm-total" id="pmTot"></div>
     <div class="pm-editorwrap">
       <div class="pm-rows" id="pmRows"></div>
       <div class="pm-manter-panel" id="pmManter"></div>
       <div class="pm-saindo-panel" id="pmSaindo"></div>
     </div>
-    <div class="pm-total" id="pmTot"></div>
     <div class="pm-chips" id="pmChips" style="margin-top:16px"></div>
     <div class="pm-adjust" id="pmAdjust" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">
       <button class="pm-oi" id="pmFit100" style="border-color:rgba(61,214,140,.5);color:#3DD68C">Ajustar para 100%</button>
+      <button class="pm-oi" id="pmByProf" style="border-color:rgba(255,78,0,.55);color:var(--or)">Distribuir pelo perfil</button>
       <button class="pm-oi" id="pmEqual">Distribuir igualmente</button>
     </div>
     <div class="pm-disc">Material de apoio comercial - alocacao alvo por classe em relacao a carteira atual do cliente. Giro estimado por diferenca de alocacao (a vender / a comprar). Nao constitui recomendacao; sujeito a suitability e as condicoes de cada produto.</div>
@@ -3673,6 +3674,7 @@ html.theme-light .pm-chip{ background:#fff; }
     ]
   };
   function applyProfile(name){
+    try{ PR.perfil=name; }catch(_){}
     var _T=window.RICO_TEMPLATES;
     if(!_T){ try{ if(window._toolInit&&window._toolInit['construtor']) window._toolInit['construtor'](); }catch(e){} _T=window.RICO_TEMPLATES; }
     if(_T && typeof _T[name]==='function'){
@@ -3765,9 +3767,24 @@ html.theme-light .pm-chip{ background:#fff; }
     bindRows();
     var _f=el('pmFit100'); if(_f) _f.onclick=function(){ ajustarPropor(false); };
     var _eq=el('pmEqual'); if(_eq) _eq.onclick=function(){ ajustarPropor(true); };
+    var _bp=el('pmByProf'); if(_bp) _bp.onclick=function(){ distribuirPorPerfil(); };
   }
   /* Feature 3(c): escala os % dos ativos propostos para somar 100 (ou distribui igualmente).
      Considera classes sem ativos (usam PR.prop) no total; arredonda a 1 casa e corrige o resto no maior. */
+  function distribuirPorPerfil(){
+    var nome=PR.perfil;
+    if(!nome || !PROFILES[nome]){ alert('Selecione um perfil (Conservadora, Moderada ou Sofisticada) antes de distribuir.'); return; }
+    var P=PROFILES[nome];
+    CATS.forEach(function(c){
+      var arr=PR.assets[c]||[];
+      var alvo=Number(P[c])||0;
+      if(!arr.length){ PR.prop[c]=alvo; return; }
+      var sum=0; arr.forEach(function(a){ sum+=(Number(a.pct)||0); });
+      if(sum>0){ var fpr=alvo/sum; arr.forEach(function(a){ a.pct=Math.round((Number(a.pct)||0)*fpr*10)/10; }); }
+      else { var each=alvo/arr.length; arr.forEach(function(a){ a.pct=Math.round(each*10)/10; }); }
+    });
+    render();
+  }
   function ajustarPropor(equal){
     var flat=[]; CATS.forEach(function(c){ (PR.assets[c]||[]).forEach(function(a){ flat.push(a); }); });
     if(!flat.length){ return; }
