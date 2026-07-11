@@ -1445,7 +1445,7 @@ body.mm .ajbtn{ padding:11px 16px !important; font-size:14px !important; }
     </button>
     <button class="g-tab" data-panel="comparador" onclick="showPanel('comparador')">
       <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-      Comparador de Rentabilidade
+      Projeções e Comparações
     </button>
     <button class="g-tab" data-panel="irpf" onclick="showPanel('irpf')">
       <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="8" y1="9" x2="16" y2="9"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="12" y2="17"/></svg>
@@ -1625,7 +1625,7 @@ body.mm .ajbtn{ padding:11px 16px !important; font-size:14px !important; }
         </div>
         <div class="hcard" onclick="showPanel('comparador')">
           <div class="hcard-ic"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
-          <div class="hcard-title">Comparador de Rentabilidade</div>
+          <div class="hcard-title">Projeções e Comparações</div>
           <div class="hcard-desc">Compare múltiplos ativos com IR regressivo, gross-up CDI equivalente e evolução patrimonial.</div>
         </div>
         <div class="hcard" onclick="showPanel('irpf')">
@@ -5961,6 +5961,14 @@ var PRESETS = [
   {label:"Tesouro Selic", nome:"Tesouro Selic", indexador:"cdi", taxa:100, tributacao:"tributado"},
   {label:"Prefixado", nome:"CDB Prefixado", indexador:"pre", taxa:14.2, tributacao:"tributado"},
   {label:"IPCA+", nome:"Tesouro IPCA+", indexador:"ipca", taxa:6.5, tributacao:"tributado"},
+  /* Indices de mercado — media historica NOMINAL (a.a.). Valores editaveis: confira antes de usar com cliente. */
+  {label:"Ibovespa (hist.)", nome:"Ibovespa · média histórica", indexador:"pre", taxa:13, tributacao:"tributado"},
+  {label:"S&P 500 (hist.)", nome:"S&P 500 · média histórica (US$)", indexador:"pre", taxa:10, tributacao:"tributado"},
+  {label:"IFIX (hist.)", nome:"IFIX · média histórica", indexador:"pre", taxa:10, tributacao:"isento"},
+  /* Carteiras do proprio Hub — usa o % do CDI estimado de cada perfil */
+  {label:"Carteira Conservadora", nome:"Carteira Conservadora", indexador:"cdi", taxa:108, tributacao:"isento"},
+  {label:"Carteira Moderada", nome:"Carteira Moderada", indexador:"cdi", taxa:113, tributacao:"isento"},
+  {label:"Carteira Sofisticada", nome:"Carteira Sofisticada", indexador:"cdi", taxa:120, tributacao:"isento"},
   {label:"Poupança", nome:"Poupança", indexador:"poupanca", taxa:0, tributacao:"isento"},
 ];
 
@@ -6217,7 +6225,7 @@ function discHTML(){
 function headerHTML(){
   return '<div class="between" style="margin-bottom:20px">'
     +'<div class="row"><span class="logo">'+RICO_SVG+'</span><span class="vline" style="display:none"></span>'
-    +'<span class="eyebrow">Comparador de Rentabilidade</span></div>'
+    +'<span class="eyebrow">Projeções e Comparações</span></div>'
     +'<div class="row">'
       +'<button class="btn btn-ghost" id="btnReal" style="font-size:12px;color:'+(state.showReal?'#F26522':'#9AA2D0')+';background:'+(state.showReal?'var(--orangeSoft)':'var(--navy2)')+'">'+(state.showReal?'● ':'○ ')+'Valor real (descontando IPCA)</button>'
       +'<button class="btn '+(state.mode==="cliente"?'btn-ghost':'btn-o')+'" id="btnMode">'+(state.mode==="cliente"?'← Editar':'Gerar projeção p/ cliente')+'</button>'
