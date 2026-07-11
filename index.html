@@ -5962,9 +5962,9 @@ var PRESETS = [
   {label:"Prefixado", nome:"CDB Prefixado", indexador:"pre", taxa:14.2, tributacao:"tributado"},
   {label:"IPCA+", nome:"Tesouro IPCA+", indexador:"ipca", taxa:6.5, tributacao:"tributado"},
   /* Indices de mercado — media historica NOMINAL (a.a.). Valores editaveis: confira antes de usar com cliente. */
-  {label:"Ibovespa (hist.)", nome:"Ibovespa · média histórica", indexador:"pre", taxa:13, tributacao:"tributado"},
-  {label:"S&P 500 (hist.)", nome:"S&P 500 · média histórica (US$)", indexador:"pre", taxa:10, tributacao:"tributado"},
-  {label:"IFIX (hist.)", nome:"IFIX · média histórica", indexador:"pre", taxa:10, tributacao:"isento"},
+  {label:"Ibovespa (hist.)", nome:"Ibovespa · hist. ~10% a.a. nominal", indexador:"pre", taxa:10, tributacao:"tributado"},
+  {label:"S&P 500 (hist.)", nome:"S&P 500 · hist. ~10% a.a. (US$, sem câmbio)", indexador:"pre", taxa:10, tributacao:"tributado"},
+  {label:"IFIX (hist.)", nome:"IFIX · hist. ~10,5% a.a. (retorno total)", indexador:"pre", taxa:10.5, tributacao:"isento"},
   /* Carteiras do proprio Hub — usa o % do CDI estimado de cada perfil */
   {label:"Carteira Conservadora", nome:"Carteira Conservadora", indexador:"cdi", taxa:108, tributacao:"isento"},
   {label:"Carteira Moderada", nome:"Carteira Moderada", indexador:"cdi", taxa:113, tributacao:"isento"},
