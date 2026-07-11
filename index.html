@@ -3799,13 +3799,21 @@ html.theme-light .pm-chip{ background:#fff; }
     render();
   }
   function nkey(n){ return String(n==null?'':n).trim().toLowerCase(); }
+  /* LCA / LCI / LCD tem a MESMA proposicao (RF pos-fixada isenta).
+     Se a proposta traz qualquer um deles, o que o cliente ja tem permanece
+     (nao vai para "Saindo") - girar um pelo outro nao agrega. */
+  function famKey(n){
+    var low=String(n||'').toLowerCase();
+    if(/(^|[^a-z])(lca|lci|lcd)([^a-z]|$)/.test(low)) return '__rf_isento__';
+    return nkey(n);
+  }
   function clearAll(){ PR.cliente=''; PR.patrim=0; PR.atual={}; PR.prop={}; PR.assets={}; PR.picker=null; PR.atualAssets=[]; try{ setStatus('',''); }catch(e){} try{ setActive(''); }catch(e){} render(); }
   function renderManter(){
     var elp=document.getElementById('pmManter'); if(!elp) return;
-    var propNames={}; CATS.forEach(function(c){ (PR.assets[c]||[]).forEach(function(x){ propNames[nkey(x.nome)]=1; }); });
+    var propNames={}; CATS.forEach(function(c){ (PR.assets[c]||[]).forEach(function(x){ propNames[famKey(x.nome)]=1; }); });
     var byCat={};
     (PR.atualAssets||[]).forEach(function(a){
-      if(!(propNames[nkey(a.nome)] || isProtected(a.nome,a.cat))) return;
+      if(!(propNames[famKey(a.nome)] || isProtected(a.nome,a.cat))) return;
       (byCat[a.cat]=byCat[a.cat]||[]).push(a);
     });
     var cats=CATS.filter(function(c){ return byCat[c]&&byCat[c].length; });
@@ -3824,8 +3832,8 @@ html.theme-light .pm-chip{ background:#fff; }
   }
   function renderSaindo(){
     var elp=document.getElementById('pmSaindo'); if(!elp) return;
-    var propNames={}; CATS.forEach(function(c){ (PR.assets[c]||[]).forEach(function(x){ propNames[nkey(x.nome)]=1; }); });
-    var byCat={}; (PR.atualAssets||[]).forEach(function(a){ if(propNames[nkey(a.nome)]||isProtected(a.nome,a.cat)) return; (byCat[a.cat]=byCat[a.cat]||[]).push(a); });
+    var propNames={}; CATS.forEach(function(c){ (PR.assets[c]||[]).forEach(function(x){ propNames[famKey(x.nome)]=1; }); });
+    var byCat={}; (PR.atualAssets||[]).forEach(function(a){ if(propNames[famKey(a.nome)]||isProtected(a.nome,a.cat)) return; (byCat[a.cat]=byCat[a.cat]||[]).push(a); });
     var cats=CATS.filter(function(c){ return byCat[c]&&byCat[c].length; });
     var h='<div class="pm-saindo-h">Saindo da carteira</div>';
     if(!cats.length){ h+='<div class="pm-saindo-empty">Importe a carteira atual do cliente (Carteira do Simulador ou Excel) para ver o que sai.</div>'; elp.innerHTML=h; return; }
@@ -3868,8 +3876,8 @@ html.theme-light .pm-chip{ background:#fff; }
   function prClassVisible(c){ var arr=PR.assets[c]||[]; return (PR.atual[c]||0)>0 || effPct(c)>0 || arr.some(function(a){ return a && a.nome; }); }
   function prDocDate(){ var n=new Date(); return ('0'+n.getDate()).slice(-2)+'/'+('0'+(n.getMonth()+1)).slice(-2)+'/'+n.getFullYear(); }
   function prSaindoData(){
-    var propNames={}; CATS.forEach(function(c){ (PR.assets[c]||[]).forEach(function(x){ propNames[nkey(x.nome)]=1; }); });
-    var byCat={}; (PR.atualAssets||[]).forEach(function(a){ if(propNames[nkey(a.nome)]||isProtected(a.nome,a.cat)) return; (byCat[a.cat]=byCat[a.cat]||[]).push(a); });
+    var propNames={}; CATS.forEach(function(c){ (PR.assets[c]||[]).forEach(function(x){ propNames[famKey(x.nome)]=1; }); });
+    var byCat={}; (PR.atualAssets||[]).forEach(function(a){ if(propNames[famKey(a.nome)]||isProtected(a.nome,a.cat)) return; (byCat[a.cat]=byCat[a.cat]||[]).push(a); });
     var cats=CATS.filter(function(c){ return byCat[c]&&byCat[c].length; });
     var total=0; cats.forEach(function(c){ byCat[c].forEach(function(a){ total+=PR.patrim*(a.pct||0)/100; }); });
     return { byCat:byCat, cats:cats, total:total };
