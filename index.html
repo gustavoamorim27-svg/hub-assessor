@@ -9565,8 +9565,7 @@ function render(){
   h += '<div class="header" style="border-bottom:none;padding-bottom:0;margin-bottom:6px"><div>'+
     '<div class="sub" style="font-size:13px">Selecione um perfil ou monte do zero · operações estruturadas e Quanto</div>'+
     '</div><div class="hbtns">'+
-    '<button class="btn-ghost" id="rvBtnCopy">'+ICON_COPY+' Copiar resumo</button>'+
-    '<button class="btn-ghost" id="rvBtnCard" style="border-color:rgba(255,78,0,.5);color:#FF8B52">'+ICON_CARD+' Card do cliente</button>'+
+    '<button class="btn-ghost" id="rvBtnCard" style="border-color:rgba(255,78,0,.5);color:#FF8B52">'+ICON_CARD+' Visualizar operação</button>'+
     '<button class="btn-solid" id="rvBtnPng">'+ICON_DOWNLOAD+' Gerar PNG</button>'+
     '</div></div>';
 
@@ -9577,8 +9576,6 @@ function render(){
   Object.keys(TEMPLATES).forEach(function(t){ var mod=(t!=="Montar do zero" && !!rvGetTplOv(t)); h += '<button class="tab'+(state.template===t?' active':'')+'" data-tpl="'+esc(t)+'">'+esc(t)+(mod?' <span style="font-size:10px;font-weight:800;color:#2BD9A6;letter-spacing:.3px">• EDITADO</span>':'')+'</button>'; });
   if(!_isZero){
     h += '<button class="tab" id="rvBtnSaveDefault" style="margin-left:auto;border-color:rgba(43,217,166,.5);color:#2BD9A6">'+ICON_SAVE+'Salvar carteira como padrão</button>';
-    h += '<button class="tab" id="rvBtnFactory" style="border-color:rgba(255,85,102,.45);color:#FF8B9A'+(_hasOv?'':';opacity:.5')+'" title="Remove as personalizações salvas deste modelo">'+ICON_ROTATE+'Restaurar padrão de fábrica</button>';
-    h += '<button class="tab" id="rvBtnRestore" title="Descarta edições não salvas e recarrega o padrão atual">'+ICON_ROTATE+'Recarregar</button>';
   } else {
     h += '<button class="tab" id="rvBtnRestore" style="margin-left:auto">'+ICON_ROTATE+'Restaurar perfil</button>';
   }
@@ -9792,7 +9789,7 @@ function rvApplyCatFilter(){
 /* ===== Eventos ===== */
 function bind(d){
   // header
-  document.getElementById("rvBtnCopy").onclick = copyResumo;
+  var _rvBtnCopy=document.getElementById("rvBtnCopy"); if(_rvBtnCopy) _rvBtnCopy.onclick = copyResumo;
   document.getElementById("rvBtnPng").onclick = gerarPNG;
   var _rvBtnCard=document.getElementById("rvBtnCard"); if(_rvBtnCard) _rvBtnCard.onclick = abrirCardModal;
   // templates
