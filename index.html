@@ -3819,7 +3819,7 @@ html.theme-light .pm-alloc{ background:#fff; }
   };
   function profileItems(name){
     var _T=window.RICO_TEMPLATES;
-    if(!_T){ try{ if(window._toolInit&&window._toolInit['construtor']) window._toolInit['construtor'](); }catch(e){} _T=window.RICO_TEMPLATES; }
+    /* construtor ja e pre-inicializado no clique de btnPropor; nao reinicializar daqui (re-entrancia travava o renderer) */
     if(_T && typeof _T[name]==='function'){
       var items=[]; try{ items=_T[name]()||[]; }catch(e){ items=[]; }
       if(items.length){
@@ -3915,7 +3915,7 @@ html.theme-light .pm-alloc{ background:#fff; }
     if(!PR.picker) return '';
     var _LD = (typeof window.__hubLibData==='function') ? window.__hubLibData() : (window.__LIBDATA||[]);
     if(!_LD || !_LD.length){
-      try{ if(window._toolInit && window._toolInit['construtor']) window._toolInit['construtor'](); }catch(e){}
+      /* sem re-init aqui: o construtor ja foi pre-inicializado ao abrir o Propor */
       _LD = (typeof window.__hubLibData==='function') ? window.__hubLibData() : (window.__LIBDATA||[]);
     }
     var c=PR.pickerCat;
@@ -4023,7 +4023,7 @@ html.theme-light .pm-alloc{ background:#fff; }
       var nome=prompt('Nome do novo ativo ('+c+'):'); if(!nome||!nome.trim()) return;
       var det=prompt('Detalhe / rentabilidade (ex.: 93% do CDI - isento):','')||'';
       var liq=prompt('Liquidez (ex.: D+1, No vencimento):','')||'';
-      if(typeof window.__hubLibAdd!=='function'){ try{ if(window._toolInit&&window._toolInit['construtor']) window._toolInit['construtor'](); }catch(e){} }
+      /* sem re-init aqui: o construtor ja foi pre-inicializado ao abrir o Propor */
       var novo=(typeof window.__hubLibAdd==='function')?window.__hubLibAdd({classe:c,nome:nome,detalhe:det,liq:liq}):null;
       var base=novo||{nome:nome.trim(),detalhe:det,liq:liq};
       var item=mkItem({nome:base.nome,cat:c,pct:0,pctOrig:0,detalhe:base.detalhe||'',liq:base.liq||'',origem:'novo',fonte:'manual'});
@@ -4330,7 +4330,7 @@ html.theme-light .pm-alloc{ background:#fff; }
   function close(){ el('proporModal').classList.remove('on'); document.body.style.overflow=''; }
   function bind(){
     var b=el('btnPropor'); if(!b || b.__b) return; b.__b=1;
-    b.onclick=function(){ try{ var rv=document.getElementById('construtorRv'); if(rv && rv.offsetParent!==null && typeof window.__rvProporProposal==='function'){ window.__rvProporProposal(); return; } }catch(_){ } open(); };
+    b.onclick=function(){ try{ var rv=document.getElementById('construtorRv'); if(rv && rv.offsetParent!==null && typeof window.__rvProporProposal==='function'){ window.__rvProporProposal(); return; } }catch(_){ } try{ if(!window.RICO_TEMPLATES && window._toolInit && window._toolInit['construtor']) window._toolInit['construtor'](); }catch(_){ } open(); };
     Array.prototype.forEach.call(document.querySelectorAll('.g-nav .g-tab, .g-nav .g-logo'),function(t){ if(!t.__pmClose){ t.__pmClose=1; t.addEventListener('click',close); } });
     el('pmClose').onclick=close; var _cl=el('pmClear'); if(_cl) _cl.onclick=clearAll;
     el('pmSrcSim').onclick=function(){ setActive('pmSrcSim'); seedSim(); };
