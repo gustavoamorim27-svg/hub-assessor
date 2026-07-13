@@ -3607,11 +3607,27 @@ html.theme-light .pm-alloc{ background:#fff; }
   function isXP(n){ return /^\s*xp/i.test(String(n||'')); }
   function isProtected(n,cat){ if(!isXP(n)) return false; var c=normCat(cat); return c==='renda fixa'||c==='renda variavel'; }
   /* Carrego ate o vencimento: nao pode ser resgatado sem perda -> nunca sugerido para SAI */
+  /* Liquidez vinda da biblioteca: o RICO_BRIDGE nao carrega o campo liq,
+     entao recuperamos a liquidez do ativo pelo nome/classe na biblioteca. */
+  function libLiqFor(nome,cat){
+    try{
+      var LD=(typeof window.__hubLibData==='function')? window.__hubLibData() : (window.__LIBDATA||[]);
+      if(!LD || !LD.length) return '';
+      var k=nkey(nome);
+      for(var i=0;i<LD.length;i++){
+        var x=LD[i]; if(!x) continue;
+        if(nkey(x.nome)===k && (!cat || !x.classe || normCat(x.classe)===normCat(cat))) return String(x.liq||'');
+      }
+      for(var j=0;j<LD.length;j++){ var y=LD[j]; if(y && nkey(y.nome)===k) return String(y.liq||''); }
+    }catch(e){}
+    return '';
+  }
   function isTravado(nome,detalhe,liq){
     var l=String(liq||'').toLowerCase();
     if(l.indexOf('vencimento')>=0) return true;
     var s=String(nome||'')+' '+String(detalhe||'');
-    return /(^|[^A-Za-z])(CDB|LCI|LCA|CRI|CRA|LC|LF)([^A-Za-z]|$)/i.test(s) || /deb[êêe]nture/i.test(s) || /debenture/i.test(s);
+    if(/letra de cr[eé]dito/i.test(s)) return true;
+    return /(^|[^A-Za-z])(CDB|RDB|LCI|LCA|LCD|LIG|LC|LF|CRI|CRA)([^A-Za-z]|$)/i.test(s) || /deb[êe]nture/i.test(s) || /debenture/i.test(s);
   }
   function metaFromLib(it){
     var det=String(it.detalhe||''), nome=String(it.nome||''), cl=it.classe||'', liq=it.liq||'';
@@ -3649,6 +3665,7 @@ html.theme-light .pm-alloc{ background:#fff; }
     o=o||{};
     var cat=canonCat(o.cat||o.classe)||'Renda Fixa';
     var nome=String(o.nome||''), det=String(o.detalhe||''), liq=String(o.liq||'');
+    if(!liq){ liq=libLiqFor(nome,cat); }
     var meta=metaFromLib({classe:cat,nome:nome,detalhe:det,liq:liq});
     var pct=Number(o.pct); if(!isFinite(pct)) pct=0;
     var po=Number(o.pctOrig); if(!isFinite(po)) po=0;
