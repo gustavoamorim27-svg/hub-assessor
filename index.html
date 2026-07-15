@@ -5338,7 +5338,7 @@ function renderEditor(D){
       <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
         <span style="width:12px; height:12px; border-radius:4px; background:${CLASS_COLORS[c]};"></span>
         <span style="font-weight:700; font-size:15px;">${window.__hubClassLabel?window.__hubClassLabel(c):c}</span>
-        <span style="color:#A9B0D6; font-weight:700; font-size:13px;">${fmtPct(D.byClass[c])}%</span>
+        <span data-classpct="${c}" style="color:#A9B0D6; font-weight:700; font-size:13px;">${fmtPct(D.byClass[c])}%</span>
       </div>`;
     list.forEach(i=>{
       if(!Array.isArray(i.tags)) i.tags = defaultTags(i);
@@ -5541,6 +5541,8 @@ function updateLight(){
   if(D.usarItens){ S.cdiMult = Math.round((D.multItens||0)*10)/10; }
   renderTotal(D); renderRetorno(D); renderAlfa(D); renderDonut(D); renderGloss(D); renderProj(D);
   S.items.forEach(i=>{ const e=document.querySelector('[data-vhint="'+i.id+'"]'); if(e) e.textContent='≈ R$ '+fmtBRL(S.patrimonio*(Number(i.pct)||0)/100); });
+  // Atualiza os subtotais por classe (o cabecalho 'Renda Fixa X%') sem reconstruir os inputs em foco
+  document.querySelectorAll('[data-classpct]').forEach(e=>{ const c=e.getAttribute('data-classpct'); e.textContent=fmtPct((D.byClass&&D.byClass[c])||0)+'%'; });
   publicarCarteira(D);
 }
 
