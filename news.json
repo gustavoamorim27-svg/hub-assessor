@@ -1,85 +1,15 @@
 {
-  "updated": "15/07/2026 07:56",
+  "updated": "15/07/2026 09:07",
   "items": [
-    {
-      "region": "nacional",
-      "title": "Ibovespa sobe 0,51% seguindo exterior apos CPI dos EUA; dolar recua a R$ 5,07",
-      "resumo": "Indice fechou aos 176.641 pontos na terca, animado pela inflacao mais fraca nos Estados Unidos.",
-      "source": "InfoMoney",
-      "date": "14 jul 2026",
-      "url": "https://www.infomoney.com.br/mercados/ibovespa-hoje-bolsa-de-valores-ao-vivo-14072026/"
-    },
-    {
-      "region": "nacional",
-      "title": "Dolar fecha no menor nivel em um mes, a R$ 5,07",
-      "resumo": "Moeda americana cedeu 1,12% ante o real com dados de deflacao no exterior enfraquecendo o dolar.",
-      "source": "Forbes Brasil",
-      "date": "14 jul 2026",
-      "url": "https://forbes.com.br/geral/2026/07/ibovespa-sobe-e-dolar-fecha-no-menor-nivel-em-um-mes/"
-    },
-    {
-      "region": "nacional",
-      "title": "IPCA de junho desacelera a 4,64% em 12 meses e reforca aposta em corte da Selic",
-      "resumo": "Indice subiu apenas 0,16% no mes, abaixo do esperado, aumentando a chance de novo corte de juros.",
-      "source": "InfoMoney",
-      "date": "10 jul 2026",
-      "url": "https://www.infomoney.com.br/mercados/ibovespa-hoje-bolsa-de-valores-ao-vivo-10072026/"
-    },
-    {
-      "region": "nacional",
-      "title": "Ibovespa B3 avanca com deflacao nos EUA; volume negociado soma R$ 22,2 bilhoes",
-      "resumo": "Pregao teve giro robusto na B3 enquanto o noticiario externo impulsionou os ativos brasileiros.",
-      "source": "Bora Investir (B3)",
-      "date": "14 jul 2026",
-      "url": "https://borainvestir.b3.com.br/noticias/mercado/ibovespa-b3-sobe-051-com-deflacao-nos-eua-dolar-cai-a-r-507/"
-    },
-    {
-      "region": "nacional",
-      "title": "Copom se reune em 4 e 5 de agosto; mercado ve possivel corte de 0,25 ponto na Selic",
-      "resumo": "Com Selic em 14,25%, inflacao mais branda alimenta expectativa de flexibilizacao monetaria.",
-      "source": "CNN Brasil",
-      "date": "10 jul 2026",
-      "url": "https://www.cnnbrasil.com.br/economia/mercado/mercado-financeiro-ibovespa-dolar-10-julho-2026/"
-    },
-    {
-      "region": "internacional",
-      "title": "S&P 500 e Nasdaq sobem com CPI mais fraco e alivio nas apostas de juros",
-      "resumo": "Inflacao dos EUA de 3,5% em junho veio abaixo do esperado e reduziu pressao sobre o Fed.",
-      "source": "CNBC",
-      "date": "14 jul 2026",
-      "url": "https://www.cnbc.com/2026/07/14/stock-market-today-live-updates.html"
-    },
-    {
-      "region": "internacional",
-      "title": "Nasdaq avanca 0,9% liderado por acoes de chips apos dado de inflacao",
-      "resumo": "Setor de semicondutores puxou os ganhos com o indice fechando aos 26.107 pontos.",
-      "source": "TheStreet",
-      "date": "14 jul 2026",
-      "url": "https://www.thestreet.com/stock-market-today/stock-market-today-dow-jones-sp-500-nasdaq-updates-july-14-2026"
-    },
-    {
-      "region": "internacional",
-      "title": "Petroleo sobe com tensoes no Estreito de Ormuz; WTI a US$ 80 o barril",
-      "resumo": "Escalada entre EUA e Ira sobre o bloqueio de navios iranianos pressionou os precos da commodity.",
-      "source": "Yahoo Finance",
-      "date": "13 jul 2026",
-      "url": "https://finance.yahoo.com/markets/live/stock-market-today-monday-july-13-dow-sp-nasdaq-113249278.html"
-    },
-    {
-      "region": "internacional",
-      "title": "Juro do Treasury de 10 anos ronda 4,55% apos minutas do Fed e alta do petroleo",
-      "resumo": "Titulos americanos oscilaram com o tom cauteloso do banco central e o avanco das cotacoes do oleo.",
-      "source": "Charles Schwab",
-      "date": "13 jul 2026",
-      "url": "https://www.schwab.com/learn/story/stock-market-update-open"
-    },
-    {
-      "region": "internacional",
-      "title": "Presidente do Fed, Kevin Warsh, reafirma compromisso de controlar a inflacao",
-      "resumo": "Em audiencia no Congresso, Warsh prometeu acertar a politica monetaria e derrotar a inflacao.",
-      "source": "Yahoo Finance",
-      "date": "14 jul 2026",
-      "url": "https://finance.yahoo.com/markets/live/stock-market-today-tuesday-july-14-dow-sp-500-nasdaq-070833816.html"
-    }
+    { "region": "nacional", "title": "Ibovespa fecha em alta seguindo exterior apos CPI dos EUA", "resumo": "Bolsa acompanhou Wall Street e o dolar recuou a R$ 5,07, menor cotacao em um mes.", "source": "InfoMoney", "date": "14 jul 2026", "url": "https://www.infomoney.com.br/mercados/ibovespa-hoje-bolsa-de-valores-ao-vivo-14072026/" },
+    { "region": "nacional", "title": "Dolar cai ao menor nivel em um mes e acumula queda de 7,56% no ano", "resumo": "Real se valoriza com fluxo externo e expectativa de corte da Selic em agosto.", "source": "Forbes", "date": "14 jul 2026", "url": "https://forbes.com.br/geral/2026/07/ibovespa-sobe-e-dolar-fecha-no-menor-nivel-em-um-mes/" },
+    { "region": "nacional", "title": "IPCA sobe 0,16% em junho e desacelera para 4,64% em 12 meses", "resumo": "Inflacao veio abaixo do esperado pelo mercado e reforcou apostas de corte de juros.", "source": "InfoMoney", "date": "10 jul 2026", "url": "https://www.infomoney.com.br/mercados/ibovespa-hoje-bolsa-de-valores-ao-vivo-10072026/" },
+    { "region": "nacional", "title": "Selic segue em 14,25%; Copom decide nova taxa em 4 e 5 de agosto", "resumo": "Mercado ve espaco para inicio de cortes diante da inflacao mais fraca e do cambio.", "source": "B3 - Bora Investir", "date": "14 jul 2026", "url": "https://borainvestir.b3.com.br/noticias/mercado/ibovespa-b3-recua-043-apos-decisao-do-fed-e-antes-do-copom-decidir-selic-dolar-vai-a-r-524/" },
+    { "region": "nacional", "title": "Bolsa brasileira renova maximas e testa os 178 mil pontos", "resumo": "Ibovespa atinge patamar nao visto desde maio, impulsionado por commodities e fluxo.", "source": "Bloomberg Linea", "date": "14 jul 2026", "url": "https://www.bloomberglinea.com.br/mercados/ibov:ind/" },
+    { "region": "internacional", "title": "S&P 500 e Nasdaq sobem com inflacao dos EUA abaixo do esperado", "resumo": "Acoes de tecnologia e semicondutores lideraram os ganhos apos o dado de CPI.", "source": "CNBC", "date": "14 jul 2026", "url": "https://www.cnbc.com/2026/07/13/stock-market-today-live-updates.html" },
+    { "region": "internacional", "title": "CPI dos EUA desacelera para 3,5% em junho e reduz apostas de alta de juros", "resumo": "Precos ao consumidor cairam 0,4% no mes, mais do que economistas previam.", "source": "TheStreet", "date": "14 jul 2026", "url": "https://www.thestreet.com/stock-market-today/stock-market-today-dow-jones-sp-500-nasdaq-updates-july-14-2026" },
+    { "region": "internacional", "title": "Petroleo supera US$ 80 apos tensoes entre EUA e Ira no Estreito de Ormuz", "resumo": "Escalada geopolitica pressiona commodities e adiciona risco aos mercados globais.", "source": "AP - Baltimore Sun", "date": "14 jul 2026", "url": "https://www.baltimoresun.com/2026/07/14/oil-prices-financial-markets-iran/" },
+    { "region": "internacional", "title": "Grandes bancos dos EUA superam estimativas na abertura da temporada de balancos", "resumo": "JPMorgan, Goldman Sachs, Citi, BofA e Wells Fargo bateram previsoes de lucro e receita.", "source": "Charles Schwab", "date": "14 jul 2026", "url": "https://www.schwab.com/learn/story/stock-market-update-open" },
+    { "region": "internacional", "title": "Treasury de 10 anos recua apos superar 4,6% pela primeira vez desde maio", "resumo": "Juros dos titulos americanos cedem com dado de inflacao mais fraco.", "source": "Yahoo Finance", "date": "14 jul 2026", "url": "https://finance.yahoo.com/markets/live/stock-market-today-tuesday-july-14-dow-sp-500-nasdaq-070833816.html" }
   ]
 }
