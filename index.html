@@ -5960,7 +5960,7 @@ function buildCarteiraPNG(){
 
   /* projecao (compacta) */
   const hasProj=!!(projData&&projData.length);
-  const projH=hasProj?250:0;
+  const projH=hasProj?306:0;
   const projTop=bodyBottom+(hasProj?14:0);
   const projBottom=projTop+projH;
 
@@ -6089,42 +6089,56 @@ function buildCarteiraPNG(){
     y+=CLASS_GAP;
   });
 
-  /* ---- projecao (compacta) ---- */
+  /* ---- projecao (limpa, bem proporcionada) ---- */
   if(hasProj){
     const py0=projTop;
     spaced("PROJEÇÃO DE RENTABILIDADE · "+String(template||"").toUpperCase(),MX,py0+24,13,"#A9B0D6","700",1.5,"left");
-    const xL=MX+80, xR=W-MX, yT=py0+44, yB=yT+120;
+    /* coluna direita reservada para as duas caixas de valor (fora da area do grafico) */
+    const RCW=360, boxGap=16, boxH=78, boxX=W-MX-RCW;
+    const chartH=190;
+    const xL=MX+80, xR=boxX-30, yT=py0+48, yB=yT+chartH;
     const yMin=patrimonio*0.97, yMax=endCarteira*1.03;
-    const sx=(a)=>xL+(projAnos===0?0:(a/projAnos))*(xR-xL);
-    const sy=(v)=>yB-((v-yMin)/(yMax-yMin||1))*(yB-yT);
+    const yRange=(yMax-yMin)||1;
+    const sx=(a)=>xL+(projAnos>0?(a/projAnos):0)*(xR-xL);
+    const sy=(v)=>yB-((v-yMin)/yRange)*(yB-yT);
+    /* grade + rotulos do eixo y */
     ctx.textAlign="right"; ctx.textBaseline="middle";
-    for(let g=0;g<=4;g++){ const gv=yMin+(g/4)*(yMax-yMin); const gy=sy(gv);
+    for(let g=0;g<=4;g++){ const gv=yMin+(g/4)*yRange; const gy=sy(gv);
       ctx.strokeStyle="rgba(120,130,210,.12)"; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(xL,gy); ctx.lineTo(xR,gy); ctx.stroke();
-      ctx.font=`500 11px ${FF}`; ctx.fillStyle="#A9B0D6"; ctx.fillText(fmtCompact(gv),xL-10,gy); }
+      ctx.font=`500 11px ${FF}`; ctx.fillStyle="#A9B0D6"; ctx.fillText(fmtCompact(gv),xL-12,gy); }
     ctx.textBaseline="alphabetic";
+    /* rotulos do eixo x */
     const step=projAnos<=6?1:2;
-    for(let a=0;a<=projAnos;a+=step) T(a===0?"Hoje":a+"a",sx(a),yB+18,11,"#A9B0D6","500","center");
-    if(projAnos%step!==0) T(projAnos+"a",sx(projAnos),yB+18,11,"#A9B0D6","500","center");
-    ctx.strokeStyle="#7C8CFF"; ctx.lineWidth=2; ctx.setLineDash([7,5]); ctx.beginPath();
+    for(let a=0;a<=projAnos;a+=step) T(a===0?"Hoje":a+"a",sx(a),yB+20,11,"#A9B0D6","500","center");
+    if(projAnos%step!==0) T(projAnos+"a",sx(projAnos),yB+20,11,"#A9B0D6","500","center");
+    /* linha CDI (tracejada) */
+    ctx.strokeStyle="#7C8CFF"; ctx.lineWidth=2; ctx.setLineDash([9,6]); ctx.beginPath();
     projData.forEach((d,idx)=>{ const px=sx(d.ano),py=sy(d.cdi); idx?ctx.lineTo(px,py):ctx.moveTo(px,py); }); ctx.stroke(); ctx.setLineDash([]);
-    ctx.strokeStyle="#2BD9A6"; ctx.lineWidth=3; ctx.beginPath();
+    /* linha carteira (continua, limpa, sem marcadores) */
+    ctx.strokeStyle="#2BD9A6"; ctx.lineWidth=3; ctx.lineJoin="round"; ctx.beginPath();
     projData.forEach((d,idx)=>{ const px=sx(d.ano),py=sy(d.carteira); idx?ctx.lineTo(px,py):ctx.moveTo(px,py); }); ctx.stroke();
-    projData.forEach(d=>{ ctx.beginPath(); ctx.arc(sx(d.ano),sy(d.carteira),3.5,0,2*Math.PI); ctx.fillStyle="#2BD9A6"; ctx.fill(); });
-    const lgy=yB+40;
+    /* apenas o ponto final destacado */
+    if(projData.length){ const _last=projData[projData.length-1], _fx=sx(_last.ano), _fy=sy(_last.carteira);
+      ctx.beginPath(); ctx.arc(_fx,_fy,5,0,2*Math.PI); ctx.fillStyle="#2BD9A6"; ctx.fill();
+      ctx.beginPath(); ctx.arc(_fx,_fy,5,0,2*Math.PI); ctx.strokeStyle="#0A0F38"; ctx.lineWidth=2; ctx.stroke(); }
+    /* legenda (abaixo do eixo x, a esquerda) */
+    const lgy=yB+48;
     const lblCart=`Carteira ${template} (${fmtPct(retAA)}% a.a.)`;
     const lblCdi=`100% do CDI (${fmtPct(cdi)}% a.a.)`;
     ctx.strokeStyle="#2BD9A6"; ctx.lineWidth=3; ctx.beginPath(); ctx.moveTo(MX,lgy); ctx.lineTo(MX+26,lgy); ctx.stroke();
     T(lblCart,MX+36,lgy+4,12.5,"#cfd4ef","600","left");
     ctx.font=`600 12.5px ${FF}`; const lgx2=MX+36+ctx.measureText(lblCart).width+30;
-    ctx.strokeStyle="#7C8CFF"; ctx.lineWidth=2; ctx.setLineDash([6,4]); ctx.beginPath(); ctx.moveTo(lgx2,lgy); ctx.lineTo(lgx2+26,lgy); ctx.stroke(); ctx.setLineDash([]);
+    ctx.strokeStyle="#7C8CFF"; ctx.lineWidth=2; ctx.setLineDash([9,6]); ctx.beginPath(); ctx.moveTo(lgx2,lgy); ctx.lineTo(lgx2+26,lgy); ctx.stroke(); ctx.setLineDash([]);
     T(lblCdi,lgx2+36,lgy+4,12.5,"#cfd4ef","600","left");
-    const boxW=272, boxH=52, boxY=lgy-24, box2X=W-MX-boxW, box1X=box2X-boxW-14;
-    ctx.fillStyle="rgba(43,217,166,.08)"; rr(box1X,boxY,boxW,boxH,12); ctx.fill(); ctx.strokeStyle="rgba(43,217,166,.3)"; ctx.lineWidth=1; rr(box1X,boxY,boxW,boxH,12); ctx.stroke();
-    T(`Carteira em ${projAnos} anos`,box1X+16,boxY+22,11.5,"#A9B0D6","700","left");
-    T("R$ "+fmtBRL(endCarteira),box1X+16,boxY+44,18,"#2BD9A6","800","left");
-    ctx.fillStyle="rgba(124,140,255,.08)"; rr(box2X,boxY,boxW,boxH,12); ctx.fill(); ctx.strokeStyle="rgba(124,140,255,.3)"; ctx.lineWidth=1; rr(box2X,boxY,boxW,boxH,12); ctx.stroke();
-    T(`100% do CDI em ${projAnos} anos`,box2X+16,boxY+22,11.5,"#A9B0D6","700","left");
-    T("R$ "+fmtBRL(endCDI),box2X+16,boxY+44,18,"#7C8CFF","800","left");
+    /* duas caixas de valor empilhadas na coluna direita (fora do grafico) */
+    const boxesBlockH=2*boxH+boxGap;
+    const box1Y=yT+Math.max(0,(chartH-boxesBlockH)/2), box2Y=box1Y+boxH+boxGap;
+    ctx.fillStyle="rgba(43,217,166,.08)"; rr(boxX,box1Y,RCW,boxH,12); ctx.fill(); ctx.strokeStyle="rgba(43,217,166,.3)"; ctx.lineWidth=1; rr(boxX,box1Y,RCW,boxH,12); ctx.stroke();
+    T(`Carteira em ${projAnos} anos`,boxX+18,box1Y+28,12,"#A9B0D6","700","left");
+    T("R$ "+fmtBRL(endCarteira),boxX+18,box1Y+58,22,"#2BD9A6","800","left");
+    ctx.fillStyle="rgba(124,140,255,.08)"; rr(boxX,box2Y,RCW,boxH,12); ctx.fill(); ctx.strokeStyle="rgba(124,140,255,.3)"; ctx.lineWidth=1; rr(boxX,box2Y,RCW,boxH,12); ctx.stroke();
+    T(`100% do CDI em ${projAnos} anos`,boxX+18,box2Y+28,12,"#A9B0D6","700","left");
+    T("R$ "+fmtBRL(endCDI),boxX+18,box2Y+58,22,"#7C8CFF","800","left");
   }
 
   /* ---- alfa (compacta) ---- */
