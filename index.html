@@ -638,6 +638,7 @@ html, body {
   --branco:#FFFFFF; --cinza:#A9B0D6; --cinza-2:#6F77A8; --verde:#2BD9A6;
   --azul-acc:#5B8DEF; --roxo:#9B6BFF; --amarelo:#F5B942;
   --line:rgba(120,130,210,.18);
+  --track-empty:rgba(255,255,255,.10);
 }
 [data-tool="simulador"] *{box-sizing:border-box;margin:0;padding:0;-webkit-font-smoothing:antialiased;}
 [data-tool="simulador"],[data-tool="simulador"]{min-height:100vh;}
@@ -846,22 +847,52 @@ html, body {
 [data-tool="simulador"] .alloc-cat .cat-dot{width:13px;height:13px;border-radius:4px;flex-shrink:0;}
 [data-tool="simulador"] .alloc-cat .cat-name{font-family:'Sora';font-weight:700;font-size:13px;letter-spacing:.6px;text-transform:uppercase;color:#fff;}
 [data-tool="simulador"] .alloc-cat .cat-pct{margin-left:auto;font-family:'Sora';font-weight:800;font-size:14px;color:var(--cinza);}
-[data-tool="simulador"] .alloc-row{display:grid;grid-template-columns:24px 1fr 130px;gap:16px;align-items:center;padding:10px 0;border-top:none;}
-[data-tool="simulador"] .alloc-row .swatch{width:18px;height:18px;border-radius:6px;}
-[data-tool="simulador"] .alloc-row .info{display:flex;flex-direction:column;}
-[data-tool="simulador"] .alloc-row .name{font-weight:700;font-size:15px;color:#fff;}
-[data-tool="simulador"] .alloc-row .descr{font-size:11px;color:var(--cinza-2);font-weight:500;margin-top:2px;}
-[data-tool="simulador"] .alloc-row .right-col{display:flex;flex-direction:column;align-items:flex-end;gap:2px;}
-[data-tool="simulador"] .alloc-row .pct-input{display:flex;align-items:center;justify-content:flex-end;}
+/* ===== Editor de alocacao — cartoes elegantes (private banking) ===== */
+[data-tool="simulador"] .alloc-controls{display:flex;flex-direction:column;gap:9px;padding:14px;}
+[data-tool="simulador"] .alloc-cat{margin-top:6px;}
+[data-tool="simulador"] .alloc-cat:first-child{margin-top:0;}
+[data-tool="simulador"] .alloc-row{display:grid;grid-template-columns:20px 1fr 138px;gap:10px 16px;align-items:center;
+  padding:14px 16px;background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:14px;
+  transition:border-color .18s ease, transform .18s ease, box-shadow .18s ease;}
+[data-tool="simulador"] .alloc-row:hover{border-color:rgba(255,255,255,.20);transform:translateY(-1px);
+  box-shadow:0 8px 22px rgba(0,0,0,.24);}
+[data-tool="simulador"] .alloc-row .swatch{width:16px;height:16px;border-radius:5px;box-shadow:0 0 0 3px rgba(255,255,255,.05);}
+[data-tool="simulador"] .alloc-row .info{display:flex;flex-direction:column;min-width:0;}
+[data-tool="simulador"] .alloc-row .name{font-weight:700;font-size:15px;color:#fff;letter-spacing:-.1px;}
+[data-tool="simulador"] .alloc-row .descr{font-size:11.5px;color:var(--cinza-2);font-weight:500;margin-top:3px;line-height:1.35;}
+[data-tool="simulador"] .alloc-row .right-col{display:flex;flex-direction:column;align-items:flex-end;gap:3px;}
+[data-tool="simulador"] .alloc-row .pct-input{display:flex;align-items:baseline;justify-content:flex-end;gap:1px;}
+[data-tool="simulador"] .alloc-row input.alloc-num,
+[data-tool="simulador"] .alloc-row .pct-input input,
 [data-tool="simulador"] .alloc-row input[type="number"]{background:transparent;border:none;color:var(--laranja);
-  font-family:'Sora';font-weight:800;font-size:18px;text-align:right;width:50px;outline:none;}
+  font-family:'Sora';font-weight:800;font-size:19px;text-align:right;width:54px;outline:none;padding:0;
+  font-variant-numeric:tabular-nums;font-feature-settings:"tnum";}
+[data-tool="simulador"] .alloc-row input.alloc-num::-webkit-inner-spin-button,
 [data-tool="simulador"] .alloc-row input[type="number"]::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
-[data-tool="simulador"] .alloc-row .pct-input::after{content:"%";color:var(--cinza-2);font-size:14px;margin-left:2px;font-weight:600;}
-[data-tool="simulador"] .alloc-row .valor-rs{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--cinza);font-weight:600;}
-[data-tool="simulador"] .alloc-row input[type="range"]{grid-column:1/4;width:100%;height:4px;-webkit-appearance:none;appearance:none;
-  background:rgba(255,255,255,.08);border-radius:10px;outline:none;margin-top:8px;cursor:pointer;}
+[data-tool="simulador"] .alloc-row .pct-input::after{content:"%";color:var(--cinza-2);font-size:13px;margin-left:1px;font-weight:700;}
+[data-tool="simulador"] .alloc-row .valor-rs{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--cinza-2);
+  font-weight:600;font-variant-numeric:tabular-nums;letter-spacing:-.2px;}
+/* Slider refinado — trilha preenchida na cor da classe (gradiente aplicado inline no background do elemento) */
+[data-tool="simulador"] .alloc-row input[type="range"]{grid-column:1/4;width:100%;height:6px;-webkit-appearance:none;appearance:none;
+  border-radius:100px;outline:none;margin:10px 0 2px;cursor:pointer;background:rgba(255,255,255,.08);}
+[data-tool="simulador"] .alloc-row input[type="range"]::-webkit-slider-runnable-track{height:6px;border-radius:100px;background:transparent;}
+[data-tool="simulador"] .alloc-row input[type="range"]::-moz-range-track{height:6px;border-radius:100px;background:transparent;}
 [data-tool="simulador"] .alloc-row input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;
-  width:16px;height:16px;border-radius:50%;cursor:pointer;border:2px solid #fff;}
+  width:18px;height:18px;border-radius:50%;cursor:pointer;margin-top:-6px;background:#fff;border:none;
+  box-shadow:0 1px 3px rgba(0,0,0,.4),0 0 0 4px rgba(255,255,255,.12);}
+[data-tool="simulador"] .alloc-row input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;cursor:pointer;
+  background:#fff;border:none;box-shadow:0 1px 3px rgba(0,0,0,.4),0 0 0 4px rgba(255,255,255,.12);}
+/* ===== Toggle recolher/expandir a carteira (opcional) ===== */
+[data-tool="simulador"] .section-divider.has-toggle{cursor:pointer;}
+[data-tool="simulador"] .carteira-toggle{margin-left:auto;display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.04);
+  border:1px solid var(--line);color:var(--cinza);font-family:inherit;font-weight:700;font-size:12.5px;letter-spacing:.3px;
+  padding:9px 16px;border-radius:100px;cursor:pointer;transition:all .15s ease;text-transform:uppercase;}
+[data-tool="simulador"] .carteira-toggle:hover{border-color:rgba(255,255,255,.22);color:#fff;background:rgba(255,255,255,.07);}
+[data-tool="simulador"] .carteira-toggle .ct-chev{font-size:12px;transition:transform .2s ease;color:var(--laranja);}
+[data-tool="simulador"] .carteira-toggle[aria-expanded="false"] .ct-chev{transform:rotate(-90deg);}
+[data-tool="simulador"] .opt-flag{font-family:'Sora';font-weight:600;font-size:15px;color:var(--cinza-2);letter-spacing:0;}
+[data-tool="simulador"] #carteiraCollapse{overflow:hidden;}
+[data-tool="simulador"] #carteiraCollapse.collapsed{display:none;}
 [data-tool="simulador"] .alloc-status{margin-top:18px;padding:14px 18px;border-radius:12px;font-size:13px;font-weight:600;text-align:center;}
 [data-tool="simulador"] .alloc-status.ok{background:rgba(43,217,166,.10);color:var(--verde);border:1px solid rgba(43,217,166,.3);}
 [data-tool="simulador"] .alloc-status.warn{background:rgba(255,78,0,.10);color:var(--laranja);border:1px solid rgba(255,78,0,.3);}
@@ -1114,6 +1145,7 @@ html.theme-light{
   --azul-1:#EDF0F7; --azul-2:#FFFFFF; --azul-3:#F5F7FC; --azul-4:#E4E8F3;
   --laranja:#F26522; --laranja-2:#FF6B2C; --laranja-soft:rgba(242,101,34,.12);
   --branco:#0B1033; --cinza:#5B6485; --cinza-2:#7A82A6; --line:rgba(11,16,51,.12);
+  --track-empty:#D7DCEA;
 }
 html.theme-light, html.theme-light body{ background:#EDF0F7 !important; color:#0B1033 !important; }
 
@@ -1357,6 +1389,20 @@ html.theme-light input[type="range"]{ -webkit-appearance:none; appearance:none; 
 html.theme-light input[type="range"]::-webkit-slider-runnable-track{ background:#D7DCEA !important; height:6px; border-radius:6px; }
 html.theme-light input[type="range"]::-moz-range-track{ background:#D7DCEA !important; height:6px; border-radius:6px; }
 html.theme-light input[type="range"]::-webkit-slider-thumb{ -webkit-appearance:none; appearance:none; margin-top:-5px; }
+/* Slider elegante do editor de alocacao no tema claro: deixa a trilha preenchida (gradiente inline) aparecer */
+html.theme-light [data-tool="simulador"] .alloc-row input[type="range"]{ background:rgba(11,16,51,.06); }
+html.theme-light [data-tool="simulador"] .alloc-row input[type="range"]::-webkit-slider-runnable-track{ background:transparent !important; }
+html.theme-light [data-tool="simulador"] .alloc-row input[type="range"]::-moz-range-track{ background:transparent !important; }
+html.theme-light [data-tool="simulador"] .alloc-row input[type="range"]::-webkit-slider-thumb{ margin-top:-6px; width:18px; height:18px; background:#fff !important;
+  box-shadow:0 1px 3px rgba(11,16,51,.28),0 0 0 4px rgba(11,16,51,.06); }
+html.theme-light [data-tool="simulador"] .alloc-row input[type="range"]::-moz-range-thumb{ width:18px; height:18px; background:#fff !important; border:none;
+  box-shadow:0 1px 3px rgba(11,16,51,.28),0 0 0 4px rgba(11,16,51,.06); }
+html.theme-light [data-tool="simulador"] .alloc-row:hover{ border-color:rgba(11,16,51,.28) !important; box-shadow:0 8px 22px rgba(11,16,51,.10); }
+html.theme-light [data-tool="simulador"] .alloc-row .name{ color:#0B1033; }
+html.theme-light [data-tool="simulador"] .alloc-row .valor-rs{ color:#5B6485; }
+html.theme-light [data-tool="simulador"] .carteira-toggle{ background:#fff; border-color:rgba(11,16,51,.14); color:#5B6485; }
+html.theme-light [data-tool="simulador"] .carteira-toggle:hover{ color:#0B1033; border-color:rgba(11,16,51,.28); background:#F2F4FB; }
+html.theme-light [data-tool="simulador"] .opt-flag{ color:#7A82A6; }
 
 /* Re-afirma branco apenas sobre laranja */
 html.theme-light .btn-o, html.theme-light .badge, html.theme-light .g-badge,
@@ -2993,14 +3039,18 @@ body.mm .ajbtn{ padding:11px 16px !important; font-size:14px !important; }
     <svg id="chart" viewBox="0 0 1100 460" preserveAspectRatio="none"></svg>
   </div>
 
-  <div class="section-divider">
+  <div class="section-divider has-toggle" id="carteiraHead">
     <div class="num">2</div>
     <div>
-      <h2>Composição da carteira</h2>
+      <h2>Composição da carteira <span class="opt-flag">(opcional)</span></h2>
       <p>Escolha um template de perfil ou distribua os ativos manualmente nos sliders</p>
     </div>
+    <button type="button" id="carteiraToggle" class="carteira-toggle" aria-expanded="true" aria-controls="carteiraCollapse" title="Recolher ou expandir a carteira">
+      <span class="ct-label">Recolher</span><span class="ct-chev">▾</span>
+    </button>
   </div>
 
+  <div id="carteiraCollapse">
   <div class="tpl-bar" id="tplBar">
     <button class="tpl-btn" data-tpl="conservadora" type="button">
       <span class="tpl-name"><span class="tpl-dot" style="background:#5B8DEF"></span>Conservadora</span>
@@ -3046,6 +3096,7 @@ body.mm .ajbtn{ padding:11px 16px !important; font-size:14px !important; }
 
     <div class="card alloc-controls" id="allocControls"></div>
   </div>
+  </div><!-- /#carteiraCollapse -->
 
   <div class="section-divider">
     <div class="num">3</div>
@@ -5870,125 +5921,179 @@ function buildCarteiraPNG(){
   const FF="Arial, Helvetica, sans-serif";
   const nome=(cliente||"").trim();
 
-  let linhas=0; const classCount=Object.values(grouped).filter(l=>l&&l.length).length;
-  CLASSES.forEach(c=>{ const list=grouped[c]; if(list&&list.length) linhas+=1+list.length; });
-  const W=1080, headH=510, rowH=40, classGap=16;
-  const bodyH=linhas*(rowH+12)+classCount*36;
-  const glossH=(glossTerms&&glossTerms.length)?(50+glossTerms.length*78):0;
-  const chartBlockH=560;
-  const alfaH=(D&&D.temCliente?120:0);
-  const H=Math.max(1180, headH+bodyH+glossH+chartBlockH+alfaH+220);
+  /* ---- helpers ---- */
+  const tagFor=(i)=>{
+    let tag="";
+    if(isFII(i)) tag+="CETIPADO";
+    const st=structureTag(i); if(st) tag+=(tag?"  ·  ":"")+st.label;
+    if(i.liquidez) tag+=(tag?"  ·  ":"")+"Liquidez "+i.liquidez;
+    if(isIsento(i.nome)) tag+=(tag?"  ·  ":"")+"Isento de IR";
+    return tag;
+  };
+  const classLabel=(c)=> (window.__hubClassLabel?window.__hubClassLabel(c):c);
+
+  /* ---- layout (LANDSCAPE) ---- */
+  const W=1600, MX=64;
+  const bodyTop=150;
+  const RX=680;                       // inicio da coluna direita
+  const LX=MX;                        // coluna esquerda
+  const LW=(RX-40)-LX;                // largura util esquerda
+
+  /* medicao previa da coluna direita */
+  const CLASS_HEAD_H=42, HOLD_H1=34, HOLD_H2=48, CLASS_GAP=16;
+  let rowsH=0; const activeClasses=[];
+  CLASSES.forEach(c=>{ const list=grouped[c]; if(!list||!list.length) return;
+    activeClasses.push(c); rowsH+=CLASS_HEAD_H;
+    list.forEach(i=>{ const second=!!(i.detalhe||tagFor(i)); rowsH+=second?HOLD_H2:HOLD_H1; });
+    rowsH+=CLASS_GAP;
+  });
+  const rightColH=84+rowsH;
+
+  /* coluna esquerda */
+  const legendClasses=CLASSES.filter(c=>byClass[c]>0);
+  const LEG_BASE_OFF=530, LEG_STEP=30;
+  const leftColH=LEG_BASE_OFF+legendClasses.length*LEG_STEP+10;
+
+  const bodyH=Math.max(leftColH,rightColH);
+  const bodyBottom=bodyTop+bodyH+26;
+
+  /* projecao */
+  const hasProj=!!(projData&&projData.length);
+  const projH=hasProj?470:0;
+  const projTop=bodyBottom+(hasProj?18:0);
+  const projBottom=projTop+projH;
+
+  /* alfa */
+  const hasAlfa=!!(D&&D.temCliente);
+  const alfaH=hasAlfa?112:0;
+  const alfaTop=projBottom+(hasAlfa?16:0);
+  const alfaBottom=alfaTop+alfaH;
+
+  /* glossario (2 colunas) */
+  const hasGloss=!!(glossTerms&&glossTerms.length);
+  const GLOSS_ROW=88;
+  const glossRows=Math.ceil((glossTerms?glossTerms.length:0)/2);
+  const glossH=hasGloss?(48+glossRows*GLOSS_ROW):0;
+  const glossTop=alfaBottom+(hasGloss?16:0);
+  const glossBottom=glossTop+glossH;
+
+  const footTop=glossBottom+28;
+  const H=Math.max(900, footTop+92);
+
   const scale=2;
   const cv=document.createElement("canvas"); cv.width=W*scale; cv.height=H*scale;
   const ctx=cv.getContext("2d"); ctx.scale(scale,scale);
 
   const T=(t,x,y,size,color,weight,align)=>{ ctx.font=`${weight||"400"} ${size}px ${FF}`; ctx.fillStyle=color; ctx.textAlign=align||"left"; ctx.textBaseline="alphabetic"; ctx.fillText(t,x,y); };
   const rr=(x,y,w,h,r)=>{ r=Math.min(r,w/2,h/2); ctx.beginPath(); ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r); ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath(); };
+  const spaced=(t,x,y,size,color,weight,sp,align)=>{ ctx.font=`${weight||"700"} ${size}px ${FF}`; ctx.fillStyle=color; ctx.textBaseline="alphabetic"; ctx.textAlign="left";
+    let w=0; for(const c of t){ w+=ctx.measureText(c).width+sp; } let xx = align==="right" ? (x-w+sp) : x;
+    for(const c of t){ ctx.fillText(c,xx,y); xx+=ctx.measureText(c).width+sp; } };
 
+  /* ---- fundo ---- */
   const bg=ctx.createLinearGradient(0,0,W,H); bg.addColorStop(0,"#0A0F38"); bg.addColorStop(.55,"#070B2E"); bg.addColorStop(1,"#05081F");
   ctx.fillStyle=bg; ctx.fillRect(0,0,W,H);
-  const glow=ctx.createRadialGradient(W*.82,90,0,W*.82,90,W*.5); glow.addColorStop(0,"rgba(255,78,0,.15)"); glow.addColorStop(1,"rgba(255,78,0,0)");
+  const glow=ctx.createRadialGradient(W*.80,80,0,W*.80,80,W*.45); glow.addColorStop(0,"rgba(255,78,0,.14)"); glow.addColorStop(1,"rgba(255,78,0,0)");
   ctx.fillStyle=glow; ctx.fillRect(0,0,W,H);
+
+  /* ---- header band ---- */
+  ctx.fillStyle="rgba(255,255,255,.02)"; ctx.fillRect(0,0,W,bodyTop);
   ctx.fillStyle=ORANGE; ctx.fillRect(0,0,W,6);
-
-  ctx.font=`800 40px ${FF}`; ctx.textAlign="left"; ctx.textBaseline="alphabetic"; ctx.fillStyle=ORANGE; ctx.fillText("rico",60,96);
-  // Eyebrow padronizado (letter-spacing manual) + perfil + data
-  (function(){
-    const txt="PROPOSTA DE CARTEIRA", sp=3; ctx.font="700 13px "+FF; ctx.fillStyle=ORANGE; ctx.textAlign="left"; ctx.textBaseline="alphabetic";
-    let w=0; for(const c of txt){ w+=ctx.measureText(c).width+sp; } let x=W-60-w+sp;
-    for(const c of txt){ ctx.fillText(c,x,72); x+=ctx.measureText(c).width+sp; }
-  })();
-  T(`Perfil ${template}`,W-60,96,15,"#A9B0D6","500","right");
+  ctx.strokeStyle="rgba(120,130,210,.20)"; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(MX,bodyTop-1); ctx.lineTo(W-MX,bodyTop-1); ctx.stroke();
+  ctx.font=`800 44px ${FF}`; ctx.textAlign="left"; ctx.textBaseline="alphabetic"; ctx.fillStyle=ORANGE; ctx.fillText("rico",MX,98);
+  ctx.strokeStyle="rgba(120,130,210,.30)"; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(MX+126,48); ctx.lineTo(MX+126,108); ctx.stroke();
+  spaced("PROPOSTA DE CARTEIRA",MX+150,74,13,ORANGE,"700",3,"left");
+  let dn=nome||"Proposta de Carteira"; ctx.font=`800 30px ${FF}`;
+  while(ctx.measureText(dn).width>640&&dn.length>3) dn=dn.slice(0,-1);
+  if(nome && (nome!==dn)) dn=dn.trim()+"…";
+  T(dn,MX+150,112,30,"#fff","800","left");
   const _hoje=new Date().toLocaleDateString("pt-BR",{day:"2-digit",month:"long",year:"numeric"});
-  T(_hoje,W-60,116,12,"#6F77A8","500","right");
-  ctx.strokeStyle="rgba(120,130,210,.22)"; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(60,140); ctx.lineTo(W-60,140); ctx.stroke();
+  spaced("PERFIL "+String(template||"").toUpperCase(),W-MX,72,13,"#A9B0D6","700",2,"right");
+  T(_hoje,W-MX,104,14,"#6F77A8","500","right");
 
-  T("CARTEIRA PREPARADA PARA",60,194,15,"#A9B0D6","700","left");
-  let dn=nome||"Cliente"; ctx.font=`800 50px ${FF}`;
-  while(ctx.measureText(dn).width>560&&dn.length>3) dn=dn.slice(0,-1);
-  if((nome||"Cliente")!==dn) dn=dn.trim()+"…";
-  T(dn,60,248,50,"#fff","800","left");
-  T("Patrimônio a alocar",60,300,14,"#A9B0D6","600","left");
-  T("R$ "+fmtBRL(patrimonio),60,336,30,ORANGE,"800","left");
-
-  T("Retorno estimado (bruto)",60,392,14,"#A9B0D6","600","left");
-  T(fmtPct(retAA)+"% a.a.",60,426,26,"#2BD9A6","800","left");
-  T("· "+fmtPct(cdiMult)+"% do CDI",60+ctx.measureText(fmtPct(retAA)+"% a.a.").width+14,426,16,"#A9B0D6","600","left");
-  T("≈ R$ "+fmtBRL(patrimonio*retAA/100)+" em 12 meses",60,452,14,"#cfd4ef","500","left");
-
-  const dcx=W-220,dcy=250,dr=92,dw=26; let acc=0;
+  /* ---- coluna esquerda: donut ---- */
+  const dcx=LX+(LW/2), dcy=bodyTop+175, dr=118, dw=32; let acc=0;
+  ctx.strokeStyle="rgba(120,130,210,.10)"; ctx.lineWidth=dw; ctx.beginPath(); ctx.arc(dcx,dcy,dr,0,2*Math.PI); ctx.stroke();
   CLASSES.forEach(c=>{ const v=byClass[c]; if(!v) return;
     const a0=(acc/100)*2*Math.PI-Math.PI/2; const a1=((acc+v)/100)*2*Math.PI-Math.PI/2;
-    ctx.beginPath(); ctx.arc(dcx,dcy,dr,a0,a1); ctx.strokeStyle=CLASS_COLORS[c]; ctx.lineWidth=dw; ctx.stroke(); acc+=v; });
-  T("Alocado",dcx,dcy-4,13,"#A9B0D6","600","center");
-  T(fmtPct(total)+"%",dcx,dcy+24,26,"#fff","800","center");
+    ctx.beginPath(); ctx.arc(dcx,dcy,dr,a0,a1); ctx.strokeStyle=CLASS_COLORS[c]; ctx.lineWidth=dw; ctx.lineCap="butt"; ctx.stroke(); acc+=v; });
+  T("ALOCADO",dcx,dcy-6,12,"#A9B0D6","700","center");
+  T(fmtPct(total)+"%",dcx,dcy+30,34,"#fff","800","center");
 
-  let y=headH-20;
-  CLASSES.forEach(c=>{
-    const list=grouped[c]; if(!list||list.length===0) return;
-    ctx.fillStyle=CLASS_COLORS[c]; rr(60,y-16,6,22,3); ctx.fill();
-    T((window.__hubClassLabel?window.__hubClassLabel(c):c),80,y,19,"#fff","800","left");
-    T(fmtPct(byClass[c])+"%",W-60,y,18,CLASS_COLORS[c],"800","right");
-    y+=classGap+18;
-    list.forEach(i=>{
-      const valor=patrimonio*(Number(i.pct)||0)/100;
-      let tag="";
-      if(isFII(i)) tag+="CETIPADO";
-      const st=structureTag(i); if(st) tag+=(tag?"  ·  ":"")+st.label;
-      if(i.liquidez) tag+=(tag?"  ·  ":"")+"Liquidez "+i.liquidez;
-      if(isIsento(i.nome)) tag+=(tag?"  ·  ":"")+"Resgate trabalhado  ·  Isento de IR";
-      const hasSecond=!!(i.detalhe||tag);
-      T(fmtPct(i.pct)+"%",80,y,16,"#FF6B2C","800","left");
-      T(i.nome,170,y,16,"#fff","700","left");
-      if(i.detalhe) T(i.detalhe,170,y+18,12.5,"#A9B0D6","500","left");
-      T("R$ "+fmtBRL(valor),W-60,y,15,"#cfd4ef","600","right");
-      if(tag) T(tag,W-60,y+18,11.5,"#8A93D8","600","right");
-      const lineY=y+(hasSecond?30:14);
-      ctx.strokeStyle="rgba(120,130,210,.12)"; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(80,lineY); ctx.lineTo(W-60,lineY); ctx.stroke();
-      y+=hasSecond?rowH+8:rowH;
-    });
-    y+=10;
+  /* cartoes patrimonio + retorno */
+  const cardX=LX, cardW=LW, CARD_H=70;
+  const cA=bodyTop+318;
+  ctx.fillStyle="rgba(255,255,255,.03)"; rr(cardX,cA,cardW,CARD_H,14); ctx.fill();
+  ctx.strokeStyle="rgba(120,130,210,.18)"; ctx.lineWidth=1; rr(cardX,cA,cardW,CARD_H,14); ctx.stroke();
+  spaced("PATRIMÔNIO A ALOCAR",cardX+18,cA+27,11.5,"#A9B0D6","700",1.5,"left");
+  T("R$ "+fmtBRL(patrimonio),cardX+18,cA+56,25,ORANGE,"800","left");
+  const cB=bodyTop+398;
+  ctx.fillStyle="rgba(43,217,166,.06)"; rr(cardX,cB,cardW,CARD_H,14); ctx.fill();
+  ctx.strokeStyle="rgba(43,217,166,.22)"; ctx.lineWidth=1; rr(cardX,cB,cardW,CARD_H,14); ctx.stroke();
+  spaced("RETORNO ESTIMADO (BRUTO)",cardX+18,cB+27,11.5,"#8FE9CB","700",1.5,"left");
+  ctx.font=`800 23px ${FF}`; const raaW=ctx.measureText(fmtPct(retAA)+"% a.a.").width;
+  T(fmtPct(retAA)+"% a.a.",cardX+18,cB+56,23,"#2BD9A6","800","left");
+  T("· "+fmtPct(cdiMult)+"% do CDI",cardX+18+raaW+12,cB+54,13.5,"#A9B0D6","600","left");
+
+  /* legenda de classes (esquerda) */
+  spaced("DISTRIBUIÇÃO POR CLASSE",LX,bodyTop+500,11.5,"#6F77A8","700",1.5,"left");
+  let ly=bodyTop+LEG_BASE_OFF;
+  legendClasses.forEach(c=>{
+    ctx.fillStyle=CLASS_COLORS[c]; rr(LX,ly-11,12,12,3); ctx.fill();
+    T(classLabel(c),LX+24,ly,14.5,"#cfd4ef","600","left");
+    T(fmtPct(byClass[c])+"%",RX-40,ly,14.5,CLASS_COLORS[c],"800","right");
+    ly+=LEG_STEP;
   });
 
-  if(glossTerms&&glossTerms.length){
-    y+=8;
-    ctx.fillStyle="rgba(255,78,0,.10)"; rr(60,y-22,W-120,30+glossTerms.length*74,14); ctx.fill();
-    T("ENTENDA AS PROTEÇÕES",84,y,14,ORANGE,"700","left"); y+=32;
-    glossTerms.forEach(k=>{
-      T(GLOSSARY[k].label,84,y,16,"#fff","800","left"); y+=22;
-      const ln=wrapText(ctx,GLOSSARY[k].desc,84,y,W-168,20,"#A9B0D6",13.5,FF); y+=ln*20+18;
-    });
-  }
+  /* ---- divisor vertical ---- */
+  ctx.strokeStyle="rgba(120,130,210,.16)"; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(RX-40,bodyTop+30); ctx.lineTo(RX-40,bodyBottom-20); ctx.stroke();
 
-  if(D&&D.temCliente){
-    y+=22;
-    const _ah=96;
-    ctx.fillStyle="rgba(43,217,166,.08)"; rr(60,y-22,W-120,_ah,14); ctx.fill();
-    ctx.strokeStyle="rgba(43,217,166,.3)"; ctx.lineWidth=1; rr(60,y-22,W-120,_ah,14); ctx.stroke();
-    T("ALFA DA ASSESSORIA",84,y,14,"#2BD9A6","700","left");
-    var _melh=(Number(S.clienteCDI)>0?(Number(S.cdiMult)-Number(S.clienteCDI))/Number(S.clienteCDI)*100:0);
-    T((_melh>=0?"Melhora de "+fmtPct(_melh)+"%":"Queda de "+fmtPct(Math.abs(_melh))+"%")+" em relação à carteira atual",84,y+36,23,(_melh>=0?"#2BD9A6":ORANGE),"800","left");
-    T(fmtPct(S.clienteCDI)+"% → "+fmtPct(S.cdiMult)+"% do CDI ("+(D.alphaCDI>=0?"+":"")+fmtPct(D.alphaCDI)+" p.p.)",84,y+60,12.5,"#A9B0D6","500","left");
-    T("Ganho extra · 12 meses",W-60,y+30,12,"#A9B0D6","600","right");
-    T((D.alpha12>=0?"+":"")+"R$ "+fmtBRL(D.alpha12),W-60,y+52,18,(D.alpha12>=0?"#2BD9A6":ORANGE),"800","right");
-    T("· "+S.projAnos+" anos: "+(D.alphaProj>=0?"+":"")+"R$ "+fmtBRL(D.alphaProj),W-60,y+72,12.5,"#cfd4ef","600","right");
-    y+=_ah+8;
-  }
-  if(projData&&projData.length){
-    y+=26;
-    T("PROJEÇÃO DE RENTABILIDADE · "+template.toUpperCase(),60,y,15,"#A9B0D6","700","left");
-    const xL=132,xR=W-60,yT=y+26,yB=yT+290;
-    const yMin=patrimonio*0.97,yMax=endCarteira*1.03;
+  /* ---- coluna direita: composicao ---- */
+  spaced("COMPOSIÇÃO DA CARTEIRA",RX,bodyTop+44,14,"#A9B0D6","700",2,"left");
+  T("% · VALOR",W-MX,bodyTop+44,12.5,"#6F77A8","600","right");
+  let y=bodyTop+86;
+  activeClasses.forEach(c=>{
+    const list=grouped[c];
+    ctx.fillStyle=CLASS_COLORS[c]; rr(RX,y-16,5,22,2); ctx.fill();
+    T(classLabel(c),RX+16,y,18,"#fff","800","left");
+    const classVal=patrimonio*(byClass[c]||0)/100;
+    ctx.font=`800 17px ${FF}`; const pctW=ctx.measureText(fmtPct(byClass[c])+"%").width;
+    T(fmtPct(byClass[c])+"%",W-MX,y,17,CLASS_COLORS[c],"800","right");
+    T("R$ "+fmtBRL(classVal),W-MX-pctW-16,y,13,"#8A93D8","600","right");
+    y+=CLASS_HEAD_H;
+    list.forEach(i=>{
+      const valor=patrimonio*(Number(i.pct)||0)/100;
+      const tg=tagFor(i);
+      const second=!!(i.detalhe||tg);
+      T(fmtPct(i.pct)+"%",RX+16,y,15,"#FF6B2C","800","left");
+      let nm=i.nome; ctx.font=`700 15.5px ${FF}`; const maxNameW=(W-MX-150)-(RX+86);
+      while(ctx.measureText(nm).width>maxNameW && nm.length>4) nm=nm.slice(0,-1);
+      if(nm!==i.nome) nm=nm.trim()+"…";
+      T(nm,RX+86,y,15.5,"#fff","700","left");
+      if(i.detalhe) T(i.detalhe,RX+86,y+18,12,"#A9B0D6","500","left");
+      T("R$ "+fmtBRL(valor),W-MX,y,14.5,"#cfd4ef","600","right");
+      if(tg) T(tg,W-MX,y+18,11,"#8A93D8","600","right");
+      const lineY=y+(second?32:16);
+      ctx.strokeStyle="rgba(120,130,210,.10)"; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(RX+16,lineY); ctx.lineTo(W-MX,lineY); ctx.stroke();
+      y+=second?HOLD_H2:HOLD_H1;
+    });
+    y+=CLASS_GAP;
+  });
+
+  /* ---- projecao ---- */
+  if(hasProj){
+    const py0=projTop;
+    spaced("PROJEÇÃO DE RENTABILIDADE · "+String(template||"").toUpperCase(),MX,py0+30,14,"#A9B0D6","700",1.5,"left");
+    const xL=MX+80, xR=W-MX, yT=py0+56, yB=yT+250;
+    const yMin=patrimonio*0.97, yMax=endCarteira*1.03;
     const sx=(a)=>xL+(projAnos===0?0:(a/projAnos))*(xR-xL);
     const sy=(v)=>yB-((v-yMin)/(yMax-yMin||1))*(yB-yT);
     ctx.textAlign="right"; ctx.textBaseline="middle";
-    for(let g=0;g<=4;g++){
-      const gv=yMin+(g/4)*(yMax-yMin); const gy=sy(gv);
-      ctx.strokeStyle="rgba(120,130,210,.14)"; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(xL,gy); ctx.lineTo(xR,gy); ctx.stroke();
-      ctx.font=`500 12px ${FF}`; ctx.fillStyle="#A9B0D6"; ctx.fillText(fmtCompact(gv),xL-12,gy);
-    }
+    for(let g=0;g<=4;g++){ const gv=yMin+(g/4)*(yMax-yMin); const gy=sy(gv);
+      ctx.strokeStyle="rgba(120,130,210,.12)"; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(xL,gy); ctx.lineTo(xR,gy); ctx.stroke();
+      ctx.font=`500 12px ${FF}`; ctx.fillStyle="#A9B0D6"; ctx.fillText(fmtCompact(gv),xL-12,gy); }
     ctx.textBaseline="alphabetic";
-    const step=projAnos<=5?1:2;
+    const step=projAnos<=6?1:2;
     for(let a=0;a<=projAnos;a+=step) T(a===0?"Hoje":a+"a",sx(a),yB+24,12,"#A9B0D6","500","center");
     if(projAnos%step!==0) T(projAnos+"a",sx(projAnos),yB+24,12,"#A9B0D6","500","center");
     ctx.strokeStyle="#7C8CFF"; ctx.lineWidth=2.5; ctx.setLineDash([8,6]); ctx.beginPath();
@@ -5996,31 +6101,59 @@ function buildCarteiraPNG(){
     ctx.strokeStyle="#2BD9A6"; ctx.lineWidth=3.5; ctx.beginPath();
     projData.forEach((d,idx)=>{ const px=sx(d.ano),py=sy(d.carteira); idx?ctx.lineTo(px,py):ctx.moveTo(px,py); }); ctx.stroke();
     projData.forEach(d=>{ ctx.beginPath(); ctx.arc(sx(d.ano),sy(d.carteira),4,0,2*Math.PI); ctx.fillStyle="#2BD9A6"; ctx.fill(); });
-    const lgy=yB+52;
+    const lgy=yB+54;
     const lblCart=`Carteira ${template} (${fmtPct(retAA)}% a.a.)`;
     const lblCdi=`100% do CDI (${fmtPct(cdi)}% a.a.)`;
-    ctx.strokeStyle="#2BD9A6"; ctx.lineWidth=3.5; ctx.beginPath(); ctx.moveTo(60,lgy); ctx.lineTo(86,lgy); ctx.stroke();
-    T(lblCart,96,lgy+4,13,"#cfd4ef","600","left");
-    ctx.font=`600 13px ${FF}`; const lgx2=96+ctx.measureText(lblCart).width+34;
+    ctx.strokeStyle="#2BD9A6"; ctx.lineWidth=3.5; ctx.beginPath(); ctx.moveTo(MX,lgy); ctx.lineTo(MX+26,lgy); ctx.stroke();
+    T(lblCart,MX+36,lgy+4,13,"#cfd4ef","600","left");
+    ctx.font=`600 13px ${FF}`; const lgx2=MX+36+ctx.measureText(lblCart).width+34;
     ctx.strokeStyle="#7C8CFF"; ctx.lineWidth=2.5; ctx.setLineDash([7,5]); ctx.beginPath(); ctx.moveTo(lgx2,lgy); ctx.lineTo(lgx2+26,lgy); ctx.stroke(); ctx.setLineDash([]);
     T(lblCdi,lgx2+36,lgy+4,13,"#cfd4ef","600","left");
-    const boxY=lgy+26; const boxW=(xR-60-20)/2;
-    ctx.fillStyle="rgba(43,217,166,.08)"; rr(60,boxY,boxW,78,12); ctx.fill();
-    ctx.strokeStyle="rgba(43,217,166,.3)"; ctx.lineWidth=1; rr(60,boxY,boxW,78,12); ctx.stroke();
-    T(`Carteira em ${projAnos} anos`,78,boxY+28,13,"#A9B0D6","700","left");
-    T("R$ "+fmtBRL(endCarteira),78,boxY+58,22,"#2BD9A6","800","left");
-    const b2x=60+boxW+20;
-    ctx.fillStyle="rgba(124,140,255,.08)"; rr(b2x,boxY,boxW,78,12); ctx.fill();
-    ctx.strokeStyle="rgba(124,140,255,.3)"; rr(b2x,boxY,boxW,78,12); ctx.stroke();
-    T(`100% do CDI em ${projAnos} anos`,b2x+18,boxY+28,13,"#A9B0D6","700","left");
-    T("R$ "+fmtBRL(endCDI),b2x+18,boxY+58,22,"#7C8CFF","800","left");
+    const boxW=300, boxH=64, boxY=lgy-22, box2X=W-MX-boxW, box1X=box2X-boxW-16;
+    ctx.fillStyle="rgba(43,217,166,.08)"; rr(box1X,boxY,boxW,boxH,12); ctx.fill(); ctx.strokeStyle="rgba(43,217,166,.3)"; ctx.lineWidth=1; rr(box1X,boxY,boxW,boxH,12); ctx.stroke();
+    T(`Carteira em ${projAnos} anos`,box1X+18,boxY+26,12.5,"#A9B0D6","700","left");
+    T("R$ "+fmtBRL(endCarteira),box1X+18,boxY+52,21,"#2BD9A6","800","left");
+    ctx.fillStyle="rgba(124,140,255,.08)"; rr(box2X,boxY,boxW,boxH,12); ctx.fill(); ctx.strokeStyle="rgba(124,140,255,.3)"; ctx.lineWidth=1; rr(box2X,boxY,boxW,boxH,12); ctx.stroke();
+    T(`100% do CDI em ${projAnos} anos`,box2X+18,boxY+26,12.5,"#A9B0D6","700","left");
+    T("R$ "+fmtBRL(endCDI),box2X+18,boxY+52,21,"#7C8CFF","800","left");
   }
 
-  const yF=H-86;
-  ctx.strokeStyle="rgba(120,130,210,.22)"; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(60,yF); ctx.lineTo(W-60,yF); ctx.stroke();
-  T("Total alocado: "+fmtPct(total)+"%  ·  Material de apoio comercial · valores, liquidez e retorno ilustrativos (estimativa bruta, sem IR) · FIIs CETIPADOS são fundos de balcão.",60,yF+30,13,"#6F77A8","500","left");
-  T("Projeção meramente ilustrativa, sem considerar IR/inflação. Não constitui recomendação ou oferta. Sujeito à suitability e às condições de cada produto.",60,yF+52,13,"#6F77A8","500","left");
-  T("rico",W-60,yF+52,18,ORANGE,"800","right");
+  /* ---- alfa ---- */
+  if(hasAlfa){
+    const ay=alfaTop;
+    ctx.fillStyle="rgba(43,217,166,.07)"; rr(MX,ay,W-2*MX,alfaH-8,14); ctx.fill();
+    ctx.strokeStyle="rgba(43,217,166,.28)"; ctx.lineWidth=1; rr(MX,ay,W-2*MX,alfaH-8,14); ctx.stroke();
+    spaced("ALFA DA ASSESSORIA",MX+22,ay+30,12.5,"#2BD9A6","700",1.5,"left");
+    var _melh=(Number(S.clienteCDI)>0?(Number(S.cdiMult)-Number(S.clienteCDI))/Number(S.clienteCDI)*100:0);
+    T((_melh>=0?"Melhora de "+fmtPct(_melh)+"%":"Queda de "+fmtPct(Math.abs(_melh))+"%")+" vs. carteira atual",MX+22,ay+66,22,(_melh>=0?"#2BD9A6":ORANGE),"800","left");
+    T(fmtPct(S.clienteCDI)+"% → "+fmtPct(S.cdiMult)+"% do CDI ("+(D.alphaCDI>=0?"+":"")+fmtPct(D.alphaCDI)+" p.p.)",MX+22,ay+92,13,"#A9B0D6","500","left");
+    T("Ganho extra · 12 meses",W-MX-22,ay+34,12.5,"#A9B0D6","600","right");
+    T((D.alpha12>=0?"+":"")+"R$ "+fmtBRL(D.alpha12),W-MX-22,ay+62,20,(D.alpha12>=0?"#2BD9A6":ORANGE),"800","right");
+    T("· "+S.projAnos+" anos: "+(D.alphaProj>=0?"+":"")+"R$ "+fmtBRL(D.alphaProj),W-MX-22,ay+90,13,"#cfd4ef","600","right");
+  }
+
+  /* ---- glossario ---- */
+  if(hasGloss){
+    const gy0=glossTop;
+    ctx.fillStyle="rgba(255,78,0,.08)"; rr(MX,gy0,W-2*MX,glossH,14); ctx.fill();
+    ctx.strokeStyle="rgba(255,78,0,.20)"; ctx.lineWidth=1; rr(MX,gy0,W-2*MX,glossH,14); ctx.stroke();
+    spaced("ENTENDA AS PROTEÇÕES",MX+22,gy0+30,13,ORANGE,"700",1.5,"left");
+    const colW=(W-2*MX-64)/2;
+    glossTerms.forEach((k,idx)=>{
+      const col=idx%2, rrow=Math.floor(idx/2);
+      const gx=MX+22+col*(colW+20);
+      const gyy=gy0+60+rrow*GLOSS_ROW;
+      T(GLOSSARY[k].label,gx,gyy,15,"#fff","800","left");
+      wrapText(ctx,GLOSSARY[k].desc,gx,gyy+20,colW-6,18,"#A9B0D6",12.5,FF);
+    });
+  }
+
+  /* ---- rodape ---- */
+  const yF=footTop;
+  ctx.strokeStyle="rgba(120,130,210,.20)"; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(MX,yF); ctx.lineTo(W-MX,yF); ctx.stroke();
+  T("Total alocado: "+fmtPct(total)+"%  ·  Material de apoio comercial · valores, liquidez e retorno ilustrativos (estimativa bruta, sem IR) · FIIs CETIPADOS são fundos de balcão.",MX,yF+28,13,"#6F77A8","500","left");
+  T("Projeção meramente ilustrativa, sem considerar IR/inflação. Não constitui recomendação ou oferta. Sujeito à suitability e às condições de cada produto.",MX,yF+50,13,"#6F77A8","500","left");
+  T("rico",W-MX,yF+50,18,ORANGE,"800","right");
 
   return cv.toDataURL("image/png");
 }
@@ -7410,7 +7543,7 @@ function renderAlocacao() {
         <div class="valor-rs">R$ ${f(valorAtivo)}</div>
       </div>
       <input type="range" data-i="${i}" class="alloc-range" min="0" max="100" step="0.5" value="${a.pct}"
-        style="accent-color:${sh};background:linear-gradient(to right, ${sh} 0%, ${sh} ${a.pct}%, rgba(255,255,255,.08) ${a.pct}%, rgba(255,255,255,.08) 100%);"/>
+        style="accent-color:${sh};background:linear-gradient(to right, ${sh} 0%, ${sh} ${a.pct}%, var(--track-empty) ${a.pct}%, var(--track-empty) 100%);"/>
     </div>`;
   });
   cont.innerHTML = html + '<div class="alloc-status" id="allocStatus"></div>';
@@ -7587,7 +7720,7 @@ window.__fillSimuladorFromAderencia = function(data){
 
 
 function aplicarGradiente(rng, color, pct) {
-  rng.style.background = 'linear-gradient(to right, ' + color + ' 0%, ' + color + ' ' + pct + '%, rgba(255,255,255,.08) ' + pct + '%, rgba(255,255,255,.08) 100%)';
+  rng.style.background = 'linear-gradient(to right, ' + color + ' 0%, ' + color + ' ' + pct + '%, var(--track-empty) ' + pct + '%, var(--track-empty) 100%)';
 }
 
 function atualizarResumoAlloc() {
@@ -8921,6 +9054,33 @@ renderAlocacao();
 renderImoveis();
 renderExternos();
 drawChart();
+
+/* ===== Carteira (opcional): recolher/expandir + persistencia (hubFpCarteiraMin) ===== */
+(function(){
+  var LS_FP_CART_MIN = 'hubFpCarteiraMin';
+  var wrap = document.getElementById('carteiraCollapse');
+  var btn  = document.getElementById('carteiraToggle');
+  var head = document.getElementById('carteiraHead');
+  if(!wrap || !btn) return;
+  function apply(min){
+    wrap.classList.toggle('collapsed', !!min);
+    btn.setAttribute('aria-expanded', min ? 'false' : 'true');
+    var lbl = btn.querySelector('.ct-label');
+    if(lbl) lbl.textContent = min ? 'Expandir carteira' : 'Recolher';
+  }
+  var min = false;
+  try{ min = localStorage.getItem(LS_FP_CART_MIN) === '1'; }catch(_){}
+  apply(min);
+  function toggle(){
+    min = !min;
+    try{ localStorage.setItem(LS_FP_CART_MIN, min ? '1' : '0'); }catch(_){}
+    apply(min);
+    if(!min){ try{ if(typeof renderAlocacao==='function') renderAlocacao(); }catch(_){ } }
+  }
+  btn.addEventListener('click', function(e){ e.stopPropagation(); toggle(); });
+  if(head) head.addEventListener('click', function(e){ if(e.target.closest('#carteiraToggle')) return; toggle(); });
+})();
+
 if (restaurado) {
   const txt = document.getElementById('autosaveText');
   if (txt) txt.textContent = 'Última simulação restaurada · salva automaticamente';
