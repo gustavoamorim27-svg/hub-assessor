@@ -4626,7 +4626,8 @@ function defaultTags(it){
   if(isGlobal(it) && t.indexOf("Global")===-1) t.push("Global");
   return t;
 }
-let _id=0; const uid=()=>"a"+(++_id);
+let _id=0; const uid=()=>{ var id; do{ id="a"+(++_id); } while(typeof S!=="undefined" && S && Array.isArray(S.items) && S.items.some(function(x){return x&&x.id===id;})); return id; };
+function ctorFixIds(){ try{ if(typeof S==="undefined"||!S||!Array.isArray(S.items)) return; var mx=0; S.items.forEach(function(x){ if(x&&typeof x.id==="string"){ var m=/^a(\d+)$/.exec(x.id); if(m){ var v=+m[1]; if(v>mx)mx=v; } } }); if(_id<mx)_id=mx; var seen={}; S.items.forEach(function(x){ if(!x)return; if(!x.id||seen[x.id]){ x.id="a"+(++_id); } seen[x.id]=1; }); }catch(_){ } }
 
 /* ===== RETORNO POR ATIVO (Parte A) ===== */
 const RET_CATS = ["pre","pos","mercado","mercadoDiv","inflacao"];
@@ -4962,7 +4963,7 @@ function restoreCtorState(){
   __ctorRestoring=true;
   try{
     if(snap.template) S.template=snap.template;
-    if(Array.isArray(snap.items) && snap.items.length){ S.items=deserItems(snap.items); }
+    if(Array.isArray(snap.items) && snap.items.length){ S.items=deserItems(snap.items); ctorFixIds(); }
     if(typeof snap.cliente==="string") S.cliente=snap.cliente;
     if(snap.patrimonio!=null && !isNaN(Number(snap.patrimonio))) S.patrimonio=Number(snap.patrimonio);
     if(snap.cdi!=null && !isNaN(Number(snap.cdi))) S.cdi=Number(snap.cdi);
@@ -5224,7 +5225,7 @@ function renderTabs(){
 }
 
 function loadTemplate(t){
-  S.template=t; S.recomendadaTemplate=t; S.items=TEMPLATES[t](); S.cdiMult=CDI_MULT[t]; render();
+  S.template=t; S.recomendadaTemplate=t; S.items=TEMPLATES[t](); ctorFixIds(); S.cdiMult=CDI_MULT[t]; render();
 }
 function loadNova(){
   S.template="Nova"; S.recomendadaTemplate="Moderada"; S.items=[]; S.cdiMult=CDI_MULT.Moderada; render();
