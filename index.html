@@ -5957,28 +5957,36 @@ function buildCarteiraPNG(){
   const bodyH=Math.max(leftColH,rightColH);
   const bodyBottom=bodyTop+bodyH+26;
 
-  /* projecao */
+  /* projecao (compacta) */
   const hasProj=!!(projData&&projData.length);
-  const projH=hasProj?470:0;
-  const projTop=bodyBottom+(hasProj?18:0);
+  const projH=hasProj?250:0;
+  const projTop=bodyBottom+(hasProj?14:0);
   const projBottom=projTop+projH;
 
-  /* alfa */
+  /* alfa (compacta) */
   const hasAlfa=!!(D&&D.temCliente);
-  const alfaH=hasAlfa?112:0;
-  const alfaTop=projBottom+(hasAlfa?16:0);
+  const alfaH=hasAlfa?84:0;
+  const alfaTop=projBottom+(hasAlfa?12:0);
   const alfaBottom=alfaTop+alfaH;
 
-  /* glossario (2 colunas) */
+  /* glossario (faixa slim de chips) */
   const hasGloss=!!(glossTerms&&glossTerms.length);
-  const GLOSS_ROW=88;
-  const glossRows=Math.ceil((glossTerms?glossTerms.length:0)/2);
-  const glossH=hasGloss?(48+glossRows*GLOSS_ROW):0;
-  const glossTop=alfaBottom+(hasGloss?16:0);
+  let glossRows=1;
+  if(hasGloss){
+    let _rw=0; const _max=W-2*MX-44;
+    glossTerms.forEach(k=>{
+      const _lbl=((GLOSSARY[k]&&GLOSSARY[k].label)||k||"");
+      const _cw=Math.round(_lbl.length*8.6)+34;
+      if(_rw>0 && _rw+_cw>_max){ glossRows++; _rw=0; }
+      _rw+=_cw+10;
+    });
+  }
+  const glossH=hasGloss?(44+glossRows*34):0;
+  const glossTop=alfaBottom+(hasGloss?12:0);
   const glossBottom=glossTop+glossH;
 
-  const footTop=glossBottom+28;
-  const H=Math.max(900, footTop+92);
+  const footTop=glossBottom+18;
+  const H=Math.max(820, footTop+84);
 
   const scale=2;
   const cv=document.createElement("canvas"); cv.width=W*scale; cv.height=H*scale;
@@ -6080,71 +6088,73 @@ function buildCarteiraPNG(){
     y+=CLASS_GAP;
   });
 
-  /* ---- projecao ---- */
+  /* ---- projecao (compacta) ---- */
   if(hasProj){
     const py0=projTop;
-    spaced("PROJEÇÃO DE RENTABILIDADE · "+String(template||"").toUpperCase(),MX,py0+30,14,"#A9B0D6","700",1.5,"left");
-    const xL=MX+80, xR=W-MX, yT=py0+56, yB=yT+250;
+    spaced("PROJEÇÃO DE RENTABILIDADE · "+String(template||"").toUpperCase(),MX,py0+24,13,"#A9B0D6","700",1.5,"left");
+    const xL=MX+80, xR=W-MX, yT=py0+44, yB=yT+120;
     const yMin=patrimonio*0.97, yMax=endCarteira*1.03;
     const sx=(a)=>xL+(projAnos===0?0:(a/projAnos))*(xR-xL);
     const sy=(v)=>yB-((v-yMin)/(yMax-yMin||1))*(yB-yT);
     ctx.textAlign="right"; ctx.textBaseline="middle";
     for(let g=0;g<=4;g++){ const gv=yMin+(g/4)*(yMax-yMin); const gy=sy(gv);
       ctx.strokeStyle="rgba(120,130,210,.12)"; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(xL,gy); ctx.lineTo(xR,gy); ctx.stroke();
-      ctx.font=`500 12px ${FF}`; ctx.fillStyle="#A9B0D6"; ctx.fillText(fmtCompact(gv),xL-12,gy); }
+      ctx.font=`500 11px ${FF}`; ctx.fillStyle="#A9B0D6"; ctx.fillText(fmtCompact(gv),xL-10,gy); }
     ctx.textBaseline="alphabetic";
     const step=projAnos<=6?1:2;
-    for(let a=0;a<=projAnos;a+=step) T(a===0?"Hoje":a+"a",sx(a),yB+24,12,"#A9B0D6","500","center");
-    if(projAnos%step!==0) T(projAnos+"a",sx(projAnos),yB+24,12,"#A9B0D6","500","center");
-    ctx.strokeStyle="#7C8CFF"; ctx.lineWidth=2.5; ctx.setLineDash([8,6]); ctx.beginPath();
+    for(let a=0;a<=projAnos;a+=step) T(a===0?"Hoje":a+"a",sx(a),yB+18,11,"#A9B0D6","500","center");
+    if(projAnos%step!==0) T(projAnos+"a",sx(projAnos),yB+18,11,"#A9B0D6","500","center");
+    ctx.strokeStyle="#7C8CFF"; ctx.lineWidth=2; ctx.setLineDash([7,5]); ctx.beginPath();
     projData.forEach((d,idx)=>{ const px=sx(d.ano),py=sy(d.cdi); idx?ctx.lineTo(px,py):ctx.moveTo(px,py); }); ctx.stroke(); ctx.setLineDash([]);
-    ctx.strokeStyle="#2BD9A6"; ctx.lineWidth=3.5; ctx.beginPath();
+    ctx.strokeStyle="#2BD9A6"; ctx.lineWidth=3; ctx.beginPath();
     projData.forEach((d,idx)=>{ const px=sx(d.ano),py=sy(d.carteira); idx?ctx.lineTo(px,py):ctx.moveTo(px,py); }); ctx.stroke();
-    projData.forEach(d=>{ ctx.beginPath(); ctx.arc(sx(d.ano),sy(d.carteira),4,0,2*Math.PI); ctx.fillStyle="#2BD9A6"; ctx.fill(); });
-    const lgy=yB+54;
+    projData.forEach(d=>{ ctx.beginPath(); ctx.arc(sx(d.ano),sy(d.carteira),3.5,0,2*Math.PI); ctx.fillStyle="#2BD9A6"; ctx.fill(); });
+    const lgy=yB+40;
     const lblCart=`Carteira ${template} (${fmtPct(retAA)}% a.a.)`;
     const lblCdi=`100% do CDI (${fmtPct(cdi)}% a.a.)`;
-    ctx.strokeStyle="#2BD9A6"; ctx.lineWidth=3.5; ctx.beginPath(); ctx.moveTo(MX,lgy); ctx.lineTo(MX+26,lgy); ctx.stroke();
-    T(lblCart,MX+36,lgy+4,13,"#cfd4ef","600","left");
-    ctx.font=`600 13px ${FF}`; const lgx2=MX+36+ctx.measureText(lblCart).width+34;
-    ctx.strokeStyle="#7C8CFF"; ctx.lineWidth=2.5; ctx.setLineDash([7,5]); ctx.beginPath(); ctx.moveTo(lgx2,lgy); ctx.lineTo(lgx2+26,lgy); ctx.stroke(); ctx.setLineDash([]);
-    T(lblCdi,lgx2+36,lgy+4,13,"#cfd4ef","600","left");
-    const boxW=300, boxH=64, boxY=lgy-22, box2X=W-MX-boxW, box1X=box2X-boxW-16;
+    ctx.strokeStyle="#2BD9A6"; ctx.lineWidth=3; ctx.beginPath(); ctx.moveTo(MX,lgy); ctx.lineTo(MX+26,lgy); ctx.stroke();
+    T(lblCart,MX+36,lgy+4,12.5,"#cfd4ef","600","left");
+    ctx.font=`600 12.5px ${FF}`; const lgx2=MX+36+ctx.measureText(lblCart).width+30;
+    ctx.strokeStyle="#7C8CFF"; ctx.lineWidth=2; ctx.setLineDash([6,4]); ctx.beginPath(); ctx.moveTo(lgx2,lgy); ctx.lineTo(lgx2+26,lgy); ctx.stroke(); ctx.setLineDash([]);
+    T(lblCdi,lgx2+36,lgy+4,12.5,"#cfd4ef","600","left");
+    const boxW=272, boxH=52, boxY=lgy-24, box2X=W-MX-boxW, box1X=box2X-boxW-14;
     ctx.fillStyle="rgba(43,217,166,.08)"; rr(box1X,boxY,boxW,boxH,12); ctx.fill(); ctx.strokeStyle="rgba(43,217,166,.3)"; ctx.lineWidth=1; rr(box1X,boxY,boxW,boxH,12); ctx.stroke();
-    T(`Carteira em ${projAnos} anos`,box1X+18,boxY+26,12.5,"#A9B0D6","700","left");
-    T("R$ "+fmtBRL(endCarteira),box1X+18,boxY+52,21,"#2BD9A6","800","left");
+    T(`Carteira em ${projAnos} anos`,box1X+16,boxY+22,11.5,"#A9B0D6","700","left");
+    T("R$ "+fmtBRL(endCarteira),box1X+16,boxY+44,18,"#2BD9A6","800","left");
     ctx.fillStyle="rgba(124,140,255,.08)"; rr(box2X,boxY,boxW,boxH,12); ctx.fill(); ctx.strokeStyle="rgba(124,140,255,.3)"; ctx.lineWidth=1; rr(box2X,boxY,boxW,boxH,12); ctx.stroke();
-    T(`100% do CDI em ${projAnos} anos`,box2X+18,boxY+26,12.5,"#A9B0D6","700","left");
-    T("R$ "+fmtBRL(endCDI),box2X+18,boxY+52,21,"#7C8CFF","800","left");
+    T(`100% do CDI em ${projAnos} anos`,box2X+16,boxY+22,11.5,"#A9B0D6","700","left");
+    T("R$ "+fmtBRL(endCDI),box2X+16,boxY+44,18,"#7C8CFF","800","left");
   }
 
-  /* ---- alfa ---- */
+  /* ---- alfa (compacta) ---- */
   if(hasAlfa){
     const ay=alfaTop;
     ctx.fillStyle="rgba(43,217,166,.07)"; rr(MX,ay,W-2*MX,alfaH-8,14); ctx.fill();
     ctx.strokeStyle="rgba(43,217,166,.28)"; ctx.lineWidth=1; rr(MX,ay,W-2*MX,alfaH-8,14); ctx.stroke();
-    spaced("ALFA DA ASSESSORIA",MX+22,ay+30,12.5,"#2BD9A6","700",1.5,"left");
+    spaced("ALFA DA ASSESSORIA",MX+22,ay+24,12,"#2BD9A6","700",1.5,"left");
     var _melh=(Number(S.clienteCDI)>0?(Number(S.cdiMult)-Number(S.clienteCDI))/Number(S.clienteCDI)*100:0);
-    T((_melh>=0?"Melhora de "+fmtPct(_melh)+"%":"Queda de "+fmtPct(Math.abs(_melh))+"%")+" vs. carteira atual",MX+22,ay+66,22,(_melh>=0?"#2BD9A6":ORANGE),"800","left");
-    T(fmtPct(S.clienteCDI)+"% → "+fmtPct(S.cdiMult)+"% do CDI ("+(D.alphaCDI>=0?"+":"")+fmtPct(D.alphaCDI)+" p.p.)",MX+22,ay+92,13,"#A9B0D6","500","left");
-    T("Ganho extra · 12 meses",W-MX-22,ay+34,12.5,"#A9B0D6","600","right");
-    T((D.alpha12>=0?"+":"")+"R$ "+fmtBRL(D.alpha12),W-MX-22,ay+62,20,(D.alpha12>=0?"#2BD9A6":ORANGE),"800","right");
-    T("· "+S.projAnos+" anos: "+(D.alphaProj>=0?"+":"")+"R$ "+fmtBRL(D.alphaProj),W-MX-22,ay+90,13,"#cfd4ef","600","right");
+    T((_melh>=0?"Melhora de "+fmtPct(_melh)+"%":"Queda de "+fmtPct(Math.abs(_melh))+"%")+" vs. carteira atual",MX+22,ay+52,19,(_melh>=0?"#2BD9A6":ORANGE),"800","left");
+    T(fmtPct(S.clienteCDI)+"% → "+fmtPct(S.cdiMult)+"% do CDI ("+(D.alphaCDI>=0?"+":"")+fmtPct(D.alphaCDI)+" p.p.)",MX+22,ay+70,12,"#A9B0D6","500","left");
+    T("Ganho extra · 12 meses",W-MX-22,ay+26,12,"#A9B0D6","600","right");
+    T((D.alpha12>=0?"+":"")+"R$ "+fmtBRL(D.alpha12),W-MX-22,ay+52,18,(D.alpha12>=0?"#2BD9A6":ORANGE),"800","right");
+    T("· "+S.projAnos+" anos: "+(D.alphaProj>=0?"+":"")+"R$ "+fmtBRL(D.alphaProj),W-MX-22,ay+70,12,"#cfd4ef","600","right");
   }
 
-  /* ---- glossario ---- */
+  /* ---- glossario (faixa slim de chips) ---- */
   if(hasGloss){
     const gy0=glossTop;
-    ctx.fillStyle="rgba(255,78,0,.08)"; rr(MX,gy0,W-2*MX,glossH,14); ctx.fill();
-    ctx.strokeStyle="rgba(255,78,0,.20)"; ctx.lineWidth=1; rr(MX,gy0,W-2*MX,glossH,14); ctx.stroke();
-    spaced("ENTENDA AS PROTEÇÕES",MX+22,gy0+30,13,ORANGE,"700",1.5,"left");
-    const colW=(W-2*MX-64)/2;
-    glossTerms.forEach((k,idx)=>{
-      const col=idx%2, rrow=Math.floor(idx/2);
-      const gx=MX+22+col*(colW+20);
-      const gyy=gy0+60+rrow*GLOSS_ROW;
-      T(GLOSSARY[k].label,gx,gyy,15,"#fff","800","left");
-      wrapText(ctx,GLOSSARY[k].desc,gx,gyy+20,colW-6,18,"#A9B0D6",12.5,FF);
+    ctx.fillStyle="rgba(255,78,0,.06)"; rr(MX,gy0,W-2*MX,glossH,14); ctx.fill();
+    ctx.strokeStyle="rgba(255,78,0,.18)"; ctx.lineWidth=1; rr(MX,gy0,W-2*MX,glossH,14); ctx.stroke();
+    spaced("ENTENDA AS PROTEÇÕES",MX+22,gy0+26,12,ORANGE,"700",1.5,"left");
+    let cgx=MX+22, cgy=gy0+42;
+    glossTerms.forEach(k=>{
+      const lbl=((GLOSSARY[k]&&GLOSSARY[k].label)||k||"");
+      const cw=Math.round(lbl.length*8.6)+34;
+      if(cgx>MX+22 && cgx+cw>W-MX-22){ cgx=MX+22; cgy+=34; }
+      ctx.fillStyle="rgba(255,78,0,.12)"; rr(cgx,cgy,cw,24,12); ctx.fill();
+      ctx.strokeStyle="rgba(255,78,0,.30)"; ctx.lineWidth=1; rr(cgx,cgy,cw,24,12); ctx.stroke();
+      T(lbl,cgx+cw/2,cgy+16,12.5,"#FFD9C7","700","center");
+      cgx+=cw+10;
     });
   }
 
