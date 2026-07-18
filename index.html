@@ -2800,6 +2800,29 @@ body.mm .ajbtn{ padding:11px 16px !important; font-size:14px !important; }
 </script>
   </div>
 
+<style>
+[data-tool="simulador"] .objetivos-card{ margin:14px 0 4px; }
+[data-tool="simulador"] .obj-head{ display:flex; gap:12px; align-items:flex-start; }
+[data-tool="simulador"] .obj-ic{ font-size:22px; line-height:1; flex-shrink:0; margin-top:2px; }
+[data-tool="simulador"] .obj-head h3{ font-family:'Sora',sans-serif; font-weight:800; font-size:17px; letter-spacing:-.3px; margin:0; }
+[data-tool="simulador"] .obj-head p{ color:var(--cinza-2,#8089BE); font-size:12.5px; line-height:1.45; margin:3px 0 0; max-width:640px; }
+[data-tool="simulador"] .objetivos-form{ margin-top:14px; }
+[data-tool="simulador"] .sucessao-box{ margin-top:16px; border-top:1px solid rgba(120,130,210,.16); padding-top:16px; }
+[data-tool="simulador"] .suc-head{ font-family:'Sora',sans-serif; font-weight:800; font-size:14px; color:#fff; margin-bottom:12px; }
+[data-tool="simulador"] .suc-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+[data-tool="simulador"] .suc-cell{ background:rgba(0,0,0,.20); border:1px solid rgba(120,130,210,.18); border-radius:13px; padding:13px 15px; display:flex; flex-direction:column; gap:3px; }
+[data-tool="simulador"] .suc-cell.danger{ border-color:rgba(255,107,44,.4); background:rgba(255,107,44,.07); }
+[data-tool="simulador"] .suc-cell.ok{ border-color:rgba(43,217,166,.35); background:rgba(43,217,166,.06); }
+[data-tool="simulador"] .suc-k{ font-size:11px; letter-spacing:.4px; text-transform:uppercase; font-weight:700; color:var(--cinza-2,#8089BE); display:flex; align-items:center; gap:6px; }
+[data-tool="simulador"] .suc-v{ font-family:'Sora',sans-serif; font-weight:800; font-size:22px; color:#fff; margin-top:2px; }
+[data-tool="simulador"] .suc-cell.danger .suc-v{ color:#FF8B52; }
+[data-tool="simulador"] .suc-cell.ok .suc-v{ color:#2BD9A6; }
+[data-tool="simulador"] .suc-d{ font-size:11px; color:var(--cinza-2,#8089BE); line-height:1.35; }
+[data-tool="simulador"] .suc-badge{ font-size:10px; font-weight:800; color:#FF8B52; background:rgba(255,107,44,.16); border-radius:20px; padding:2px 7px; letter-spacing:.3px; text-transform:none; }
+[data-tool="simulador"] .suc-disc{ font-size:11.5px; color:var(--cinza-2,#8089BE); line-height:1.55; margin-top:13px; }
+[data-tool="simulador"] .suc-disc strong{ color:#A9B0D6; }
+@media (max-width:720px){ [data-tool="simulador"] .suc-grid{ grid-template-columns:1fr; } }
+</style>
   <div class="g-panel" id="p-simulador" data-tool="simulador">
 <div class="wrap" id="capture-area">
   <header class="header">
@@ -2813,6 +2836,43 @@ body.mm .ajbtn{ padding:11px 16px !important; font-size:14px !important; }
   <div class="client-row">
     <span class="lbl">Cliente</span>
     <input type="text" id="nomeCliente" placeholder="Digite o nome do cliente (ex: Maria, Carlos...)" maxlength="60" />
+  </div>
+
+  <div class="card objetivos-card">
+    <div class="obj-head">
+      <span class="obj-ic">🎯</span>
+      <div>
+        <h3>Objetivos do cliente</h3>
+        <p>Metas de compra do cliente — imóvel, carro, viagem. Cada objetivo entra no gráfico como uma compra planejada: a curva do patrimônio cai no ano escolhido e segue dali.</p>
+      </div>
+    </div>
+    <div class="imovel-form objetivos-form">
+      <div class="ff">
+        <label>Objetivo</label>
+        <select id="objTipo">
+          <option value="Imóvel">🏠 Imóvel</option>
+          <option value="Carro">🚗 Carro</option>
+          <option value="Viagem">✈️ Viagem</option>
+          <option value="Outro">🎯 Outro</option>
+        </select>
+      </div>
+      <div class="ff">
+        <label>Descrição (opcional)</label>
+        <input type="text" id="objDesc" maxlength="40" placeholder="Ex.: apê na praia" />
+      </div>
+      <div class="ff">
+        <label>Valor</label>
+        <div class="im-valor"><span class="pre">R$</span><input type="text" inputmode="numeric" id="objValor" class="money" placeholder="0" /></div>
+      </div>
+      <div class="ff">
+        <label>Daqui a</label>
+        <div class="num-input" style="justify-content:space-between"><input type="number" id="objAno" min="1" max="30" step="1" value="5" /><span class="pos">anos</span></div>
+      </div>
+      <div class="add-wrap">
+        <button class="btn-add" id="objAdd" type="button">+ Adicionar</button>
+      </div>
+    </div>
+    <div class="imoveis-list" id="objetivosList"></div>
   </div>
 
   <div class="controls">
@@ -2968,17 +3028,6 @@ body.mm .ajbtn{ padding:11px 16px !important; font-size:14px !important; }
       <div class="goal-income" id="goalIncome"></div>
     </div>
 
-    <div class="card protect-card">
-      <div class="ph">
-        <span class="icon">
-          <svg fill="none" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6l8-4z"/></svg>
-        </span>
-        <h3>Proteção patrimonial</h3>
-      </div>
-      <div class="ph-sub">O cliente já está assegurado? Marque o que ele possui.</div>
-      <div class="protect-list" id="protectList"></div>
-      <div class="protect-status none" id="protectStatus"></div>
-    </div>
   </div>
 
   <div class="kpis">
@@ -3189,6 +3238,27 @@ body.mm .ajbtn{ padding:11px 16px !important; font-size:14px !important; }
   </div>
 
   <div id="patrimonioTotalWrap"></div>
+
+  <div class="section-divider">
+    <div class="num">5</div>
+    <div>
+      <h2>Proteção patrimonial e sucessão</h2>
+      <p>Estruturas de proteção do cliente e estimativa do custo de transmissão do patrimônio aos herdeiros</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="ph">
+      <span class="icon">
+        <svg fill="none" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6l8-4z"/></svg>
+      </span>
+      <h3>Proteção patrimonial</h3>
+    </div>
+    <div class="ph-sub">O cliente já está assegurado? Marque o que ele possui.</div>
+    <div class="protect-list" id="protectList"></div>
+    <div class="protect-status none" id="protectStatus"></div>
+    <div class="sucessao-box" id="sucessaoBox"></div>
+  </div>
 
   <div class="actions">
     <button class="btn secondary" id="btnNovo" type="button">
@@ -6943,7 +7013,7 @@ const state = {
   rentMode: 'ipca', ipcaSpread: 6,
   rendaMensal: 10000, ipca: 4.5, ajustarIpca: false, cdiAnual: 10,
   nomeCliente: '', template: 'conservadora', protecao: protecaoPadrao(), alocacao: alocacaoPadrao(),
-  imoveis: [], externos: [],
+  imoveis: [], externos: [], objetivos: [],
   // Ciclo de vida / aporte
   aporteMode: 'direto', rendaAtual: 12000, despesaMensal: 8000,
   idadeAtual: 40, expectativa: 100,
@@ -6974,6 +7044,7 @@ function salvarEstado() {
       }),
       imoveis: state.imoveis.map(i => ({ estado: i.estado, tipo: i.tipo, quantidade: i.quantidade, valor: i.valor })),
       externos: state.externos.map(i => ({ instituicao: i.instituicao, descricao: i.descricao, valor: i.valor })),
+      objetivos: state.objetivos.map(o => ({ tipo: o.tipo, descricao: o.descricao, valor: o.valor, ano: o.ano })),
     };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(dados));
   } catch (e) { /* preview/CSP ou modo privado — segue sem salvar */ }
@@ -7051,6 +7122,17 @@ function carregarEstado() {
         }))
         .filter(i => i.instituicao && i.valor > 0);
     }
+    if (Array.isArray(d.objetivos)) {
+      state.objetivos = d.objetivos
+        .map(o => ({
+          id: novoIdImovel(),
+          tipo: (o && o.tipo) ? String(o.tipo) : 'Outro',
+          descricao: (o && o.descricao) ? String(o.descricao) : '',
+          valor: Math.max(0, Number(o && o.valor) || 0),
+          ano: Math.max(1, Math.min(30, Number(o && o.ano) || 1)),
+        }))
+        .filter(o => o.valor > 0);
+    }
     return true;
   } catch (e) { return false; }
 }
@@ -7116,6 +7198,17 @@ function rentLabel() {
   }
   return state.pctCdi + '% do CDI';
 }
+function saidaObjetivosNoIndice(idx){
+  if (!Array.isArray(state.objetivos) || !state.objetivos.length) return 0;
+  let s = 0;
+  for (const o of state.objetivos) {
+    if (!o) continue;
+    const val = Number(o.valor) || 0, ano = Number(o.ano) || 0;
+    if (val <= 0 || ano <= 0) continue;
+    if (24 + Math.round(ano * 12) === idx) s += val;
+  }
+  return s;
+}
 function calcular() {
   const totalMeses = getTotalMeses();
   const aporte = aporteEfetivo();
@@ -7130,8 +7223,12 @@ function calcular() {
     const apMes = (i >= 24) ? aporte : 0;
     const ultCdi = cdi[cdi.length-1];
     const ultCart = cart[cart.length-1];
-    cdi.push((ultCdi + apMes) * (1 + taxaCdi));
-    cart.push((ultCart + apMes) * (1 + taxaCart));
+    let novoCdi = (ultCdi + apMes) * (1 + taxaCdi);
+    let novoCart = (ultCart + apMes) * (1 + taxaCart);
+    const saidaObj = saidaObjetivosNoIndice(i + 1);
+    if (saidaObj > 0) { novoCdi = Math.max(0, novoCdi - saidaObj); novoCart = Math.max(0, novoCart - saidaObj); }
+    cdi.push(novoCdi);
+    cart.push(novoCart);
     if (i >= 24) totalAportadoMes += aporte;
     flat.push(totalAportadoMes);
   }
@@ -7263,6 +7360,7 @@ function drawChart() {
   const { cdi, cart, totalMeses, totalAportado, cdiD, cartD, flatD, objArr, adj } = data;
   renderKpis(cdi, cart, totalMeses, totalAportado);
   renderGoalBanner(cart, totalMeses);
+  renderSucessao();
 
   const W = 1100, H = 460;
   const padL = 95, padR = 30, padT = 35, padB = 56;
@@ -7393,6 +7491,27 @@ function drawChart() {
       </g>`;
   }
 
+  // ----- marcadores de objetivos do cliente (compra planejada) -----
+  let objetivosCompraSvg = '';
+  if (Array.isArray(state.objetivos) && state.objetivos.length) {
+    const _icoObj = { 'Imóvel':'🏠','Carro':'🚗','Viagem':'✈️','Outro':'🎯' };
+    state.objetivos.forEach(function(o, k){
+      const val = Number(o && o.valor) || 0;
+      const ano = Number(o && o.ano) || 0;
+      if (val <= 0 || ano <= 0 || ano > state.prazoAnos) return;
+      const xc = X(ano * 12);
+      const lbl = (_icoObj[o.tipo] || '🎯') + ' -R$ ' + valorAmigavel(val);
+      const wlbl = 30 + lbl.length * 6.2;
+      let lx = xc - wlbl / 2;
+      if (lx < padL + 2) lx = padL + 2;
+      if (lx + wlbl > W - padR - 2) lx = W - padR - 2 - wlbl;
+      const ly = padT + 26 + (k % 2) * 26;
+      objetivosCompraSvg += `
+        <line x1="${xc.toFixed(1)}" y1="${padT.toFixed(1)}" x2="${xc.toFixed(1)}" y2="${(padT+ch).toFixed(1)}" stroke="#E8709B" stroke-width="1.4" stroke-dasharray="4 4" opacity="0.75"/>
+        <rect x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" width="${wlbl.toFixed(1)}" height="20" rx="6" fill="#E8709B"/>
+        <text x="${(lx+wlbl/2).toFixed(1)}" y="${(ly+14).toFixed(1)}" fill="#fff" font-family="Manrope" font-size="11" font-weight="800" text-anchor="middle">${lbl}</text>`;
+    });
+  }
   const svg = document.getElementById('chart');
   svg.innerHTML = `
     <defs>
@@ -7428,6 +7547,7 @@ function drawChart() {
       points="${ptsCart}"/>
 
     ${objetivoSvg}
+    ${objetivosCompraSvg}
 
     <line x1="${X(0)}" y1="${padT}" x2="${X(0)}" y2="${padT+ch}"
       stroke="#FF6B2C" stroke-width="1.5" stroke-dasharray="4 4" opacity="0.7"/>
@@ -8010,6 +8130,93 @@ function adicionarExterno() {
   });
 })();
 
+// ============ OBJETIVOS DO CLIENTE (compra planejada) ============
+function renderObjetivos() {
+  const list = document.getElementById('objetivosList');
+  if (!list) return;
+  const ic = { 'Imóvel':'🏠','Carro':'🚗','Viagem':'✈️','Outro':'🎯' };
+  if (!state.objetivos.length) {
+    list.innerHTML = '<div class="im-empty">Nenhum objetivo cadastrado.<br>Adicione metas de compra do cliente (imóvel, carro, viagem) para vê-las no gráfico.</div>';
+  } else {
+    list.innerHTML = state.objetivos.map(o => {
+      const emo = ic[o.tipo] || '🎯';
+      const anoTxt = (Number(o.ano) > 1) ? ('daqui a ' + o.ano + ' anos') : 'daqui a 1 ano';
+      const sub = o.descricao ? (escapeHtml(o.tipo) + ' · ' + escapeHtml(o.descricao)) : escapeHtml(o.tipo);
+      return `
+      <div class="im-row" data-id="${o.id}">
+        <span class="im-uf" style="font-size:19px;background:rgba(232,112,155,.14);color:#E8709B">${emo}</span>
+        <div class="im-info">
+          <span class="im-tipo">${sub}</span>
+          <span class="im-loc">${anoTxt}</span>
+        </div>
+        <span class="im-val">R$ ${f(o.valor)}</span>
+        <button class="im-del" data-id="${o.id}" type="button" title="Remover">✕</button>
+      </div>`;
+    }).join('');
+  }
+}
+function adicionarObjetivo() {
+  const tipo = document.getElementById('objTipo').value || 'Outro';
+  const descricao = (document.getElementById('objDesc').value || '').trim();
+  const valor = parseNum(document.getElementById('objValor').value);
+  const ano = Math.max(1, Math.min(30, parseInt(document.getElementById('objAno').value, 10) || 1));
+  if (valor <= 0) { showToast('Informe o valor do objetivo'); document.getElementById('objValor').focus(); return; }
+  state.objetivos.push({ id: novoIdImovel(), tipo, descricao, valor, ano });
+  document.getElementById('objDesc').value = '';
+  document.getElementById('objValor').value = '';
+  document.getElementById('objAno').value = '5';
+  salvarEstado(); renderObjetivos(); drawChart();
+  showToast('🎯 Objetivo adicionado');
+}
+(function () {
+  const list = document.getElementById('objetivosList');
+  if (list) {
+    list.addEventListener('click', e => {
+      const btn = e.target.closest('.im-del');
+      if (!btn) return;
+      state.objetivos = state.objetivos.filter(o => o.id !== btn.dataset.id);
+      salvarEstado(); renderObjetivos(); drawChart();
+      showToast('Objetivo removido');
+    });
+  }
+  const addBtn = document.getElementById('objAdd');
+  if (addBtn) addBtn.addEventListener('click', adicionarObjetivo);
+  const ov = document.getElementById('objValor');
+  if (ov) ov.addEventListener('input', e => { const n = parseNum(e.target.value); e.target.value = n ? fmtMoney(n) : ''; });
+})();
+
+// ============ CUSTO DE SUCESSÃO (Proteção Patrimonial · tópico 5) ============
+function renderSucessao() {
+  const box = document.getElementById('sucessaoBox');
+  if (!box) return;
+  const totImo = state.imoveis.reduce((s, i) => s + (Number(i.valor) || 0), 0);
+  const totExt = state.externos.reduce((s, i) => s + (Number(i.valor) || 0), 0);
+  const patTotal = (Number(state.valor) || 0) + totImo + totExt;
+  const custo = patTotal * 0.20;
+  const liquido = patTotal - custo;
+  box.innerHTML = `
+    <div class="suc-head">Custo estimado de sucessão do patrimônio</div>
+    <div class="suc-grid">
+      <div class="suc-cell">
+        <span class="suc-k">Patrimônio total</span>
+        <span class="suc-v">R$ ${f(patTotal)}</span>
+        <span class="suc-d">investimentos Rico + imóveis + fora da Rico</span>
+      </div>
+      <div class="suc-cell danger">
+        <span class="suc-k">Custo de sucessão <span class="suc-badge">≈ 20%</span></span>
+        <span class="suc-v">R$ ${f(custo)}</span>
+        <span class="suc-d">ITCMD + inventário e honorários</span>
+      </div>
+      <div class="suc-cell ok">
+        <span class="suc-k">Líquido aos herdeiros</span>
+        <span class="suc-v">R$ ${f(liquido)}</span>
+        <span class="suc-d">após os custos de transmissão</span>
+      </div>
+    </div>
+    <div class="suc-disc"><strong>Estimativa ilustrativa</strong> de ~20% do patrimônio total. A tributação sobre a transmissão (<strong>ITCMD</strong>) <strong>varia conforme o estado</strong> do cliente — hoje entre 2% e 8% —, somada a custos de inventário e honorários, então o percentual real pode ser maior ou menor. Estruturas como seguro de vida (Whole Life), holding e previdência reduzem esse custo.</div>
+  `;
+}
+
 function adicionarImovel() {
   const sel = document.getElementById('imEstado');
   const estado = sel.value;
@@ -8251,10 +8458,11 @@ document.getElementById('btnReset').addEventListener('click', () => {
   state.alocacao = alocacaoPadrao();
   state.imoveis = [];
   state.externos = [];
+  state.objetivos = [];
   sincronizarInputs();
   salvarEstado();
   marcarTemplateAtivo();
-  renderProtecao(); renderAlocacao(); renderImoveis(); renderExternos(); drawChart();
+  renderProtecao(); renderAlocacao(); renderImoveis(); renderExternos(); renderObjetivos(); drawChart();
   showToast('↺ Padrões restaurados');
 });
 
@@ -8268,10 +8476,11 @@ document.getElementById('btnNovo').addEventListener('click', () => {
   state.alocacao = alocacaoPadrao();
   state.imoveis = [];
   state.externos = [];
+  state.objetivos = [];
   limparEstado();
   sincronizarInputs();
   marcarTemplateAtivo();
-  renderProtecao(); renderAlocacao(); renderImoveis(); renderExternos(); drawChart();
+  renderProtecao(); renderAlocacao(); renderImoveis(); renderExternos(); renderObjetivos(); drawChart();
   document.getElementById('nomeCliente').focus();
   showToast('🆕 Pronto para um novo cliente!');
 });
@@ -8391,6 +8600,28 @@ function desenharGraficoCanvas(ctx, gx, gy, gw, gh, data) {
   ctx.setLineDash([4, 4]); ctx.strokeStyle = '#FF6B2C'; ctx.lineWidth = 1.5; ctx.globalAlpha = .7;
   ctx.beginPath(); ctx.moveTo(X(0), gy + padT); ctx.lineTo(X(0), gy + padT + ch); ctx.stroke();
   ctx.globalAlpha = 1; ctx.setLineDash([]);
+
+  // marcadores de objetivos do cliente (compra planejada)
+  if (Array.isArray(state.objetivos) && state.objetivos.length) {
+    const _icoO = { 'Imóvel':'🏠','Carro':'🚗','Viagem':'✈️','Outro':'🎯' };
+    state.objetivos.forEach(function(o, k){
+      const val = Number(o && o.valor) || 0, ano = Number(o && o.ano) || 0;
+      if (val <= 0 || ano <= 0 || ano > state.prazoAnos) return;
+      const xc = X(ano * 12);
+      ctx.setLineDash([4, 4]); ctx.strokeStyle = '#E8709B'; ctx.lineWidth = 1.4; ctx.globalAlpha = .78;
+      ctx.beginPath(); ctx.moveTo(xc, gy + padT); ctx.lineTo(xc, gy + padT + ch); ctx.stroke();
+      ctx.globalAlpha = 1; ctx.setLineDash([]);
+      const lbl = (_icoO[o.tipo] || '🎯') + ' -R$ ' + valorAmigavel(val);
+      ctx.font = "800 10px Manrope";
+      const wl = ctx.measureText(lbl).width + 14;
+      let lx = xc - wl / 2;
+      if (lx < gx + padL + 2) lx = gx + padL + 2;
+      if (lx + wl > gx + gw - padR - 2) lx = gx + gw - padR - 2 - wl;
+      const ly = gy + padT + 3 + (k % 2) * 21;
+      ctx.fillStyle = '#E8709B'; ctx.fillRect(lx, ly, wl, 17);
+      ctx.fillStyle = '#fff'; ctx.textAlign = 'center'; ctx.fillText(lbl, lx + wl / 2, ly + 12); ctx.textAlign = 'left';
+    });
+  }
 
   ctx.fillStyle = '#FF4E00'; ctx.beginPath(); ctx.arc(X(xMesMax), Y(cartD[totalMeses]), 5, 0, Math.PI * 2); ctx.fill();
   ctx.fillStyle = '#5B8DEF'; ctx.beginPath(); ctx.arc(X(xMesMax), Y(cdiD[totalMeses]), 4, 0, Math.PI * 2); ctx.fill();
@@ -8779,6 +9010,22 @@ async function gerarPngCanvas() {
   ctx.fillText(ptxt, PAD + 18, y + 26);
   y += ph + 20;
 
+  // custo estimado de sucessão (tópico 5)
+  {
+    const _totImoS = state.imoveis.reduce((s, i) => s + (Number(i.valor) || 0), 0);
+    const _totExtS = state.externos.reduce((s, i) => s + (Number(i.valor) || 0), 0);
+    const _patTotS = (Number(state.valor) || 0) + _totImoS + _totExtS;
+    const _custoS = _patTotS * 0.20;
+    const sh = 48;
+    fillRR(PAD, y, IW, sh, 12, 'rgba(255,107,44,.08)');
+    strokeRR(PAD, y, IW, sh, 12, 'rgba(255,107,44,.4)', 1);
+    setFont('700', 13, 'Manrope'); ctx.fillStyle = '#FF8B52';
+    ctx.fillText('Custo estimado de sucessão (≈ 20%): R$ ' + f(_custoS), PAD + 18, y + 21);
+    setFont('500', 10.5, 'Manrope'); ctx.fillStyle = '#A9B0D6';
+    ctx.fillText('Sobre patrimônio total de R$ ' + f(_patTotS) + ' · ITCMD varia por estado (2%–8%) + inventário e honorários.', PAD + 18, y + 38);
+    y += sh + 16;
+  }
+
   setFont('500', 10.5, 'Manrope'); ctx.fillStyle = '#6F77A8';
   const disc = 'Simulação ilustrativa baseada no CDI histórico recente e na média de longo prazo. Valores brutos, sem considerar impostos ou taxas. Não constitui oferta ou garantia de rentabilidade — rentabilidade passada não garante resultados futuros.';
   y = wrapTextCanvas(ctx, disc, PAD, y + 6, IW, 15) + 14;
@@ -9082,6 +9329,7 @@ renderProtecao();
 renderAlocacao();
 renderImoveis();
 renderExternos();
+renderObjetivos();
 drawChart();
 
 /* ===== Carteira (opcional): recolher/expandir + persistencia (hubFpCarteiraMin) ===== */
