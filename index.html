@@ -2842,8 +2842,8 @@ body.mm .ajbtn{ padding:11px 16px !important; font-size:14px !important; }
     <div class="obj-head">
       <span class="obj-ic">🎯</span>
       <div>
-        <h3>Objetivos do cliente</h3>
-        <p>Metas de compra do cliente — imóvel, carro, viagem. Cada objetivo entra no gráfico como uma compra planejada: a curva do patrimônio cai no ano escolhido e segue dali.</p>
+        <h3>Objetivos Futuros</h3>
+        <p>Metas de aquisição do cliente — imóvel, veículo, viagem. Cada objetivo entra no gráfico como uma compra planejada: no ano definido, a curva do patrimônio recua no valor da meta e segue a projeção a partir daí.</p>
       </div>
     </div>
     <div class="imovel-form objetivos-form">
@@ -2858,15 +2858,15 @@ body.mm .ajbtn{ padding:11px 16px !important; font-size:14px !important; }
       </div>
       <div class="ff">
         <label>Descrição (opcional)</label>
-        <input type="text" id="objDesc" maxlength="40" placeholder="Ex.: apê na praia" />
+        <input type="text" id="objDesc" maxlength="40" placeholder="Ex.: aquisição de imóvel" />
       </div>
       <div class="ff">
         <label>Valor</label>
         <div class="im-valor"><span class="pre">R$</span><input type="text" inputmode="numeric" id="objValor" class="money" placeholder="0" /></div>
       </div>
       <div class="ff">
-        <label>Daqui a</label>
-        <div class="num-input" style="justify-content:space-between"><input type="number" id="objAno" min="1" max="30" step="1" value="5" /><span class="pos">anos</span></div>
+        <label>Prazo (anos)</label>
+        <input type="number" id="objAno" min="1" max="30" step="1" value="5" />
       </div>
       <div class="add-wrap">
         <button class="btn-add" id="objAdd" type="button">+ Adicionar</button>
@@ -3247,7 +3247,7 @@ body.mm .ajbtn{ padding:11px 16px !important; font-size:14px !important; }
     </div>
   </div>
 
-  <div class="card">
+  <div class="card protect-card">
     <div class="ph">
       <span class="icon">
         <svg fill="none" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6l8-4z"/></svg>
@@ -4445,11 +4445,12 @@ html.theme-light .pm-alloc{ background:#fff; }
       items.forEach(function(a){ totPct+=(Number(a.pct)||0); });
       var r=0;
       if(totPct>0){ items.forEach(function(a){ r+=((Number(a.pct)||0)/totPct)*retAA(a); }); }
-      var pat=Number(PR.patrim)||0, years=5, vals=[], y;
+      var pat=Number(PR.patrim)||0, years=(typeof S!=='undefined'&&S&&Number(S.projAnos)>0)?Math.max(1,Math.min(60,Math.round(Number(S.projAnos)))):10, vals=[], y;
       for(y=0;y<=years;y++){ vals.push(pat*Math.pow(1+r/100,y)); }
       var maxV=vals[years]||1; if(!isFinite(maxV)||maxV<=0) maxV=1;
-      var bars=''; for(y=0;y<=years;y++){ var hh=Math.max(4,Math.round(vals[y]/maxV*150)); bars+='<div class="bcol"><div class="bval">R$ '+fmt(vals[y])+'</div><div class="bar" style="height:'+hh+'px"></div><div class="byr">'+(y===0?'Hoje':('Ano '+y))+'</div></div>'; }
-      var trows=''; for(y=1;y<=years;y++){ trows+='<tr><td class="cl">Ano '+y+'</td><td style="text-align:right">R$ '+fmt(vals[y])+'</td><td style="text-align:right;color:#0a7a45">+R$ '+fmt(vals[y]-pat)+'</td></tr>'; }
+      var _stepB=years<=12?1:Math.ceil(years/10); var _byrs=[]; for(y=0;y<=years;y+=_stepB) _byrs.push(y); if(_byrs[_byrs.length-1]!==years) _byrs.push(years);
+      var bars=''; _byrs.forEach(function(yy){ var hh=Math.max(4,Math.round(vals[yy]/maxV*150)); bars+='<div class="bcol"><div class="bval">R$ '+fmt(vals[yy])+'</div><div class="bar" style="height:'+hh+'px"></div><div class="byr">'+(yy===0?'Hoje':('Ano '+yy))+'</div></div>'; });
+      var trows=''; _byrs.filter(function(yy){return yy>0;}).forEach(function(yy){ trows+='<tr><td class="cl">Ano '+yy+'</td><td style="text-align:right">R$ '+fmt(vals[yy])+'</td><td style="text-align:right;color:#0a7a45">+R$ '+fmt(vals[yy]-pat)+'</td></tr>'; });
       var extraCSS='<style>.ppdoc .chart{display:flex;align-items:flex-end;gap:16px;height:200px;border-bottom:2px solid #e3e7f0;padding:10px 6px 0;margin:4px 0 6px}.ppdoc .bcol{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}.ppdoc .bar{width:64%;background:linear-gradient(180deg,#FF8A3D,#FF4E00);border-radius:6px 6px 0 0}.ppdoc .bval{font-size:10px;font-weight:700;margin-bottom:5px;white-space:nowrap}.ppdoc .byr{font-size:10.5px;color:#5b6485;font-weight:700;margin-top:6px}</style>';
       var inner=prShellOpen('Projeção da Carteira', prMeta())+extraCSS+
         '<div class="cards"><div class="cd"><div class="k">Patrimônio inicial</div><div class="v">R$ '+fmt(pat)+'</div></div>'+
@@ -13362,7 +13363,7 @@ window.__rvRender = render;
     m.style.cssText='position:fixed;inset:0;z-index:5200;background:rgba(5,8,31,.88);display:flex;align-items:flex-start;justify-content:center;padding:24px;overflow:auto;';
     var box=document.createElement('div');
     box.style.cssText='background:#0B1033;border:1px solid rgba(120,130,210,.3);border-radius:16px;padding:18px;max-width:860px;width:100%;color:#fff;font-family:Manrope,sans-serif;';
-    var anos=[2,3,4,5], sel=5;
+    var anos=[1,2,3,5,10,15,20,30], sel=5;
     box.innerHTML=
       '<div style="display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:6px;flex-wrap:wrap">'+
         '<div style="font-family:Sora,sans-serif;font-weight:800;font-size:18px">Projeção da carteira'+(cfg.cliente?' &middot; <span style="color:#9AA2D0;font-size:14px">'+String(cfg.cliente)+'</span>':'')+'</div>'+
@@ -13377,7 +13378,7 @@ window.__rvRender = render;
         campo('Retorno estimado (% a.a.)','hpT',String((Math.round((Number(cfg.taxaAA)||0)*10)/10)).replace('.',','))+
         campo('Aporte mensal (R$)','hpA','0')+
       '</div>'+
-      '<div id="hpAnos" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px"></div>'+
+      '<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:14px">'+        '<div id="hpAnos" style="display:flex;gap:8px;flex-wrap:wrap"></div>'+        '<span style="display:inline-flex;align-items:center;gap:6px;border:1px solid rgba(120,130,210,.3);border-radius:9px;padding:3px 8px 3px 11px">'+          '<input id="hpAnoCustom" type="number" min="1" max="60" step="1" placeholder="outro" style="width:54px;background:transparent;border:none;outline:none;color:#fff;font-family:inherit;font-weight:700;font-size:13px"/>'+          '<span style="font-size:12px;color:#8A93D8">anos</span>'+        '</span>'+      '</div>'+
       '<div id="hpOut"></div>';
     m.appendChild(box); document.body.appendChild(m);
 
@@ -13422,6 +13423,7 @@ window.__rvRender = render;
         '<div style="font-family:Sora,sans-serif;font-weight:800;font-size:19px;color:'+col+';margin-top:3px">'+v+'</div></div>';
     }
     ['hpP','hpT','hpA'].forEach(function(id){ var e=document.getElementById(id); if(e) e.onchange=render; });
+    var _hpc=document.getElementById('hpAnoCustom'); if(_hpc){ _hpc.onchange=function(){ var v=Math.max(1,Math.min(60,Math.round(pn(_hpc.value)||0))); if(v){ sel=v; render(); } }; _hpc.onkeydown=function(e){ if(e.key==='Enter'){ e.preventDefault(); _hpc.blur(); } }; }
     document.getElementById('hpClose').onclick=function(){ try{ m.remove(); }catch(_){ } };
     m.onclick=function(e){ if(e.target===m){ try{ m.remove(); }catch(_){ } } };
     document.getElementById('hpCopy').onclick=function(){
