@@ -10216,12 +10216,13 @@ function rvApplyCatFilter(){
 
 /* ===== Eventos ===== */
 function bind(d){
+  var _rvApp = document.getElementById("rv-app") || document;
   // header
   var _rvBtnCopy=document.getElementById("rvBtnCopy"); if(_rvBtnCopy) _rvBtnCopy.onclick = copyResumo;
   document.getElementById("rvBtnPng").onclick = gerarPNG;
   var _rvBtnCard=document.getElementById("rvBtnCard"); if(_rvBtnCard) _rvBtnCard.onclick = abrirCardModal;
   // templates
-  document.querySelectorAll("[data-tpl]").forEach(function(b){ b.onclick = function(){ loadTemplate(b.getAttribute("data-tpl")); }; });
+  _rvApp.querySelectorAll("[data-tpl]").forEach(function(b){ b.onclick = function(){ loadTemplate(b.getAttribute("data-tpl")); }; });
   var _br=document.getElementById("rvBtnRestore"); if(_br) _br.onclick = function(){ loadTemplate(state.template); };
   var _bs=document.getElementById("rvBtnSaveDefault"); if(_bs) _bs.onclick = rvSaveAsDefault;
   var _bf=document.getElementById("rvBtnFactory"); if(_bf) _bf.onclick = rvRestoreFactory;
@@ -10245,13 +10246,13 @@ function bind(d){
   var bd = document.getElementById("btnDistrib"); if(bd) bd.onclick = distribuirRestante;
 
   // catálogo add
-  document.querySelectorAll("[data-addop]").forEach(function(b){ b.onclick = function(){ addOperacao(b.getAttribute("data-addop")); }; });
-  document.querySelectorAll("[data-addq]").forEach(function(b){ b.onclick = function(){ addQuantoOp(b.getAttribute("data-addq")); }; });
-  document.querySelectorAll("[data-addrubi]").forEach(function(b){ b.onclick = function(){ addRubiCatalogo(b.getAttribute("data-addrubi")); }; });
+  _rvApp.querySelectorAll("[data-addop]").forEach(function(b){ b.onclick = function(){ addOperacao(b.getAttribute("data-addop")); }; });
+  _rvApp.querySelectorAll("[data-addq]").forEach(function(b){ b.onclick = function(){ addQuantoOp(b.getAttribute("data-addq")); }; });
+  _rvApp.querySelectorAll("[data-addrubi]").forEach(function(b){ b.onclick = function(){ addRubiCatalogo(b.getAttribute("data-addrubi")); }; });
 
 
   // item rows
-  document.querySelectorAll(".row[data-id]").forEach(function(rowEl){
+  _rvApp.querySelectorAll(".row[data-id]").forEach(function(rowEl){
     var id = rowEl.getAttribute("data-id");
     rowEl.querySelectorAll("[data-act]").forEach(function(el){
       var act = el.getAttribute("data-act");
