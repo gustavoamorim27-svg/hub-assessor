@@ -368,6 +368,12 @@ html, body {
 [data-tool="construtor"] .proj-btn{ background:rgba(0,0,0,.25); border:1px solid rgba(120,130,210,.2); color:#A9B0D6; padding:7px 14px;
     border-radius:100px; font-weight:700; font-size:13px; cursor:pointer; }
 [data-tool="construtor"] .proj-btn.active{ background:rgba(43,217,166,.18); border-color:#2BD9A6; color:#2BD9A6; }
+[data-tool="construtor"] .proj-custom{ display:inline-flex; align-items:center; gap:6px; }
+[data-tool="construtor"] .proj-anos-input{ width:58px; background:rgba(0,0,0,.25); border:1px solid rgba(120,130,210,.2); color:#A9B0D6; padding:7px 8px; border-radius:100px; font-family:inherit; font-weight:700; font-size:13px; text-align:center; outline:none; -moz-appearance:textfield; }
+[data-tool="construtor"] .proj-anos-input::-webkit-outer-spin-button,[data-tool="construtor"] .proj-anos-input::-webkit-inner-spin-button{ -webkit-appearance:none; margin:0; }
+[data-tool="construtor"] .proj-anos-input:focus{ border-color:#2BD9A6; }
+[data-tool="construtor"] .proj-anos-input.active{ background:rgba(43,217,166,.18); border-color:#2BD9A6; color:#2BD9A6; }
+[data-tool="construtor"] .proj-anos-suf{ font-size:12px; color:#8089BE; font-weight:700; }
 [data-tool="construtor"] .item{ background:rgba(0,0,0,.16); border:1px solid rgba(120,130,210,.14); border-radius:12px; padding:12px; margin-bottom:8px; }
 [data-tool="construtor"] .pct-wrap{ position:relative; width:92px; }
 [data-tool="construtor"] .pct-input{ width:100%; background:rgba(0,0,0,.3); border:1px solid rgba(120,130,210,.2); border-radius:9px;
@@ -5791,8 +5797,16 @@ function renderGloss(D){
 function renderProj(D){
   // tabs de anos
   const tabsEl=document.getElementById("projTabs");
-  tabsEl.innerHTML=[3,5,10].map(a=>`<button class="proj-btn ${S.projAnos===a?"active":""}" data-anos="${a}">${a} anos</button>`).join("");
+  const _projPresets=[3,5,10,20];
+  const _isCustom=_projPresets.indexOf(S.projAnos)<0;
+  tabsEl.innerHTML=_projPresets.map(a=>`<button class="proj-btn ${S.projAnos===a?"active":""}" data-anos="${a}">${a} anos</button>`).join("")
+    +`<span class="proj-custom"><input id="projAnosInput" class="proj-anos-input ${_isCustom?"active":""}" type="number" inputmode="numeric" min="1" max="60" step="1" value="${S.projAnos}" title="Digite os anos (1 a 60)"><span class="proj-anos-suf">anos</span></span>`;
   tabsEl.querySelectorAll("[data-anos]").forEach(b=>b.onclick=()=>{ S.projAnos=Number(b.dataset.anos); render(); });
+  (function(){ var inp=document.getElementById("projAnosInput"); if(!inp) return;
+    function applyProjAnos(){ var v=Math.round(Number(inp.value)||0); v=Math.max(1,Math.min(60,v)); if(v===S.projAnos){ inp.value=v; return; } S.projAnos=v; render(); }
+    inp.onchange=applyProjAnos;
+    inp.onkeydown=function(e){ if(e.key==="Enter"){ e.preventDefault(); inp.blur(); } };
+  })();
 
   const W=760, H=300, padL=70, padR=20, padT=10, padB=34;
   const xL=padL, xR=W-padR, yT=padT, yB=H-padB;
@@ -5806,7 +5820,7 @@ function renderProj(D){
     grid+=`<line x1="${xL}" y1="${gy}" x2="${xR}" y2="${gy}" stroke="rgba(120,130,210,.14)" stroke-width="1"/>`;
     ylabels+=`<text x="${xL-10}" y="${gy+4}" text-anchor="end" font-size="11" fill="#A9B0D6">${fmtCompact(gv)}</text>`;
   }
-  const step=S.projAnos<=5?1:2; let xlabels="";
+  const step=S.projAnos<=5?1:(S.projAnos<=12?2:Math.ceil(S.projAnos/8)); let xlabels="";
   for(let a=0;a<=S.projAnos;a+=step){
     xlabels+=`<text x="${sx(a)}" y="${yB+20}" text-anchor="middle" font-size="11" fill="#A9B0D6">${a===0?"Hoje":a+"a"}</text>`;
   }
@@ -6106,7 +6120,7 @@ function buildCarteiraPNG(){
       ctx.strokeStyle="rgba(120,130,210,.12)"; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(xL,gy); ctx.lineTo(xR,gy); ctx.stroke();
       ctx.font=`500 11px ${FF}`; ctx.fillStyle="#A9B0D6"; ctx.fillText(fmtCompact(gv),xL-10,gy); }
     ctx.textBaseline="alphabetic";
-    const step=projAnos<=6?1:2;
+    const step=projAnos<=6?1:(projAnos<=12?2:Math.ceil(projAnos/8));
     for(let a=0;a<=projAnos;a+=step) T(a===0?"Hoje":a+"a",sx(a),yB+18,11,"#A9B0D6","500","center");
     if(projAnos%step!==0) T(projAnos+"a",sx(projAnos),yB+18,11,"#A9B0D6","500","center");
     ctx.strokeStyle="#7C8CFF"; ctx.lineWidth=2; ctx.setLineDash([7,5]); ctx.beginPath();
