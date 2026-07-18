@@ -5121,13 +5121,9 @@ function calc(){
 }
 
 /* ---------- render ---------- */
-var _ctorRenderScheduled=false;
-/* Coalesce: varias chamadas de render() no mesmo frame viram 1 so (evita engasgo ao trocar template/ativos rapido). */
+/* Render sincrono. (Coalescing via requestAnimationFrame foi removido: quando a aba ficava em segundo plano o rAF nao disparava, a flag ficava presa e os botoes de perfil paravam de responder.) */
 function render(){
-  if(_ctorRenderScheduled) return;
-  _ctorRenderScheduled=true;
-  var raf=window.requestAnimationFrame||function(cb){ return setTimeout(cb,16); };
-  raf(function(){ _ctorRenderScheduled=false; try{ renderNow(); }catch(e){ try{ console.error(e); }catch(_){} } });
+  try{ renderNow(); }catch(e){ try{ console.error(e); }catch(_){} }
 }
 function renderNow(){
   const D = calc();
@@ -10232,7 +10228,7 @@ function bind(d){
   // cliente
   document.getElementById("inpCliente").oninput = function(e){ state.cliente = e.target.value; updateValHints(); updateDonutTitle(); };
   var pat = document.getElementById("inpPatrimonio");
-  pat.oninput = function(e){ var digits = e.target.value.replace(/\D/g,""); state.patrimonio = digits? parseInt(digits,10):0; e.target.value = fmtBRL(state.patrimonio); render(); };
+  pat.oninput = function(e){ var digits = e.target.value.replace(/\D/g,""); state.patrimonio = digits? parseInt(digits,10):0; e.target.value = fmtBRL(state.patrimonio); updateValHints(); };
   // add buttons
   document.getElementById("rvBtnAdd").onclick = function(){ state.items.push(mk("Renda Variável","Nova ação",0,"","B3",null,null,"Outros")); render(); };
   var _ba=document.getElementById("rvBtnAddAcao"); if(_ba) _ba.onclick = function(){ var it=mkAcao("","Nova ação","Outros",0,null,""); it.precoAlvo=null; state.items.push(it); state.abertos[it.id]=true; render(); };
