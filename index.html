@@ -3986,8 +3986,22 @@ html.theme-light .pm-alloc{ background:#fff; }
       var novo=mkItem({nome:x.nome,cat:x.cat,pct:x.pct,pctOrig:0,detalhe:x.detalhe,liq:x.liq,origem:'novo',fonte:'perfil',tags:x.tags,retCat:x.retCat,retVal:x.retVal,retIsento:x.retIsento});
       if(!boardAdd('entra',novo)) ja++;
     });
-    setStatus('Perfil '+name+' aplicado na coluna ENTRA.'+(ja?(' '+ja+' ativo(s) o cliente já possui — permanecem em MANTÉM.'):''),'ok');
+    fitEntraTo100();
+    setStatus('Perfil '+name+' aplicado — ENTRA ajustado para fechar 100%.'+(ja?(' '+ja+' ativo(s) o cliente já possui — permanecem em MANTÉM.'):''),'ok');
     render();
+  }
+  /* Escala apenas a coluna ENTRA para que MANTÉM + ENTRA feche 100% (preserva os pesos dos mantidos). */
+  function fitEntraTo100(){
+    var totM=0; PR.board.mantem.forEach(function(i){ totM+=(Number(i.pct)||0); });
+    var entra=PR.board.entra; if(!entra.length) return;
+    var rem=Math.round((100-totM)*10)/10;
+    if(rem<=0){ ajustarPropor(false); return; }
+    var sumE=0; entra.forEach(function(i){ sumE+=(Number(i.pct)||0); });
+    if(sumE<=0){ var each=rem/entra.length; entra.forEach(function(i){ i.pct=Math.round(each*10)/10; }); }
+    else { var fct=rem/sumE; entra.forEach(function(i){ i.pct=Math.round((Number(i.pct)||0)*fct*10)/10; }); }
+    var newE=0; entra.forEach(function(i){ newE+=(Number(i.pct)||0); });
+    var diff=Math.round((rem-newE)*10)/10;
+    if(diff!==0){ var big=entra[0]; entra.forEach(function(i){ if((Number(i.pct)||0)>(Number(big.pct)||0)) big=i; }); big.pct=Math.round(((Number(big.pct)||0)+diff)*10)/10; }
   }
   /* Escala MANTEM+ENTRA para somar exatamente 100,0 (ou distribui igualmente) */
   function ajustarPropor(equal){
@@ -4013,7 +4027,6 @@ html.theme-light .pm-alloc{ background:#fff; }
     var h='<div class="pm-badges">';
     h+= (it.origem==='atual') ? '<span class="pm-bdg tem">Já tem</span>' : '<span class="pm-bdg novo">Novo</span>';
     if(it.protegido) h+='<span class="pm-bdg prot">🔒 XP · não vendável</span>';
-    if(it.travado) h+='<span class="pm-bdg trav">⚠ Carrego até o vencimento · resgate não recomendado</span>';
     h+='</div>';
     return h;
   }
@@ -4134,9 +4147,6 @@ html.theme-light .pm-alloc{ background:#fff; }
     Array.prototype.forEach.call(root.querySelectorAll('[data-mv]'),function(b){ b.onclick=function(){
       var id=b.getAttribute('data-id'), to=b.getAttribute('data-mv');
       var f=findById(id); if(!f) return;
-      if(to==='sai' && f.item.travado){
-        if(!confirm('"'+(f.item.nome||'Ativo')+'" é um ativo de carrego até o vencimento. O resgate antecipado normalmente gera perda. Tem certeza que quer colocá-lo em SAI?')) return;
-      }
       boardMove(id,to); render();
     }; });
     Array.prototype.forEach.call(root.querySelectorAll('[data-rm]'),function(b){ b.onclick=function(){ boardRemove(b.getAttribute('data-rm')); render(); }; });
@@ -4218,7 +4228,7 @@ html.theme-light .pm-alloc{ background:#fff; }
     '.ppdoc .box.keep{border:1px solid #dfe3ee;background:#f8f9fc}'+
     '.ppdoc .box.in{border:1px solid #cdeadd;background:#f4fbf7}'+
     '.ppdoc .box .row{display:flex;justify-content:space-between;align-items:flex-start;padding:7px 0;border-bottom:1px solid rgba(0,0,0,.05);font-size:12px}'+
-    '.ppdoc .box .row:last-child{border-bottom:none}'+
+    '.ppdoc .box .row:last-child{border-bottom:none}'+    '.ppdoc .box .rows.twocol{column-count:2;column-gap:30px}'+    '.ppdoc .box .rows.twocol .row{break-inside:avoid;-webkit-column-break-inside:avoid}'+
     '.ppdoc .box .nm{font-weight:700}'+
     '.ppdoc .box.sai .nm{color:#8a2a2a}'+
     '.ppdoc .box.in .nm{color:#0a6b45}'+
@@ -4244,29 +4254,29 @@ html.theme-light .pm-alloc{ background:#fff; }
   }
   function prSaiSection(m){
     var arr=PR.board.sai; if(!arr.length) return '';
-    var P=m.patrim, h='<div class="sect-t">Saindo da carteira</div><div class="box sai">';
+    var P=m.patrim, h='<div class="sect-t">Saindo da carteira</div><div class="box sai"><div class="rows'+(arr.length>6?' twocol':'')+'">';
     arr.forEach(function(i){ var o=Number(i.pctOrig)||0;
-      h+='<div class="row"><div><div class="nm">'+esc2(i.nome||'-')+'</div><div class="cls"><span class="dot" style="background:'+(COLORS[i.cat]||'#888')+'"></span>'+esc2(prClassLabel(i.cat))+'</div>'+(i.travado?'<div class="warn">Carrego até o vencimento — resgate antecipado pode gerar perda</div>':'')+'</div>'+
+      h+='<div class="row"><div><div class="nm">'+esc2(i.nome||'-')+'</div><div class="cls"><span class="dot" style="background:'+(COLORS[i.cat]||'#888')+'"></span>'+esc2(prClassLabel(i.cat))+'</div>'+'</div>'+
         '<div class="val">'+fp(o)+'% · R$ '+fmt(P*o/100)+'</div></div>'; });
-    h+='<div class="tot">Total saindo: '+fp(m.totSai)+'% · R$ '+fmt(m.rsSai)+'</div></div>';
+    h+='</div><div class="tot">Total saindo: '+fp(m.totSai)+'% · R$ '+fmt(m.rsSai)+'</div></div>';
     return h;
   }
   function prMantemSection(m){
     var arr=PR.board.mantem; if(!arr.length) return '';
-    var P=m.patrim, h='<div class="sect-t">Mantidos na carteira</div><div class="box keep">';
+    var P=m.patrim, h='<div class="sect-t">Mantidos na carteira</div><div class="box keep"><div class="rows'+(arr.length>6?' twocol':'')+'">';
     arr.forEach(function(i){ var o=Number(i.pctOrig)||0, p=Number(i.pct)||0;
       h+='<div class="row"><div><div class="nm">'+esc2(i.nome||'-')+(i.protegido?' 🔒':'')+'</div><div class="cls"><span class="dot" style="background:'+(COLORS[i.cat]||'#888')+'"></span>'+esc2(prClassLabel(i.cat))+'</div>'+(i.travado?'<div class="warn">Carrego até o vencimento — permanece na carteira</div>':'')+'</div>'+
         '<div class="val" style="color:#12162a">'+fp(o)+'% → '+fp(p)+'% · R$ '+fmt(P*p/100)+'</div></div>'; });
-    h+='<div class="tot" style="color:#12162a">Total mantido: '+fp(m.totM)+'% · R$ '+fmt(P*m.totM/100)+'</div></div>';
+    h+='</div><div class="tot" style="color:#12162a">Total mantido: '+fp(m.totM)+'% · R$ '+fmt(P*m.totM/100)+'</div></div>';
     return h;
   }
   function prEntraSection(m){
     var arr=PR.board.entra; if(!arr.length) return '';
-    var P=m.patrim, h='<div class="sect-t">Entrando na carteira</div><div class="box in">';
+    var P=m.patrim, h='<div class="sect-t">Entrando na carteira</div><div class="box in"><div class="rows'+(arr.length>6?' twocol':'')+'">';
     arr.forEach(function(i){ var p=Number(i.pct)||0;
       h+='<div class="row"><div><div class="nm">'+esc2(i.nome||'-')+'</div><div class="cls"><span class="dot" style="background:'+(COLORS[i.cat]||'#888')+'"></span>'+esc2(prClassLabel(i.cat))+'</div>'+(i.detalhe?'<div class="cls" style="text-transform:none;letter-spacing:0">'+esc2(i.detalhe)+'</div>':'')+'</div>'+
         '<div class="val">'+fp(p)+'% · R$ '+fmt(P*p/100)+'</div></div>'; });
-    h+='<div class="tot">Total entrando: '+fp(m.totE)+'% · R$ '+fmt(P*m.totE/100)+'</div></div>';
+    h+='</div><div class="tot">Total entrando: '+fp(m.totE)+'% · R$ '+fmt(P*m.totE/100)+'</div></div>';
     return h;
   }
   function prAllocSection(){
@@ -4399,7 +4409,7 @@ html.theme-light .pm-alloc{ background:#fff; }
         prMantemSection(m)+
         prEntraSection(m)+
         prAllocSection()+
-        prShellClose('Material de apoio comercial · carteira proposta = ativos mantidos + ativos que entram. Ativos de carrego até o vencimento (CDB, LCI, LCA, CRI, CRA, debêntures) permanecem na carteira; resgate antecipado pode gerar perda. Não constitui recomendação ou oferta; sujeito a suitability e às condições de cada produto.');
+        prShellClose('Material de apoio comercial · carteira proposta = ativos mantidos + ativos que entram. Ativos de carrego até o vencimento (CDB, LCI, LCA, CRI, CRA, debêntures) permanecem na carteira. Não constitui recomendação ou oferta; sujeito a suitability e às condições de cada produto.');
       proporPreviewPNG(inner, 'Proposta_'+prSan(PR.cliente), {title:'Proposta de carteira'});
     }catch(e){ try{ if(typeof showToast==='function') showToast('Não foi possível gerar a proposta.'); }catch(_){ } }
   }
@@ -9580,6 +9590,8 @@ function rvQuoteVia(proxyUrl){
 function rvYahooUrl(sym){ return 'https://query1.finance.yahoo.com/v8/finance/chart/'+sym+'?interval=1d&range=1d'; }
 var RV_PROXY_CORS = function(u){ return 'https://corsproxy.io/?url='+encodeURIComponent(u); };
 var RV_PROXY_ALLO = function(u){ return 'https://api.allorigins.win/raw?url='+encodeURIComponent(u); };
+var RV_PROXY_CORSSH = function(u){ return 'https://proxy.cors.sh/'+u; };
+var RV_PROXY_CODETABS = function(u){ return 'https://api.codetabs.com/v1/proxy/?quest='+encodeURIComponent(u); };
 /* Busca cotações de TODOS os tickers. corsproxy.io = primário (paralelo) + retry;
    allorigins = fallback secundário; brapi.dev = fallback final opcional (só com token).
    Chave = ticker ORIGINAL em maiúsculas (sem .SA). try/catch total — nunca lança. */
@@ -9596,9 +9608,25 @@ async function rvFetchQuotes(tickers){
     var prices=await Promise.all(pend.map(function(k){ return rvQuoteVia(proxyFn(rvYahooUrl(sym(k)))); }));
     pend.forEach(function(k,i){ if(prices[i]!=null) out[k]=prices[i]; });
   }
-  try{ await pass(RV_PROXY_CORS); }catch(e){}     // primário, paralelo
-  try{ await pass(RV_PROXY_CORS); }catch(e){}     // retry corsproxy
-  try{ await pass(RV_PROXY_ALLO); }catch(e){}     // fallback allorigins
+  /* brapi.dev direto (sem token) — só p/ tickers ainda nulos; costuma passar em redes que bloqueiam proxies */
+  async function passBrapiDireto(){
+    var pend=uniq.filter(function(k){ return out[k]==null; });
+    if(!pend.length) return;
+    var res=await Promise.all(pend.map(function(k){
+      var ctl=new AbortController(); var to=setTimeout(function(){ctl.abort();},9000);
+      return fetch('https://brapi.dev/api/quote/'+encodeURIComponent(k),{cache:'no-store',signal:ctl.signal})
+        .then(function(r){ clearTimeout(to); return (r&&r.ok)? r.json() : null; })
+        .then(function(j){ try{ var d=j.results[0]; var p=d.regularMarketPrice; if(p==null||!(Number(p)>0)) p=d.regularMarketPreviousClose; return (p!=null&&Number(p)>0)?Number(p):null; }catch(e){ return null; } })
+        .catch(function(){ clearTimeout(to); return null; });
+    }));
+    pend.forEach(function(k,i){ if(res[i]!=null) out[k]=res[i]; });
+  }
+  try{ await pass(RV_PROXY_CORS); }catch(e){}     // 1) corsproxy.io (paralelo)
+  try{ await pass(RV_PROXY_CORSSH); }catch(e){}   // 2) proxy.cors.sh
+  try{ await passBrapiDireto(); }catch(e){}       // 3) brapi.dev direto
+  try{ await pass(RV_PROXY_ALLO); }catch(e){}     // 4) allorigins
+  try{ await pass(RV_PROXY_CODETABS); }catch(e){} // 5) codetabs
+  try{ await pass(RV_PROXY_CORS); }catch(e){}     // 6) retry corsproxy
   /* Fallback final opcional: brapi.dev — só p/ tickers ainda nulos e se houver token. */
   try{
     var tok=(typeof rvGetBrapiToken==='function')?rvGetBrapiToken():"";
