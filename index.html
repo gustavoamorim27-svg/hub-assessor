@@ -2823,6 +2823,42 @@ body.mm .ajbtn{ padding:11px 16px !important; font-size:14px !important; }
 [data-tool="simulador"] .suc-disc strong{ color:#A9B0D6; }
 @media (max-width:720px){ [data-tool="simulador"] .suc-grid{ grid-template-columns:1fr; } }
 </style>
+<style>
+/* ===== FP - simetria e ritmo vertical dos cards de controle ===== */
+[data-tool="simulador"] .controls{ align-items:stretch; gap:18px; }
+[data-tool="simulador"] .controls > .card.control{
+  display:flex; flex-direction:column; padding:24px 22px 22px; height:100%;
+}
+[data-tool="simulador"] .controls .control > .label-row{
+  display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between;
+  gap:4px; margin:0 0 10px; padding-right:20px; min-height:32px;
+}
+[data-tool="simulador"] .controls .control > .label-row > label{ line-height:1.25; }
+[data-tool="simulador"] .controls .control > .label-row > .num-input{ flex:1 0 100%; justify-content:flex-end; }
+[data-tool="simulador"] .controls .control .rent-mode{ display:flex; width:100%; box-sizing:border-box; margin:0 0 12px; }
+[data-tool="simulador"] .controls .control .rent-mode .rent-mode-opt{ flex:1; text-align:center; padding:7px 6px; }
+[data-tool="simulador"] .controls .control > .label-row > .rent-mode{ flex:1 0 100%; margin:2px 0 12px; }
+[data-tool="simulador"] .controls .control .num-input{ justify-content:flex-end; }
+[data-tool="simulador"] .controls .control > div > .num-input{ margin-bottom:12px; }
+[data-tool="simulador"] .controls .control input[type="range"]{ margin:2px 0 0; }
+[data-tool="simulador"] .controls .control .range-row{ margin-top:10px; }
+[data-tool="simulador"] .controls .control .quick{
+  display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; margin-top:16px;
+}
+[data-tool="simulador"] .controls .control .quick button{
+  width:100%; padding:8px 4px; font-size:10.5px; letter-spacing:.4px; text-align:center;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+[data-tool="simulador"] #rentCdi .quick{ grid-template-columns:repeat(2,minmax(0,1fr)); }
+[data-tool="simulador"] .controls .control .prazo-idade{ margin-top:auto; padding-top:16px; }
+[data-tool="simulador"] .controls .control .prazo-hint{ margin-top:10px; }
+[data-tool="simulador"] .controls .control .rd-grid{ gap:10px; }
+[data-tool="simulador"] .controls .control .fp-drag{ top:7px; right:8px; }
+@media(max-width:700px){
+  [data-tool="simulador"] .controls .control > .label-row{ min-height:0; }
+  [data-tool="simulador"] .controls .control .quick{ grid-template-columns:repeat(2,minmax(0,1fr)); }
+}
+</style>
   <div class="g-panel" id="p-simulador" data-tool="simulador">
 <div class="wrap" id="capture-area">
   <header class="header">
