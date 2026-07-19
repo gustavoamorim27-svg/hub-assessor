@@ -725,6 +725,12 @@ html, body {
   color:var(--cinza);font-size:11px;font-weight:700;padding:6px 12px;border-radius:100px;
   cursor:pointer;font-family:inherit;letter-spacing:1px;transition:all .15s;}
 [data-tool="simulador"] .control .quick button:hover{background:rgba(255,78,0,.15);color:var(--laranja);border-color:rgba(255,78,0,.4);}
+[data-tool="simulador"] .fp-view-bar{display:flex;align-items:center;justify-content:flex-end;gap:10px;margin:0 0 14px;}
+[data-tool="simulador"] .fp-view-bar .fvb-lbl{font-size:10px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;color:var(--cinza-2,#8089BE);}
+[data-tool="simulador"] .fvb-seg{display:inline-flex;gap:4px;background:rgba(0,0,0,.28);border:1px solid rgba(120,130,210,.22);border-radius:10px;padding:3px;}
+[data-tool="simulador"] .fvb-seg button{background:transparent;border:none;color:#A9B0D6;font-family:inherit;font-weight:700;font-size:12px;padding:6px 14px;border-radius:8px;cursor:pointer;transition:all .15s;}
+[data-tool="simulador"] .fvb-seg button:hover{color:#fff;}
+[data-tool="simulador"] .fvb-seg button.on{background:var(--laranja,#FF4E00);color:#fff;}
 [data-tool="simulador"] .goal-grid{display:grid;grid-template-columns:1fr;gap:18px;margin-bottom:24px;}
 [data-tool="simulador"] .goal-card{display:flex;flex-direction:column;}
 [data-tool="simulador"] .goal-income{margin-top:auto;}
@@ -3142,6 +3148,13 @@ body.mm .ajbtn{ padding:11px 16px !important; font-size:14px !important; }
   </div>
 
   <div id="carteiraCollapse">
+  <div class="fp-view-bar">
+    <span class="fvb-lbl">Visão</span>
+    <div class="fvb-seg" id="fpViewSeg" title="Produtos: carteira completa com os ativos. Classes: mesma proporção, só por classe de ativo.">
+      <button type="button" data-fpview="produtos">Produtos</button>
+      <button type="button" data-fpview="classes">Classes</button>
+    </div>
+  </div>
   <div class="tpl-bar" id="tplBar">
     <button class="tpl-btn" data-tpl="conservadora" type="button">
       <span class="tpl-name"><span class="tpl-dot" style="background:#5B8DEF"></span>Conservadora</span>
@@ -5350,7 +5363,9 @@ function renderTabs(){
     +'<button type="button" data-cview="classes" style="'+_cvB+(CTOR_VIEW==="classes"?"background:#FF4E00;color:#fff;":"background:transparent;color:#A9B0D6;")+'">Classes</button>'
     +'</div>';
   if(ehBase && CTOR_VIEW==="classes"){
-    /* na visao por classe nao ha edicao de modelo (o modelo salvo eh o de produtos) */
+    /* mantem o botao no lugar (so desabilitado) para a barra nao mudar de tamanho */
+    h+=`<button class="tab" disabled style="opacity:.42;cursor:not-allowed" title="A edicao de modelo so esta disponivel na visao Produtos">
+          <svg class="icon" viewBox="0 0 24 24" style="margin-right:6px; vertical-align:-3px; width:14px; height:14px;"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>Editar modelo</button>`;
   } else if(ehBase && S.editandoTemplate===S.template){
     // modo edicao ativo: salvar / cancelar
     h+=`<span style="font-size:11px;font-weight:800;letter-spacing:.5px;color:#FFB020;display:inline-flex;align-items:center;gap:6px;background:rgba(255,176,32,.12);border:1px solid rgba(255,176,32,.4);border-radius:8px;padding:7px 11px">
@@ -7018,13 +7033,16 @@ const TEMPLATES = {
     { cat:'Internacional', name:'Renda Fixa Global', descr:'Crédito global em dólar · Certificate of Deposit', pct:2.5 },
   ]),
 };
+let FP_VIEW = "produtos";
+try{ var _fv=localStorage.getItem("hubFpView"); if(_fv==="classes"||_fv==="produtos") FP_VIEW=_fv; }catch(e){}
 function clonarTemplate(id){
   // DINÂMICO: espelha 1:1 a carteira ideal do Montar a Carteira (RICO_TEMPLATES já aplica os overrides salvos pelo usuário)
+  // Se a visão for "classes", usa a versão genérica (mesmas proporções, sem produtos).
   try{
     var nameMap={conservadora:'Conservadora',moderada:'Moderada',sofisticada:'Sofisticada'};
     var pname=nameMap[id];
-    var T=window.RICO_TEMPLATES;
-    if(!T){ try{ if(window._toolInit&&window._toolInit['construtor']) window._toolInit['construtor'](); }catch(e){} T=window.RICO_TEMPLATES; }
+    var T = (FP_VIEW==="classes" && window.RICO_GENERIC_TEMPLATES) ? window.RICO_GENERIC_TEMPLATES : window.RICO_TEMPLATES;
+    if(!T){ try{ if(window._toolInit&&window._toolInit['construtor']) window._toolInit['construtor'](); }catch(e){} T=(FP_VIEW==="classes" && window.RICO_GENERIC_TEMPLATES) ? window.RICO_GENERIC_TEMPLATES : window.RICO_TEMPLATES; }
     if(T && pname && typeof T[pname]==='function'){
       var arr=T[pname]()||[];
       if(arr.length){
@@ -7878,6 +7896,25 @@ function marcarTemplateAtivo() {
 document.querySelectorAll('#tplBar .tpl-btn').forEach(b => {
   b.addEventListener('click', () => aplicarTemplate(b.dataset.tpl));
 });
+
+// ===== visão: carteira com produtos x apenas classes de ativo =====
+function marcarFpView(){
+  document.querySelectorAll('#fpViewSeg [data-fpview]').forEach(b => {
+    b.classList.toggle('on', b.dataset.fpview === FP_VIEW);
+  });
+}
+document.querySelectorAll('#fpViewSeg [data-fpview]').forEach(b => {
+  b.addEventListener('click', () => {
+    const v = b.dataset.fpview;
+    if (v === FP_VIEW) return;
+    FP_VIEW = v;
+    try{ localStorage.setItem('hubFpView', v); }catch(e){}
+    marcarFpView();
+    if (TEMPLATES[state.template]) aplicarTemplate(state.template);
+    else showToast('Escolha um perfil (Conservadora / Moderada / Sofisticada) para carregar a visão por ' + (v === 'classes' ? 'classe' : 'produto') + '.');
+  });
+});
+marcarFpView();
 
 // ============ PONTE: importar carteira do Construtor ============
 function atualizarBarraImport(){
