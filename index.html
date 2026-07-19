@@ -7898,6 +7898,52 @@ document.querySelectorAll('#tplBar .tpl-btn').forEach(b => {
 });
 
 // ===== visão: carteira com produtos x apenas classes de ativo =====
+/* Agrupa QUALQUER carteira (template, importada do Montar a Carteira ou editada
+   na mão) nas classes genéricas, mantendo as proporções. */
+const FP_GEN_DESCR = {
+  'Pós-fixado':'CDI / Selic · caixa e liquidez',
+  'Inflação':'Títulos indexados ao IPCA · ganho real',
+  'Pré-fixado':'Taxa travada na largada',
+  'Multimercados':'Estratégias macro, long&short e teses temáticas',
+  'Ações':'Bolsa local e global · direta ou via estruturadas',
+  'Fundos Imobiliários':'FIIs de tijolo e papel · Fiagro · renda mensal'
+};
+const FP_GEN_ORDER = ['Pós-fixado','Inflação','Pré-fixado','Multimercados','Ações','Fundos Imobiliários'];
+function fpSubRF(a){
+  const b = ((a.name||'')+' '+(a.descr||'')).toLowerCase();
+  if(/ipca|ntn-?b|infla/.test(b)) return 'Inflação';
+  if(/pr[eé]|prefix|\bltn\b|tesouro prefixado/.test(b)) return 'Pré-fixado';
+  return 'Pós-fixado';
+}
+function fpBucket(a){
+  const cat = a.cat || '';
+  const b = ((a.name||'')+' '+(a.descr||'')).toLowerCase();
+  if(cat === 'Renda Fixa') return { cat:'Renda Fixa', name:fpSubRF(a) };
+  if(cat === 'Alternativos' || cat === 'Fundo Aberto' || cat === 'Multimercados') return { cat:'Multimercados', name:'Multimercados' };
+  if(cat === 'Internacional'){
+    if(/renda fixa|cr[eé]dito|certificate|\bcd\b|bond|treasury|d[oó]lar pr[eé]/.test(b)) return { cat:'Renda Fixa', name:'Pré-fixado' };
+    return { cat:'Renda Variável', name:'Ações' };
+  }
+  if(cat === 'Renda Variável') return { cat:'Renda Variável', name:'Ações' };
+  if(cat === 'Fundos Listados') return { cat:'Fundos Listados', name:'Fundos Imobiliários' };
+  return { cat: cat || 'Renda Fixa', name: cat || 'Outros' };
+}
+function agregarPorClasse(lista){
+  const map = {};
+  (lista||[]).forEach(a => {
+    const b = fpBucket(a);
+    const k = b.cat + '|' + b.name;
+    if(!map[k]) map[k] = { cat:b.cat, name:b.name, descr:FP_GEN_DESCR[b.name]||'', pct:0, color:corCat(b.cat), tags:[] };
+    map[k].pct += Number(a.pct) || 0;
+  });
+  const arr = Object.keys(map).map(k => { const o = map[k]; o.pct = Math.round(o.pct*100)/100; return o; });
+  arr.sort((x,y) => {
+    let ix = FP_GEN_ORDER.indexOf(x.name), iy = FP_GEN_ORDER.indexOf(y.name);
+    if(ix < 0) ix = 99; if(iy < 0) iy = 99;
+    return ix - iy;
+  });
+  return arr.filter(o => o.pct > 0);
+}
 function marcarFpView(){
   document.querySelectorAll('#fpViewSeg [data-fpview]').forEach(b => {
     b.classList.toggle('on', b.dataset.fpview === FP_VIEW);
@@ -7910,8 +7956,22 @@ document.querySelectorAll('#fpViewSeg [data-fpview]').forEach(b => {
     FP_VIEW = v;
     try{ localStorage.setItem('hubFpView', v); }catch(e){}
     marcarFpView();
-    if (TEMPLATES[state.template]) aplicarTemplate(state.template);
-    else showToast('Escolha um perfil (Conservadora / Moderada / Sofisticada) para carregar a visão por ' + (v === 'classes' ? 'classe' : 'produto') + '.');
+    if (TEMPLATES[state.template]) { aplicarTemplate(state.template); return; }
+    if (v === 'classes'){
+      state._allocProdutos = JSON.parse(JSON.stringify(state.alocacao || []));
+      state.alocacao = agregarPorClasse(state.alocacao);
+      salvarEstado(); renderAlocacao();
+      showToast('Carteira agrupada por classe de ativo');
+    } else {
+      if (state._allocProdutos && state._allocProdutos.length){
+        state.alocacao = state._allocProdutos;
+        state._allocProdutos = null;
+        salvarEstado(); renderAlocacao();
+        showToast('Carteira com os produtos restaurada');
+      } else {
+        showToast('Escolha um perfil ou importe do Montar a Carteira para ver os produtos.');
+      }
+    }
   });
 });
 marcarFpView();
@@ -7948,7 +8008,8 @@ function importarDoConstrutor(){
     color: corCat(it.classe),
     tags: Array.isArray(it.tags) ? it.tags.slice() : []
   }));
-  state.alocacao = nova;
+  state.alocacao = (FP_VIEW === 'classes') ? agregarPorClasse(nova) : nova;
+  if(FP_VIEW === 'classes') state._allocProdutos = nova;
   state.template = 'construtor';
   // Sincroniza patrimônio e rentabilidade com o Construtor usando os setters existentes
   if(c.patrimonio){ setValor(String(c.patrimonio)); }
