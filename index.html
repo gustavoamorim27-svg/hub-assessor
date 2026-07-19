@@ -4931,6 +4931,48 @@ const TEMPLATES = {
 try{ window.RICO_TEMPLATES = TEMPLATES; }catch(e){}
 
 /* =====================================================================
+   VISAO POR CLASSE (generica) — mesmas proporcoes das carteiras acima,
+   agregadas por classe de ativo, sem citar produtos.
+   Mapeamento: Alternativos -> Multimercados; Internacional -> Renda Fixa
+   (parte de crédito/CD) e Ações (parte de equity global).
+   ===================================================================== */
+const GEN_RF_POS = "93,5% do CDI · isento (LCA/LCD, CDB e Tesouro Selic)";
+const GEN_RF_INF = "IPCA + 7,8% a.a. · títulos indexados à inflação";
+const GEN_RF_PRE = "14% a.a. · pré-fixado (Tesouro e crédito privado)";
+const GEN_MM_DET = "Estratégias macro, long&short e teses temáticas";
+const GEN_AC_DET = "Bolsa local e global · direta ou via estruturadas";
+const GEN_FI_DET = "FIIs de tijolo e papel · Fiagro · renda mensal";
+const GENERIC_TEMPLATES = {
+  Conservadora: ()=>[
+    mk("Renda Fixa","Pós-fixado",72.5,GEN_RF_POS,"D+0 a vencimento"),
+    mk("Renda Fixa","Inflação",12.5,GEN_RF_INF,"D+1"),
+    mk("Renda Fixa","Pré-fixado",7.5,GEN_RF_PRE,"No vencimento"),
+    mk("Multimercados","Multimercados",2.5,GEN_MM_DET,"D+17"),
+    mk("Renda Variável","Ações",2.5,GEN_AC_DET,"D+2"),
+    mk("Fundos Listados","Fundos Imobiliários",2.5,GEN_FI_DET,"D+2")
+  ],
+  Moderada: ()=>[
+    mk("Renda Fixa","Pós-fixado",35.5,GEN_RF_POS,"D+0 a vencimento"),
+    mk("Renda Fixa","Inflação",22.5,GEN_RF_INF,"D+1"),
+    mk("Renda Fixa","Pré-fixado",12.5,GEN_RF_PRE,"No vencimento"),
+    mk("Multimercados","Multimercados",17,GEN_MM_DET,"D+17"),
+    mk("Renda Variável","Ações",8.5,GEN_AC_DET,"D+2"),
+    mk("Fundos Listados","Fundos Imobiliários",4,GEN_FI_DET,"D+2")
+  ],
+  Sofisticada: ()=>[
+    mk("Renda Fixa","Pós-fixado",16,GEN_RF_POS,"D+0 a vencimento"),
+    mk("Renda Fixa","Inflação",27.5,GEN_RF_INF,"D+1"),
+    mk("Renda Fixa","Pré-fixado",10,GEN_RF_PRE,"No vencimento"),
+    mk("Multimercados","Multimercados",17,GEN_MM_DET,"D+17"),
+    mk("Renda Variável","Ações",20,GEN_AC_DET,"D+2"),
+    mk("Fundos Listados","Fundos Imobiliários",9.5,GEN_FI_DET,"D+2")
+  ]
+};
+let CTOR_VIEW = "produtos";
+try{ var _cv=localStorage.getItem("hubCtorView"); if(_cv==="classes"||_cv==="produtos") CTOR_VIEW=_cv; }catch(e){}
+try{ window.RICO_GENERIC_TEMPLATES = GENERIC_TEMPLATES; }catch(e){}
+
+/* =====================================================================
    PERSISTENCIA (localStorage) — Tarefas 2 e 3
    - hubConstrutorState : estado editado da carteira do Simulador (state S)
    - hubTemplatesOverride: override de fabrica dos templates
@@ -5300,7 +5342,16 @@ function renderTabs(){
   var ehBase = !!TEMPLATES_FACTORY[S.template];
   var temOv = ehBase && hasTplOverride(S.template);
   h+=`<div style="margin-left:auto;display:flex;gap:8px;flex-wrap:wrap;align-items:center">`;
-  if(ehBase && S.editandoTemplate===S.template){
+  // ===== visao: carteira com produtos x apenas classes de ativo =====
+  var _cvB="font-family:inherit;font-weight:700;font-size:12px;padding:6px 12px;border-radius:8px;border:none;cursor:pointer;transition:all .15s;";
+  h+='<div title="Produtos: carteira completa com os ativos. Classes: mesma proporção, só por classe de ativo." style="display:inline-flex;gap:4px;background:rgba(0,0,0,.28);border:1px solid rgba(120,130,210,.22);border-radius:10px;padding:3px;align-items:center">'
+    +'<span style="font-size:10px;font-weight:800;letter-spacing:.6px;color:#8089BE;padding:0 4px 0 8px;text-transform:uppercase">Visão</span>'
+    +'<button type="button" data-cview="produtos" style="'+_cvB+(CTOR_VIEW==="produtos"?"background:#FF4E00;color:#fff;":"background:transparent;color:#A9B0D6;")+'">Produtos</button>'
+    +'<button type="button" data-cview="classes" style="'+_cvB+(CTOR_VIEW==="classes"?"background:#FF4E00;color:#fff;":"background:transparent;color:#A9B0D6;")+'">Classes</button>'
+    +'</div>';
+  if(ehBase && CTOR_VIEW==="classes"){
+    /* na visao por classe nao ha edicao de modelo (o modelo salvo eh o de produtos) */
+  } else if(ehBase && S.editandoTemplate===S.template){
     // modo edicao ativo: salvar / cancelar
     h+=`<span style="font-size:11px;font-weight:800;letter-spacing:.5px;color:#FFB020;display:inline-flex;align-items:center;gap:6px;background:rgba(255,176,32,.12);border:1px solid rgba(255,176,32,.4);border-radius:8px;padding:7px 11px">
           <svg class="icon" viewBox="0 0 24 24" style="width:13px;height:13px;stroke:#FFB020"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
@@ -5316,6 +5367,13 @@ function renderTabs(){
   h+=`</div>`;
   el.innerHTML=h;
   el.querySelectorAll("[data-tpl]").forEach(b=>b.onclick=()=>loadTemplate(b.dataset.tpl));
+  el.querySelectorAll("[data-cview]").forEach(b=>b.onclick=()=>{
+    var v=b.getAttribute("data-cview");
+    if(v===CTOR_VIEW) return;
+    CTOR_VIEW=v; try{ localStorage.setItem("hubCtorView",v); }catch(_){}
+    S.editandoTemplate=null;
+    if(TEMPLATES[S.template]) loadTemplate(S.template); else render();
+  });
   const atualBtn = el.querySelector("[data-atual]");
   if(atualBtn) atualBtn.onclick=()=>loadAtual();
   const novaBtn = el.querySelector("[data-nova]");
@@ -5352,7 +5410,9 @@ function renderTabs(){
 }
 
 function loadTemplate(t){
-  S.template=t; S.recomendadaTemplate=t; S.items=TEMPLATES[t](); ctorFixIds(); S.cdiMult=CDI_MULT[t]; render();
+  S.template=t; S.recomendadaTemplate=t;
+  S.items = (CTOR_VIEW==="classes" && GENERIC_TEMPLATES[t]) ? GENERIC_TEMPLATES[t]() : TEMPLATES[t]();
+  ctorFixIds(); S.cdiMult=CDI_MULT[t]; render();
 }
 function loadNova(){
   S.template="Nova"; S.recomendadaTemplate="Moderada"; S.items=[]; S.cdiMult=CDI_MULT.Moderada; render();
