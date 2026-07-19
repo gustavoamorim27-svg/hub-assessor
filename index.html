@@ -4946,8 +4946,8 @@ try{ window.RICO_TEMPLATES = TEMPLATES; }catch(e){}
 /* =====================================================================
    VISAO POR CLASSE (generica) — mesmas proporcoes das carteiras acima,
    agregadas por classe de ativo, sem citar produtos.
-   Mapeamento: Alternativos -> Multimercados; Internacional -> Renda Fixa
-   (parte de crédito/CD) e Ações (parte de equity global).
+   Classes: Renda Fixa (pos / inflacao / pre), Multimercados, Acoes,
+   Fundos Imobiliarios, Alternativos e Internacional.
    ===================================================================== */
 const GEN_RF_POS = "93,5% do CDI · isento (LCA/LCD, CDB e Tesouro Selic)";
 const GEN_RF_INF = "IPCA + 7,8% a.a. · títulos indexados à inflação";
@@ -4955,30 +4955,36 @@ const GEN_RF_PRE = "14% a.a. · pré-fixado (Tesouro e crédito privado)";
 const GEN_MM_DET = "Estratégias macro, long&short e teses temáticas";
 const GEN_AC_DET = "Bolsa local e global · direta ou via estruturadas";
 const GEN_FI_DET = "FIIs de tijolo e papel · Fiagro · renda mensal";
+const GEN_AL_DET = "Ouro, temáticos e estruturas com proteção";
+const GEN_IN_DET = "Exposição global em dólar · ações e crédito";
 const GENERIC_TEMPLATES = {
   Conservadora: ()=>[
     mk("Renda Fixa","Pós-fixado",72.5,GEN_RF_POS,"D+0 a vencimento"),
     mk("Renda Fixa","Inflação",12.5,GEN_RF_INF,"D+1"),
-    mk("Renda Fixa","Pré-fixado",7.5,GEN_RF_PRE,"No vencimento"),
+    mk("Renda Fixa","Pré-fixado",5,GEN_RF_PRE,"No vencimento"),
     mk("Multimercados","Multimercados",2.5,GEN_MM_DET,"D+17"),
-    mk("Renda Variável","Ações",2.5,GEN_AC_DET,"D+2"),
-    mk("Fundos Listados","Fundos Imobiliários",2.5,GEN_FI_DET,"D+2")
+    mk("Fundos Listados","Fundos Imobiliários",2.5,GEN_FI_DET,"D+2"),
+    mk("Internacional","Internacional",5,GEN_IN_DET,"~D+5")
   ],
   Moderada: ()=>[
     mk("Renda Fixa","Pós-fixado",35.5,GEN_RF_POS,"D+0 a vencimento"),
     mk("Renda Fixa","Inflação",22.5,GEN_RF_INF,"D+1"),
-    mk("Renda Fixa","Pré-fixado",12.5,GEN_RF_PRE,"No vencimento"),
-    mk("Multimercados","Multimercados",17,GEN_MM_DET,"D+17"),
-    mk("Renda Variável","Ações",8.5,GEN_AC_DET,"D+2"),
-    mk("Fundos Listados","Fundos Imobiliários",4,GEN_FI_DET,"D+2")
+    mk("Renda Fixa","Pré-fixado",10,GEN_RF_PRE,"No vencimento"),
+    mk("Multimercados","Multimercados",14,GEN_MM_DET,"D+17"),
+    mk("Renda Variável","Ações",5,GEN_AC_DET,"D+2"),
+    mk("Fundos Listados","Fundos Imobiliários",4,GEN_FI_DET,"D+2"),
+    mk("Alternativos","Alternativos",3,GEN_AL_DET,"No vencimento"),
+    mk("Internacional","Internacional",6,GEN_IN_DET,"~D+5")
   ],
   Sofisticada: ()=>[
     mk("Renda Fixa","Pós-fixado",16,GEN_RF_POS,"D+0 a vencimento"),
     mk("Renda Fixa","Inflação",27.5,GEN_RF_INF,"D+1"),
-    mk("Renda Fixa","Pré-fixado",10,GEN_RF_PRE,"No vencimento"),
-    mk("Multimercados","Multimercados",17,GEN_MM_DET,"D+17"),
-    mk("Renda Variável","Ações",20,GEN_AC_DET,"D+2"),
-    mk("Fundos Listados","Fundos Imobiliários",9.5,GEN_FI_DET,"D+2")
+    mk("Renda Fixa","Pré-fixado",7.5,GEN_RF_PRE,"No vencimento"),
+    mk("Multimercados","Multimercados",10,GEN_MM_DET,"D+17"),
+    mk("Renda Variável","Ações",15,GEN_AC_DET,"D+2"),
+    mk("Fundos Listados","Fundos Imobiliários",9.5,GEN_FI_DET,"D+2"),
+    mk("Alternativos","Alternativos",7,GEN_AL_DET,"No vencimento"),
+    mk("Internacional","Internacional",7.5,GEN_IN_DET,"~D+5")
   ]
 };
 let CTOR_VIEW = "produtos";
@@ -7906,9 +7912,11 @@ const FP_GEN_DESCR = {
   'Pré-fixado':'Taxa travada na largada',
   'Multimercados':'Estratégias macro, long&short e teses temáticas',
   'Ações':'Bolsa local e global · direta ou via estruturadas',
-  'Fundos Imobiliários':'FIIs de tijolo e papel · Fiagro · renda mensal'
+  'Fundos Imobiliários':'FIIs de tijolo e papel · Fiagro · renda mensal',
+  'Alternativos':'Ouro, temáticos e estruturas com proteção',
+  'Internacional':'Exposição global em dólar · ações e crédito'
 };
-const FP_GEN_ORDER = ['Pós-fixado','Inflação','Pré-fixado','Multimercados','Ações','Fundos Imobiliários'];
+const FP_GEN_ORDER = ['Pós-fixado','Inflação','Pré-fixado','Multimercados','Ações','Fundos Imobiliários','Alternativos','Internacional'];
 function fpSubRF(a){
   const b = ((a.name||'')+' '+(a.descr||'')).toLowerCase();
   if(/ipca|ntn-?b|infla/.test(b)) return 'Inflação';
@@ -7919,11 +7927,9 @@ function fpBucket(a){
   const cat = a.cat || '';
   const b = ((a.name||'')+' '+(a.descr||'')).toLowerCase();
   if(cat === 'Renda Fixa') return { cat:'Renda Fixa', name:fpSubRF(a) };
-  if(cat === 'Alternativos' || cat === 'Fundo Aberto' || cat === 'Multimercados') return { cat:'Multimercados', name:'Multimercados' };
-  if(cat === 'Internacional'){
-    if(/renda fixa|cr[eé]dito|certificate|\bcd\b|bond|treasury|d[oó]lar pr[eé]/.test(b)) return { cat:'Renda Fixa', name:'Pré-fixado' };
-    return { cat:'Renda Variável', name:'Ações' };
-  }
+  if(cat === 'Fundo Aberto' || cat === 'Multimercados') return { cat:'Multimercados', name:'Multimercados' };
+  if(cat === 'Alternativos') return { cat:'Alternativos', name:'Alternativos' };
+  if(cat === 'Internacional') return { cat:'Internacional', name:'Internacional' };
   if(cat === 'Renda Variável') return { cat:'Renda Variável', name:'Ações' };
   if(cat === 'Fundos Listados') return { cat:'Fundos Listados', name:'Fundos Imobiliários' };
   return { cat: cat || 'Renda Fixa', name: cat || 'Outros' };
@@ -7968,6 +7974,8 @@ document.querySelectorAll('#fpViewSeg [data-fpview]').forEach(b => {
         state._allocProdutos = null;
         salvarEstado(); renderAlocacao();
         showToast('Carteira com os produtos restaurada');
+      } else if (state.template === 'construtor' && window.RICO_BRIDGE && window.RICO_BRIDGE.carteira) {
+        importarDoConstrutor();
       } else {
         showToast('Escolha um perfil ou importe do Montar a Carteira para ver os produtos.');
       }
@@ -7975,6 +7983,19 @@ document.querySelectorAll('#fpViewSeg [data-fpview]').forEach(b => {
   });
 });
 marcarFpView();
+/* Ao abrir a aba com a visão "classes" salva, reagrupa a carteira guardada. */
+(function(){
+  try{
+    if(FP_VIEW !== 'classes') return;
+    if(!Array.isArray(state.alocacao) || !state.alocacao.length) return;
+    var agg = agregarPorClasse(state.alocacao);
+    if(agg.length && agg.length !== state.alocacao.length){
+      if(!state._allocProdutos) state._allocProdutos = JSON.parse(JSON.stringify(state.alocacao));
+      state.alocacao = agg;
+      try{ renderAlocacao(); }catch(e){}
+    }
+  }catch(e){}
+})();
 
 // ============ PONTE: importar carteira do Construtor ============
 function atualizarBarraImport(){
