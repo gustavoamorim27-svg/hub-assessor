@@ -4641,9 +4641,10 @@ html.theme-light .pm-alloc{ background:#fff; }
     st.id = "png-modal-css";
     st.textContent =
       '#rhPngModal{position:fixed;inset:0;z-index:9999;background:rgba(3,5,18,.9);display:flex;flex-direction:column;'+
-      'align-items:center;justify-content:flex-start;padding:32px 18px;overflow:auto;-webkit-overflow-scrolling:touch;'+
+      'align-items:center;justify-content:flex-start;padding:24px 10px;overflow:auto;-webkit-overflow-scrolling:touch;'+
       'font-family:Manrope,-apple-system,BlinkMacSystemFont,sans-serif;backdrop-filter:blur(6px);}'+
       '#rhPngModal .rhpm-inner{max-width:780px;width:100%;text-align:center;margin:auto;}'+
+      '#rhPngModal .rhpm-inner.rhpm-wide{max-width:97vw;}'+
       '#rhPngModal .rhpm-hint{color:#A9B0D6;font-weight:600;font-size:14.5px;line-height:1.5;margin:0 auto 16px;max-width:600px;}'+
       '#rhPngModal img{width:100%;border-radius:16px;border:1px solid rgba(120,130,210,.22);box-shadow:0 24px 70px rgba(0,0,0,.55);display:block;}'+
       '#rhPngModal .rhpm-actions{display:flex;gap:12px;justify-content:center;margin-top:20px;flex-wrap:wrap;}'+
@@ -4673,7 +4674,7 @@ html.theme-light .pm-alloc{ background:#fff; }
     ov.id = "rhPngModal";
     ov.style.setProperty("--rhpm-accent", accent);
     ov.innerHTML =
-      '<div class="rhpm-inner">'+
+      '<div class="rhpm-inner'+(opts.wide?' rhpm-wide':'')+'">'+
         '<p class="rhpm-hint">'+hint+'</p>'+
         '<img src="'+dataUrl+'" alt="'+(filename||"imagem")+'">'+
         '<div class="rhpm-actions">'+
@@ -9317,13 +9318,13 @@ async function gerarPngCanvasWide() {
     fillRR(x, yy, w, h, 16, 'rgba(28,36,112,.35)');
     strokeRR(x, yy, w, h, 16, 'rgba(120,130,210,.18)', 1);
     ctx.textAlign = 'left';
-    if (titulo) { setFont('700', 14.5, 'Sora'); ctx.fillStyle = '#fff'; ctx.fillText(cut(titulo, 30), x + 18, yy + 28); }
-    if (sub) { setFont('600', 10.5, 'Manrope'); ctx.fillStyle = '#8089BE'; ctx.fillText(cut(sub, 46), x + 18, yy + 45); }
+    if (titulo) { setFont('700', 17.5, 'Sora'); ctx.fillStyle = '#fff'; ctx.fillText(cut(titulo, 26), x + 20, yy + 33); }
+    if (sub) { setFont('600', 12, 'Manrope'); ctx.fillStyle = '#8089BE'; ctx.fillText(cut(sub, 40), x + 20, yy + 53); }
   };
   const linha = (x, w, yy, rotulo, valor, corValor, tam) => {
-    setFont('600', tam || 11.5, 'Manrope'); ctx.fillStyle = '#A9B0D6'; ctx.textAlign = 'left';
+    setFont('600', tam || 13.5, 'Manrope'); ctx.fillStyle = '#A9B0D6'; ctx.textAlign = 'left';
     ctx.fillText(rotulo, x, yy);
-    setFont('700', tam || 11.5, 'Manrope'); ctx.fillStyle = corValor || '#fff'; ctx.textAlign = 'right';
+    setFont('700', tam || 13.5, 'Manrope'); ctx.fillStyle = corValor || '#fff'; ctx.textAlign = 'right';
     ctx.fillText(valor, x + w, yy);
     ctx.textAlign = 'left';
   };
@@ -9363,11 +9364,11 @@ async function gerarPngCanvasWide() {
   gb.addColorStop(0, 'rgba(255,78,0,.16)'); gb.addColorStop(1, 'rgba(255,107,44,.05)');
   fillRR(PAD, y, heroLW, heroH, 18, gb);
   strokeRR(PAD, y, heroLW, heroH, 18, 'rgba(255,78,0,.3)', 1);
-  setFont('700', 11.5, 'Manrope'); ctx.fillStyle = '#A9B0D6'; ls('1.5px');
+  setFont('700', 13, 'Manrope'); ctx.fillStyle = '#A9B0D6'; ls('1.5px');
   ctx.fillText('PROJEÇÃO PARA ' + state.prazoAnos + (state.prazoAnos === 1 ? ' ANO' : ' ANOS'), PAD + 28, y + 32); ls('normal');
-  setFont('800', 44, 'Sora'); ctx.fillStyle = '#FF6B2C';
-  ctx.fillText('R$ ' + f(finalCart), PAD + 28, y + 86);
-  setFont('700', 14, 'Manrope'); ctx.fillStyle = '#2BD9A6';
+  setFont('800', 50, 'Sora'); ctx.fillStyle = '#FF6B2C';
+  ctx.fillText('R$ ' + f(finalCart), PAD + 28, y + 90);
+  setFont('700', 16, 'Manrope'); ctx.fillStyle = '#2BD9A6';
   const t1 = '+ R$ ' + f(delta) + ' acima do CDI';
   ctx.fillText(t1, PAD + 28, y + 116);
   const w1 = ctx.measureText(t1).width;
@@ -9386,10 +9387,10 @@ async function gerarPngCanvasWide() {
     const sx = stX + i * (stW + GAP);
     fillRR(sx, y, stW, heroH, 12, 'rgba(255,255,255,.04)');
     strokeRR(sx, y, stW, heroH, 12, 'rgba(120,130,210,.18)', 1);
-    setFont('700', 9.5, 'Manrope'); ctx.fillStyle = '#A9B0D6'; ls('.6px');
-    ctx.fillText(s[0], sx + 18, y + 34); ls('normal');
-    setFont('800', 22, 'Sora'); ctx.fillStyle = '#fff';
-    ctx.fillText(cut(s[1], 18), sx + 18, y + 72);
+    setFont('700', 11, 'Manrope'); ctx.fillStyle = '#A9B0D6'; ls('.6px');
+    ctx.fillText(s[0], sx + 18, y + 36); ls('normal');
+    setFont('800', 26, 'Sora'); ctx.fillStyle = '#fff';
+    ctx.fillText(cut(s[1], 17), sx + 18, y + 78);
   });
   y += heroH + GAP;
 
@@ -9410,30 +9411,31 @@ async function gerarPngCanvasWide() {
       txt = '🎯 Renda de R$ ' + valorAmigavel(state.rendaMensal) + '/mês — ' + fmtBRdec.format(pct) + '% do patrimônio em ' + state.prazoAnos + ' anos';
       col = '#F5B942'; rgb = '245,185,66';
     }
-    const mh = 46, mw = (IW - GAP) / 2;
+    const mh = 52, mw = (IW - GAP) / 2;
     fillRR(PAD, y, mw, mh, 12, 'rgba(' + rgb + ',.10)');
     strokeRR(PAD, y, mw, mh, 12, col, 1);
-    setFont('700', 13, 'Manrope'); ctx.fillStyle = col;
-    ctx.fillText(txt, PAD + 18, y + 28);
+    setFont('700', 15, 'Manrope'); ctx.fillStyle = col;
+    ctx.fillText(txt, PAD + 20, y + 32);
     fillRR(PAD + mw + GAP, y, mw, mh, 12, 'rgba(245,185,66,.08)');
     strokeRR(PAD + mw + GAP, y, mw, mh, 12, 'rgba(245,185,66,.3)', 1);
-    setFont('700', 12.5, 'Manrope'); ctx.fillStyle = '#F5B942';
+    setFont('700', 14, 'Manrope'); ctx.fillStyle = '#F5B942';
     ctx.fillText('💰 Patrimônio necessário: R$ ' + f(objBase) + ' hoje · R$ ' + f(objFim) + ' corrigido por IPCA em ' + state.prazoAnos + (state.prazoAnos === 1 ? ' ano' : ' anos'), PAD + mw + GAP + 18, y + 28);
     y += mh + GAP;
   }
 
   // ---------- grafico ----------
   const dispPNG = dadosExibicao();
-  const chartH = 300;
-  card(PAD, y, IW, chartH, 'Evolução do patrimônio', dispPNG.adj ? ('em R$ de hoje · IPCA ' + fmtPct(state.ipca) + '% a.a.') : 'histórico dos últimos 24 meses + projeção');
+  const chartH = 400;
+  const chartW = Math.round(IW * 0.63);
+  const marcosX = PAD + chartW + GAP, marcosW = IW - chartW - GAP;
+  card(PAD, y, chartW, chartH, 'Evolução do patrimônio', dispPNG.adj ? ('em R$ de hoje · IPCA ' + fmtPct(state.ipca) + '% a.a.') : 'histórico dos últimos 24 meses + projeção');
   ctx.textAlign = 'right';
-  setFont('600', 11.5, 'Manrope');
-  ctx.fillStyle = '#FF6B2C'; ctx.fillText('■ Sua carteira', PAD + IW - 330, y + 28);
-  ctx.fillStyle = '#5B8DEF'; ctx.fillText('■ CDI 100%', PAD + IW - 218, y + 28);
-  ctx.fillStyle = '#F5B942'; ctx.fillText('■ Patrimônio-alvo', PAD + IW - 110, y + 28);
+  setFont('600', 13, 'Manrope');
+  ctx.fillStyle = '#FF6B2C'; ctx.fillText('■ Sua carteira', PAD + chartW - 300, y + 36);
+  ctx.fillStyle = '#5B8DEF'; ctx.fillText('■ CDI 100%', PAD + chartW - 186, y + 36);
+  ctx.fillStyle = '#F5B942'; ctx.fillText('■ Patrimônio-alvo', PAD + chartW - 70, y + 36);
   ctx.textAlign = 'left';
-  desenharGraficoCanvas(ctx, PAD + 18, y + 54, IW - 36, chartH - 74, dispPNG);
-  y += chartH + GAP;
+  desenharGraficoCanvas(ctx, PAD + 20, y + 66, chartW - 40, chartH - 92, dispPNG);
 
   // ================= cards em colunas (distribuidos pela altura) =================
   const cards = [];
@@ -9446,30 +9448,30 @@ async function gerarPngCanvasWide() {
   });
   const somaCarteira = catOrder.reduce((s, c) => s + catMap[c].pct, 0);
   cards.push({
-    h: Math.max(210, 186 + catOrder.length * 22),
+    h: Math.max(250, 232 + catOrder.length * 26),
     draw: (x, yy, w, h) => {
       card(x, yy, w, h, 'Composição da carteira', 'por classe de ativo');
-      const dcx = x + w / 2, dcy = yy + 122, dr = 50, dlw = 20;
+      const dcx = x + w / 2, dcy = yy + 140, dr = 58, dlw = 24;
       desenharDonutCanvas(ctx, dcx, dcy, dr, dlw);
       ctx.textAlign = 'center';
-      setFont('700', 8.5, 'Manrope'); ctx.fillStyle = '#A9B0D6'; ls('.8px');
-      ctx.fillText('TOTAL', dcx, dcy - 5); ls('normal');
-      setFont('800', 16, 'Sora'); ctx.fillStyle = '#fff';
-      ctx.fillText('R$ ' + valorAmigavel(state.valor), dcx, dcy + 15);
+      setFont('700', 10, 'Manrope'); ctx.fillStyle = '#A9B0D6'; ls('.8px');
+      ctx.fillText('TOTAL', dcx, dcy - 6); ls('normal');
+      setFont('800', 19, 'Sora'); ctx.fillStyle = '#fff';
+      ctx.fillText('R$ ' + valorAmigavel(state.valor), dcx, dcy + 17);
       ctx.textAlign = 'left';
-      let ry = yy + 198;
+      let ry = yy + 240;
       catOrder.forEach(cat => {
         const c = catMap[cat];
-        fillRR(x + 18, ry - 9, 10, 10, 3, c.color);
-        setFont('600', 12.5, 'Manrope'); ctx.fillStyle = '#fff';
-        ctx.fillText(cut(cat, 22), x + 36, ry);
-        setFont('800', 13, 'Sora'); ctx.fillStyle = c.color; ctx.textAlign = 'right';
-        ctx.fillText(fmtPct(c.pct) + '%', x + w - 18, ry); ctx.textAlign = 'left';
-        ry += 22;
+        fillRR(x + 20, ry - 10, 12, 12, 3, c.color);
+        setFont('600', 14.5, 'Manrope'); ctx.fillStyle = '#fff';
+        ctx.fillText(cut(cat, 20), x + 40, ry);
+        setFont('800', 15, 'Sora'); ctx.fillStyle = c.color; ctx.textAlign = 'right';
+        ctx.fillText(fmtPct(c.pct) + '%', x + w - 20, ry); ctx.textAlign = 'left';
+        ry += 26;
       });
       if (Math.round(somaCarteira * 10) !== 1000) {
-        setFont('600', 10.5, 'Manrope'); ctx.fillStyle = '#F5B942';
-        ctx.fillText('Total alocado: ' + fmtPct(somaCarteira) + '%', x + 36, ry + 2);
+        setFont('600', 12, 'Manrope'); ctx.fillStyle = '#F5B942';
+        ctx.fillText('Total alocado: ' + fmtPct(somaCarteira) + '%', x + 40, ry + 2);
       }
     }
   });
@@ -9479,26 +9481,26 @@ async function gerarPngCanvasWide() {
     const MAX = 14;
     const shown = itens.slice(0, MAX), extra = itens.length - shown.length;
     cards.push({
-      h: 62 + shown.length * 29 + (extra > 0 ? 20 : 0) + 12,
+      h: 74 + shown.length * 34 + (extra > 0 ? 24 : 0) + 14,
       draw: (x, yy, w) => {
-        card(x, yy, w, 62 + shown.length * 29 + (extra > 0 ? 20 : 0) + 12, 'Ativos da carteira', itens.length + (itens.length > 1 ? ' posições' : ' posição'));
-        let iy = yy + 76;
+        card(x, yy, w, 74 + shown.length * 34 + (extra > 0 ? 24 : 0) + 14, 'Ativos da carteira', itens.length + (itens.length > 1 ? ' posições' : ' posição'));
+        let iy = yy + 88;
         shown.forEach(a => {
-          fillRR(x + 18, iy - 9, 4, 21, 2, a.shade || a.color);
-          setFont('700', 12, 'Manrope'); ctx.fillStyle = '#fff'; ctx.textAlign = 'left';
-          ctx.fillText(cut(a.name, 22), x + 30, iy);
-          setFont('500', 10, 'Manrope'); ctx.fillStyle = '#6F77A8';
-          ctx.fillText(cut(a.descr, 34), x + 30, iy + 13);
-          setFont('800', 12.5, 'Sora'); ctx.fillStyle = a.shade || a.color; ctx.textAlign = 'right';
-          ctx.fillText(fmtPct(a.pct) + '%', x + w - 18, iy);
-          setFont('600', 10, 'Manrope'); ctx.fillStyle = '#8089BE';
-          ctx.fillText('R$ ' + f(state.valor * a.pct / 100), x + w - 18, iy + 13);
+          fillRR(x + 20, iy - 11, 4, 25, 2, a.shade || a.color);
+          setFont('700', 14, 'Manrope'); ctx.fillStyle = '#fff'; ctx.textAlign = 'left';
+          ctx.fillText(cut(a.name, 19), x + 34, iy);
+          setFont('500', 11.5, 'Manrope'); ctx.fillStyle = '#6F77A8';
+          ctx.fillText(cut(a.descr, 30), x + 34, iy + 15);
+          setFont('800', 14.5, 'Sora'); ctx.fillStyle = a.shade || a.color; ctx.textAlign = 'right';
+          ctx.fillText(fmtPct(a.pct) + '%', x + w - 20, iy);
+          setFont('600', 11.5, 'Manrope'); ctx.fillStyle = '#8089BE';
+          ctx.fillText('R$ ' + f(state.valor * a.pct / 100), x + w - 20, iy + 15);
           ctx.textAlign = 'left';
-          iy += 29;
+          iy += 34;
         });
         if (extra > 0) {
-          setFont('600', 10.5, 'Manrope'); ctx.fillStyle = '#6F77A8';
-          ctx.fillText('+ ' + extra + (extra > 1 ? ' outros ativos' : ' outro ativo'), x + 30, iy + 2);
+          setFont('600', 12, 'Manrope'); ctx.fillStyle = '#6F77A8';
+          ctx.fillText('+ ' + extra + (extra > 1 ? ' outros ativos' : ' outro ativo'), x + 34, iy + 2);
         }
       }
     });
@@ -9514,62 +9516,64 @@ async function gerarPngCanvasWide() {
       keep.push(anos[anos.length - 1]);
       anos = keep.filter((v, i, arr) => arr.indexOf(v) === i);
     }
-    cards.push({
-      h: 76 + anos.length * 25 + 22,
-      draw: (x, yy, w) => {
-        card(x, yy, w, 76 + anos.length * 25 + 22, 'Marcos da projeção', 'patrimônio · aportado · rendimento');
-        const c1 = x + 18, c4 = x + w - 18;
+    (function(){
+      const x = marcosX, yy = y, w = marcosW;
+      {
+        card(x, yy, w, chartH, 'Marcos da projeção', 'patrimônio · aportado · rendimento acumulado');
+        const c1 = x + 20, c4 = x + w - 20;
         const c2 = x + w * 0.50, c3 = x + w * 0.76;
-        setFont('700', 9, 'Manrope'); ctx.fillStyle = '#6F77A8'; ls('.5px');
-        ctx.textAlign = 'left'; ctx.fillText('ANO', c1, yy + 66);
+        setFont('700', 10.5, 'Manrope'); ctx.fillStyle = '#6F77A8'; ls('.5px');
+        ctx.textAlign = 'left'; ctx.fillText('ANO', c1, yy + 78);
         ctx.textAlign = 'right';
-        ctx.fillText('PATRIMÔNIO', c2, yy + 66);
-        ctx.fillText('APORTADO', c3, yy + 66);
-        ctx.fillText('RENDIM.', c4, yy + 66);
+        ctx.fillText('PATRIMÔNIO', c2, yy + 78);
+        ctx.fillText('APORTADO', c3, yy + 78);
+        ctx.fillText('RENDIM.', c4, yy + 78);
         ls('normal'); ctx.textAlign = 'left';
         ctx.strokeStyle = 'rgba(120,130,210,.18)'; ctx.lineWidth = 1;
-        ctx.beginPath(); ctx.moveTo(c1, yy + 74); ctx.lineTo(c4, yy + 74); ctx.stroke();
-        let ty = yy + 94;
+        ctx.beginPath(); ctx.moveTo(c1, yy + 88); ctx.lineTo(c4, yy + 88); ctx.stroke();
+        const rowStep = Math.min(42, Math.max(28, Math.floor((chartH - 150) / anos.length)));
+        let ty = yy + 130;
         anos.forEach(a => {
           const idx = Math.min(totalMeses, 24 + a * 12);
           const pat = cart[idx], apo = flat[idx], rend = Math.max(0, pat - apo);
-          setFont('700', 11.5, 'Sora'); ctx.fillStyle = '#fff'; ctx.textAlign = 'left';
+          setFont('700', 13.5, 'Sora'); ctx.fillStyle = '#fff'; ctx.textAlign = 'left';
           ctx.fillText(a + (a === 1 ? ' ano' : ' anos'), c1, ty);
           ctx.textAlign = 'right';
-          setFont('700', 11.5, 'Manrope'); ctx.fillStyle = '#FF8B52';
+          setFont('700', 13.5, 'Manrope'); ctx.fillStyle = '#FF8B52';
           ctx.fillText('R$ ' + f(pat), c2, ty);
-          setFont('600', 11, 'Manrope'); ctx.fillStyle = '#A9B0D6';
+          setFont('600', 13, 'Manrope'); ctx.fillStyle = '#A9B0D6';
           ctx.fillText('R$ ' + f(apo), c3, ty);
           ctx.fillStyle = '#2BD9A6';
           ctx.fillText('R$ ' + f(rend), c4, ty);
           ctx.textAlign = 'left';
-          ty += 25;
+          ty += rowStep;
         });
       }
-    });
+    })();
   }
+  y += chartH + GAP;
 
   {
     let lc = null; try { lc = lifeCycle(); } catch (e) { lc = null; }
     if (lc) {
       cards.push({
-        h: 226,
+        h: 280,
         draw: (x, yy, w) => {
-          card(x, yy, w, 226, 'Aposentadoria', 'R$ de hoje · retorno real ' + fmtBRdec.format(lc.r * 100) + '% a.a.');
-          const lx = x + 18, lw = w - 36;
-          let ly = yy + 74;
-          linha(lx, lw, ly, 'Idade atual', lc.i0 + ' anos'); ly += 23;
-          linha(lx, lw, ly, 'Aposentadoria', lc.iA + ' anos (em ' + lc.T + (lc.T === 1 ? ' ano' : ' anos') + ')'); ly += 23;
-          linha(lx, lw, ly, 'Patrimônio na aposentadoria', 'R$ ' + f(lc.pAtualApos), '#FF8B52'); ly += 23;
-          linha(lx, lw, ly, 'Renda desejada', state.rendaMensal > 0 ? 'R$ ' + f(state.rendaMensal) + '/mês' : '—'); ly += 23;
-          linha(lx, lw, ly, 'Aporte p/ consumir', 'R$ ' + f(lc.aporteConsumoMensal) + '/mês'); ly += 23;
-          linha(lx, lw, ly, 'Aporte p/ preservar', 'R$ ' + f(lc.aportePreservMensal) + '/mês'); ly += 26;
+          card(x, yy, w, 280, 'Aposentadoria', 'R$ de hoje · retorno real ' + fmtBRdec.format(lc.r * 100) + '% a.a.');
+          const lx = x + 20, lw = w - 40;
+          let ly = yy + 88;
+          linha(lx, lw, ly, 'Idade atual', lc.i0 + ' anos'); ly += 27;
+          linha(lx, lw, ly, 'Aposentadoria', lc.iA + ' anos (em ' + lc.T + (lc.T === 1 ? ' ano' : ' anos') + ')'); ly += 27;
+          linha(lx, lw, ly, 'Patrimônio na data', 'R$ ' + f(lc.pAtualApos), '#FF8B52'); ly += 27;
+          linha(lx, lw, ly, 'Renda desejada', state.rendaMensal > 0 ? 'R$ ' + f(state.rendaMensal) + '/mês' : '—'); ly += 27;
+          linha(lx, lw, ly, 'Aporte p/ consumir', 'R$ ' + f(lc.aporteConsumoMensal) + '/mês'); ly += 27;
+          linha(lx, lw, ly, 'Aporte p/ preservar', 'R$ ' + f(lc.aportePreservMensal) + '/mês'); ly += 30;
           const sc2 = lc.statusColor || [43, 180, 120];
           const scHex = 'rgb(' + sc2[0] + ',' + sc2[1] + ',' + sc2[2] + ')';
-          fillRR(lx, ly - 12, lw, 28, 9, 'rgba(' + sc2[0] + ',' + sc2[1] + ',' + sc2[2] + ',.12)');
-          strokeRR(lx, ly - 12, lw, 28, 9, scHex, 1);
-          setFont('700', 11, 'Manrope'); ctx.fillStyle = scHex; ctx.textAlign = 'left';
-          ctx.fillText(cut(lc.status, 40), lx + 11, ly + 6);
+          fillRR(lx, ly - 14, lw, 34, 9, 'rgba(' + sc2[0] + ',' + sc2[1] + ',' + sc2[2] + ',.12)');
+          strokeRR(lx, ly - 14, lw, 34, 9, scHex, 1);
+          setFont('700', 12.5, 'Manrope'); ctx.fillStyle = scHex; ctx.textAlign = 'left';
+          ctx.fillText(cut(lc.status, 34), lx + 13, ly + 8);
         }
       });
     }
@@ -9582,24 +9586,24 @@ async function gerarPngCanvasWide() {
     const extra = objs.length - shown.length;
     const totalObj = objs.reduce((s, o) => s + (Number(o.valor) || 0), 0);
     cards.push({
-      h: 62 + shown.length * 29 + (extra > 0 ? 20 : 0) + 14,
+      h: 74 + shown.length * 34 + (extra > 0 ? 24 : 0) + 16,
       draw: (x, yy, w) => {
-        card(x, yy, w, 62 + shown.length * 29 + (extra > 0 ? 20 : 0) + 14, 'Objetivos futuros', 'R$ ' + f(totalObj) + ' em compras planejadas');
-        let oy = yy + 76;
+        card(x, yy, w, 74 + shown.length * 34 + (extra > 0 ? 24 : 0) + 16, 'Objetivos futuros', 'R$ ' + f(totalObj) + ' em compras planejadas');
+        let oy = yy + 88;
         shown.forEach(o => {
           const ic = o.tipo === 'Carro' ? '🚗' : o.tipo === 'Viagem' ? '✈️' : o.tipo === 'Imóvel' ? '🏠' : '🎯';
-          setFont('700', 12, 'Manrope'); ctx.fillStyle = '#fff'; ctx.textAlign = 'left';
-          ctx.fillText(ic + '  ' + cut(o.descricao || o.tipo, 20), x + 18, oy);
-          setFont('500', 10, 'Manrope'); ctx.fillStyle = '#6F77A8';
-          ctx.fillText('em ' + (Number(o.ano) || 0) + ((Number(o.ano) || 0) === 1 ? ' ano' : ' anos'), x + 18, oy + 13);
-          setFont('800', 12.5, 'Sora'); ctx.fillStyle = '#F5B942'; ctx.textAlign = 'right';
-          ctx.fillText('R$ ' + f(Number(o.valor) || 0), x + w - 18, oy);
+          setFont('700', 14, 'Manrope'); ctx.fillStyle = '#fff'; ctx.textAlign = 'left';
+          ctx.fillText(ic + '  ' + cut(o.descricao || o.tipo, 17), x + 20, oy);
+          setFont('500', 11.5, 'Manrope'); ctx.fillStyle = '#6F77A8';
+          ctx.fillText('em ' + (Number(o.ano) || 0) + ((Number(o.ano) || 0) === 1 ? ' ano' : ' anos'), x + 20, oy + 15);
+          setFont('800', 14.5, 'Sora'); ctx.fillStyle = '#F5B942'; ctx.textAlign = 'right';
+          ctx.fillText('R$ ' + f(Number(o.valor) || 0), x + w - 20, oy);
           ctx.textAlign = 'left';
-          oy += 29;
+          oy += 34;
         });
         if (extra > 0) {
-          setFont('600', 10.5, 'Manrope'); ctx.fillStyle = '#6F77A8';
-          ctx.fillText('+ ' + extra + (extra > 1 ? ' outros objetivos' : ' outro objetivo'), x + 18, oy + 2);
+          setFont('600', 12, 'Manrope'); ctx.fillStyle = '#6F77A8';
+          ctx.fillText('+ ' + extra + (extra > 1 ? ' outros objetivos' : ' outro objetivo'), x + 20, oy + 2);
         }
       }
     });
@@ -9611,14 +9615,14 @@ async function gerarPngCanvasWide() {
     const patProj = finalCart + totExt + totImo;
     const patHoje = state.valor + totExt + totImo;
     cards.push({
-      h: 206,
+      h: 250,
       draw: (x, yy, w) => {
-        card(x, yy, w, 206, 'Patrimônio consolidado', 'Rico + outras instituições + imobilizado');
-        setFont('700', 10, 'Manrope'); ctx.fillStyle = '#A9B0D6'; ls('1.2px');
-        ctx.fillText('PROJETADO EM ' + state.prazoAnos + (state.prazoAnos === 1 ? ' ANO' : ' ANOS'), x + 18, yy + 72); ls('normal');
-        setFont('800', 27, 'Sora'); ctx.fillStyle = '#FF6B2C';
-        ctx.fillText('R$ ' + f(patProj), x + 18, yy + 104);
-        const bx2 = x + 18, bw2 = w - 36, bh2 = 11, by2 = yy + 118;
+        card(x, yy, w, 250, 'Patrimônio consolidado', 'Rico + outras instituições + imobilizado');
+        setFont('700', 11.5, 'Manrope'); ctx.fillStyle = '#A9B0D6'; ls('1.2px');
+        ctx.fillText('PROJETADO EM ' + state.prazoAnos + (state.prazoAnos === 1 ? ' ANO' : ' ANOS'), x + 20, yy + 84); ls('normal');
+        setFont('800', 31, 'Sora'); ctx.fillStyle = '#FF6B2C';
+        ctx.fillText('R$ ' + f(patProj), x + 20, yy + 120);
+        const bx2 = x + 20, bw2 = w - 40, bh2 = 12, by2 = yy + 136;
         const pInv = patProj > 0 ? finalCart / patProj : 1;
         const pExt = patProj > 0 ? totExt / patProj : 0;
         ctx.save(); rr(bx2, by2, bw2, bh2, 6); ctx.clip();
@@ -9626,10 +9630,10 @@ async function gerarPngCanvasWide() {
         ctx.fillStyle = '#9B6BFF'; ctx.fillRect(bx2 + bw2 * pInv, by2, bw2 * pExt, bh2);
         ctx.fillStyle = '#FF4E00'; ctx.fillRect(bx2 + bw2 * (pInv + pExt), by2, bw2 * (1 - pInv - pExt), bh2);
         ctx.restore();
-        let py = yy + 150;
-        linha(bx2, bw2, py, '● Investimentos Rico', 'R$ ' + f(finalCart), '#5B8DEF'); py += 19;
-        linha(bx2, bw2, py, '● Outras instituições', 'R$ ' + f(totExt), '#9B6BFF'); py += 19;
-        linha(bx2, bw2, py, '● Imobilizado', 'R$ ' + f(totImo), '#FF6B2C'); py += 19;
+        let py = yy + 178;
+        linha(bx2, bw2, py, '● Investimentos Rico', 'R$ ' + f(finalCart), '#5B8DEF'); py += 23;
+        linha(bx2, bw2, py, '● Outras instituições', 'R$ ' + f(totExt), '#9B6BFF'); py += 23;
+        linha(bx2, bw2, py, '● Imobilizado', 'R$ ' + f(totImo), '#FF6B2C'); py += 23;
         linha(bx2, bw2, py, 'Patrimônio hoje', 'R$ ' + f(patHoje), '#A9B0D6');
       }
     });
@@ -9638,19 +9642,19 @@ async function gerarPngCanvasWide() {
   {
     const modo = state.aporteMode === 'rendadespesa' ? 'renda − despesa' : 'valor direto';
     cards.push({
-      h: 192,
+      h: 244,
       draw: (x, yy, w) => {
-        card(x, yy, w, 192, 'Premissas do estudo', '');
-        const lx = x + 18, lw = w - 36;
-        let ly = yy + 60;
-        linha(lx, lw, ly, 'CDI considerado', (state.cdiAnual != null && state.cdiAnual > 0) ? (fmtBRdec.format(state.cdiAnual) + '% a.a.') : 'curva histórica'); ly += 23;
-        linha(lx, lw, ly, 'IPCA considerado', fmtPct(state.ipca) + '% a.a.'); ly += 23;
-        linha(lx, lw, ly, 'Rentabilidade', rentLabel(), '#FF8B52'); ly += 23;
-        linha(lx, lw, ly, 'Aporte mensal', (aporteEfetivo() > 0 ? 'R$ ' + f(aporteEfetivo()) : '—')); ly += 23;
-        linha(lx, lw, ly, 'Forma do aporte', modo); ly += 23;
-        linha(lx, lw, ly, 'Horizonte', state.prazoAnos + (state.prazoAnos === 1 ? ' ano' : ' anos')); ly += 20;
-        setFont('500', 10, 'Manrope'); ctx.fillStyle = '#6F77A8'; ctx.textAlign = 'left';
-        wrapTextCanvas(ctx, 'Valores brutos, sem dedução de IR ou taxas.', lx, ly + 10, lw, 13);
+        card(x, yy, w, 244, 'Premissas do estudo', '');
+        const lx = x + 20, lw = w - 40;
+        let ly = yy + 72;
+        linha(lx, lw, ly, 'CDI considerado', (state.cdiAnual != null && state.cdiAnual > 0) ? (fmtBRdec.format(state.cdiAnual) + '% a.a.') : 'curva histórica'); ly += 27;
+        linha(lx, lw, ly, 'IPCA considerado', fmtPct(state.ipca) + '% a.a.'); ly += 27;
+        linha(lx, lw, ly, 'Rentabilidade', rentLabel(), '#FF8B52'); ly += 27;
+        linha(lx, lw, ly, 'Aporte mensal', (aporteEfetivo() > 0 ? 'R$ ' + f(aporteEfetivo()) : '—')); ly += 27;
+        linha(lx, lw, ly, 'Forma do aporte', modo); ly += 27;
+        linha(lx, lw, ly, 'Horizonte', state.prazoAnos + (state.prazoAnos === 1 ? ' ano' : ' anos')); ly += 24;
+        setFont('500', 11.5, 'Manrope'); ctx.fillStyle = '#6F77A8'; ctx.textAlign = 'left';
+        wrapTextCanvas(ctx, 'Valores brutos, sem dedução de IR ou taxas.', lx, ly + 12, lw, 15);
       }
     });
   }
@@ -9674,11 +9678,11 @@ async function gerarPngCanvasWide() {
     if (marcados.length === 0) { ptxt = '⚠️ Patrimônio ainda sem proteção — vale conversarmos sobre isso'; pcol = '#FF6B2C'; prgb = '255,107,44'; }
     else if (temWhole) { ptxt = '🛡️ Patrimônio protegido com Whole Life — a cobertura mais completa'; pcol = '#2BD9A6'; prgb = '43,217,166'; }
     else { ptxt = '🛡️ Patrimônio protegido · ' + marcados.map(p => p.name).join(', '); pcol = '#2BD9A6'; prgb = '43,217,166'; }
-    const hh = 56, hw = (IW - GAP) / 2;
+    const hh = 64, hw = (IW - GAP) / 2;
     fillRR(PAD, y, hw, hh, 12, 'rgba(' + prgb + ',.10)');
     strokeRR(PAD, y, hw, hh, 12, pcol, 1);
-    setFont('700', 13.5, 'Manrope'); ctx.fillStyle = pcol; ctx.textAlign = 'left';
-    ctx.fillText(cut(ptxt, 80), PAD + 20, y + 34);
+    setFont('700', 15.5, 'Manrope'); ctx.fillStyle = pcol; ctx.textAlign = 'left';
+    ctx.fillText(cut(ptxt, 72), PAD + 22, y + 39);
 
     const _totImoS = state.imoveis.reduce((s, i) => s + (Number(i.valor) || 0), 0);
     const _totExtS = state.externos.reduce((s, i) => s + (Number(i.valor) || 0), 0);
@@ -9687,16 +9691,16 @@ async function gerarPngCanvasWide() {
     const sx2 = PAD + hw + GAP;
     fillRR(sx2, y, hw, hh, 12, 'rgba(255,107,44,.08)');
     strokeRR(sx2, y, hw, hh, 12, 'rgba(255,107,44,.4)', 1);
-    setFont('700', 13, 'Manrope'); ctx.fillStyle = '#FF8B52';
-    ctx.fillText('Custo estimado de sucessão (≈ 20%): R$ ' + f(_custoS), sx2 + 20, y + 25);
-    setFont('500', 10.5, 'Manrope'); ctx.fillStyle = '#A9B0D6';
-    ctx.fillText('Sobre patrimônio total de R$ ' + f(_patTotS) + ' · ITCMD varia por estado (2%–8%) + inventário e honorários.', sx2 + 20, y + 43);
+    setFont('700', 15, 'Manrope'); ctx.fillStyle = '#FF8B52';
+    ctx.fillText('Custo estimado de sucessão (≈ 20%): R$ ' + f(_custoS), sx2 + 22, y + 28);
+    setFont('500', 12, 'Manrope'); ctx.fillStyle = '#A9B0D6';
+    ctx.fillText('Sobre patrimônio total de R$ ' + f(_patTotS) + ' · ITCMD varia por estado (2%–8%) + inventário e honorários.', sx2 + 22, y + 49);
     y += hh + 18;
   }
 
-  setFont('500', 10.5, 'Manrope'); ctx.fillStyle = '#6F77A8'; ctx.textAlign = 'left';
+  setFont('500', 12, 'Manrope'); ctx.fillStyle = '#6F77A8'; ctx.textAlign = 'left';
   const disc = 'Simulação ilustrativa baseada no CDI histórico recente e na média de longo prazo. Valores brutos, sem considerar impostos ou taxas. Não constitui oferta ou garantia de rentabilidade — rentabilidade passada não garante resultados futuros.';
-  y = wrapTextCanvas(ctx, disc, PAD, y + 6, IW - 140, 15) + 14;
+  y = wrapTextCanvas(ctx, disc, PAD, y + 8, IW - 160, 17) + 16;
   setFont('800', 17, 'Sora'); ctx.fillStyle = '#FF4E00'; ctx.textAlign = 'right';
   ctx.fillText('rico', W - PAD, y); ctx.textAlign = 'left';
   y += 16;
@@ -9761,7 +9765,7 @@ document.getElementById('btnExportWide').addEventListener('click', async () => {
       ? '-' + state.nomeCliente.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
       : '';
     const filename = `plano-rico-expandido${slug}-${ts}.png`;
-    window.mostrarPngModal(dataUrl, filename, { accent:'#F26522' });
+    window.mostrarPngModal(dataUrl, filename, { accent:'#F26522', wide:true, hint:'Plano expandido — baixe ou copie a imagem para enviar ao cliente.' });
     showToast('✓ Plano expandido gerado!');
   } catch (err) {
     console.error(err);
