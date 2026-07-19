@@ -9289,8 +9289,8 @@ async function gerarPngCanvasWide() {
   const nome = state.nomeCliente || '';
   const hoje = new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
 
-  const SC = 2, W = 1600, PAD = 48, IW = W - PAD * 2, HMAX = 2600;
-  const GAP = 20, COLW = Math.floor((IW - GAP * 2) / 3);
+  const SC = 2, W = 1920, PAD = 52, IW = W - PAD * 2, HMAX = 2600;
+  const GAP = 20, NCOL = 4, COLW = Math.floor((IW - GAP * (NCOL - 1)) / NCOL);
   const big = document.createElement('canvas');
   big.width = W * SC; big.height = HMAX * SC;
   const ctx = big.getContext('2d');
@@ -9317,13 +9317,13 @@ async function gerarPngCanvasWide() {
     fillRR(x, yy, w, h, 16, 'rgba(28,36,112,.35)');
     strokeRR(x, yy, w, h, 16, 'rgba(120,130,210,.18)', 1);
     ctx.textAlign = 'left';
-    if (titulo) { setFont('700', 15, 'Sora'); ctx.fillStyle = '#fff'; ctx.fillText(titulo, x + 20, yy + 28); }
-    if (sub) { setFont('600', 11, 'Manrope'); ctx.fillStyle = '#8089BE'; ctx.fillText(sub, x + 20, yy + 46); }
+    if (titulo) { setFont('700', 14.5, 'Sora'); ctx.fillStyle = '#fff'; ctx.fillText(cut(titulo, 30), x + 18, yy + 28); }
+    if (sub) { setFont('600', 10.5, 'Manrope'); ctx.fillStyle = '#8089BE'; ctx.fillText(cut(sub, 46), x + 18, yy + 45); }
   };
-  const linha = (x, w, yy, rotulo, valor, corValor, tamanho) => {
-    setFont('600', tamanho || 12.5, 'Manrope'); ctx.fillStyle = '#A9B0D6'; ctx.textAlign = 'left';
+  const linha = (x, w, yy, rotulo, valor, corValor, tam) => {
+    setFont('600', tam || 11.5, 'Manrope'); ctx.fillStyle = '#A9B0D6'; ctx.textAlign = 'left';
     ctx.fillText(rotulo, x, yy);
-    setFont('700', tamanho || 12.5, 'Manrope'); ctx.fillStyle = corValor || '#fff'; ctx.textAlign = 'right';
+    setFont('700', tam || 11.5, 'Manrope'); ctx.fillStyle = corValor || '#fff'; ctx.textAlign = 'right';
     ctx.fillText(valor, x + w, yy);
     ctx.textAlign = 'left';
   };
@@ -9338,45 +9338,41 @@ async function gerarPngCanvasWide() {
   fillRR(PAD, y, IW, 5, 2.5, ob);
   y += 30;
 
-  // ---------- cabecalho ----------
   setFont('800', 38, 'Sora'); ctx.fillStyle = '#FF4E00'; ctx.textAlign = 'left';
   ctx.fillText('rico', PAD, y + 32);
+  if (nome) {
+    setFont('600', 12.5, 'Manrope'); ctx.fillStyle = '#A9B0D6'; ls('.5px');
+    ctx.fillText('Preparado especialmente para', PAD + 130, y + 14); ls('normal');
+    setFont('800', 26, 'Sora'); ctx.fillStyle = '#fff';
+    ctx.fillText(cut(nome, 40), PAD + 130, y + 40);
+  } else {
+    setFont('800', 24, 'Sora'); ctx.fillStyle = '#fff';
+    ctx.fillText('Plano de Investimentos Personalizado', PAD + 130, y + 34);
+  }
   ctx.textAlign = 'right';
   setFont('800', 12, 'Manrope'); ls('3px'); ctx.fillStyle = '#FF4E00';
-  ctx.fillText('PLANO DE INVESTIMENTOS · VISÃO EXPANDIDA', W - PAD, y + 13); ls('normal');
+  ctx.fillText('PLANO DE INVESTIMENTOS · VISÃO EXPANDIDA', W - PAD, y + 14); ls('normal');
   setFont('500', 12.5, 'Manrope'); ctx.fillStyle = '#6F77A8';
-  ctx.fillText(hoje, W - PAD, y + 33);
+  ctx.fillText(hoje, W - PAD, y + 36);
   ctx.textAlign = 'left';
-  y += 52;
+  y += 62;
 
-  if (nome) {
-    setFont('600', 13, 'Manrope'); ctx.fillStyle = '#A9B0D6'; ls('.5px');
-    ctx.fillText('Preparado especialmente para', PAD, y + 12); ls('normal');
-    setFont('800', 32, 'Sora'); ctx.fillStyle = '#fff';
-    ctx.fillText(nome, PAD, y + 46);
-    y += 66;
-  } else {
-    setFont('800', 28, 'Sora'); ctx.fillStyle = '#fff';
-    ctx.fillText('Plano de Investimentos Personalizado', PAD, y + 30);
-    y += 52;
-  }
-
-  // ---------- hero: projecao + premissas rapidas ----------
-  const heroH = 150, heroLW = Math.round(IW * 0.44);
+  // ---------- hero ----------
+  const heroH = 140, heroLW = Math.round(IW * 0.36);
   const gb = ctx.createLinearGradient(PAD, y, PAD + heroLW, y + heroH);
   gb.addColorStop(0, 'rgba(255,78,0,.16)'); gb.addColorStop(1, 'rgba(255,107,44,.05)');
   fillRR(PAD, y, heroLW, heroH, 18, gb);
   strokeRR(PAD, y, heroLW, heroH, 18, 'rgba(255,78,0,.3)', 1);
-  setFont('700', 12, 'Manrope'); ctx.fillStyle = '#A9B0D6'; ls('1.5px');
-  ctx.fillText('PROJEÇÃO PARA ' + state.prazoAnos + (state.prazoAnos === 1 ? ' ANO' : ' ANOS'), PAD + 30, y + 34); ls('normal');
-  setFont('800', 46, 'Sora'); ctx.fillStyle = '#FF6B2C';
-  ctx.fillText('R$ ' + f(finalCart), PAD + 30, y + 90);
-  setFont('700', 15, 'Manrope'); ctx.fillStyle = '#2BD9A6';
+  setFont('700', 11.5, 'Manrope'); ctx.fillStyle = '#A9B0D6'; ls('1.5px');
+  ctx.fillText('PROJEÇÃO PARA ' + state.prazoAnos + (state.prazoAnos === 1 ? ' ANO' : ' ANOS'), PAD + 28, y + 32); ls('normal');
+  setFont('800', 44, 'Sora'); ctx.fillStyle = '#FF6B2C';
+  ctx.fillText('R$ ' + f(finalCart), PAD + 28, y + 86);
+  setFont('700', 14, 'Manrope'); ctx.fillStyle = '#2BD9A6';
   const t1 = '+ R$ ' + f(delta) + ' acima do CDI';
-  ctx.fillText(t1, PAD + 30, y + 122);
+  ctx.fillText(t1, PAD + 28, y + 116);
   const w1 = ctx.measureText(t1).width;
   ctx.fillStyle = '#A9B0D6';
-  ctx.fillText('   (' + (deltaPct >= 0 ? '+' : '') + fmtBRdec.format(deltaPct) + '% ao final)', PAD + 30 + w1, y + 122);
+  ctx.fillText('   (' + (deltaPct >= 0 ? '+' : '') + fmtBRdec.format(deltaPct) + '% ao final)', PAD + 28 + w1, y + 116);
 
   const stats = [
     ['INVESTIMENTO INICIAL', 'R$ ' + f(state.valor)],
@@ -9384,15 +9380,16 @@ async function gerarPngCanvasWide() {
     ['RENTABILIDADE', rentLabel()],
     ['PRAZO', state.prazoAnos + (state.prazoAnos === 1 ? ' ano' : ' anos')],
   ];
-  const stX = PAD + heroLW + GAP, stW = (IW - heroLW - GAP - GAP) / 2, stH = (heroH - GAP) / 2;
+  const stX = PAD + heroLW + GAP, stTotW = IW - heroLW - GAP;
+  const stW = (stTotW - GAP * 3) / 4;
   stats.forEach((s, i) => {
-    const sx = stX + (i % 2) * (stW + GAP), sy = y + Math.floor(i / 2) * (stH + GAP);
-    fillRR(sx, sy, stW, stH, 12, 'rgba(255,255,255,.04)');
-    strokeRR(sx, sy, stW, stH, 12, 'rgba(120,130,210,.18)', 1);
+    const sx = stX + i * (stW + GAP);
+    fillRR(sx, y, stW, heroH, 12, 'rgba(255,255,255,.04)');
+    strokeRR(sx, y, stW, heroH, 12, 'rgba(120,130,210,.18)', 1);
     setFont('700', 9.5, 'Manrope'); ctx.fillStyle = '#A9B0D6'; ls('.6px');
-    ctx.fillText(s[0], sx + 16, sy + 26); ls('normal');
-    setFont('800', 19, 'Sora'); ctx.fillStyle = '#fff';
-    ctx.fillText(s[1], sx + 16, sy + 52);
+    ctx.fillText(s[0], sx + 18, y + 34); ls('normal');
+    setFont('800', 22, 'Sora'); ctx.fillStyle = '#fff';
+    ctx.fillText(cut(s[1], 18), sx + 18, y + 72);
   });
   y += heroH + GAP;
 
@@ -9413,36 +9410,34 @@ async function gerarPngCanvasWide() {
       txt = '🎯 Renda de R$ ' + valorAmigavel(state.rendaMensal) + '/mês — ' + fmtBRdec.format(pct) + '% do patrimônio em ' + state.prazoAnos + ' anos';
       col = '#F5B942'; rgb = '245,185,66';
     }
-    const mh = 48, mw = (IW - GAP) / 2;
+    const mh = 46, mw = (IW - GAP) / 2;
     fillRR(PAD, y, mw, mh, 12, 'rgba(' + rgb + ',.10)');
     strokeRR(PAD, y, mw, mh, 12, col, 1);
-    setFont('700', 13.5, 'Manrope'); ctx.fillStyle = col;
-    ctx.fillText(txt, PAD + 18, y + 29);
+    setFont('700', 13, 'Manrope'); ctx.fillStyle = col;
+    ctx.fillText(txt, PAD + 18, y + 28);
     fillRR(PAD + mw + GAP, y, mw, mh, 12, 'rgba(245,185,66,.08)');
     strokeRR(PAD + mw + GAP, y, mw, mh, 12, 'rgba(245,185,66,.3)', 1);
     setFont('700', 12.5, 'Manrope'); ctx.fillStyle = '#F5B942';
-    ctx.fillText('💰 Patrimônio necessário: R$ ' + f(objBase) + ' hoje · R$ ' + f(objFim) + ' corrigido por IPCA em ' + state.prazoAnos + (state.prazoAnos === 1 ? ' ano' : ' anos'), PAD + mw + GAP + 18, y + 29);
+    ctx.fillText('💰 Patrimônio necessário: R$ ' + f(objBase) + ' hoje · R$ ' + f(objFim) + ' corrigido por IPCA em ' + state.prazoAnos + (state.prazoAnos === 1 ? ' ano' : ' anos'), PAD + mw + GAP + 18, y + 28);
     y += mh + GAP;
   }
 
   // ---------- grafico ----------
   const dispPNG = dadosExibicao();
-  const chartH = 330;
-  card(PAD, y, IW, chartH, 'Evolução do patrimônio', dispPNG.adj ? ('em R$ de hoje · IPCA ' + fmtPct(state.ipca) + '% a.a.') : '');
+  const chartH = 300;
+  card(PAD, y, IW, chartH, 'Evolução do patrimônio', dispPNG.adj ? ('em R$ de hoje · IPCA ' + fmtPct(state.ipca) + '% a.a.') : 'histórico dos últimos 24 meses + projeção');
   ctx.textAlign = 'right';
   setFont('600', 11.5, 'Manrope');
-  ctx.fillStyle = '#FF6B2C'; ctx.fillText('■ Sua carteira', PAD + IW - 320, y + 28);
-  ctx.fillStyle = '#5B8DEF'; ctx.fillText('■ CDI 100%', PAD + IW - 210, y + 28);
+  ctx.fillStyle = '#FF6B2C'; ctx.fillText('■ Sua carteira', PAD + IW - 330, y + 28);
+  ctx.fillStyle = '#5B8DEF'; ctx.fillText('■ CDI 100%', PAD + IW - 218, y + 28);
   ctx.fillStyle = '#F5B942'; ctx.fillText('■ Patrimônio-alvo', PAD + IW - 110, y + 28);
   ctx.textAlign = 'left';
-  desenharGraficoCanvas(ctx, PAD + 18, y + 52, IW - 36, chartH - 72, dispPNG);
+  desenharGraficoCanvas(ctx, PAD + 18, y + 54, IW - 36, chartH - 74, dispPNG);
   y += chartH + GAP;
 
-  const colTop = y;
-  const cX = [PAD, PAD + COLW + GAP, PAD + (COLW + GAP) * 2];
-  let cY = [colTop, colTop, colTop];
+  // ================= cards em colunas (distribuidos pela altura) =================
+  const cards = [];
 
-  // ================= COLUNA 1: carteira =================
   const catMap = {}; const catOrder = [];
   state.alocacao.forEach(a => {
     if (a.pct <= 0) return;
@@ -9450,64 +9445,65 @@ async function gerarPngCanvasWide() {
     catMap[a.cat].pct += a.pct;
   });
   const somaCarteira = catOrder.reduce((s, c) => s + catMap[c].pct, 0);
-  {
-    const h = Math.max(220, 190 + catOrder.length * 22);
-    card(cX[0], cY[0], COLW, h, 'Composição da carteira', 'distribuição por classe de ativo');
-    const dcx = cX[0] + COLW / 2, dcy = cY[0] + 128, dr = 54, dlw = 22;
-    desenharDonutCanvas(ctx, dcx, dcy, dr, dlw);
-    ctx.textAlign = 'center';
-    setFont('700', 9, 'Manrope'); ctx.fillStyle = '#A9B0D6'; ls('.8px');
-    ctx.fillText('TOTAL', dcx, dcy - 6); ls('normal');
-    setFont('800', 17, 'Sora'); ctx.fillStyle = '#fff';
-    ctx.fillText('R$ ' + valorAmigavel(state.valor), dcx, dcy + 16);
-    ctx.textAlign = 'left';
-    let ry = cY[0] + 208;
-    catOrder.forEach(cat => {
-      const c = catMap[cat];
-      fillRR(cX[0] + 20, ry - 9, 11, 11, 3, c.color);
-      setFont('600', 13, 'Manrope'); ctx.fillStyle = '#fff';
-      ctx.fillText(cut(cat, 26), cX[0] + 40, ry);
-      setFont('800', 13.5, 'Sora'); ctx.fillStyle = c.color; ctx.textAlign = 'right';
-      ctx.fillText(fmtPct(c.pct) + '%', cX[0] + COLW - 20, ry); ctx.textAlign = 'left';
-      ry += 22;
-    });
-    if (Math.round(somaCarteira * 10) !== 1000) {
-      setFont('600', 11, 'Manrope'); ctx.fillStyle = '#F5B942';
-      ctx.fillText('Total alocado: ' + fmtPct(somaCarteira) + '%', cX[0] + 40, ry + 2);
-    }
-    cY[0] += h + GAP;
-  }
-  // ativos detalhados
-  {
-    const itens = state.alocacao.filter(a => a.pct > 0);
-    if (itens.length) {
-      const MAX = 16;
-      const shown = itens.slice(0, MAX), extra = itens.length - shown.length;
-      const h = 64 + shown.length * 30 + (extra > 0 ? 20 : 0) + 12;
-      card(cX[0], cY[0], COLW, h, 'Ativos da carteira', itens.length + (itens.length > 1 ? ' posições' : ' posição'));
-      let iy = cY[0] + 76;
-      shown.forEach(a => {
-        fillRR(cX[0] + 20, iy - 9, 4, 22, 2, a.shade || a.color);
-        setFont('700', 12.5, 'Manrope'); ctx.fillStyle = '#fff'; ctx.textAlign = 'left';
-        ctx.fillText(cut(a.name, 30), cX[0] + 32, iy);
-        setFont('500', 10.5, 'Manrope'); ctx.fillStyle = '#6F77A8';
-        ctx.fillText(cut(a.descr, 44), cX[0] + 32, iy + 14);
-        setFont('800', 13, 'Sora'); ctx.fillStyle = a.shade || a.color; ctx.textAlign = 'right';
-        ctx.fillText(fmtPct(a.pct) + '%', cX[0] + COLW - 20, iy);
-        setFont('600', 10.5, 'Manrope'); ctx.fillStyle = '#8089BE';
-        ctx.fillText('R$ ' + f(state.valor * a.pct / 100), cX[0] + COLW - 20, iy + 14);
-        ctx.textAlign = 'left';
-        iy += 30;
+  cards.push({
+    h: Math.max(210, 186 + catOrder.length * 22),
+    draw: (x, yy, w, h) => {
+      card(x, yy, w, h, 'Composição da carteira', 'por classe de ativo');
+      const dcx = x + w / 2, dcy = yy + 122, dr = 50, dlw = 20;
+      desenharDonutCanvas(ctx, dcx, dcy, dr, dlw);
+      ctx.textAlign = 'center';
+      setFont('700', 8.5, 'Manrope'); ctx.fillStyle = '#A9B0D6'; ls('.8px');
+      ctx.fillText('TOTAL', dcx, dcy - 5); ls('normal');
+      setFont('800', 16, 'Sora'); ctx.fillStyle = '#fff';
+      ctx.fillText('R$ ' + valorAmigavel(state.valor), dcx, dcy + 15);
+      ctx.textAlign = 'left';
+      let ry = yy + 198;
+      catOrder.forEach(cat => {
+        const c = catMap[cat];
+        fillRR(x + 18, ry - 9, 10, 10, 3, c.color);
+        setFont('600', 12.5, 'Manrope'); ctx.fillStyle = '#fff';
+        ctx.fillText(cut(cat, 22), x + 36, ry);
+        setFont('800', 13, 'Sora'); ctx.fillStyle = c.color; ctx.textAlign = 'right';
+        ctx.fillText(fmtPct(c.pct) + '%', x + w - 18, ry); ctx.textAlign = 'left';
+        ry += 22;
       });
-      if (extra > 0) {
-        setFont('600', 11, 'Manrope'); ctx.fillStyle = '#6F77A8';
-        ctx.fillText('+ ' + extra + (extra > 1 ? ' outros ativos' : ' outro ativo'), cX[0] + 32, iy + 2);
+      if (Math.round(somaCarteira * 10) !== 1000) {
+        setFont('600', 10.5, 'Manrope'); ctx.fillStyle = '#F5B942';
+        ctx.fillText('Total alocado: ' + fmtPct(somaCarteira) + '%', x + 36, ry + 2);
       }
-      cY[0] += h + GAP;
     }
+  });
+
+  const itens = state.alocacao.filter(a => a.pct > 0);
+  if (itens.length) {
+    const MAX = 14;
+    const shown = itens.slice(0, MAX), extra = itens.length - shown.length;
+    cards.push({
+      h: 62 + shown.length * 29 + (extra > 0 ? 20 : 0) + 12,
+      draw: (x, yy, w) => {
+        card(x, yy, w, 62 + shown.length * 29 + (extra > 0 ? 20 : 0) + 12, 'Ativos da carteira', itens.length + (itens.length > 1 ? ' posições' : ' posição'));
+        let iy = yy + 76;
+        shown.forEach(a => {
+          fillRR(x + 18, iy - 9, 4, 21, 2, a.shade || a.color);
+          setFont('700', 12, 'Manrope'); ctx.fillStyle = '#fff'; ctx.textAlign = 'left';
+          ctx.fillText(cut(a.name, 22), x + 30, iy);
+          setFont('500', 10, 'Manrope'); ctx.fillStyle = '#6F77A8';
+          ctx.fillText(cut(a.descr, 34), x + 30, iy + 13);
+          setFont('800', 12.5, 'Sora'); ctx.fillStyle = a.shade || a.color; ctx.textAlign = 'right';
+          ctx.fillText(fmtPct(a.pct) + '%', x + w - 18, iy);
+          setFont('600', 10, 'Manrope'); ctx.fillStyle = '#8089BE';
+          ctx.fillText('R$ ' + f(state.valor * a.pct / 100), x + w - 18, iy + 13);
+          ctx.textAlign = 'left';
+          iy += 29;
+        });
+        if (extra > 0) {
+          setFont('600', 10.5, 'Manrope'); ctx.fillStyle = '#6F77A8';
+          ctx.fillText('+ ' + extra + (extra > 1 ? ' outros ativos' : ' outro ativo'), x + 30, iy + 2);
+        }
+      }
+    });
   }
 
-  // ================= COLUNA 2: marcos + aposentadoria =================
   {
     let anos = [1, 2, 3, 5, 10, 15, 20, 25, 30].filter(a => a <= state.prazoAnos);
     if (anos.indexOf(state.prazoAnos) === -1) anos.push(state.prazoAnos);
@@ -9518,130 +9514,157 @@ async function gerarPngCanvasWide() {
       keep.push(anos[anos.length - 1]);
       anos = keep.filter((v, i, arr) => arr.indexOf(v) === i);
     }
-    const h = 78 + anos.length * 26 + 26;
-    card(cX[1], cY[1], COLW, h, 'Marcos da projeção', 'valores brutos, sem ajuste de inflação');
-    const c1 = cX[1] + 20, c4 = cX[1] + COLW - 20;
-    const c2 = cX[1] + COLW * 0.50, c3 = cX[1] + COLW * 0.75;
-    setFont('700', 9.5, 'Manrope'); ctx.fillStyle = '#6F77A8'; ls('.6px');
-    ctx.textAlign = 'left'; ctx.fillText('ANO', c1, cY[1] + 68);
-    ctx.textAlign = 'right';
-    ctx.fillText('PATRIMÔNIO', c2, cY[1] + 68);
-    ctx.fillText('APORTADO', c3, cY[1] + 68);
-    ctx.fillText('RENDIMENTO', c4, cY[1] + 68);
-    ls('normal'); ctx.textAlign = 'left';
-    ctx.strokeStyle = 'rgba(120,130,210,.18)'; ctx.lineWidth = 1;
-    ctx.beginPath(); ctx.moveTo(c1, cY[1] + 76); ctx.lineTo(c4, cY[1] + 76); ctx.stroke();
-    let ty = cY[1] + 96;
-    anos.forEach(a => {
-      const idx = Math.min(totalMeses, 24 + a * 12);
-      const pat = cart[idx], apo = flat[idx], rend = Math.max(0, pat - apo);
-      setFont('700', 12.5, 'Sora'); ctx.fillStyle = '#fff'; ctx.textAlign = 'left';
-      ctx.fillText(a + (a === 1 ? ' ano' : ' anos'), c1, ty);
-      ctx.textAlign = 'right';
-      setFont('700', 12.5, 'Manrope'); ctx.fillStyle = '#FF8B52';
-      ctx.fillText('R$ ' + f(pat), c2, ty);
-      setFont('600', 12, 'Manrope'); ctx.fillStyle = '#A9B0D6';
-      ctx.fillText('R$ ' + f(apo), c3, ty);
-      ctx.fillStyle = '#2BD9A6';
-      ctx.fillText('R$ ' + f(rend), c4, ty);
-      ctx.textAlign = 'left';
-      ty += 26;
+    cards.push({
+      h: 76 + anos.length * 25 + 22,
+      draw: (x, yy, w) => {
+        card(x, yy, w, 76 + anos.length * 25 + 22, 'Marcos da projeção', 'patrimônio · aportado · rendimento');
+        const c1 = x + 18, c4 = x + w - 18;
+        const c2 = x + w * 0.50, c3 = x + w * 0.76;
+        setFont('700', 9, 'Manrope'); ctx.fillStyle = '#6F77A8'; ls('.5px');
+        ctx.textAlign = 'left'; ctx.fillText('ANO', c1, yy + 66);
+        ctx.textAlign = 'right';
+        ctx.fillText('PATRIMÔNIO', c2, yy + 66);
+        ctx.fillText('APORTADO', c3, yy + 66);
+        ctx.fillText('RENDIM.', c4, yy + 66);
+        ls('normal'); ctx.textAlign = 'left';
+        ctx.strokeStyle = 'rgba(120,130,210,.18)'; ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.moveTo(c1, yy + 74); ctx.lineTo(c4, yy + 74); ctx.stroke();
+        let ty = yy + 94;
+        anos.forEach(a => {
+          const idx = Math.min(totalMeses, 24 + a * 12);
+          const pat = cart[idx], apo = flat[idx], rend = Math.max(0, pat - apo);
+          setFont('700', 11.5, 'Sora'); ctx.fillStyle = '#fff'; ctx.textAlign = 'left';
+          ctx.fillText(a + (a === 1 ? ' ano' : ' anos'), c1, ty);
+          ctx.textAlign = 'right';
+          setFont('700', 11.5, 'Manrope'); ctx.fillStyle = '#FF8B52';
+          ctx.fillText('R$ ' + f(pat), c2, ty);
+          setFont('600', 11, 'Manrope'); ctx.fillStyle = '#A9B0D6';
+          ctx.fillText('R$ ' + f(apo), c3, ty);
+          ctx.fillStyle = '#2BD9A6';
+          ctx.fillText('R$ ' + f(rend), c4, ty);
+          ctx.textAlign = 'left';
+          ty += 25;
+        });
+      }
     });
-    cY[1] += h + GAP;
   }
+
   {
     let lc = null; try { lc = lifeCycle(); } catch (e) { lc = null; }
     if (lc) {
-      const h = 232;
-      card(cX[1], cY[1], COLW, h, 'Aposentadoria', 'valores em R$ de hoje · retorno real de ' + fmtBRdec.format(lc.r * 100) + '% a.a.');
-      const lx = cX[1] + 20, lw = COLW - 40;
-      let ly = cY[1] + 76;
-      linha(lx, lw, ly, 'Idade atual', lc.i0 + ' anos'); ly += 24;
-      linha(lx, lw, ly, 'Aposentadoria estimada', lc.iA + ' anos (em ' + lc.T + (lc.T === 1 ? ' ano' : ' anos') + ')'); ly += 24;
-      linha(lx, lw, ly, 'Patrimônio na aposentadoria', 'R$ ' + f(lc.pAtualApos), '#FF8B52'); ly += 24;
-      linha(lx, lw, ly, 'Renda desejada', state.rendaMensal > 0 ? 'R$ ' + f(state.rendaMensal) + '/mês' : '—'); ly += 24;
-      linha(lx, lw, ly, 'Aporte p/ consumir o patrimônio', 'R$ ' + f(lc.aporteConsumoMensal) + '/mês'); ly += 24;
-      linha(lx, lw, ly, 'Aporte p/ preservar o patrimônio', 'R$ ' + f(lc.aportePreservMensal) + '/mês'); ly += 26;
-      const sc2 = lc.statusColor || [43, 180, 120];
-      const scHex = 'rgb(' + sc2[0] + ',' + sc2[1] + ',' + sc2[2] + ')';
-      fillRR(lx, ly - 12, lw, 30, 9, 'rgba(' + sc2[0] + ',' + sc2[1] + ',' + sc2[2] + ',.12)');
-      strokeRR(lx, ly - 12, lw, 30, 9, scHex, 1);
-      setFont('700', 12, 'Manrope'); ctx.fillStyle = scHex;
-      ctx.fillText(cut(lc.status, 44), lx + 12, ly + 7);
-      cY[1] += h + GAP;
+      cards.push({
+        h: 226,
+        draw: (x, yy, w) => {
+          card(x, yy, w, 226, 'Aposentadoria', 'R$ de hoje · retorno real ' + fmtBRdec.format(lc.r * 100) + '% a.a.');
+          const lx = x + 18, lw = w - 36;
+          let ly = yy + 74;
+          linha(lx, lw, ly, 'Idade atual', lc.i0 + ' anos'); ly += 23;
+          linha(lx, lw, ly, 'Aposentadoria', lc.iA + ' anos (em ' + lc.T + (lc.T === 1 ? ' ano' : ' anos') + ')'); ly += 23;
+          linha(lx, lw, ly, 'Patrimônio na aposentadoria', 'R$ ' + f(lc.pAtualApos), '#FF8B52'); ly += 23;
+          linha(lx, lw, ly, 'Renda desejada', state.rendaMensal > 0 ? 'R$ ' + f(state.rendaMensal) + '/mês' : '—'); ly += 23;
+          linha(lx, lw, ly, 'Aporte p/ consumir', 'R$ ' + f(lc.aporteConsumoMensal) + '/mês'); ly += 23;
+          linha(lx, lw, ly, 'Aporte p/ preservar', 'R$ ' + f(lc.aportePreservMensal) + '/mês'); ly += 26;
+          const sc2 = lc.statusColor || [43, 180, 120];
+          const scHex = 'rgb(' + sc2[0] + ',' + sc2[1] + ',' + sc2[2] + ')';
+          fillRR(lx, ly - 12, lw, 28, 9, 'rgba(' + sc2[0] + ',' + sc2[1] + ',' + sc2[2] + ',.12)');
+          strokeRR(lx, ly - 12, lw, 28, 9, scHex, 1);
+          setFont('700', 11, 'Manrope'); ctx.fillStyle = scHex; ctx.textAlign = 'left';
+          ctx.fillText(cut(lc.status, 40), lx + 11, ly + 6);
+        }
+      });
     }
   }
 
-  // ================= COLUNA 3: objetivos, patrimonio, premissas =================
   const objs = (Array.isArray(state.objetivos) ? state.objetivos : []).filter(o => o && (Number(o.valor) || 0) > 0);
   if (objs.length) {
     const MAX = 8;
     const shown = objs.slice().sort((a, b) => (Number(a.ano) || 0) - (Number(b.ano) || 0)).slice(0, MAX);
     const extra = objs.length - shown.length;
     const totalObj = objs.reduce((s, o) => s + (Number(o.valor) || 0), 0);
-    const h = 64 + shown.length * 30 + (extra > 0 ? 20 : 0) + 16;
-    card(cX[2], cY[2], COLW, h, 'Objetivos futuros', 'total de R$ ' + f(totalObj) + ' em compras planejadas');
-    let oy = cY[2] + 76;
-    shown.forEach(o => {
-      const ic = o.tipo === 'Carro' ? '🚗' : o.tipo === 'Viagem' ? '✈️' : o.tipo === 'Imóvel' ? '🏠' : '🎯';
-      setFont('700', 12.5, 'Manrope'); ctx.fillStyle = '#fff'; ctx.textAlign = 'left';
-      ctx.fillText(ic + '  ' + cut(o.descricao || o.tipo, 26), cX[2] + 20, oy);
-      setFont('500', 10.5, 'Manrope'); ctx.fillStyle = '#6F77A8';
-      ctx.fillText('em ' + (Number(o.ano) || 0) + ((Number(o.ano) || 0) === 1 ? ' ano' : ' anos'), cX[2] + 20, oy + 14);
-      setFont('800', 13, 'Sora'); ctx.fillStyle = '#F5B942'; ctx.textAlign = 'right';
-      ctx.fillText('R$ ' + f(Number(o.valor) || 0), cX[2] + COLW - 20, oy);
-      ctx.textAlign = 'left';
-      oy += 30;
+    cards.push({
+      h: 62 + shown.length * 29 + (extra > 0 ? 20 : 0) + 14,
+      draw: (x, yy, w) => {
+        card(x, yy, w, 62 + shown.length * 29 + (extra > 0 ? 20 : 0) + 14, 'Objetivos futuros', 'R$ ' + f(totalObj) + ' em compras planejadas');
+        let oy = yy + 76;
+        shown.forEach(o => {
+          const ic = o.tipo === 'Carro' ? '🚗' : o.tipo === 'Viagem' ? '✈️' : o.tipo === 'Imóvel' ? '🏠' : '🎯';
+          setFont('700', 12, 'Manrope'); ctx.fillStyle = '#fff'; ctx.textAlign = 'left';
+          ctx.fillText(ic + '  ' + cut(o.descricao || o.tipo, 20), x + 18, oy);
+          setFont('500', 10, 'Manrope'); ctx.fillStyle = '#6F77A8';
+          ctx.fillText('em ' + (Number(o.ano) || 0) + ((Number(o.ano) || 0) === 1 ? ' ano' : ' anos'), x + 18, oy + 13);
+          setFont('800', 12.5, 'Sora'); ctx.fillStyle = '#F5B942'; ctx.textAlign = 'right';
+          ctx.fillText('R$ ' + f(Number(o.valor) || 0), x + w - 18, oy);
+          ctx.textAlign = 'left';
+          oy += 29;
+        });
+        if (extra > 0) {
+          setFont('600', 10.5, 'Manrope'); ctx.fillStyle = '#6F77A8';
+          ctx.fillText('+ ' + extra + (extra > 1 ? ' outros objetivos' : ' outro objetivo'), x + 18, oy + 2);
+        }
+      }
     });
-    if (extra > 0) {
-      setFont('600', 11, 'Manrope'); ctx.fillStyle = '#6F77A8';
-      ctx.fillText('+ ' + extra + (extra > 1 ? ' outros objetivos' : ' outro objetivo'), cX[2] + 20, oy + 2);
-    }
-    cY[2] += h + GAP;
   }
+
   {
     const totImo = state.imoveis.reduce((s, i) => s + (Number(i.valor) || 0), 0);
     const totExt = state.externos.reduce((s, i) => s + (Number(i.valor) || 0), 0);
     const patProj = finalCart + totExt + totImo;
     const patHoje = state.valor + totExt + totImo;
-    const h = 214;
-    card(cX[2], cY[2], COLW, h, 'Patrimônio consolidado', 'carteira Rico + outras instituições + imobilizado');
-    setFont('700', 10.5, 'Manrope'); ctx.fillStyle = '#A9B0D6'; ls('1.2px');
-    ctx.fillText('PROJETADO EM ' + state.prazoAnos + (state.prazoAnos === 1 ? ' ANO' : ' ANOS'), cX[2] + 20, cY[2] + 76); ls('normal');
-    setFont('800', 30, 'Sora'); ctx.fillStyle = '#FF6B2C';
-    ctx.fillText('R$ ' + f(patProj), cX[2] + 20, cY[2] + 110);
-    const bx2 = cX[2] + 20, bw2 = COLW - 40, bh2 = 12, by2 = cY[2] + 124;
-    const pInv = patProj > 0 ? finalCart / patProj : 1;
-    const pExt = patProj > 0 ? totExt / patProj : 0;
-    ctx.save(); rr(bx2, by2, bw2, bh2, 6); ctx.clip();
-    ctx.fillStyle = '#5B8DEF'; ctx.fillRect(bx2, by2, bw2 * pInv, bh2);
-    ctx.fillStyle = '#9B6BFF'; ctx.fillRect(bx2 + bw2 * pInv, by2, bw2 * pExt, bh2);
-    ctx.fillStyle = '#FF4E00'; ctx.fillRect(bx2 + bw2 * (pInv + pExt), by2, bw2 * (1 - pInv - pExt), bh2);
-    ctx.restore();
-    let py = cY[2] + 158;
-    linha(bx2, bw2, py, '● Investimentos Rico', 'R$ ' + f(finalCart), '#5B8DEF', 12); py += 20;
-    linha(bx2, bw2, py, '● Outras instituições', 'R$ ' + f(totExt), '#9B6BFF', 12); py += 20;
-    linha(bx2, bw2, py, '● Imobilizado', 'R$ ' + f(totImo), '#FF6B2C', 12); py += 20;
-    linha(bx2, bw2, py, 'Patrimônio hoje', 'R$ ' + f(patHoje), '#A9B0D6', 12);
-    cY[2] += h + GAP;
-  }
-  {
-    const modo = state.aporteMode === 'rendadespesa' ? 'renda − despesa' : 'valor direto';
-    const h = 196;
-    card(cX[2], cY[2], COLW, h, 'Premissas do estudo', '');
-    const lx = cX[2] + 20, lw = COLW - 40;
-    let ly = cY[2] + 62;
-    linha(lx, lw, ly, 'CDI considerado', (state.cdiAnual != null && state.cdiAnual > 0) ? (fmtBRdec.format(state.cdiAnual) + '% a.a.') : 'curva padrão (histórico)'); ly += 24;
-    linha(lx, lw, ly, 'IPCA considerado', fmtPct(state.ipca) + '% a.a.'); ly += 24;
-    linha(lx, lw, ly, 'Rentabilidade da carteira', rentLabel(), '#FF8B52'); ly += 24;
-    linha(lx, lw, ly, 'Aporte mensal', (aporteEfetivo() > 0 ? 'R$ ' + f(aporteEfetivo()) : '—') + ' · ' + modo); ly += 24;
-    linha(lx, lw, ly, 'Horizonte', state.prazoAnos + (state.prazoAnos === 1 ? ' ano' : ' anos')); ly += 22;
-    setFont('500', 10.5, 'Manrope'); ctx.fillStyle = '#6F77A8';
-    wrapTextCanvas(ctx, 'Valores brutos, sem dedução de IR ou taxas. O histórico dos últimos 24 meses aparece à esquerda do gráfico.', lx, ly + 12, lw, 14);
-    cY[2] += h + GAP;
+    cards.push({
+      h: 206,
+      draw: (x, yy, w) => {
+        card(x, yy, w, 206, 'Patrimônio consolidado', 'Rico + outras instituições + imobilizado');
+        setFont('700', 10, 'Manrope'); ctx.fillStyle = '#A9B0D6'; ls('1.2px');
+        ctx.fillText('PROJETADO EM ' + state.prazoAnos + (state.prazoAnos === 1 ? ' ANO' : ' ANOS'), x + 18, yy + 72); ls('normal');
+        setFont('800', 27, 'Sora'); ctx.fillStyle = '#FF6B2C';
+        ctx.fillText('R$ ' + f(patProj), x + 18, yy + 104);
+        const bx2 = x + 18, bw2 = w - 36, bh2 = 11, by2 = yy + 118;
+        const pInv = patProj > 0 ? finalCart / patProj : 1;
+        const pExt = patProj > 0 ? totExt / patProj : 0;
+        ctx.save(); rr(bx2, by2, bw2, bh2, 6); ctx.clip();
+        ctx.fillStyle = '#5B8DEF'; ctx.fillRect(bx2, by2, bw2 * pInv, bh2);
+        ctx.fillStyle = '#9B6BFF'; ctx.fillRect(bx2 + bw2 * pInv, by2, bw2 * pExt, bh2);
+        ctx.fillStyle = '#FF4E00'; ctx.fillRect(bx2 + bw2 * (pInv + pExt), by2, bw2 * (1 - pInv - pExt), bh2);
+        ctx.restore();
+        let py = yy + 150;
+        linha(bx2, bw2, py, '● Investimentos Rico', 'R$ ' + f(finalCart), '#5B8DEF'); py += 19;
+        linha(bx2, bw2, py, '● Outras instituições', 'R$ ' + f(totExt), '#9B6BFF'); py += 19;
+        linha(bx2, bw2, py, '● Imobilizado', 'R$ ' + f(totImo), '#FF6B2C'); py += 19;
+        linha(bx2, bw2, py, 'Patrimônio hoje', 'R$ ' + f(patHoje), '#A9B0D6');
+      }
+    });
   }
 
-  y = Math.max(cY[0], cY[1], cY[2]);
+  {
+    const modo = state.aporteMode === 'rendadespesa' ? 'renda − despesa' : 'valor direto';
+    cards.push({
+      h: 192,
+      draw: (x, yy, w) => {
+        card(x, yy, w, 192, 'Premissas do estudo', '');
+        const lx = x + 18, lw = w - 36;
+        let ly = yy + 60;
+        linha(lx, lw, ly, 'CDI considerado', (state.cdiAnual != null && state.cdiAnual > 0) ? (fmtBRdec.format(state.cdiAnual) + '% a.a.') : 'curva histórica'); ly += 23;
+        linha(lx, lw, ly, 'IPCA considerado', fmtPct(state.ipca) + '% a.a.'); ly += 23;
+        linha(lx, lw, ly, 'Rentabilidade', rentLabel(), '#FF8B52'); ly += 23;
+        linha(lx, lw, ly, 'Aporte mensal', (aporteEfetivo() > 0 ? 'R$ ' + f(aporteEfetivo()) : '—')); ly += 23;
+        linha(lx, lw, ly, 'Forma do aporte', modo); ly += 23;
+        linha(lx, lw, ly, 'Horizonte', state.prazoAnos + (state.prazoAnos === 1 ? ' ano' : ' anos')); ly += 20;
+        setFont('500', 10, 'Manrope'); ctx.fillStyle = '#6F77A8'; ctx.textAlign = 'left';
+        wrapTextCanvas(ctx, 'Valores brutos, sem dedução de IR ou taxas.', lx, ly + 10, lw, 13);
+      }
+    });
+  }
+
+  const colTop = y;
+  const colY = new Array(NCOL).fill(colTop);
+  cards.forEach(c => {
+    let k = 0;
+    for (let i = 1; i < NCOL; i++) if (colY[i] < colY[k]) k = i;
+    const x = PAD + k * (COLW + GAP);
+    c.draw(x, colY[k], COLW, c.h);
+    colY[k] += c.h + GAP;
+  });
+  y = Math.max.apply(null, colY);
 
   // ---------- protecao + sucessao ----------
   {
@@ -9651,11 +9674,11 @@ async function gerarPngCanvasWide() {
     if (marcados.length === 0) { ptxt = '⚠️ Patrimônio ainda sem proteção — vale conversarmos sobre isso'; pcol = '#FF6B2C'; prgb = '255,107,44'; }
     else if (temWhole) { ptxt = '🛡️ Patrimônio protegido com Whole Life — a cobertura mais completa'; pcol = '#2BD9A6'; prgb = '43,217,166'; }
     else { ptxt = '🛡️ Patrimônio protegido · ' + marcados.map(p => p.name).join(', '); pcol = '#2BD9A6'; prgb = '43,217,166'; }
-    const hh = 58, hw = (IW - GAP) / 2;
+    const hh = 56, hw = (IW - GAP) / 2;
     fillRR(PAD, y, hw, hh, 12, 'rgba(' + prgb + ',.10)');
     strokeRR(PAD, y, hw, hh, 12, pcol, 1);
-    setFont('700', 14, 'Manrope'); ctx.fillStyle = pcol; ctx.textAlign = 'left';
-    ctx.fillText(cut(ptxt, 72), PAD + 20, y + 35);
+    setFont('700', 13.5, 'Manrope'); ctx.fillStyle = pcol; ctx.textAlign = 'left';
+    ctx.fillText(cut(ptxt, 80), PAD + 20, y + 34);
 
     const _totImoS = state.imoveis.reduce((s, i) => s + (Number(i.valor) || 0), 0);
     const _totExtS = state.externos.reduce((s, i) => s + (Number(i.valor) || 0), 0);
@@ -9664,19 +9687,19 @@ async function gerarPngCanvasWide() {
     const sx2 = PAD + hw + GAP;
     fillRR(sx2, y, hw, hh, 12, 'rgba(255,107,44,.08)');
     strokeRR(sx2, y, hw, hh, 12, 'rgba(255,107,44,.4)', 1);
-    setFont('700', 13.5, 'Manrope'); ctx.fillStyle = '#FF8B52';
-    ctx.fillText('Custo estimado de sucessão (≈ 20%): R$ ' + f(_custoS), sx2 + 20, y + 26);
+    setFont('700', 13, 'Manrope'); ctx.fillStyle = '#FF8B52';
+    ctx.fillText('Custo estimado de sucessão (≈ 20%): R$ ' + f(_custoS), sx2 + 20, y + 25);
     setFont('500', 10.5, 'Manrope'); ctx.fillStyle = '#A9B0D6';
-    ctx.fillText('Sobre patrimônio total de R$ ' + f(_patTotS) + ' · ITCMD varia por estado (2%–8%) + inventário e honorários.', sx2 + 20, y + 44);
-    y += hh + 20;
+    ctx.fillText('Sobre patrimônio total de R$ ' + f(_patTotS) + ' · ITCMD varia por estado (2%–8%) + inventário e honorários.', sx2 + 20, y + 43);
+    y += hh + 18;
   }
 
-  setFont('500', 11, 'Manrope'); ctx.fillStyle = '#6F77A8'; ctx.textAlign = 'left';
+  setFont('500', 10.5, 'Manrope'); ctx.fillStyle = '#6F77A8'; ctx.textAlign = 'left';
   const disc = 'Simulação ilustrativa baseada no CDI histórico recente e na média de longo prazo. Valores brutos, sem considerar impostos ou taxas. Não constitui oferta ou garantia de rentabilidade — rentabilidade passada não garante resultados futuros.';
-  y = wrapTextCanvas(ctx, disc, PAD, y + 6, IW - 120, 16) + 16;
-  setFont('800', 18, 'Sora'); ctx.fillStyle = '#FF4E00'; ctx.textAlign = 'right';
+  y = wrapTextCanvas(ctx, disc, PAD, y + 6, IW - 140, 15) + 14;
+  setFont('800', 17, 'Sora'); ctx.fillStyle = '#FF4E00'; ctx.textAlign = 'right';
   ctx.fillText('rico', W - PAD, y); ctx.textAlign = 'left';
-  y += 18;
+  y += 16;
 
   const finalH = Math.min(HMAX, Math.ceil(y + 10));
   const out = document.createElement('canvas');
