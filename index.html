@@ -9,7 +9,7 @@
    Serve para depurar em aparelhos onde não dá para abrir o console (iPad/iPhone).
    Só aparece se algo realmente quebrar. */
 (function(){
-  window.__HUB_BUILD = "2026-07-21-a";
+  window.__HUB_BUILD = "2026-07-21-b";
   var box=null;
   function show(kind,msg){
     try{
@@ -4565,7 +4565,7 @@ html.theme-light .pm-alloc{ background:#fff; }
       items.forEach(function(a){ totPct+=(Number(a.pct)||0); });
       var r=0;
       if(totPct>0){ items.forEach(function(a){ r+=((Number(a.pct)||0)/totPct)*retAA(a); }); }
-      var pat=Number(PR.patrim)||0, years=(typeof S!=='undefined'&&S&&Number(S.projAnos)>0)?Math.max(1,Math.min(60,Math.round(Number(S.projAnos)))):10, vals=[], y;
+      var pat=Number(PR.patrim)||0, years=(function(){ try{ return (S&&Number(S.projAnos)>0)?Math.max(1,Math.min(60,Math.round(Number(S.projAnos)))):10; }catch(e){ return 10; } })(), vals=[], y;
       for(y=0;y<=years;y++){ vals.push(pat*Math.pow(1+r/100,y)); }
       var maxV=vals[years]||1; if(!isFinite(maxV)||maxV<=0) maxV=1;
       var _stepB=years<=12?1:Math.ceil(years/10); var _byrs=[]; for(y=0;y<=years;y+=_stepB) _byrs.push(y); if(_byrs[_byrs.length-1]!==years) _byrs.push(years);
@@ -4843,8 +4843,20 @@ function defaultTags(it){
   if(isGlobal(it) && t.indexOf("Global")===-1) t.push("Global");
   return t;
 }
-let _id=0; const uid=()=>{ var id; do{ id="a"+(++_id); } while(typeof S!=="undefined" && S && Array.isArray(S.items) && S.items.some(function(x){return x&&x.id===id;})); return id; };
-function ctorFixIds(){ try{ if(typeof S==="undefined"||!S||!Array.isArray(S.items)) return; var mx=0; S.items.forEach(function(x){ if(x&&typeof x.id==="string"){ var m=/^a(\d+)$/.exec(x.id); if(m){ var v=+m[1]; if(v>mx)mx=v; } } }); if(_id<mx)_id=mx; var seen={}; S.items.forEach(function(x){ if(!x)return; if(!x.id||seen[x.id]){ x.id="a"+(++_id); } seen[x.id]=1; }); }catch(_){ } }
+let _id=0;
+/* Acesso protegido ao estado. IMPORTANTE: `S` é declarado com `const` mais
+   abaixo e o próprio inicializador dele chama TEMPLATES -> mk() -> uid().
+   Nesse instante `S` está na "zona morta temporal" e um `typeof S` LANÇA
+   ReferenceError em vez de devolver "undefined" — era o que deixava a aba
+   Montar a Carteira em branco. */
+function _ctorS(){ try{ return S; }catch(e){ return null; } }
+const uid=()=>{
+  var id, s;
+  do{ id="a"+(++_id); s=_ctorS(); }
+  while(s && Array.isArray(s.items) && s.items.some(function(x){ return x&&x.id===id; }));
+  return id;
+};
+function ctorFixIds(){ try{ var _s=_ctorS(); if(!_s||!Array.isArray(_s.items)) return; var mx=0; S.items.forEach(function(x){ if(x&&typeof x.id==="string"){ var m=/^a(\d+)$/.exec(x.id); if(m){ var v=+m[1]; if(v>mx)mx=v; } } }); if(_id<mx)_id=mx; var seen={}; S.items.forEach(function(x){ if(!x)return; if(!x.id||seen[x.id]){ x.id="a"+(++_id); } seen[x.id]=1; }); }catch(_){ } }
 
 /* ===== RETORNO POR ATIVO (Parte A) ===== */
 const RET_CATS = ["pre","pos","mercado","mercadoDiv","inflacao"];
