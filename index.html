@@ -4621,13 +4621,24 @@ html.theme-light .pm-alloc{ background:#fff; }
       p.classList.toggle('on', p.id === 'p-' + id);
     });
     if (id !== 'home' && !_inited[id]) {
-      _inited[id] = true;
       var initFn = window._toolInit && window._toolInit[id];
-      if (initFn) {
-        // Wait two animation frames so the panel has real dimensions
-        requestAnimationFrame(function() {
-          requestAnimationFrame(initFn);
-        });
+      if (!initFn) {
+        _inited[id] = true;
+      } else {
+        var _ran = false;
+        var _run = function() {
+          if (_ran) return;
+          _ran = true;
+          _inited[id] = true;            /* só marca depois de realmente rodar */
+          try { initFn(); } catch (e) { try { console.error(e); } catch (_) {} }
+        };
+        /* dois frames para o painel ter dimensões reais... */
+        if (window.requestAnimationFrame) {
+          requestAnimationFrame(function() { requestAnimationFrame(_run); });
+        }
+        /* ...mas com rede de segurança: se o rAF não disparar (iOS em 2º plano,
+           modo de baixo consumo, aba suspensa), o init roda mesmo assim. */
+        setTimeout(_run, 400);
       }
     }
     window.scrollTo(0, 0);
@@ -13891,7 +13902,10 @@ window.__rvRender = render;
       if(id==="rv"){
         prev("construtor");
         document.querySelectorAll(".g-tab").forEach(function(t){ t.classList.toggle("on", t.dataset.panel==="rv"); });
-        requestAnimationFrame(function(){ requestAnimationFrame(function(){ if(window.__setCtorMode) window.__setCtorMode("rv"); }); });
+        var _rvRan=false;
+        var _rvGo=function(){ if(_rvRan) return; _rvRan=true; try{ if(window.__setCtorMode) window.__setCtorMode("rv"); }catch(e){} };
+        if(window.requestAnimationFrame){ requestAnimationFrame(function(){ requestAnimationFrame(_rvGo); }); }
+        setTimeout(_rvGo,400);   /* fallback p/ iOS quando o rAF não dispara */
         return;
       }
       prev(id);
