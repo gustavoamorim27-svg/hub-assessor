@@ -1,6 +1,63 @@
 <!DOCTYPE html><!-- deploy: fp-align v2 -->
 <html lang="pt-BR">
 <head>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<script>
+/* ===== Diagnóstico (build stamp + erros na tela) =====
+   Serve para depurar em aparelhos onde não dá para abrir o console (iPad/iPhone).
+   Só aparece se algo realmente quebrar. */
+(function(){
+  window.__HUB_BUILD = "2026-07-20-c";
+  var box=null;
+  function show(kind,msg){
+    try{
+      if(!box){
+        box=document.createElement("div");
+        box.id="hubErrBox";
+        box.style.cssText="position:fixed;left:0;right:0;bottom:0;z-index:2147483647;background:#6d1020;color:#fff;"
+          +"font:12px/1.45 -apple-system,BlinkMacSystemFont,system-ui,sans-serif;padding:10px 12px;"
+          +"max-height:46vh;overflow:auto;white-space:pre-wrap;border-top:3px solid #FF4E00;-webkit-overflow-scrolling:touch";
+        var b=document.createElement("button");
+        b.textContent="fechar";
+        b.style.cssText="float:right;background:#fff;color:#6d1020;border:0;border-radius:7px;padding:5px 12px;font-weight:800;margin-left:10px";
+        b.onclick=function(){ box.style.display="none"; };
+        box.appendChild(b);
+        var h=document.createElement("div");
+        h.textContent="Erro no app · build "+window.__HUB_BUILD;
+        h.style.cssText="font-weight:800;margin-bottom:6px";
+        box.appendChild(h);
+        (document.body||document.documentElement).appendChild(box);
+      }
+      var p=document.createElement("div");
+      p.style.cssText="border-top:1px solid rgba(255,255,255,.25);padding-top:6px;margin-top:6px";
+      p.textContent=kind+": "+msg;
+      box.appendChild(p);
+      box.style.display="block";
+    }catch(_){}
+  }
+  window.addEventListener("error",function(e){
+    var where=(e.filename||"").split("/").pop();
+    show("ERRO",(e.message||"?")+(where?("  ["+where+":"+(e.lineno||"?")+"]"):""));
+  });
+  window.addEventListener("unhandledrejection",function(e){
+    var r=e.reason; show("PROMISE",(r&&(r.message||r.toString&&r.toString()))||"?");
+  });
+  window.__hubShowErr=show;
+  /* selo de versão, para confirmar qual build o aparelho carregou */
+  document.addEventListener("DOMContentLoaded",function(){
+    try{
+      var t=document.createElement("div");
+      t.textContent="build "+window.__HUB_BUILD;
+      t.style.cssText="position:fixed;right:6px;bottom:5px;z-index:99998;font:10px/1 -apple-system,system-ui,sans-serif;"
+        +"color:rgba(169,176,214,.55);background:rgba(10,15,56,.6);padding:3px 7px;border-radius:6px;pointer-events:none";
+      document.body.appendChild(t);
+    }catch(_){}
+  });
+})();
+</script>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Rico · Hub do Assessor</title>
@@ -4630,7 +4687,7 @@ html.theme-light .pm-alloc{ background:#fff; }
           if (_ran) return;
           _ran = true;
           _inited[id] = true;            /* só marca depois de realmente rodar */
-          try { initFn(); } catch (e) { try { console.error(e); } catch (_) {} }
+          try { initFn(); } catch (e) { try { console.error(e); } catch (_) {} try { if(window.__hubShowErr) window.__hubShowErr("INIT "+id, (e&&(e.message||e))+"  "+((e&&e.stack)||"").split("\n").slice(0,2).join(" | ")); } catch(_){} }
         };
         /* dois frames para o painel ter dimensões reais... */
         if (window.requestAnimationFrame) {
