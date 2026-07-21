@@ -9,7 +9,7 @@
    Serve para depurar em aparelhos onde não dá para abrir o console (iPad/iPhone).
    Só aparece se algo realmente quebrar. */
 (function(){
-  window.__HUB_BUILD = "2026-07-20-c";
+  window.__HUB_BUILD = "2026-07-21-a";
   var box=null;
   function show(kind,msg){
     try{
@@ -4669,7 +4669,7 @@ html.theme-light .pm-alloc{ background:#fff; }
 
 <script>
 (function() {
-  var _inited = {};
+  var _inited = {}, _pending = {};
   window.showPanel = function(id) {
     document.querySelectorAll('.g-tab').forEach(function(t) {
       t.classList.toggle('on', t.dataset.panel === id);
@@ -4677,26 +4677,34 @@ html.theme-light .pm-alloc{ background:#fff; }
     document.querySelectorAll('.g-panel').forEach(function(p) {
       p.classList.toggle('on', p.id === 'p-' + id);
     });
-    if (id !== 'home' && !_inited[id]) {
-      var initFn = window._toolInit && window._toolInit[id];
-      if (!initFn) {
-        _inited[id] = true;
-      } else {
-        var _ran = false;
-        var _run = function() {
-          if (_ran) return;
-          _ran = true;
-          _inited[id] = true;            /* só marca depois de realmente rodar */
-          try { initFn(); } catch (e) { try { console.error(e); } catch (_) {} try { if(window.__hubShowErr) window.__hubShowErr("INIT "+id, (e&&(e.message||e))+"  "+((e&&e.stack)||"").split("\n").slice(0,2).join(" | ")); } catch(_){} }
-        };
-        /* dois frames para o painel ter dimensões reais... */
-        if (window.requestAnimationFrame) {
-          requestAnimationFrame(function() { requestAnimationFrame(_run); });
+    if (id !== 'home' && !_inited[id] && !_pending[id]) {
+      _pending[id] = true;
+      var _tries = 0;
+      var _attempt = function() {
+        if (_inited[id]) { _pending[id] = false; return; }
+        var fn = window._toolInit && window._toolInit[id];
+        if (!fn) {
+          /* O <script> desta ferramenta ainda não terminou de carregar.
+             Os botões do menu usam onclick inline, então respondem assim que o
+             HTML é lido — bem antes de a página inteira (1,8 MB) ser executada.
+             Num aparelho lento (iPad) o usuário toca na aba nesse intervalo.
+             Antes marcávamos a aba como pronta e ela nunca mais inicializava;
+             agora tentamos de novo até o script aparecer. */
+          if (++_tries < 100) { setTimeout(_attempt, 100); }
+          else { _pending[id] = false; }
+          return;
         }
-        /* ...mas com rede de segurança: se o rAF não disparar (iOS em 2º plano,
-           modo de baixo consumo, aba suspensa), o init roda mesmo assim. */
-        setTimeout(_run, 400);
+        _inited[id] = true; _pending[id] = false;
+        try { fn(); } catch (e) { try { console.error(e); } catch (_) {} try { if(window.__hubShowErr) window.__hubShowErr("INIT "+id, (e&&(e.message||e))+"  "+((e&&e.stack)||"").split("\n").slice(0,2).join(" | ")); } catch(_){} }
+      };
+      /* caminho rápido: dois frames para o painel ter dimensões reais */
+      if (window.requestAnimationFrame) {
+        requestAnimationFrame(function() { requestAnimationFrame(function() {
+          if (window._toolInit && window._toolInit[id]) _attempt();
+        }); });
       }
+      /* rede de segurança + retry (vale também se o rAF estiver suspenso no iOS) */
+      setTimeout(_attempt, 150);
     }
     window.scrollTo(0, 0);
   };
