@@ -4664,6 +4664,7 @@ html.theme-light .pm-alloc{ background:#fff; }
     #p-holding .hp-badge.o{background:rgba(242,101,34,.16);color:#F26522}
     #p-holding .hp-badge.r{background:rgba(248,113,113,.16);color:#F87171}
     #p-holding .hp-note{background:rgba(245,185,66,.08);border-left:3px solid #F5B942;border-radius:0 8px 8px 0;padding:9px 12px;font-size:12px;color:#E7D9B4;line-height:1.5;margin:12px 0}
+    #p-holding .hp-ssub{font-size:10.5px;color:#9AA2D0;margin:-2px 0 6px;line-height:1.4}
     #p-holding .hp-warn{font-size:11px;color:#F5B942;line-height:1.45;margin-top:9px;border-top:1px dashed rgba(245,185,66,.28);padding-top:7px}
     #p-holding .hp-warn b{color:#F5B942}
     #p-holding .hp-disc{color:#7A83AD;font-size:11px;line-height:1.55;margin-top:20px;border-top:1px solid rgba(120,130,210,.14);padding-top:14px}
@@ -4698,6 +4699,11 @@ html.theme-light .pm-alloc{ background:#fff; }
           <label>Receita de aluguel (mensal) <b id="hpAlugOut">R$ 10.000</b></label>
           <input class="hp-inp" id="hpAlug" inputmode="numeric" value="R$ 10.000">
           <input type="range" id="hpAlugR" min="0" max="100000" step="1000" value="10000">
+        </div>
+        <div class="hp-field">
+          <label>Prêmio do seguro de vida (mensal) <b id="hpPremOut">R$ 1.500</b></label>
+          <input class="hp-inp" id="hpPrem" inputmode="numeric" value="R$ 1.500">
+          <input type="range" id="hpPremR" min="0" max="20000" step="100" value="1500">
         </div>
         <div class="hp-field">
           <label>Cenário de abertura</label>
@@ -4759,7 +4765,7 @@ html.theme-light .pm-alloc{ background:#fff; }
   function rng(a,b){ a=Math.round(a); b=Math.round(b); return 'R$ '+a.toLocaleString('pt-BR')+' – '+b.toLocaleString('pt-BR'); }
   function pctf(p){ return p.toFixed(1).replace('.',',')+'%'; }
 
-  var ST={ patr:2000000, itbi:3, itcmd:4, alug:10000, cen:'simples' };
+  var ST={ patr:2000000, itbi:3, itcmd:4, alug:10000, premio:1500, cen:'simples' };
 
   /* IRPF mensal (carnê-leão) — tabela progressiva */
   function irpfMes(base){
@@ -4784,12 +4790,14 @@ html.theme-light .pm-alloc{ background:#fff; }
     var pf = alug*0.275;   /* alíquota máxima marginal — cenário com outras rendas (padrão do material) */
     var pj = [alug*0.1133, alug*0.1453];
     var econ = [pf-pj[1], pf-pj[0]];
+    var wl10 = ST.premio*12*10;         /* Whole Life: paga ~10 anos, depois vitalício */
+    var tradAno = ST.premio*12;           /* tradicional: pagamento vitalício */
     var holdingITCMD = p*ST.itcmd/100;
     var invExtra = [p*0.06, p*0.10];
     var inventario = [holdingITCMD+invExtra[0], holdingITCMD+invExtra[1]];
     return {abert:abert,itbi:itbi,cart:cart,laudo:laudo,transf:transf,inicial:inicial,
             manutMes:manutMes,manutAno:manutAno,temAlug:temAlug,pf:pf,pj:pj,econ:econ,
-            holdingITCMD:holdingITCMD,inventario:inventario};
+            wl10:wl10,tradAno:tradAno,holdingITCMD:holdingITCMD,inventario:inventario};
   }
 
   function row(label,val,cls){ return '<tr'+(cls?' class="'+cls+'"':'')+'><td>'+label+'</td><td class="v">'+val+'</td></tr>'; }
@@ -4824,10 +4832,11 @@ html.theme-light .pm-alloc{ background:#fff; }
     }
 
     var succ=[
-      {t:'Previdência (VGBL)', v:'~ R$ 0', d:'Transmissão direta aos beneficiários, fora do inventário. ITCMD em discussão por estado. IR só sobre o rendimento no resgate.', warn:'Não abriga imóveis — cobre só o que for aportado em dinheiro. Tem taxas e prazo de carência.', badge:'g', best:true, badgeTxt:'Mais eficiente'},
-      {t:'Seguro de Vida (Whole Life)', v:'~ R$ 0', d:'Seguro vitalício: o capital vai direto aos beneficiários, fora do inventário e isento de ITCMD/IR (art. 794 CC). Gera liquidez imediata — inclusive para pagar o ITCMD de outros bens.', warn:'Prêmio vitalício: custo recorrente até o falecimento. Exige subscrição (avaliação de saúde).', badge:'g', best:false, badgeTxt:'Liquidez imediata'},
-      {t:'Holding (doação de quotas)', v:brl(d.holdingITCMD), d:'ITCMD de '+pctf(ST.itcmd)+' sobre '+brl(ST.patr)+'. Doação em vida com reserva de usufruto; evita inventário.', warn:'Custo alto de implantação (abertura + ITBI + cartório) e manutenção contábil recorrente. Só compensa com patrimônio grande e/ou receita de aluguel relevante — para valores menores, o custo pode não se pagar.', badge:'o', best:false, badgeTxt:'Planejado'},
-      {t:'Inventário direto', v:rng(d.inventario[0],d.inventario[1]), d:'ITCMD + honorários e custas (~6%–10%).', warn:'Mais caro e demorado; os bens ficam bloqueados durante todo o processo.', badge:'r', best:false, badgeTxt:'Sem planejamento'}
+      {t:'Previdência (VGBL)', v:'~ R$ 0', sub:'na transmissão', d:'Vai direto aos beneficiários, fora do inventário. IR só sobre o rendimento no resgate.', warn:'NÃO abriga imóveis. Cobre apenas o que for aportado em dinheiro — para um patrimônio majoritariamente imobiliário, não resolve a sucessão dos imóveis.', badge:'g', best:false, badgeTxt:'Só ativos financeiros'},
+      {t:'Seguro de Vida (Whole Life)', v:brl(d.wl10), sub:brl(ST.premio)+'/mês · '+brl(ST.premio*12)+'/ano por ~10 anos', d:'Paga o prêmio por cerca de 10 anos e depois a cobertura fica vitalícia sem novos pagamentos. Capital vai direto aos beneficiários, fora do inventário e isento (art. 794 CC).', warn:'Prêmio mais alto que o tradicional, mas com prazo de pagamento definido (~10 anos). Exige subscrição (avaliação de saúde).', badge:'g', best:true, badgeTxt:'Pagamento por 10 anos'},
+      {t:'Seguro tradicional', v:brl(ST.premio)+'/mês', sub:brl(d.tradAno)+'/ano hoje · vitalício e crescente', d:'Seguro de vida convencional: também transmite o capital fora do inventário e isento. Prêmio mais baixo no início, mas sobe com a idade.', warn:'Pagamento ETERNO e CRESCENTE — o prêmio sobe ao longo do tempo conforme a idade (o risco aumenta), então o custo total ao longo da vida tende a superar bastante o Whole Life. Se parar de pagar, perde a cobertura.', badge:'o', best:false, badgeTxt:'Pagamento vitalício'},
+      {t:'Holding (doação de quotas)', v:brl(d.holdingITCMD), sub:'ITCMD '+pctf(ST.itcmd)+' sobre o patrimônio', d:'Doação de quotas em vida com reserva de usufruto; evita o inventário dos imóveis.', warn:'Exige PATRIMÔNIO GRANDE. Só se justifica com patrimônio elevado (e/ou aluguel relevante) — abaixo disso, o custo de abertura, o ITBI e a manutenção não se pagam.', badge:'o', best:false, badgeTxt:'Para patrimônio grande'},
+      {t:'Inventário direto', v:rng(d.inventario[0],d.inventario[1]), sub:'ITCMD + honorários e custas', d:'Sem planejamento: transmissão pela via judicial/extrajudicial.', warn:'Mais caro e demorado; os bens ficam bloqueados durante todo o processo.', badge:'r', best:false, badgeTxt:'Sem planejamento'}
     ];
     el('hpSucc').innerHTML = succ.map(function(s){
       var col = s.badge==='g'?'#2BD9A6':(s.badge==='o'?'#F5B942':'#F87171');
@@ -4835,6 +4844,7 @@ html.theme-light .pm-alloc{ background:#fff; }
         +'<span class="hp-badge '+s.badge+'">'+s.badgeTxt+'</span>'
         +'<div class="st">'+s.t+'</div>'
         +'<div class="sv" style="color:'+col+'">'+s.v+'</div>'
+        +'<div class="hp-ssub">'+s.sub+'</div>'
         +'<div class="sd">'+s.d+'</div>'
         +(s.warn?'<div class="hp-warn"><b>Atenção:</b> '+s.warn+'</div>':'')+'</div>';
     }).join('');
@@ -4851,6 +4861,11 @@ html.theme-light .pm-alloc{ background:#fff; }
     else { ST.alug=n2(el('hpAlug').value); var r=el('hpAlugR'); r.value=Math.max(r.min,Math.min(r.max,ST.alug)); }
     el('hpAlugOut').textContent=brl(ST.alug); render();
   }
+  function syncPrem(fromR){
+    if(fromR){ ST.premio=n2(el('hpPremR').value); el('hpPrem').value=brl(ST.premio); }
+    else { ST.premio=n2(el('hpPrem').value); var r=el('hpPremR'); r.value=Math.max(r.min,Math.min(r.max,ST.premio)); }
+    el('hpPremOut').textContent=brl(ST.premio); render();
+  }
 
   function bind(){
     if(!el('hpPatr')) return;
@@ -4860,6 +4875,9 @@ html.theme-light .pm-alloc{ background:#fff; }
     el('hpAlug').addEventListener('input',function(){ syncAlug(false); });
     el('hpAlug').addEventListener('blur',function(){ el('hpAlug').value=brl(ST.alug); });
     el('hpAlugR').addEventListener('input',function(){ syncAlug(true); });
+    el('hpPrem').addEventListener('input',function(){ syncPrem(false); });
+    el('hpPrem').addEventListener('blur',function(){ el('hpPrem').value=brl(ST.premio); });
+    el('hpPremR').addEventListener('input',function(){ syncPrem(true); });
     el('hpItbi').addEventListener('input',function(){ ST.itbi=parseFloat(el('hpItbi').value); el('hpItbiOut').textContent=pctf(ST.itbi); render(); });
     el('hpItcmd').addEventListener('input',function(){ ST.itcmd=parseFloat(el('hpItcmd').value); el('hpItcmdOut').textContent=pctf(ST.itcmd); render(); });
     Array.prototype.forEach.call(el('hpCen').querySelectorAll('button'),function(b){
@@ -4918,25 +4936,37 @@ html.theme-light .pm-alloc{ background:#fff; }
       line('Holding PJ — Lucro Presumido', rng(d.pj[0],d.pj[1]));
       line('Economia mensal (PF − PJ)', rng(Math.max(0,d.econ[0]),Math.max(0,d.econ[1])), true); y+=8;
     }
-    sectionTitle(5,'Sucessão · doação e previdência');
-    line('Previdência (VGBL) — fora do inventário', '~ R$ 0');
-    line('Seguro de Vida (Whole Life) — fora do inventário', '~ R$ 0');
+    sectionTitle(5,'Sucessão · comparativo de caminhos');
+    line('Previdência (VGBL) — só ativos financeiros', '~ R$ 0');
+    line('Whole Life — '+brl(ST.premio)+'/mês por ~10 anos', brl(d.wl10));
+    line('Seguro tradicional — '+brl(ST.premio)+'/mês (sobe c/ idade)', brl(d.tradAno)+'/ano');
     line('Holding — doação de quotas (ITCMD '+pctf(ST.itcmd)+')', brl(d.holdingITCMD));
     line('Inventário direto (ITCMD + custas)', rng(d.inventario[0],d.inventario[1]), true);
     y+=18;
     ctx.fillStyle='#F5B942'; ctx.font='800 14px Sora,sans-serif'; ctx.fillText('PONTOS DE ATENÇÃO', pad, y); y+=24;
     ctx.fillStyle='#C9B67A'; ctx.font='400 13px Manrope,sans-serif';
-    ['Previdência (VGBL): não abriga imóveis, só aportes em dinheiro; taxas e carência.',
-     'Seguro de Vida (Whole Life): prêmio vitalício, custo recorrente até o falecimento.',
-     'Holding: custo alto (abertura + ITBI + manutenção) — só compensa com patrimônio grande.',
-     'Inventário: mais caro e demorado; bens bloqueados durante o processo.'
+    ['Previdência (VGBL): NÃO abriga imóveis — só ativos financeiros aportados em dinheiro.',
+     'Whole Life: paga o prêmio por ~10 anos e depois fica vitalício; exige subscrição (saúde).',
+     'Seguro tradicional: pagamento eterno e crescente (sobe com a idade); parou, perdeu a cobertura.',
+     'Holding: exige patrimônio GRANDE; custo alto de abertura, ITBI e manutenção.',
+     'Inventário: mais caro e demorado; bens ficam bloqueados durante o processo.'
     ].forEach(function(t){ y=wrap(ctx,'•  '+t, pad, y, W-2*pad, 18)+2; });
     y+=14;
     ctx.fillStyle='#7A83AD'; ctx.font='400 12px Manrope,sans-serif';
     y=wrap(ctx,'Estimativas de mercado, não constituem consultoria jurídica/contábil. ITBI varia por município; ITCMD e a incidência sobre previdência variam por estado. Validar com advogado e contador.', pad, y, W-2*pad, 17);
 
-    // recorta exatamente na altura usada
-    var used=Math.min(H, y+34);
+    // recorta exatamente onde o conteúdo termina (varre os pixels de baixo p/ cima)
+    var used;
+    try{
+      var Wd=W*DPR, Hd=H*DPR, dat=ctx.getImageData(0,0,Wd,Hd).data, bottom=Hd-1;
+      for(var yy=Hd-1; yy>=0; yy--){
+        var t=yy/Hd, br=Math.round(0x0A+(0x07-0x0A)*t), bg2=Math.round(0x0F+(0x0B-0x0F)*t), bb=Math.round(0x38+(0x2E-0x38)*t), found=false;
+        for(var xx=Math.floor(24*DPR); xx<Wd; xx+=8){ var i=(yy*Wd+xx)*4;
+          if(Math.abs(dat[i]-br)+Math.abs(dat[i+1]-bg2)+Math.abs(dat[i+2]-bb)>40){ found=true; break; } }
+        if(found){ bottom=yy; break; }
+      }
+      used=Math.min(H, (bottom/DPR)+30);
+    }catch(e){ used=Math.min(H, y+34); }
     var c2=document.createElement('canvas'); c2.width=W*DPR; c2.height=used*DPR; var x2=c2.getContext('2d');
     x2.drawImage(c,0,0,W*DPR,used*DPR,0,0,W*DPR,used*DPR);
     var url=c2.toDataURL('image/png');
