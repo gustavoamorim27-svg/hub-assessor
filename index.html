@@ -1566,6 +1566,10 @@ body.mm .ajbtn{ padding:11px 16px !important; font-size:14px !important; }
       <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="8" y1="9" x2="16" y2="9"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="12" y2="17"/></svg>
       IR / DARF
     </button>
+    <button class="g-tab" data-panel="holding" onclick="showPanel('holding')">
+      <svg viewBox="0 0 24 24"><path d="M3 21h18M5 21V8l7-4 7 4v13M10 21v-6h4v6"/></svg>
+      Holding Patrimonial
+    </button>
   </div>
 <style id="g-ticker-css">
 .g-ticker{ display:flex; align-items:center; gap:16px; margin-left:auto; padding-left:18px; flex-shrink:0; }
@@ -4614,6 +4618,326 @@ html.theme-light .pm-alloc{ background:#fff; }
   if(document.readyState==='loading'){ document.addEventListener('DOMContentLoaded', bind); } else { bind(); }
 })();
 </script>
+<div class="g-panel" id="p-holding" data-tool="holding">
+  <style>
+    #p-holding .hp-wrap{max-width:1160px;margin:0 auto;padding:6px 4px 40px;font-family:'Manrope',-apple-system,sans-serif;color:#EAECFB}
+    #p-holding .hp-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:18px}
+    #p-holding .hp-logo{font-family:'Sora',sans-serif;font-weight:800;font-size:19px;color:#F26522;letter-spacing:-.5px}
+    #p-holding .hp-sub{color:#9AA2D0;font-size:13px;line-height:1.5;margin-top:3px;max-width:640px}
+    #p-holding .hp-png{background:#F26522;color:#fff;border:none;font-family:'Sora',sans-serif;font-weight:700;font-size:13.5px;padding:11px 20px;border-radius:100px;cursor:pointer;white-space:nowrap}
+    #p-holding .hp-png:hover{filter:brightness(1.08)}
+    #p-holding .hp-grid{display:grid;grid-template-columns:340px 1fr;gap:18px;align-items:start}
+    @media(max-width:820px){#p-holding .hp-grid{grid-template-columns:1fr}}
+    #p-holding .hp-card{background:linear-gradient(160deg,#111845,#0C1138);border:1px solid rgba(120,130,210,.20);border-radius:16px;padding:18px 18px}
+    #p-holding .hp-card h3{font-family:'Sora',sans-serif;font-size:14px;font-weight:800;margin:0 0 14px;color:#fff;letter-spacing:.2px}
+    #p-holding .hp-field{margin-bottom:16px}
+    #p-holding .hp-field label{display:flex;justify-content:space-between;align-items:baseline;font-size:12px;color:#9AA2D0;font-weight:600;margin-bottom:6px}
+    #p-holding .hp-field label b{color:#F5B942;font-family:'Sora',sans-serif;font-size:13.5px}
+    #p-holding .hp-inp{width:100%;background:#0A0E3F;border:1px solid rgba(120,130,210,.28);border-radius:9px;color:#fff;font-family:'Manrope';font-size:14px;padding:10px 12px;outline:none;box-sizing:border-box}
+    #p-holding .hp-inp:focus{border-color:#F26522}
+    #p-holding input[type=range]{width:100%;accent-color:#F26522;margin-top:8px}
+    #p-holding .hp-seg{display:flex;gap:8px;margin-top:6px}
+    #p-holding .hp-seg button{flex:1;background:#0A0E3F;border:1px solid rgba(120,130,210,.28);color:#c8cdf0;font-family:'Sora';font-weight:700;font-size:12px;padding:9px 6px;border-radius:9px;cursor:pointer}
+    #p-holding .hp-seg button.on{background:#F26522;border-color:#F26522;color:#fff}
+    #p-holding .hp-block{margin-bottom:16px}
+    #p-holding .hp-blocktitle{display:flex;align-items:center;gap:8px;font-family:'Sora';font-size:12px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;color:#F26522;margin:2px 0 10px}
+    #p-holding .hp-blocktitle .n{width:20px;height:20px;border-radius:50%;background:rgba(242,101,34,.16);color:#F26522;display:inline-flex;align-items:center;justify-content:center;font-size:11px}
+    #p-holding table.hp-t{width:100%;border-collapse:collapse;font-size:13px}
+    #p-holding table.hp-t td{padding:8px 6px;border-bottom:1px solid rgba(120,130,210,.13);color:#DDE0F5}
+    #p-holding table.hp-t td.v{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap;color:#fff;font-weight:600}
+    #p-holding table.hp-t tr.tot td{border-top:1px solid rgba(242,101,34,.4);border-bottom:none;font-weight:800;color:#fff;padding-top:10px}
+    #p-holding table.hp-t tr.tot td.v{color:#F5B942;font-size:15px}
+    #p-holding .hp-kpis{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+    #p-holding .hp-kpi{background:#0A0E3F;border:1px solid rgba(120,130,210,.18);border-radius:12px;padding:12px 14px}
+    #p-holding .hp-kpi .lbl{font-size:10.5px;color:#9AA2D0;text-transform:uppercase;letter-spacing:.5px;font-weight:700}
+    #p-holding .hp-kpi .val{font-family:'Sora';font-weight:800;font-size:18px;color:#fff;margin-top:4px}
+    #p-holding .hp-kpi .val.acc{color:#F5B942}
+    #p-holding .hp-succ{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+    @media(max-width:680px){#p-holding .hp-succ{grid-template-columns:1fr}}
+    #p-holding .hp-scard{background:#0A0E3F;border:1px solid rgba(120,130,210,.2);border-radius:12px;padding:14px}
+    #p-holding .hp-scard.best{border-color:#2BD9A6}
+    #p-holding .hp-scard .st{font-family:'Sora';font-weight:800;font-size:13px;color:#fff}
+    #p-holding .hp-scard .sv{font-family:'Sora';font-weight:800;font-size:19px;margin:8px 0 4px}
+    #p-holding .hp-scard .sd{font-size:11.5px;color:#9AA2D0;line-height:1.5}
+    #p-holding .hp-badge{display:inline-block;font-size:9.5px;font-weight:800;letter-spacing:.4px;text-transform:uppercase;padding:2px 8px;border-radius:20px;margin-bottom:8px}
+    #p-holding .hp-badge.g{background:rgba(43,217,166,.16);color:#2BD9A6}
+    #p-holding .hp-badge.o{background:rgba(242,101,34,.16);color:#F26522}
+    #p-holding .hp-badge.r{background:rgba(248,113,113,.16);color:#F87171}
+    #p-holding .hp-note{background:rgba(245,185,66,.08);border-left:3px solid #F5B942;border-radius:0 8px 8px 0;padding:9px 12px;font-size:12px;color:#E7D9B4;line-height:1.5;margin:12px 0}
+    #p-holding .hp-disc{color:#7A83AD;font-size:11px;line-height:1.55;margin-top:20px;border-top:1px solid rgba(120,130,210,.14);padding-top:14px}
+  </style>
+
+  <div class="hp-wrap">
+    <div class="hp-head">
+      <div>
+        <div class="hp-logo">rico &middot; Holding Patrimonial</div>
+        <div class="hp-sub">Estimativa de custos para constituir uma holding de imóveis. Ajuste o patrimônio e as alíquotas — tudo recalcula na hora. Valores são estimativas de mercado e variam por município e estado.</div>
+      </div>
+      <button class="hp-png" id="hpPng">Gerar PNG</button>
+    </div>
+
+    <div class="hp-grid">
+      <div class="hp-card">
+        <h3>Parâmetros</h3>
+        <div class="hp-field">
+          <label>Patrimônio em imóveis <b id="hpPatrOut">R$ 2.000.000</b></label>
+          <input class="hp-inp" id="hpPatr" inputmode="numeric" value="R$ 2.000.000">
+          <input type="range" id="hpPatrR" min="200000" max="20000000" step="100000" value="2000000">
+        </div>
+        <div class="hp-field">
+          <label>Alíquota do ITBI <b id="hpItbiOut">3,0%</b></label>
+          <input type="range" id="hpItbi" min="2" max="4" step="0.1" value="3">
+        </div>
+        <div class="hp-field">
+          <label>Alíquota do ITCMD (sucessão) <b id="hpItcmdOut">4,0%</b></label>
+          <input type="range" id="hpItcmd" min="2" max="8" step="0.1" value="4">
+        </div>
+        <div class="hp-field">
+          <label>Receita de aluguel (mensal) <b id="hpAlugOut">R$ 10.000</b></label>
+          <input class="hp-inp" id="hpAlug" inputmode="numeric" value="R$ 10.000">
+          <input type="range" id="hpAlugR" min="0" max="100000" step="1000" value="10000">
+        </div>
+        <div class="hp-field">
+          <label>Cenário de abertura</label>
+          <div class="hp-seg" id="hpCen">
+            <button data-c="simples" class="on">Simples</button>
+            <button data-c="estrut">Estruturada / sucessória</button>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="hp-card" style="margin-bottom:16px">
+          <div class="hp-kpis">
+            <div class="hp-kpi"><div class="lbl">Custo inicial (abertura + transferência)</div><div class="val acc" id="hpKInic">—</div></div>
+            <div class="hp-kpi"><div class="lbl">Manutenção anual</div><div class="val" id="hpKManut">—</div></div>
+          </div>
+
+          <div class="hp-block">
+            <div class="hp-blocktitle"><span class="n">1</span> Custos de abertura</div>
+            <table class="hp-t"><tbody id="hpAbert"></tbody></table>
+          </div>
+
+          <div class="hp-block">
+            <div class="hp-blocktitle"><span class="n">2</span> Transferência dos imóveis</div>
+            <table class="hp-t"><tbody id="hpTransf"></tbody></table>
+            <div class="hp-note">O <b>ITBI</b> costuma ser o maior custo e surpreende quem não planeja. Há discussão sobre imunidade na integralização ao capital, mas holdings com atividade preponderantemente imobiliária (locação/compra e venda) normalmente <b>não têm imunidade</b> e o município cobra.</div>
+          </div>
+
+          <div class="hp-block">
+            <div class="hp-blocktitle"><span class="n">3</span> Manutenção recorrente</div>
+            <table class="hp-t"><tbody id="hpManut"></tbody></table>
+          </div>
+
+          <div class="hp-block">
+            <div class="hp-blocktitle"><span class="n">4</span> Aluguel &middot; Pessoa Física × Holding (PJ)</div>
+            <table class="hp-t"><tbody id="hpTrib"></tbody></table>
+          </div>
+        </div>
+
+        <div class="hp-card">
+          <div class="hp-blocktitle"><span class="n">5</span> Sucessão &middot; doação e previdência</div>
+          <div class="hp-succ" id="hpSucc"></div>
+          <div class="hp-note">A <b>Previdência (VGBL)</b> transmite direto aos beneficiários, fora do inventário; o ITCMD sobre VGBL é tema em discussão e varia por estado. No resgate, o IR incide só sobre o rendimento (regressivo, mínimo 10%). O <b>ITCMD</b> da doação de quotas varia de 2% a 8% conforme o estado.</div>
+        </div>
+
+        <div class="hp-disc">
+          Material de apoio ao assessor — estimativas de mercado, não constituem consultoria jurídica, contábil ou tributária. ITBI (2%–4%) varia por município; ITCMD (2%–8%) e a incidência sobre previdência variam por estado. A tributação do aluguel na PF usa a alíquota marginal de 27,5% (cenário com outras rendas); pela tabela progressiva isolada pode ser menor. Custas de cartório e honorários dependem do caso concreto. Recomende ao cliente validar com advogado e contador antes de decidir.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+(function(){
+  function el(id){ return document.getElementById(id); }
+  function n2(v){ if(v==null) return 0; var s=String(v).replace(/[^\d,.-]/g,'').replace(/\./g,'').replace(',','.'); var x=parseFloat(s); return isFinite(x)?x:0; }
+  function brl(v){ v=Math.round(Number(v)||0); return 'R$ '+v.toLocaleString('pt-BR'); }
+  function brl2(v){ return 'R$ '+(Number(v)||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+  function rng(a,b){ a=Math.round(a); b=Math.round(b); return 'R$ '+a.toLocaleString('pt-BR')+' – '+b.toLocaleString('pt-BR'); }
+  function pctf(p){ return p.toFixed(1).replace('.',',')+'%'; }
+
+  var ST={ patr:2000000, itbi:3, itcmd:4, alug:10000, cen:'simples' };
+
+  /* IRPF mensal (carnê-leão) — tabela progressiva */
+  function irpfMes(base){
+    if(base<=2259.20) return 0;
+    if(base<=2826.65) return base*0.075-169.44;
+    if(base<=3751.05) return base*0.15-381.44;
+    if(base<=4664.68) return base*0.225-662.77;
+    return base*0.275-896.00;
+  }
+
+  function calc(){
+    var p=ST.patr, alug=ST.alug;
+    var abert = ST.cen==='simples' ? [5000,16000] : [10000,40000];
+    var itbi = p*ST.itbi/100;
+    var cart = [p*0.005, p*0.01];
+    var laudo = [2000,10000];
+    var transf = [itbi+cart[0]+laudo[0], itbi+cart[1]+laudo[1]];
+    var inicial = [abert[0]+transf[0], abert[1]+transf[1]];
+    var temAlug = alug>0;
+    var manutMes = temAlug ? [800,2800] : [500,1700];
+    var manutAno = [manutMes[0]*12, manutMes[1]*12];
+    var pf = alug*0.275;   /* alíquota máxima marginal — cenário com outras rendas (padrão do material) */
+    var pj = [alug*0.1133, alug*0.1453];
+    var econ = [pf-pj[1], pf-pj[0]];
+    var holdingITCMD = p*ST.itcmd/100;
+    var invExtra = [p*0.06, p*0.10];
+    var inventario = [holdingITCMD+invExtra[0], holdingITCMD+invExtra[1]];
+    return {abert:abert,itbi:itbi,cart:cart,laudo:laudo,transf:transf,inicial:inicial,
+            manutMes:manutMes,manutAno:manutAno,temAlug:temAlug,pf:pf,pj:pj,econ:econ,
+            holdingITCMD:holdingITCMD,inventario:inventario};
+  }
+
+  function row(label,val,cls){ return '<tr'+(cls?' class="'+cls+'"':'')+'><td>'+label+'</td><td class="v">'+val+'</td></tr>'; }
+
+  function render(){
+    var d=calc();
+    el('hpKInic').textContent = rng(d.inicial[0],d.inicial[1]);
+    el('hpKManut').textContent = rng(d.manutAno[0],d.manutAno[1]);
+
+    el('hpAbert').innerHTML =
+      row(ST.cen==='simples'?'Abertura simples (sem transferência imediata)':'Abertura estruturada + planejamento sucessório', rng(d.abert[0],d.abert[1])) +
+      row('<span style="color:#9AA2D0">Inclui contrato social, contábil, Junta, e-CNPJ e taxas</span>','',null).replace('<td class="v"></td>','<td class="v" style="color:#7A83AD">estimativa</td>');
+
+    el('hpTransf').innerHTML =
+      row('ITBI ('+pctf(ST.itbi)+' sobre '+brl(ST.patr)+')', brl(d.itbi)) +
+      row('Cartório e registro de imóveis (0,5%–1%)', rng(d.cart[0],d.cart[1])) +
+      row('Avaliações e laudos técnicos', rng(d.laudo[0],d.laudo[1])) +
+      row('Total da transferência', rng(d.transf[0],d.transf[1]), 'tot');
+
+    el('hpManut').innerHTML =
+      row(d.temAlug?'Com imóveis alugados — por mês':'Sem receita operacional — por mês', rng(d.manutMes[0],d.manutMes[1])) +
+      row('Por ano', rng(d.manutAno[0],d.manutAno[1]), 'tot');
+
+    if(d.temAlug){
+      el('hpTrib').innerHTML =
+        row('Receita de aluguel (mês)', brl(ST.alug)) +
+        row('Pessoa Física — IRPF (27,5% máx.)', brl2(d.pf)) +
+        row('Holding PJ — Lucro Presumido (11,33%–14,53%)', rng(d.pj[0],d.pj[1])) +
+        row('Economia mensal estimada (PF − PJ)', rng(Math.max(0,d.econ[0]),Math.max(0,d.econ[1])), 'tot');
+    } else {
+      el('hpTrib').innerHTML = row('<span style="color:#9AA2D0">Informe uma receita de aluguel para ver o comparativo PF × PJ.</span>','',null).replace('<td class="v"></td>','<td class="v"></td>');
+    }
+
+    var succ=[
+      {t:'Previdência (VGBL)', v:'~ R$ 0', d:'Transmissão direta aos beneficiários, fora do inventário. ITCMD em discussão por estado. IR só sobre o rendimento no resgate.', badge:'g', best:true, badgeTxt:'Mais eficiente'},
+      {t:'Holding (doação de quotas)', v:brl(d.holdingITCMD), d:'ITCMD de '+pctf(ST.itcmd)+' sobre '+brl(ST.patr)+'. Doação em vida com reserva de usufruto; evita inventário.', badge:'o', best:false, badgeTxt:'Planejado'},
+      {t:'Inventário direto', v:rng(d.inventario[0],d.inventario[1]), d:'ITCMD + honorários e custas (~6%–10%). Caminho mais caro e demorado quando não há planejamento.', badge:'r', best:false, badgeTxt:'Sem planejamento'}
+    ];
+    el('hpSucc').innerHTML = succ.map(function(s){
+      var col = s.badge==='g'?'#2BD9A6':(s.badge==='o'?'#F5B942':'#F87171');
+      return '<div class="hp-scard'+(s.best?' best':'')+'">'
+        +'<span class="hp-badge '+s.badge+'">'+s.badgeTxt+'</span>'
+        +'<div class="st">'+s.t+'</div>'
+        +'<div class="sv" style="color:'+col+'">'+s.v+'</div>'
+        +'<div class="sd">'+s.d+'</div></div>';
+    }).join('');
+  }
+
+  /* binds */
+  function syncPatr(fromR){
+    if(fromR){ ST.patr=n2(el('hpPatrR').value); el('hpPatr').value=brl(ST.patr); }
+    else { ST.patr=n2(el('hpPatr').value); var r=el('hpPatrR'); r.value=Math.max(r.min,Math.min(r.max,ST.patr)); }
+    el('hpPatrOut').textContent=brl(ST.patr); render();
+  }
+  function syncAlug(fromR){
+    if(fromR){ ST.alug=n2(el('hpAlugR').value); el('hpAlug').value=brl(ST.alug); }
+    else { ST.alug=n2(el('hpAlug').value); var r=el('hpAlugR'); r.value=Math.max(r.min,Math.min(r.max,ST.alug)); }
+    el('hpAlugOut').textContent=brl(ST.alug); render();
+  }
+
+  function bind(){
+    if(!el('hpPatr')) return;
+    el('hpPatr').addEventListener('input',function(){ syncPatr(false); });
+    el('hpPatr').addEventListener('blur',function(){ el('hpPatr').value=brl(ST.patr); });
+    el('hpPatrR').addEventListener('input',function(){ syncPatr(true); });
+    el('hpAlug').addEventListener('input',function(){ syncAlug(false); });
+    el('hpAlug').addEventListener('blur',function(){ el('hpAlug').value=brl(ST.alug); });
+    el('hpAlugR').addEventListener('input',function(){ syncAlug(true); });
+    el('hpItbi').addEventListener('input',function(){ ST.itbi=parseFloat(el('hpItbi').value); el('hpItbiOut').textContent=pctf(ST.itbi); render(); });
+    el('hpItcmd').addEventListener('input',function(){ ST.itcmd=parseFloat(el('hpItcmd').value); el('hpItcmdOut').textContent=pctf(ST.itcmd); render(); });
+    Array.prototype.forEach.call(el('hpCen').querySelectorAll('button'),function(b){
+      b.addEventListener('click',function(){ ST.cen=b.getAttribute('data-c'); Array.prototype.forEach.call(el('hpCen').querySelectorAll('button'),function(x){x.classList.toggle('on',x===b);}); render(); });
+    });
+    el('hpPng').addEventListener('click',gerarPNG);
+    render();
+  }
+
+  /* ===== PNG (canvas nativo, tema rico) ===== */
+  function gerarPNG(){
+    var d=calc();
+    var W=1080, pad=64;
+    var c=document.createElement('canvas'); var DPR=2; c.width=W*DPR; var ctx=c.getContext('2d'); ctx.scale(DPR,DPR);
+    /* medir altura: layout fixo, calculamos H aproximado */
+    var H=1400; c.height=H*DPR; ctx.scale(1,1);
+    // fundo
+    var g=ctx.createLinearGradient(0,0,0,H); g.addColorStop(0,'#0A0F38'); g.addColorStop(1,'#070B2E'); ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
+    ctx.fillStyle='#F26522'; ctx.fillRect(0,0,10,H);
+    var y=pad;
+    ctx.textBaseline='top';
+    ctx.fillStyle='#F26522'; ctx.font='800 30px Sora,sans-serif'; ctx.fillText('rico · Holding Patrimonial', pad, y); y+=42;
+    ctx.fillStyle='#9AA2D0'; ctx.font='600 16px Manrope,sans-serif';
+    ctx.fillText('Patrimônio: '+brl(ST.patr)+'   ·   ITBI '+pctf(ST.itbi)+'   ·   ITCMD '+pctf(ST.itcmd)+'   ·   Abertura '+(ST.cen==='simples'?'simples':'estruturada'), pad, y); y+=22;
+    ctx.fillText(new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'long',year:'numeric'}), pad, y); y+=40;
+
+    function sectionTitle(num,txt){ ctx.fillStyle='#F26522'; ctx.font='800 15px Sora,sans-serif'; ctx.fillText(num+'.  '+txt.toUpperCase(), pad, y); y+=30; }
+    function line(label,val,strong){
+      ctx.fillStyle= strong?'#fff':'#DDE0F5'; ctx.font=(strong?'800 ':'600 ')+'16px Manrope,sans-serif';
+      ctx.fillText(label, pad, y);
+      ctx.textAlign='right'; ctx.fillStyle= strong?'#F5B942':'#fff'; ctx.font='700 16px Manrope,sans-serif';
+      ctx.fillText(val, W-pad, y); ctx.textAlign='left';
+      y+=27; ctx.strokeStyle='rgba(120,130,210,.15)'; ctx.beginPath(); ctx.moveTo(pad,y-6); ctx.lineTo(W-pad,y-6); ctx.stroke();
+    }
+    // KPIs
+    function kpi(x,w,lbl,val){ ctx.fillStyle='#0A0E3F'; roundRect(ctx,x,y,w,72,12); ctx.fill();
+      ctx.fillStyle='#9AA2D0'; ctx.font='700 12px Sora,sans-serif'; ctx.fillText(lbl.toUpperCase(), x+16, y+15);
+      ctx.fillStyle='#F5B942'; ctx.font='800 22px Sora,sans-serif'; ctx.fillText(val, x+16, y+36); }
+    kpi(pad, (W-2*pad-16)/2, 'Custo inicial', rng(d.inicial[0],d.inicial[1]));
+    kpi(pad+(W-2*pad-16)/2+16, (W-2*pad-16)/2, 'Manutenção/ano', rng(d.manutAno[0],d.manutAno[1]));
+    y+=92;
+
+    sectionTitle(1,'Abertura ('+(ST.cen==='simples'?'simples':'estruturada')+')');
+    line('Constituição, contábil, taxas e e-CNPJ', rng(d.abert[0],d.abert[1])); y+=8;
+    sectionTitle(2,'Transferência dos imóveis');
+    line('ITBI ('+pctf(ST.itbi)+')', brl(d.itbi));
+    line('Cartório e registro (0,5%–1%)', rng(d.cart[0],d.cart[1]));
+    line('Avaliações e laudos', rng(d.laudo[0],d.laudo[1]));
+    line('Total da transferência', rng(d.transf[0],d.transf[1]), true); y+=8;
+    sectionTitle(3,'Manutenção recorrente');
+    line(d.temAlug?'Com aluguel (mês)':'Sem receita (mês)', rng(d.manutMes[0],d.manutMes[1]));
+    line('Por ano', rng(d.manutAno[0],d.manutAno[1]), true); y+=8;
+    if(d.temAlug){
+      sectionTitle(4,'Aluguel · PF × Holding (PJ)');
+      line('Pessoa Física — IRPF (27,5% máx.)', brl2(d.pf));
+      line('Holding PJ — Lucro Presumido', rng(d.pj[0],d.pj[1]));
+      line('Economia mensal (PF − PJ)', rng(Math.max(0,d.econ[0]),Math.max(0,d.econ[1])), true); y+=8;
+    }
+    sectionTitle(5,'Sucessão · doação e previdência');
+    line('Previdência (VGBL) — fora do inventário', '~ R$ 0');
+    line('Holding — doação de quotas (ITCMD '+pctf(ST.itcmd)+')', brl(d.holdingITCMD));
+    line('Inventário direto (ITCMD + custas)', rng(d.inventario[0],d.inventario[1]), true);
+    y+=20;
+    ctx.fillStyle='#7A83AD'; ctx.font='400 12px Manrope,sans-serif';
+    wrap(ctx,'Estimativas de mercado, não constituem consultoria jurídica/contábil. ITBI varia por município; ITCMD e a incidência sobre previdência variam por estado. Validar com advogado e contador.', pad, y, W-2*pad, 17);
+
+    // recorta a altura usada
+    var used=y+70;
+    var c2=document.createElement('canvas'); c2.width=W*DPR; c2.height=used*DPR; var x2=c2.getContext('2d');
+    x2.drawImage(c,0,0,W*DPR,used*DPR,0,0,W*DPR,used*DPR);
+    var url=c2.toDataURL('image/png');
+    if(typeof window.mostrarPngModal==='function') window.mostrarPngModal(url,'Holding Patrimonial.png',{accent:'#F26522',hint:'Baixe ou copie a imagem para enviar ao cliente.'});
+    else { var a=document.createElement('a'); a.href=url; a.download='Holding Patrimonial.png'; a.click(); }
+  }
+  function roundRect(ctx,x,y,w,h,r){ ctx.beginPath(); ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r); ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath(); }
+  function wrap(ctx,text,x,y,maxW,lh){ var words=text.split(' '),line=''; for(var i=0;i<words.length;i++){ var t=line+words[i]+' '; if(ctx.measureText(t).width>maxW && i>0){ ctx.fillText(line,x,y); line=words[i]+' '; y+=lh; } else line=t; } ctx.fillText(line,x,y); }
+
+  if(document.readyState==='loading'){ document.addEventListener('DOMContentLoaded', bind); } else { bind(); }
+  window._toolInit=window._toolInit||{}; window._toolInit['holding']=bind;
+})();
+</script>
+
   <div class="g-panel" id="p-aderencia" data-tool="aderencia">
     <div class="adw">
       <div class="ad-header">
