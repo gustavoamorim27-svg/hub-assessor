@@ -1568,7 +1568,7 @@ body.mm .ajbtn{ padding:11px 16px !important; font-size:14px !important; }
     </button>
     <button class="g-tab" data-panel="holding" onclick="showPanel('holding')">
       <svg viewBox="0 0 24 24"><path d="M3 21h18M5 21V8l7-4 7 4v13M10 21v-6h4v6"/></svg>
-      Holding Patrimonial
+      Sucessão
     </button>
   </div>
 <style id="g-ticker-css">
@@ -4652,7 +4652,7 @@ html.theme-light .pm-alloc{ background:#fff; }
     #p-holding .hp-kpi .lbl{font-size:10.5px;color:#9AA2D0;text-transform:uppercase;letter-spacing:.5px;font-weight:700}
     #p-holding .hp-kpi .val{font-family:'Sora';font-weight:800;font-size:18px;color:#fff;margin-top:4px}
     #p-holding .hp-kpi .val.acc{color:#F5B942}
-    #p-holding .hp-succ{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+    #p-holding .hp-succ{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px}
     @media(max-width:680px){#p-holding .hp-succ{grid-template-columns:1fr}}
     #p-holding .hp-scard{background:#0A0E3F;border:1px solid rgba(120,130,210,.2);border-radius:12px;padding:14px}
     #p-holding .hp-scard.best{border-color:#2BD9A6}
@@ -4670,7 +4670,7 @@ html.theme-light .pm-alloc{ background:#fff; }
   <div class="hp-wrap">
     <div class="hp-head">
       <div>
-        <div class="hp-logo">rico &middot; Holding Patrimonial</div>
+        <div class="hp-logo">rico &middot; Suces&atilde;o Patrimonial</div>
         <div class="hp-sub">Estimativa de custos para constituir uma holding de imóveis. Ajuste o patrimônio e as alíquotas — tudo recalcula na hora. Valores são estimativas de mercado e variam por município e estado.</div>
       </div>
       <button class="hp-png" id="hpPng">Gerar PNG</button>
@@ -4738,7 +4738,7 @@ html.theme-light .pm-alloc{ background:#fff; }
         <div class="hp-card">
           <div class="hp-blocktitle"><span class="n">5</span> Sucessão &middot; doação e previdência</div>
           <div class="hp-succ" id="hpSucc"></div>
-          <div class="hp-note">A <b>Previdência (VGBL)</b> transmite direto aos beneficiários, fora do inventário; o ITCMD sobre VGBL é tema em discussão e varia por estado. No resgate, o IR incide só sobre o rendimento (regressivo, mínimo 10%). O <b>ITCMD</b> da doação de quotas varia de 2% a 8% conforme o estado.</div>
+          <div class="hp-note">A <b>Previdência (VGBL)</b> transmite direto aos beneficiários, fora do inventário; o ITCMD sobre VGBL é tema em discussão e varia por estado. No resgate, o IR incide só sobre o rendimento (regressivo, mínimo 10%). O <b>seguro de vida (Whole Life)</b> paga o capital aos beneficiários fora do inventário e isento (art. 794 do Código Civil), servindo de liquidez sucessória. O <b>ITCMD</b> da doação de quotas varia de 2% a 8% conforme o estado.</div>
         </div>
 
         <div class="hp-disc">
@@ -4823,6 +4823,7 @@ html.theme-light .pm-alloc{ background:#fff; }
 
     var succ=[
       {t:'Previdência (VGBL)', v:'~ R$ 0', d:'Transmissão direta aos beneficiários, fora do inventário. ITCMD em discussão por estado. IR só sobre o rendimento no resgate.', badge:'g', best:true, badgeTxt:'Mais eficiente'},
+      {t:'Seguro de Vida (Whole Life)', v:'~ R$ 0', d:'Seguro vitalício: o capital vai direto aos beneficiários, fora do inventário e isento de ITCMD/IR (art. 794 CC). Gera liquidez imediata — inclusive para pagar o ITCMD de outros bens. Custo = prêmio ao longo do tempo.', badge:'g', best:false, badgeTxt:'Liquidez imediata'},
       {t:'Holding (doação de quotas)', v:brl(d.holdingITCMD), d:'ITCMD de '+pctf(ST.itcmd)+' sobre '+brl(ST.patr)+'. Doação em vida com reserva de usufruto; evita inventário.', badge:'o', best:false, badgeTxt:'Planejado'},
       {t:'Inventário direto', v:rng(d.inventario[0],d.inventario[1]), d:'ITCMD + honorários e custas (~6%–10%). Caminho mais caro e demorado quando não há planejamento.', badge:'r', best:false, badgeTxt:'Sem planejamento'}
     ];
@@ -4877,7 +4878,7 @@ html.theme-light .pm-alloc{ background:#fff; }
     ctx.fillStyle='#F26522'; ctx.fillRect(0,0,10,H);
     var y=pad;
     ctx.textBaseline='top';
-    ctx.fillStyle='#F26522'; ctx.font='800 30px Sora,sans-serif'; ctx.fillText('rico · Holding Patrimonial', pad, y); y+=42;
+    ctx.fillStyle='#F26522'; ctx.font='800 30px Sora,sans-serif'; ctx.fillText('rico · Sucessão Patrimonial', pad, y); y+=42;
     ctx.fillStyle='#9AA2D0'; ctx.font='600 16px Manrope,sans-serif';
     ctx.fillText('Patrimônio: '+brl(ST.patr)+'   ·   ITBI '+pctf(ST.itbi)+'   ·   ITCMD '+pctf(ST.itcmd)+'   ·   Abertura '+(ST.cen==='simples'?'simples':'estruturada'), pad, y); y+=22;
     ctx.fillText(new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'long',year:'numeric'}), pad, y); y+=40;
@@ -4916,6 +4917,7 @@ html.theme-light .pm-alloc{ background:#fff; }
     }
     sectionTitle(5,'Sucessão · doação e previdência');
     line('Previdência (VGBL) — fora do inventário', '~ R$ 0');
+    line('Seguro de Vida (Whole Life) — fora do inventário', '~ R$ 0');
     line('Holding — doação de quotas (ITCMD '+pctf(ST.itcmd)+')', brl(d.holdingITCMD));
     line('Inventário direto (ITCMD + custas)', rng(d.inventario[0],d.inventario[1]), true);
     y+=20;
@@ -4927,8 +4929,8 @@ html.theme-light .pm-alloc{ background:#fff; }
     var c2=document.createElement('canvas'); c2.width=W*DPR; c2.height=used*DPR; var x2=c2.getContext('2d');
     x2.drawImage(c,0,0,W*DPR,used*DPR,0,0,W*DPR,used*DPR);
     var url=c2.toDataURL('image/png');
-    if(typeof window.mostrarPngModal==='function') window.mostrarPngModal(url,'Holding Patrimonial.png',{accent:'#F26522',hint:'Baixe ou copie a imagem para enviar ao cliente.'});
-    else { var a=document.createElement('a'); a.href=url; a.download='Holding Patrimonial.png'; a.click(); }
+    if(typeof window.mostrarPngModal==='function') window.mostrarPngModal(url,'Sucessão Patrimonial.png',{accent:'#F26522',hint:'Baixe ou copie a imagem para enviar ao cliente.'});
+    else { var a=document.createElement('a'); a.href=url; a.download='Sucessão Patrimonial.png'; a.click(); }
   }
   function roundRect(ctx,x,y,w,h,r){ ctx.beginPath(); ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r); ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath(); }
   function wrap(ctx,text,x,y,maxW,lh){ var words=text.split(' '),line=''; for(var i=0;i<words.length;i++){ var t=line+words[i]+' '; if(ctx.measureText(t).width>maxW && i>0){ ctx.fillText(line,x,y); line=words[i]+' '; y+=lh; } else line=t; } ctx.fillText(line,x,y); }
