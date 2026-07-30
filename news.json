@@ -1,15 +1,85 @@
 {
-  "updated": "28/07/2026 15:07",
+  "updated": "30/07/2026 09:13",
   "items": [
-    { "region": "nacional", "title": "Ibovespa luta para manter os 177 mil pontos", "resumo": "Bolsa oscila com IPCA-15 no radar e mercado avaliando resultados da Petrobras.", "source": "InfoMoney", "date": "28 jul 2026", "url": "https://www.infomoney.com.br/mercados/ibovespa-hoje-bolsa-de-valores-ao-vivo-28072026/" },
-    { "region": "nacional", "title": "IPCA-15 sobe apenas 0,06% em julho e surpreende", "resumo": "Desaceleracao ampla, apoiada pela queda dos alimentos, aproxima inflacao da meta.", "source": "InfoMoney", "date": "28 jul 2026", "url": "https://www.infomoney.com.br/mercados/ibovespa-hoje-bolsa-de-valores-ao-vivo-28072026/" },
-    { "region": "nacional", "title": "Copom ganha espaco para seguir cortando a Selic", "resumo": "Inflacao menor reforca aposta de corte de 0,25 ponto na reuniao de agosto.", "source": "Toro Investimentos", "date": "28 jul 2026", "url": "https://blog.toroinvestimentos.com.br/renda-fixa/proximas-reunioes-do-copom/" },
-    { "region": "nacional", "title": "Dolar avanca ante o real apos tombo do petroleo", "resumo": "Moeda americana fecha em alta de 0,62%, a R$ 5,11, com Focus revisando cambio.", "source": "Bom Dia Mercado", "date": "28 jul 2026", "url": "https://www.bomdiamercado.com.br/mercado-financeiro/cambio/dolar-avanca-diante-do-real-apos-tombo-do-petroleo/" },
-    { "region": "nacional", "title": "Focus corta projecao do IPCA 2026 para 5,15%", "resumo": "Mercado ve inflacao menor e mantem Selic em 14% no fim do ano.", "source": "EBC Financial Group", "date": "28 jul 2026", "url": "https://www.ebc.com/pt/forex/boletim-focus-ipca-2026-cai-dolar-selic-ibovespa" },
-    { "region": "internacional", "title": "Fed inicia reuniao de dois dias com juros no radar", "resumo": "Investidores aguardam decisao e projecoes economicas do banco central americano.", "source": "Kiplinger", "date": "28 jul 2026", "url": "https://www.kiplinger.com/investing/live/fed-meeting-updates-and-commentary-july-2026" },
-    { "region": "internacional", "title": "Petroleo desaba 7% com pausa entre EUA e Ira", "resumo": "Brent recua abaixo de US$ 90 apos retomada de conversas diplomaticas.", "source": "CNBC", "date": "27 jul 2026", "url": "https://www.cnbc.com/2026/07/27/oil-price-wti-brent-slide-as-iran-reportedly-may-halt-attacks.html" },
-    { "region": "internacional", "title": "Dow sobe 600 pontos com balancos e queda do petroleo", "resumo": "Wall Street avanca impulsionada por resultados fortes e alivio nas commodities.", "source": "CNBC", "date": "27 jul 2026", "url": "https://www.cnbc.com/2026/07/27/stock-market-today-live-updates.html" },
-    { "region": "internacional", "title": "Nasdaq recua com venda de chips antes do Fed", "resumo": "Selloff de semicondutores pressiona indice de tecnologia em semana decisiva.", "source": "Schwab", "date": "27 jul 2026", "url": "https://www.schwab.com/learn/story/stock-market-update-open" },
-    { "region": "internacional", "title": "Brent cai a US$ 86 com foco na decisao do Fed", "resumo": "Petroleo estende perdas apos maior tombo em mais de tres meses na segunda.", "source": "Trading Economics", "date": "28 jul 2026", "url": "https://tradingeconomics.com/commodity/brent-crude-oil" }
+    {
+      "region": "nacional",
+      "title": "Ibovespa fecha em queda na contramao do exterior; dolar recua",
+      "resumo": "Bolsa cede pressionada por realizacao de lucros enquanto o dolar perde forca frente ao real.",
+      "source": "InfoMoney",
+      "date": "30 jul 2026",
+      "url": "https://www.infomoney.com.br/mercados/ibovespa-hoje-bolsa-de-valores-ao-vivo-06072026/"
+    },
+    {
+      "region": "nacional",
+      "title": "IPCA-15 de julho fica em 0,06% e reforca cenario de corte da Selic",
+      "resumo": "Previa da inflacao veio bem abaixo dos 0,18% esperados e amplia espaco para afrouxamento monetario.",
+      "source": "Suno",
+      "date": "30 jul 2026",
+      "url": "https://www.suno.com.br/noticias/ipca-15-julho-2026-006-abaixo-esperado-selic-copom-go/"
+    },
+    {
+      "region": "nacional",
+      "title": "Com inflacao fraca em julho, Copom deve cortar juros em agosto",
+      "resumo": "Leitura benigna dos precos consolida aposta em novo corte da Selic na reuniao de 4 e 5 de agosto.",
+      "source": "O Tempo",
+      "date": "29 jul 2026",
+      "url": "https://www.otempo.com.br/economia/2026/7/29/com-inflacao-baixa-em-julho-copom-vai-cortar-taxa-de-juros"
+    },
+    {
+      "region": "nacional",
+      "title": "Selic a 14,25% apos quarto corte consecutivo do Copom",
+      "resumo": "Taxa basica recua desde o pico de 15% e IPCA acumulado em 12 meses esta em 4,64%.",
+      "source": "Credited",
+      "date": "28 jul 2026",
+      "url": "https://credited.com.br/noticias/2026/07/28/selic-a-1425-e-ipca-acumulado-de-464-o-que-muda-no-seu-bolso-em-julho-de-2026/"
+    },
+    {
+      "region": "nacional",
+      "title": "Dolar se valoriza contra o real pelo segundo mes consecutivo",
+      "resumo": "Moeda americana sobe no mes apesar de recuo pontual, refletindo cautela externa e tensao geopolitica.",
+      "source": "Bloomberg Linea",
+      "date": "30 jul 2026",
+      "url": "https://www.bloomberglinea.com.br/mercados/ibov:ind/"
+    },
+    {
+      "region": "internacional",
+      "title": "Fed mantem juros e Dow despenca mais de 1.100 pontos",
+      "resumo": "Decisao de manter a taxa nao acalma o mercado e as bolsas de Nova York recuam com forca.",
+      "source": "Yahoo Finance",
+      "date": "29 jul 2026",
+      "url": "https://finance.yahoo.com/markets/live/stock-market-today-wednesday-july-29-dow-sp-500-nasdaq-082009165.html"
+    },
+    {
+      "region": "internacional",
+      "title": "Juro do Treasury de 30 anos supera 5,2%, maior nivel desde 2007",
+      "resumo": "Rendimentos dos titulos disparam com duvidas sobre a firmeza do Fed no combate a inflacao.",
+      "source": "CNBC",
+      "date": "29 jul 2026",
+      "url": "https://www.cnbc.com/2026/07/28/stock-market-today-live-updates.html"
+    },
+    {
+      "region": "internacional",
+      "title": "Petroleo dispara com tensao no Oriente Medio; Brent vai a US$ 89",
+      "resumo": "Brent sobe 6,6% e o WTI avanca apos reacender dos conflitos entre EUA e Ira.",
+      "source": "BNN Bloomberg",
+      "date": "29 jul 2026",
+      "url": "https://www.bnnbloomberg.ca/business/economics/2026/07/29/us-markets-mixed-ahead-of-fed-decision-and-oil-prices-jump-as-middle-east-violence-flares/"
+    },
+    {
+      "region": "internacional",
+      "title": "S&P 500 tenta recuperacao apos forte queda na vespera",
+      "resumo": "Indice ensaia leve alta enquanto investidores digerem o Fed e aguardam balancos de Big Techs.",
+      "source": "Benzinga",
+      "date": "30 jul 2026",
+      "url": "https://www.benzinga.com/markets/prediction-markets/26/07/60788305/sp500-july-30-open-up-or-down-polymarket-fed-bond-yields-big-tech-earnings-oil"
+    },
+    {
+      "region": "internacional",
+      "title": "Acoes de chips caem antes dos balancos das Big Techs",
+      "resumo": "Lucro da SK Hynix abaixo do esperado alimenta temor de desaceleracao do boom de inteligencia artificial.",
+      "source": "CNBC",
+      "date": "27 jul 2026",
+      "url": "https://www.cnbc.com/2026/07/27/stock-market-today-live-updates.html"
+    }
   ]
 }
