@@ -4933,10 +4933,10 @@ html.theme-light .pm-alloc{ background:#fff; }
     ].forEach(function(t){ y=wrap(ctx,'•  '+t, pad, y, W-2*pad, 18)+2; });
     y+=14;
     ctx.fillStyle='#7A83AD'; ctx.font='400 12px Manrope,sans-serif';
-    wrap(ctx,'Estimativas de mercado, não constituem consultoria jurídica/contábil. ITBI varia por município; ITCMD e a incidência sobre previdência variam por estado. Validar com advogado e contador.', pad, y, W-2*pad, 17);
+    y=wrap(ctx,'Estimativas de mercado, não constituem consultoria jurídica/contábil. ITBI varia por município; ITCMD e a incidência sobre previdência variam por estado. Validar com advogado e contador.', pad, y, W-2*pad, 17);
 
-    // recorta a altura usada
-    var used=y+70;
+    // recorta exatamente na altura usada
+    var used=Math.min(H, y+34);
     var c2=document.createElement('canvas'); c2.width=W*DPR; c2.height=used*DPR; var x2=c2.getContext('2d');
     x2.drawImage(c,0,0,W*DPR,used*DPR,0,0,W*DPR,used*DPR);
     var url=c2.toDataURL('image/png');
