@@ -4776,8 +4776,8 @@ html.theme-light .pm-alloc{ background:#fff; }
   function brl(v){ return 'R$ '+Math.round(Number(v)||0).toLocaleString('pt-BR'); }
   var UFS=['AC','AL','AP','AM','BA','CE','DF','ES','GO','MA','MT','MS','MG','PA','PB','PR','PE','PI','RJ','RN','RS','RO','RR','SC','SP','SE','TO'];
   var ITBI={SP:3,RJ:3,MG:3,ES:3,PR:2,SC:2,RS:2,BA:2.5,CE:2.5,PE:2.5,MA:2.5,PB:2.5,RN:2.5,AL:2.5,SE:2.5,PI:2.5,AM:3,PA:3,RO:3,RR:3,AP:3,AC:3,TO:3,MT:3,MS:3,GO:3,DF:3};
-  var IDADE=[[35,0.7],[45,1.0],[55,1.5],[65,2.2],[75,3.2]];
-  function fatorIdade(a){ for(var i=0;i<IDADE.length;i++){ if(a<=IDADE[i][0]) return IDADE[i][1]; } return 3.2; }
+  var IDADE=[[36,1.0],[40,1.15],[45,1.4],[50,1.7],[55,2.1],[60,2.6],[65,3.2],[70,4.0],[75,4.8]];
+  function fatorIdade(a){ for(var i=0;i<IDADE.length;i++){ if(a<=IDADE[i][0]) return IDADE[i][1]; } return 5.5; }
   var CHART=null;
   var ST={patr:2000000,imov:70,alug:10000,herd:2,uf:'SP',hor:10,obj:'Todos',idade:45};
 
@@ -4787,14 +4787,17 @@ html.theme-light .pm-alloc{ background:#fff; }
     var custoInicial=valImov*itbiP/100+valImov*0.0075+hon+3000+1200;
     var manutAno=ST.alug>0?24000:12000, econAno=ST.alug*12*(0.275-0.1453), custoLiqAno=manutAno-econAno;
     var payback=econAno>0?custoInicial/econAno:null;
-    var premioMes=ST.patr*0.0004*fatorIdade(ST.idade), premioAno=premioMes*12, cobertura=ST.patr*1.2;
+    var cobertura=ST.patr*0.20;                         /* capital segurado = 20% do patrimonio (liquidez sucessoria) */
+    var premioAno=cobertura*0.037*fatorIdade(ST.idade); /* premio nivelado — ancora real XP Toda Vida: 3,70%/ano aos 36; pago por 10 anos */
     var anos=[],hBruto=[],hLiq=[],wlBruto=[],wlResg=[],wlLiq=[];
     for(var n=0;n<=ST.hor;n++){ anos.push(n);
       hBruto.push(custoInicial+manutAno*n); hLiq.push(custoInicial+custoLiqAno*n);
-      var wb=premioAno*n;
-      var resgBr=premioAno*(Math.pow(1.045,n)-1)/0.045*0.7;
-      var resg=Math.min(resgBr, wb);
-      wlBruto.push(wb); wlResg.push(resg); wlLiq.push(Math.max(0, wb-resg)); }
+      var pagos=premioAno*Math.min(n,10);               /* premios cessam apos 10 anos (10-pay) */
+      var resg;                                         /* valor de resgate — curva real (0 ate ~2 anos, sobe e fica < premios pagos) */
+      if(n<=2) resg=0;
+      else if(n<=10) resg=pagos*Math.min(1,0.11*(n-1));
+      else resg=(premioAno*10*0.99)*Math.pow(1.04,n-10);
+      wlBruto.push(pagos); wlResg.push(resg); wlLiq.push(Math.max(0,pagos-resg)); }
     return {custoInicial:custoInicial,econAno:econAno,custoLiqAno:custoLiqAno,payback:payback,premioAno:premioAno,cobertura:cobertura,
             anos:anos,hBruto:hBruto,hLiq:hLiq,wlBruto:wlBruto,wlResg:wlResg,wlLiq:wlLiq};
   }
@@ -4956,14 +4959,14 @@ html.theme-light .pm-alloc{ background:#fff; }
             <div class="hp-kpi"><div class="lbl">Capital segurado (cobertura)</div><div class="val" id="hpCapital">—</div></div>
           </div>
           <div class="hp-field">
-            <label>Whole Life — custo total em 10 anos (% do capital) <b id="hpTwlOut">50%</b></label>
-            <input type="range" id="hpTwl" min="10" max="120" step="5" value="50">
+            <label>Whole Life — custo total em 10 anos (% do capital) <b id="hpTwlOut">37%</b></label>
+            <input type="range" id="hpTwl" min="10" max="120" step="5" value="37">
           </div>
           <div class="hp-field" style="margin-bottom:0">
             <label>Seguro tradicional — prêmio ao ano hoje (% do capital) <b id="hpTtrOut">1,0%</b></label>
             <input type="range" id="hpTtr" min="0.2" max="5" step="0.1" value="1">
           </div>
-          <div class="hp-note" style="margin-bottom:0">O capital segurado acompanha o patrimônio (padrão 20%). Os percentuais acima são ilustrativos e <b>personalizáveis</b> — ajuste conforme a cotação real da seguradora e a idade do cliente.</div>
+          <div class="hp-note" style="margin-bottom:0">O capital segurado acompanha o patrimônio (padrão 20%). Padrão calibrado por uma cotação real XP Toda Vida (10 anos): prêmio ~3,7%/ano aos 36 (≈37% do capital em 10 anos), subindo com a idade. Ajuste conforme a cotação da seguradora.</div>
         </div>
 
         <div class="hp-card">
@@ -4991,7 +4994,7 @@ html.theme-light .pm-alloc{ background:#fff; }
   function rng(a,b){ a=Math.round(a); b=Math.round(b); return 'R$ '+a.toLocaleString('pt-BR')+' – '+b.toLocaleString('pt-BR'); }
   function pctf(p){ return p.toFixed(1).replace('.',',')+'%'; }
 
-  var ST={ patr:2000000, itbi:3, itcmd:4, alug:10000, cobertura:20, taxaWL:50, taxaTrad:1.0, cen:'simples' };
+  var ST={ patr:2000000, itbi:3, itcmd:4, alug:10000, cobertura:20, taxaWL:37, taxaTrad:1.0, cen:'simples' };
 
   /* IRPF mensal (carnê-leão) — tabela progressiva */
   function irpfMes(base){
