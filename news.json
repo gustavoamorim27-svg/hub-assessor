@@ -1,85 +1,15 @@
 {
-  "updated": "30/07/2026 09:13",
+  "updated": "30/07/2026 15:07",
   "items": [
-    {
-      "region": "nacional",
-      "title": "Ibovespa fecha em queda na contramao do exterior; dolar recua",
-      "resumo": "Bolsa cede pressionada por realizacao de lucros enquanto o dolar perde forca frente ao real.",
-      "source": "InfoMoney",
-      "date": "30 jul 2026",
-      "url": "https://www.infomoney.com.br/mercados/ibovespa-hoje-bolsa-de-valores-ao-vivo-06072026/"
-    },
-    {
-      "region": "nacional",
-      "title": "IPCA-15 de julho fica em 0,06% e reforca cenario de corte da Selic",
-      "resumo": "Previa da inflacao veio bem abaixo dos 0,18% esperados e amplia espaco para afrouxamento monetario.",
-      "source": "Suno",
-      "date": "30 jul 2026",
-      "url": "https://www.suno.com.br/noticias/ipca-15-julho-2026-006-abaixo-esperado-selic-copom-go/"
-    },
-    {
-      "region": "nacional",
-      "title": "Com inflacao fraca em julho, Copom deve cortar juros em agosto",
-      "resumo": "Leitura benigna dos precos consolida aposta em novo corte da Selic na reuniao de 4 e 5 de agosto.",
-      "source": "O Tempo",
-      "date": "29 jul 2026",
-      "url": "https://www.otempo.com.br/economia/2026/7/29/com-inflacao-baixa-em-julho-copom-vai-cortar-taxa-de-juros"
-    },
-    {
-      "region": "nacional",
-      "title": "Selic a 14,25% apos quarto corte consecutivo do Copom",
-      "resumo": "Taxa basica recua desde o pico de 15% e IPCA acumulado em 12 meses esta em 4,64%.",
-      "source": "Credited",
-      "date": "28 jul 2026",
-      "url": "https://credited.com.br/noticias/2026/07/28/selic-a-1425-e-ipca-acumulado-de-464-o-que-muda-no-seu-bolso-em-julho-de-2026/"
-    },
-    {
-      "region": "nacional",
-      "title": "Dolar se valoriza contra o real pelo segundo mes consecutivo",
-      "resumo": "Moeda americana sobe no mes apesar de recuo pontual, refletindo cautela externa e tensao geopolitica.",
-      "source": "Bloomberg Linea",
-      "date": "30 jul 2026",
-      "url": "https://www.bloomberglinea.com.br/mercados/ibov:ind/"
-    },
-    {
-      "region": "internacional",
-      "title": "Fed mantem juros e Dow despenca mais de 1.100 pontos",
-      "resumo": "Decisao de manter a taxa nao acalma o mercado e as bolsas de Nova York recuam com forca.",
-      "source": "Yahoo Finance",
-      "date": "29 jul 2026",
-      "url": "https://finance.yahoo.com/markets/live/stock-market-today-wednesday-july-29-dow-sp-500-nasdaq-082009165.html"
-    },
-    {
-      "region": "internacional",
-      "title": "Juro do Treasury de 30 anos supera 5,2%, maior nivel desde 2007",
-      "resumo": "Rendimentos dos titulos disparam com duvidas sobre a firmeza do Fed no combate a inflacao.",
-      "source": "CNBC",
-      "date": "29 jul 2026",
-      "url": "https://www.cnbc.com/2026/07/28/stock-market-today-live-updates.html"
-    },
-    {
-      "region": "internacional",
-      "title": "Petroleo dispara com tensao no Oriente Medio; Brent vai a US$ 89",
-      "resumo": "Brent sobe 6,6% e o WTI avanca apos reacender dos conflitos entre EUA e Ira.",
-      "source": "BNN Bloomberg",
-      "date": "29 jul 2026",
-      "url": "https://www.bnnbloomberg.ca/business/economics/2026/07/29/us-markets-mixed-ahead-of-fed-decision-and-oil-prices-jump-as-middle-east-violence-flares/"
-    },
-    {
-      "region": "internacional",
-      "title": "S&P 500 tenta recuperacao apos forte queda na vespera",
-      "resumo": "Indice ensaia leve alta enquanto investidores digerem o Fed e aguardam balancos de Big Techs.",
-      "source": "Benzinga",
-      "date": "30 jul 2026",
-      "url": "https://www.benzinga.com/markets/prediction-markets/26/07/60788305/sp500-july-30-open-up-or-down-polymarket-fed-bond-yields-big-tech-earnings-oil"
-    },
-    {
-      "region": "internacional",
-      "title": "Acoes de chips caem antes dos balancos das Big Techs",
-      "resumo": "Lucro da SK Hynix abaixo do esperado alimenta temor de desaceleracao do boom de inteligencia artificial.",
-      "source": "CNBC",
-      "date": "27 jul 2026",
-      "url": "https://www.cnbc.com/2026/07/27/stock-market-today-live-updates.html"
-    }
+    { "region": "nacional", "title": "IPCA-15 sobe 0,06% em julho e fica abaixo do esperado", "resumo": "Previa da inflacao desacelera ante junho e surpreende o mercado, que projetava alta de 0,18%.", "source": "InfoMoney", "date": "30 jul 2026", "url": "https://www.infomoney.com.br/economia/ipca-15-previa-inflacao-ibge-julho-2026/" },
+    { "region": "nacional", "title": "Previa da inflacao reforca cenario de corte da Selic em agosto", "resumo": "Com IPCA-15 fraco, analistas veem espaco para novo corte de 0,25 ponto na proxima reuniao do Copom.", "source": "Suno", "date": "30 jul 2026", "url": "https://www.suno.com.br/noticias/ipca-15-julho-2026-006-abaixo-esperado-selic-copom-go/" },
+    { "region": "nacional", "title": "XP reduz projecao do IPCA de 2026 de 5,2% para 5,1%", "resumo": "Casa revisa estimativa de inflacao para baixo apos leitura mais benigna da previa de julho.", "source": "XP Investimentos", "date": "30 jul 2026", "url": "https://conteudos.xpi.com.br/economia/ipca-15-de-julho-reduzimos-nossa-projecao-para-o-ipca-de-52-para-51-em-2026/" },
+    { "region": "nacional", "title": "Ibovespa recua com aversao a risco; dolar estavel perto de R$ 5,11", "resumo": "Bolsa cede em sessao de dois ritmos, com cambio ancorado pelo carrego da Selic de 14,25%.", "source": "Rio Times", "date": "30 jul 2026", "url": "https://www.riotimesonline.com/brazils-financial-morning-call-for-thursday-july-30-2026/" },
+    { "region": "nacional", "title": "Petrobras PN sobe quase 2% com plano de entrada em energia nuclear", "resumo": "Papeis avancam com giro elevado apos relatos de que a estatal prepara avanco no setor nuclear.", "source": "Rio Times", "date": "30 jul 2026", "url": "https://www.riotimesonline.com/brazil-markets-ibovespa-real-thursday-july-30-2026/" },
+    { "region": "internacional", "title": "Fed mantem juros entre 3,50% e 3,75% com tres dissidencias", "resumo": "Comite decide por 9 a 3 manter a taxa; tres presidentes regionais defenderam alta de 0,25 ponto.", "source": "CNBC", "date": "29 jul 2026", "url": "https://www.cnbc.com/2026/07/29/fed-rate-decision-july-2026.html" },
+    { "region": "internacional", "title": "Nasdaq salta com Microsoft liderando ganhos de tecnologia", "resumo": "Indices se recuperam apos queda induzida pelo Fed, impulsionados por resultados fortes de big techs.", "source": "Yahoo Finance", "date": "30 jul 2026", "url": "https://finance.yahoo.com/markets/live/stock-market-today-thursday-july-30-dow-sp-500-nasdaq-082255995.html" },
+    { "region": "internacional", "title": "Juro do Treasury de 30 anos atinge maxima de decadas perto de 5,24%", "resumo": "Titulo longo dispara com receios de que o Fed esteja atrasado no combate a inflacao.", "source": "24/7 Wall St", "date": "30 jul 2026", "url": "https://247wallst.com/investing/2026/07/30/stock-market-live-july-30-2026-sp-500-spy-pivoting-from-fed-induced-drop/" },
+    { "region": "internacional", "title": "Petroleo recua a US$ 83,86 apesar de ataques dos EUA a alvos no Ira", "resumo": "Barril cede mesmo com tensao geopolitica, em meio a temores de escalada no Oriente Medio.", "source": "Charles Schwab", "date": "30 jul 2026", "url": "https://www.schwab.com/learn/story/stock-market-update-open" },
+    { "region": "internacional", "title": "Dow caiu 1.100 pontos no pior dia desde abril de 2025 por temor de inflacao", "resumo": "Mercado reagiu ao receio de que o Fed esteja ficando para tras no controle dos precos.", "source": "CNBC", "date": "28 jul 2026", "url": "https://www.cnbc.com/2026/07/28/stock-market-today-live-updates.html" }
   ]
 }
