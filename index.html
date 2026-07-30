@@ -5199,17 +5199,16 @@ html.theme-light .pm-alloc{ background:#fff; }
     var Wd=W*DPR, Hd=H*DPR, used;
     try{
       var full=ctx.getImageData(0,0,Wd,Hd).data;
-      var ri=((Hd-4)*Wd+(Wd-4))*4, Rb=full[ri], Gb=full[ri+1], Bb=full[ri+2];   // cor de fundo de referência
       var cb=Math.round((y+20)*DPR);
+      // o fundo navy é sempre escuro (canais < 60); qualquer pixel claro é texto/conteúdo.
+      // começamos em x>40 p/ pular a faixa laranja da lateral.
       for(var yy=Hd-1; yy>=0; yy--){
         var hit=false;
-        for(var xx=Math.floor(30*DPR); xx<Wd-4; xx+=8){ var i=(yy*Wd+xx)*4;
-          if(full[i+3]<200) continue;                                            // transparente
-          if(full[i]>220&&full[i+1]>80&&full[i+1]<140&&full[i+2]<70) continue;    // faixa laranja
-          if(Math.abs(full[i]-Rb)+Math.abs(full[i+1]-Gb)+Math.abs(full[i+2]-Bb)>55){ hit=true; break; } }
+        for(var xx=Math.floor(40*DPR); xx<Wd-4; xx+=6){ var i=(yy*Wd+xx)*4;
+          if(full[i]>90 || full[i+1]>90 || full[i+2]>96){ hit=true; break; } }
         if(hit){ cb=yy; break; }
       }
-      used=Math.min(H, cb/DPR + 24);
+      used=Math.min(H, cb/DPR + 22);
     }catch(e){ used=Math.min(H, y+30); }
     // c2 com fundo navy OPACO (evita transparência/preto na exportação)
     var c2=document.createElement('canvas'); c2.width=Wd; c2.height=Math.round(used*DPR); var x2=c2.getContext('2d');
