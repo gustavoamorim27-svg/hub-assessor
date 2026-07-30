@@ -4664,6 +4664,8 @@ html.theme-light .pm-alloc{ background:#fff; }
     #p-holding .hp-badge.o{background:rgba(242,101,34,.16);color:#F26522}
     #p-holding .hp-badge.r{background:rgba(248,113,113,.16);color:#F87171}
     #p-holding .hp-note{background:rgba(245,185,66,.08);border-left:3px solid #F5B942;border-radius:0 8px 8px 0;padding:9px 12px;font-size:12px;color:#E7D9B4;line-height:1.5;margin:12px 0}
+    #p-holding .hp-warn{font-size:11px;color:#F5B942;line-height:1.45;margin-top:9px;border-top:1px dashed rgba(245,185,66,.28);padding-top:7px}
+    #p-holding .hp-warn b{color:#F5B942}
     #p-holding .hp-disc{color:#7A83AD;font-size:11px;line-height:1.55;margin-top:20px;border-top:1px solid rgba(120,130,210,.14);padding-top:14px}
   </style>
 
@@ -4822,10 +4824,10 @@ html.theme-light .pm-alloc{ background:#fff; }
     }
 
     var succ=[
-      {t:'Previdência (VGBL)', v:'~ R$ 0', d:'Transmissão direta aos beneficiários, fora do inventário. ITCMD em discussão por estado. IR só sobre o rendimento no resgate.', badge:'g', best:true, badgeTxt:'Mais eficiente'},
-      {t:'Seguro de Vida (Whole Life)', v:'~ R$ 0', d:'Seguro vitalício: o capital vai direto aos beneficiários, fora do inventário e isento de ITCMD/IR (art. 794 CC). Gera liquidez imediata — inclusive para pagar o ITCMD de outros bens. Custo = prêmio ao longo do tempo.', badge:'g', best:false, badgeTxt:'Liquidez imediata'},
-      {t:'Holding (doação de quotas)', v:brl(d.holdingITCMD), d:'ITCMD de '+pctf(ST.itcmd)+' sobre '+brl(ST.patr)+'. Doação em vida com reserva de usufruto; evita inventário.', badge:'o', best:false, badgeTxt:'Planejado'},
-      {t:'Inventário direto', v:rng(d.inventario[0],d.inventario[1]), d:'ITCMD + honorários e custas (~6%–10%). Caminho mais caro e demorado quando não há planejamento.', badge:'r', best:false, badgeTxt:'Sem planejamento'}
+      {t:'Previdência (VGBL)', v:'~ R$ 0', d:'Transmissão direta aos beneficiários, fora do inventário. ITCMD em discussão por estado. IR só sobre o rendimento no resgate.', warn:'Não abriga imóveis — cobre só o que for aportado em dinheiro. Tem taxas e prazo de carência.', badge:'g', best:true, badgeTxt:'Mais eficiente'},
+      {t:'Seguro de Vida (Whole Life)', v:'~ R$ 0', d:'Seguro vitalício: o capital vai direto aos beneficiários, fora do inventário e isento de ITCMD/IR (art. 794 CC). Gera liquidez imediata — inclusive para pagar o ITCMD de outros bens.', warn:'Prêmio vitalício: custo recorrente até o falecimento. Exige subscrição (avaliação de saúde).', badge:'g', best:false, badgeTxt:'Liquidez imediata'},
+      {t:'Holding (doação de quotas)', v:brl(d.holdingITCMD), d:'ITCMD de '+pctf(ST.itcmd)+' sobre '+brl(ST.patr)+'. Doação em vida com reserva de usufruto; evita inventário.', warn:'Custo alto de implantação (abertura + ITBI + cartório) e manutenção contábil recorrente. Só compensa com patrimônio grande e/ou receita de aluguel relevante — para valores menores, o custo pode não se pagar.', badge:'o', best:false, badgeTxt:'Planejado'},
+      {t:'Inventário direto', v:rng(d.inventario[0],d.inventario[1]), d:'ITCMD + honorários e custas (~6%–10%).', warn:'Mais caro e demorado; os bens ficam bloqueados durante todo o processo.', badge:'r', best:false, badgeTxt:'Sem planejamento'}
     ];
     el('hpSucc').innerHTML = succ.map(function(s){
       var col = s.badge==='g'?'#2BD9A6':(s.badge==='o'?'#F5B942':'#F87171');
@@ -4833,7 +4835,8 @@ html.theme-light .pm-alloc{ background:#fff; }
         +'<span class="hp-badge '+s.badge+'">'+s.badgeTxt+'</span>'
         +'<div class="st">'+s.t+'</div>'
         +'<div class="sv" style="color:'+col+'">'+s.v+'</div>'
-        +'<div class="sd">'+s.d+'</div></div>';
+        +'<div class="sd">'+s.d+'</div>'
+        +(s.warn?'<div class="hp-warn"><b>Atenção:</b> '+s.warn+'</div>':'')+'</div>';
     }).join('');
   }
 
@@ -4872,7 +4875,7 @@ html.theme-light .pm-alloc{ background:#fff; }
     var W=1080, pad=64;
     var c=document.createElement('canvas'); var DPR=2; c.width=W*DPR; var ctx=c.getContext('2d'); ctx.scale(DPR,DPR);
     /* medir altura: layout fixo, calculamos H aproximado */
-    var H=1400; c.height=H*DPR; ctx.scale(1,1);
+    var H=1760; c.height=H*DPR; ctx.scale(1,1);
     // fundo
     var g=ctx.createLinearGradient(0,0,0,H); g.addColorStop(0,'#0A0F38'); g.addColorStop(1,'#070B2E'); ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
     ctx.fillStyle='#F26522'; ctx.fillRect(0,0,10,H);
@@ -4920,7 +4923,15 @@ html.theme-light .pm-alloc{ background:#fff; }
     line('Seguro de Vida (Whole Life) — fora do inventário', '~ R$ 0');
     line('Holding — doação de quotas (ITCMD '+pctf(ST.itcmd)+')', brl(d.holdingITCMD));
     line('Inventário direto (ITCMD + custas)', rng(d.inventario[0],d.inventario[1]), true);
-    y+=20;
+    y+=18;
+    ctx.fillStyle='#F5B942'; ctx.font='800 14px Sora,sans-serif'; ctx.fillText('PONTOS DE ATENÇÃO', pad, y); y+=24;
+    ctx.fillStyle='#C9B67A'; ctx.font='400 13px Manrope,sans-serif';
+    ['Previdência (VGBL): não abriga imóveis, só aportes em dinheiro; taxas e carência.',
+     'Seguro de Vida (Whole Life): prêmio vitalício, custo recorrente até o falecimento.',
+     'Holding: custo alto (abertura + ITBI + manutenção) — só compensa com patrimônio grande.',
+     'Inventário: mais caro e demorado; bens bloqueados durante o processo.'
+    ].forEach(function(t){ y=wrap(ctx,'•  '+t, pad, y, W-2*pad, 18)+2; });
+    y+=14;
     ctx.fillStyle='#7A83AD'; ctx.font='400 12px Manrope,sans-serif';
     wrap(ctx,'Estimativas de mercado, não constituem consultoria jurídica/contábil. ITBI varia por município; ITCMD e a incidência sobre previdência variam por estado. Validar com advogado e contador.', pad, y, W-2*pad, 17);
 
@@ -4933,7 +4944,7 @@ html.theme-light .pm-alloc{ background:#fff; }
     else { var a=document.createElement('a'); a.href=url; a.download='Sucessão Patrimonial.png'; a.click(); }
   }
   function roundRect(ctx,x,y,w,h,r){ ctx.beginPath(); ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r); ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath(); }
-  function wrap(ctx,text,x,y,maxW,lh){ var words=text.split(' '),line=''; for(var i=0;i<words.length;i++){ var t=line+words[i]+' '; if(ctx.measureText(t).width>maxW && i>0){ ctx.fillText(line,x,y); line=words[i]+' '; y+=lh; } else line=t; } ctx.fillText(line,x,y); }
+  function wrap(ctx,text,x,y,maxW,lh){ var words=text.split(' '),line=''; for(var i=0;i<words.length;i++){ var t=line+words[i]+' '; if(ctx.measureText(t).width>maxW && i>0){ ctx.fillText(line,x,y); line=words[i]+' '; y+=lh; } else line=t; } ctx.fillText(line,x,y); return y+lh; }
 
   if(document.readyState==='loading'){ document.addEventListener('DOMContentLoaded', bind); } else { bind(); }
   window._toolInit=window._toolInit||{}; window._toolInit['holding']=bind;
