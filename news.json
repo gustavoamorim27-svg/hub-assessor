@@ -1,1 +1,85 @@
-{"updated": "31/07/2026 09:07", "items": [{"region": "nacional", "title": "Ibovespa avanca 0,70% e fecha aos 176.565 pontos", "resumo": "Bolsa emenda segundo pregao de alta impulsionada pela expectativa de corte de juros.", "source": "Money Times", "date": "28 jul 2026", "url": "https://www.moneytimes.com.br/ibovespa-28-7-26-apsa/"}, {"region": "nacional", "title": "IPCA-15 desacelera a 0,06% em julho e reforca aposta de corte da Selic", "resumo": "Previa da inflacao veio abaixo do esperado e cede de 4,80% para 4,52% em 12 meses.", "source": "Bloomberg Linea", "date": "28 jul 2026", "url": "https://www.bloomberglinea.com.br/mercados/ibovespa-fecha-em-alta-com-ipca-15-abaixo-do-esperado-dolar-sobe-a-r-512/"}, {"region": "nacional", "title": "Dolar sobe a R$ 5,12 com decisao do Fed no radar", "resumo": "Moeda americana avanca 0,20% em dia de dados de inflacao e cautela externa.", "source": "O Tempo", "date": "28 jul 2026", "url": "https://www.otempo.com.br/economia/2026/7/28/bolsa-avanca-e-dolar-fecha-em-leve-alta-com-divulgacao-do-ipca-15-e-fed-no-radar"}, {"region": "nacional", "title": "Focus reduz IPCA de 2026 a 5,12% e mantem Selic a 14,00%", "resumo": "Boletim do BC preserva projecao de corte de 0,25 p.p. na proxima reuniao do Copom.", "source": "Brasil 247", "date": "28 jul 2026", "url": "https://www.brasil247.com/economia/ibovespa-avanca-com-ipca-15-fraco-e-aposta-em-nova-queda-da-selic/"}, {"region": "nacional", "title": "Copom se reune em 4 e 5 de agosto com aposta em novo corte de juros", "resumo": "Mercado projeta Selic a 14,00% apos inflacao mais fraca e olhar na geopolitica.", "source": "Investing.com", "date": "28 jul 2026", "url": "https://br.investing.com/news/stock-market-news/ibovespa-e-dolar-hoje-focam-em-ipca15-e-geopolitica-predecisao-do-fed-2015164"}, {"region": "internacional", "title": "Fed mantem juros por 9 a 3 e Dow desaba 800 pontos", "resumo": "Postura dura do banco central americano derruba S&P 500 e Nasdaq em Wall Street.", "source": "TheStreet", "date": "29 jul 2026", "url": "https://www.thestreet.com/stock-market-today/stock-market-today-dow-jones-sp-500-nasdaq-updates-july-29-2026stock-market-today-july-29-2026"}, {"region": "internacional", "title": "Nasdaq sobe quase 3% e Dow e S&P 500 se recuperam", "resumo": "Bolsas de NY reagem com forca apos a queda provocada pela decisao do Fed.", "source": "Yahoo Finance", "date": "30 jul 2026", "url": "https://finance.yahoo.com/markets/live/stock-market-today-thursday-july-30-dow-sp-500-nasdaq-082255995.html"}, {"region": "internacional", "title": "Juro do Treasury de 30 anos atinge maxima em decadas perto de 5,24%", "resumo": "Mercado de bonds reage a decisao hawkish do Fed com forte alta dos rendimentos.", "source": "Yahoo Finance", "date": "29 jul 2026", "url": "https://finance.yahoo.com/markets/live/stock-market-today-wednesday-july-29-dow-sp-500-nasdaq-082009165.html"}, {"region": "internacional", "title": "Fed mantem taxa estavel com tres dirigentes votando contra", "resumo": "Comite fica dividido enquanto a inflacao segue acima da meta de 2%.", "source": "CNBC", "date": "29 jul 2026", "url": "https://www.cnbc.com/2026/07/29/fed-meeting-today-live-updates.html"}, {"region": "internacional", "title": "Petroleo recua a US$ 83,86 com tensao no Estreito de Ormuz", "resumo": "Brent acumula forte alta no ano com o conflito no Oriente Medio limitando o transito.", "source": "24/7 Wall St.", "date": "30 jul 2026", "url": "https://247wallst.com/investing/2026/07/30/stock-market-live-july-30-2026-sp-500-spy-pivoting-from-fed-induced-drop/"}]}
+{
+  "updated": "31/07/2026 15:07",
+  "items": [
+    {
+      "region": "nacional",
+      "title": "Ibovespa abre com atraso e sobe aos 177,8 mil pontos",
+      "resumo": "Bolsa abriu 2h30 mais tarde apos falha na camara de compensacao da B3 e avancou; dolar rondava R$ 5,07.",
+      "source": "InfoMoney",
+      "date": "31 jul 2026",
+      "url": "https://www.infomoney.com.br/mercados/ibovespa-hoje-bolsa-de-valores-ao-vivo-31072026/"
+    },
+    {
+      "region": "nacional",
+      "title": "IPCA-15 desacelera a 0,06% em julho e alivia inflacao",
+      "resumo": "Previa oficial veio abaixo do mes anterior; indice acumula 3,51% no ano e 4,52% em 12 meses.",
+      "source": "B3 Bora Investir",
+      "date": "28 jul 2026",
+      "url": "https://borainvestir.b3.com.br/noticias/mercado/ibovespa-b3-ganha-070-com-previa-da-inflacao-abaixo-do-esperado-dolar-vai-a-r-512/"
+    },
+    {
+      "region": "nacional",
+      "title": "Santander Brasil lidera perdas entre bancos apos lucro fraco",
+      "resumo": "Resultado do 2T veio abaixo das estimativas e pressionou o setor financeiro na bolsa.",
+      "source": "InfoMoney",
+      "date": "31 jul 2026",
+      "url": "https://www.infomoney.com.br/mercados/ibovespa-hoje-bolsa-de-valores-ao-vivo-31072026/"
+    },
+    {
+      "region": "nacional",
+      "title": "Mercado projeta Selic a 14,25% com corte de 0,25 p.p. do Copom",
+      "resumo": "Maioria dos analistas via manutencao dos juros nas reunioes seguintes de agosto e setembro.",
+      "source": "Mais Retorno",
+      "date": "31 jul 2026",
+      "url": "https://maisretorno.com/portal/em-dia-de-copom-sem-surpresas-bolsa-sobe-dolar-recua"
+    },
+    {
+      "region": "nacional",
+      "title": "Vale reporta lucro de US$ 1,375 bilhao no 2T, queda de 35%",
+      "resumo": "Mineradora teve recuo ante o mesmo periodo do ano anterior; investidores acompanham resultados.",
+      "source": "Bloomberg Linea",
+      "date": "31 jul 2026",
+      "url": "https://www.bloomberglinea.com.br/mercados/ibov:ind/"
+    },
+    {
+      "region": "internacional",
+      "title": "Fed mantem juros e Dow despenca mais de 1.100 pontos",
+      "resumo": "Decisao hawkish elevou os yields dos Treasuries e derrubou S&P 500 e Nasdaq.",
+      "source": "Yahoo Finance",
+      "date": "29 jul 2026",
+      "url": "https://finance.yahoo.com/markets/live/stock-market-today-wednesday-july-29-dow-sp-500-nasdaq-082009165.html"
+    },
+    {
+      "region": "internacional",
+      "title": "Tres membros do Fomc votam por alta de juros, maior dissidencia desde 2016",
+      "resumo": "Presidentes regionais discordaram da manutencao das taxas em meio a inflacao elevada.",
+      "source": "CNBC",
+      "date": "29 jul 2026",
+      "url": "https://www.cnbc.com/2026/07/29/fed-meeting-today-live-updates.html"
+    },
+    {
+      "region": "internacional",
+      "title": "Yields dos Treasuries sobem e pressionam acoes em Wall Street",
+      "resumo": "Juro do titulo de 10 anos foi a 4,657% e o de 30 anos superou 5,19% apos o Fed.",
+      "source": "Barchart",
+      "date": "30 jul 2026",
+      "url": "https://www.barchart.com/story/news/30415328/stocks-pressured-by-rising-bond-yields-as-fed-rate-cut-hopes-fade"
+    },
+    {
+      "region": "internacional",
+      "title": "Petroleo recua com alivio das tensoes entre EUA e Ira",
+      "resumo": "Distensao geopolitica no fim de semana derrubou os precos e pressionou acoes de energia.",
+      "source": "CNBC",
+      "date": "27 jul 2026",
+      "url": "https://www.cnbc.com/2026/07/26/stock-market-today-live-updates.html"
+    },
+    {
+      "region": "internacional",
+      "title": "Brent supera US$ 100 e derruba bolsas; Alphabet e Tesla caem",
+      "resumo": "Salto do petroleo e balancos fracos de big techs levaram o Dow a perder mais de 500 pontos.",
+      "source": "CNBC",
+      "date": "22 jul 2026",
+      "url": "https://www.cnbc.com/2026/07/22/stock-market-today-live-updates.html"
+    }
+  ]
+}
