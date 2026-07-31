@@ -4692,7 +4692,14 @@ html.theme-light .pm-alloc{ background:#fff; }
     #p-holding .hc-sel{width:100%;background:#0f1330;border:1px solid rgba(120,130,210,.3);border-radius:9px;color:#fff;font-family:'Manrope';font-size:13px;padding:8px 10px;outline:none}
     #p-holding .hc-sel:focus{border-color:#F26522}
     #p-holding .hc-sec input[type=range]{width:100%;accent-color:#F26522;margin-top:3px}
-    #p-holding .hc-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
+    #p-holding .hc-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
+    #p-holding .hc-f input[type=number]{width:100%;background:#0b1136;border:1px solid rgba(120,130,210,.3);color:#eaf0ff;border-radius:8px;padding:7px 9px;font-family:Manrope;font-size:13px}
+    #p-holding .hc-auto{cursor:pointer;font-size:10px;color:#5B8DEF;border:1px solid rgba(91,141,239,.45);border-radius:5px;padding:1px 6px;margin-left:6px;vertical-align:middle}
+    #p-holding .hc-pbrow{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:2px 0 16px}
+    @media(max-width:760px){#p-holding .hc-pbrow{grid-template-columns:1fr}}
+    #p-holding .hc-pbbox{background:#0A0E3F;border:1px solid rgba(120,130,210,.2);border-left:3px solid rgba(120,130,210,.45);border-radius:12px;padding:14px 16px}
+    #p-holding .hc-pbbox .pbt{font-family:'Sora';font-size:12px;font-weight:800;letter-spacing:.3px;text-transform:uppercase;margin-bottom:7px}
+    #p-holding .hc-pbbox .pbc{color:#c8cdf0;font-size:12.5px;line-height:1.55}
     @media(max-width:1024px){#p-holding .hc-kpis{grid-template-columns:repeat(2,1fr)}}
     @media(max-width:560px){#p-holding .hc-kpis{grid-template-columns:1fr 1fr}}
     #p-holding .hc-kpi{background:#111845;border:1px solid rgba(120,130,210,.2);border-radius:12px;padding:12px 13px}
@@ -4742,17 +4749,19 @@ html.theme-light .pm-alloc{ background:#fff; }
     <div class="hc-f"><label>Estado do imóvel <span class="tip" title="ITBI varia por estado/município">?</span></label><select class="hc-sel" id="hcUF"></select></div>
     <div class="hc-f"><label>Horizonte</label><select class="hc-sel" id="hcHor"><option value="5">5 anos</option><option value="10">10 anos</option><option value="15">15 anos</option><option value="20" selected>20 anos</option><option value="30">30 anos</option></select></div>
     <div class="hc-f"><label>Objetivo principal</label><select class="hc-sel" id="hcObj"><option>Sucessão familiar</option><option>Proteção patrimonial</option><option>Eficiência tributária</option><option selected>Todos</option></select></div>
+    <div class="hc-f"><label>Parcela anual Whole Life <span id="hcParcAuto" class="hc-auto" title="voltar ao cálculo automático">auto</span></label><input type="number" id="hcParc" min="0" step="500" placeholder="auto"></div>
   </div>
 
   <div class="hc-kpis">
     <div class="hc-kpi o"><div class="k">Custo inicial Holding</div><div class="v" id="hcK1">—</div></div>
     <div class="hc-kpi o"><div class="k">Custo total Holding <span id="hcK7h" style="opacity:.65"></span></div><div class="v" id="hcK7">—</div></div>
+    <div class="hc-kpi o"><div class="k">Custo Holding s/ receita <span id="hcK10h" style="opacity:.65"></span></div><div class="v" id="hcK10">—</div></div>
     <div class="hc-kpi y"><div class="k">Payback da Holding</div><div class="v" id="hcK3">—</div></div>
     <div class="hc-kpi g"><div class="k">Economia tributária/ano</div><div class="v" id="hcK4">—</div></div>
     <div class="hc-kpi b"><div class="k">Prêmio anual Whole Life</div><div class="v" id="hcK2">—</div></div>
     <div class="hc-kpi b"><div class="k">Cobertura Whole Life</div><div class="v" id="hcK5">—</div></div>
-    <div class="hc-kpi b"><div class="k">Resgate WL em 20 anos <span style="opacity:.65">(IPCA+3)</span></div><div class="v" id="hcK8">—</div></div>
-    <div class="hc-kpi y"><div class="k">Payback Whole Life <span style="opacity:.65">(resgate)</span></div><div class="v" id="hcK9">—</div></div>
+    <div class="hc-kpi b"><div class="k">Resgate WL em 10 anos <span style="opacity:.65">(IPCA+3)</span></div><div class="v" id="hcK8">—</div></div>
+    <div class="hc-kpi y"><div class="k">Payback Whole Life <span style="opacity:.65">(resgate 10a)</span></div><div class="v" id="hcK9">—</div></div>
   </div>
 
   <div class="hc-row2">
@@ -4769,7 +4778,12 @@ html.theme-light .pm-alloc{ background:#fff; }
     <table class="hc-t"><thead><tr><th>Ano</th><th>Holding bruto</th><th>Holding líquido</th><th>WL bruto</th><th>Resgate WL</th><th>WL líquido</th></tr></thead><tbody id="hcTbody"></tbody></table>
   </div>
 
-  <div class="hc-disc2">Ferramenta educacional; não substitui a orientação de um assessor habilitado. ITBI, ITCMD e a tributação variam por estado/município; prêmios de seguro dependem de subscrição e idade. O resgate do Whole Life é corrigido por IPCA+3% a.a. após a quitação (10 anos) e considerado líquido a partir de 20 anos. Valores ilustrativos.</div>
+  <div class="hc-pbrow">
+    <div class="hc-pbbox"><div class="pbt" style="color:#F26522">Como ler o Payback da Holding</div><div class="pbc" id="hcPbH">—</div></div>
+    <div class="hc-pbbox"><div class="pbt" style="color:#F5B942">Como ler o Payback do Whole Life</div><div class="pbc" id="hcPbW">—</div></div>
+  </div>
+
+  <div class="hc-disc2">Ferramenta educacional; não substitui a orientação de um assessor habilitado. ITBI, ITCMD e a tributação variam por estado/município; prêmios de seguro dependem de subscrição e idade. O resgate do Whole Life é corrigido por IPCA+3% a.a.; a parcela é paga por 10 anos e, a partir do 10º ano, o resgate já devolve ~o valor aportado. Valores ilustrativos.</div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <script>
@@ -4782,7 +4796,7 @@ html.theme-light .pm-alloc{ background:#fff; }
   function fatorIdade(a){ for(var i=0;i<IDADE.length;i++){ if(a<=IDADE[i][0]) return IDADE[i][1]; } return 5.5; }
   var CHART=null;
   var IPCA=0.045, RES_R=IPCA+0.03; /* correcao do resgate WL: IPCA (~4,5%) + 3% a.a. = 7,5% */
-  var ST={patr:2000000,imov:70,alug:10000,herd:2,uf:'SP',hor:20,obj:'Todos',idade:45};
+  var ST={patr:2000000,imov:70,alug:10000,herd:2,uf:'SP',hor:20,obj:'Todos',idade:45,parcelaWL:null};
 
   function calc(){
     var valImov=ST.patr*ST.imov/100, itbiP=ITBI[ST.uf]||3;
@@ -4791,7 +4805,8 @@ html.theme-light .pm-alloc{ background:#fff; }
     var manutAno=ST.alug>0?24000:12000, econAno=ST.alug*12*(0.275-0.1453), custoLiqAno=manutAno-econAno;
     var payback=econAno>0?custoInicial/econAno:null;
     var cobertura=ST.patr*0.20;                         /* capital segurado = 20% do patrimonio (liquidez sucessoria) */
-    var premioAno=cobertura*0.037*fatorIdade(ST.idade); /* premio nivelado — ancora real XP Toda Vida: 3,70%/ano aos 36; pago 10 anos */
+    var premioAuto=cobertura*0.037*fatorIdade(ST.idade); /* premio nivelado — ancora real XP Toda Vida (3,70%/ano aos 36) */
+    var premioAno=(ST.parcelaWL!=null&&ST.parcelaWL>0)?ST.parcelaWL:premioAuto; /* parcela anual EDITAVEL pelo usuario */
     /* resgate: curva real XP nos 10 primeiros anos; apos a quitacao a reserva e CORRIGIDA por IPCA+3 (RES_R) */
     function wlRes(n){ if(n<=2) return 0; if(n<=10) return premioAno*Math.min(n,10)*Math.min(1,0.11*(n-1)); return (premioAno*10*0.99)*Math.pow(1+RES_R,n-10); }
     var anos=[],hBruto=[],hLiq=[],wlBruto=[],wlResg=[],wlLiq=[];
@@ -4801,11 +4816,13 @@ html.theme-light .pm-alloc{ background:#fff; }
       wlBruto.push(pagos); wlResg.push(resg); wlLiq.push(Math.max(0,pagos-resg)); }
     /* custo TOTAL da holding no horizonte = abertura + aportes mensais de manutencao acumulados */
     var custoTotalHolding=custoInicial+manutAno*ST.hor;
-    /* payback WL: ano em que o resgate (IPCA+3) devolve os premios pagos; resgate liquido so a partir de 20 anos */
-    var wlPb=null; for(var k=1;k<=40;k++){ if(wlRes(k)>=premioAno*Math.min(k,10)){ wlPb=k; break; } } if(wlPb!==null&&wlPb<20) wlPb=20;
-    var resg20=wlRes(20);
-    return {custoInicial:custoInicial,econAno:econAno,custoLiqAno:custoLiqAno,payback:payback,premioAno:premioAno,cobertura:cobertura,
-            custoTotalHolding:custoTotalHolding,wlPb:wlPb,resg20:resg20,
+    /* custo da holding SEM receita recorrente: sem aluguel nao ha lucro na PJ nem economia tributaria — holding vira custo puro (manutencao minima) */
+    var manutSemReceita=12000, custoSemReceita=custoInicial+manutSemReceita*ST.hor;
+    /* payback WL: o resgate e feito a partir de 10 anos (quitacao), devolvendo ao investidor ~o valor aportado */
+    var wlPb=10; /* resgate disponivel a partir de 10 anos (quitacao): valor devolvido ao investidor */
+    var resg10=wlRes(10), premios10=premioAno*10;
+    return {custoInicial:custoInicial,econAno:econAno,custoLiqAno:custoLiqAno,payback:payback,premioAno:premioAno,premioAuto:premioAuto,cobertura:cobertura,
+            custoTotalHolding:custoTotalHolding,custoSemReceita:custoSemReceita,manutSemReceita:manutSemReceita,wlPb:wlPb,resg10:resg10,premios10:premios10,
             anos:anos,hBruto:hBruto,hLiq:hLiq,wlBruto:wlBruto,wlResg:wlResg,wlLiq:wlLiq};
   }
   function scores(){
@@ -4822,7 +4839,11 @@ html.theme-light .pm-alloc{ background:#fff; }
     el('hcK3').textContent=d.payback?d.payback.toFixed(1)+' anos':'—'; el('hcK4').textContent=brl(d.econAno);
     el('hcK5').textContent=brl(d.cobertura);
     el('hcK7').textContent=brl(d.custoTotalHolding); el('hcK7h').textContent='('+ST.hor+'a)';
-    el('hcK8').textContent=brl(d.resg20); el('hcK9').textContent=d.wlPb?('~'+d.wlPb+' anos'):'—';
+    el('hcK10').textContent=brl(d.custoSemReceita); el('hcK10h').textContent='('+ST.hor+'a)';
+    el('hcK8').textContent=brl(d.resg10); el('hcK9').textContent=d.wlPb?('~'+d.wlPb+' anos'):'—';
+    var pc=el('hcParc'); if(pc && ST.parcelaWL==null && document.activeElement!==pc) pc.value=Math.round(d.premioAuto);
+    el('hcPbH').innerHTML='O payback da Holding é o tempo para a <b>economia tributária recorrente</b> cobrir o custo de abertura. Aqui: custo inicial de '+brl(d.custoInicial)+' ÷ economia de '+brl(d.econAno)+'/ano sobre o aluguel (PF 27,5% &rarr; PJ ~14,5%) = <b>'+(d.payback?d.payback.toFixed(1)+' anos':'—')+'</b>. Ele depende de haver <b>receita recorrente</b> (aluguel): sem ela não há lucro na PJ nem economia — a holding vira custo puro (<b>'+brl(d.custoSemReceita)+'</b> em '+ST.hor+' anos) e se justifica só pela organização sucessória.';
+    el('hcPbW').innerHTML='O prêmio é pago por <b>10 anos</b> e depois cessa. A partir do <b>10º ano o resgate devolve ao investidor</b> ~o valor aportado ('+brl(d.resg10)+' de resgate vs '+brl(d.premios10)+' pagos), por isso o payback é de <b>~'+d.wlPb+' anos</b> — e daí em diante a reserva segue crescendo por <b>IPCA+3</b>. Mas o valor principal do seguro <b>não é o resgate</b>: é a cobertura de '+brl(d.cobertura)+', isenta e fora do inventário, disponível desde o 1º ano para dar liquidez sucessória aos herdeiros.';
     el('hcSHp').textContent=sc.h; el('hcSHb').style.width=sc.h+'%'; var nh=nivel(sc.h); el('hcSHl').textContent=nh[0]; el('hcSHl').style.color=nh[1]; el('hcSHb').style.background=nh[1];
     el('hcSWp').textContent=sc.w; el('hcSWb').style.width=sc.w+'%'; var nw=nivel(sc.w); el('hcSWl').textContent=nw[0]; el('hcSWl').style.color=nw[1]; el('hcSWb').style.background=nw[1];
     var rec;
@@ -4886,6 +4907,8 @@ html.theme-light .pm-alloc{ background:#fff; }
     el('hcUF').onchange=function(){ ST.uf=this.value; render(); };
     el('hcHor').onchange=function(){ ST.hor=+this.value; render(); };
     el('hcObj').onchange=function(){ ST.obj=this.value; render(); };
+    var pc=el('hcParc'); if(pc) pc.oninput=function(){ ST.parcelaWL = (this.value===''?null:+this.value); render(); };
+    var pa=el('hcParcAuto'); if(pa) pa.onclick=function(){ ST.parcelaWL=null; render(); };
     var pb=el('hcPngBtn'); if(pb) pb.onclick=gerarPNGhc;
     render();
   }
