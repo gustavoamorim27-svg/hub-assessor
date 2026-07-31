@@ -4775,7 +4775,7 @@ html.theme-light .pm-alloc{ background:#fff; }
 
   <div class="hc-tblwrap">
     <div class="tt">Custo acumulado ano a ano</div>
-    <table class="hc-t"><thead><tr><th>Ano</th><th>Holding bruto</th><th>Holding líquido</th><th>WL bruto</th><th>Resgate WL</th><th>WL líquido</th></tr></thead><tbody id="hcTbody"></tbody></table>
+    <table class="hc-t"><thead><tr><th>Ano</th><th>Holding bruto</th><th>Holding líquido</th><th>Prêmios pagos</th><th>Resgate (IPCA+3)</th><th>Saldo (resgate − pago)</th></tr></thead><tbody id="hcTbody"></tbody></table>
   </div>
 
   <div class="hc-pbrow">
@@ -4803,12 +4803,14 @@ html.theme-light .pm-alloc{ background:#fff; }
     var hon; if(ST.patr<=1000000)hon=8000; else if(ST.patr<=3000000)hon=20000; else if(ST.patr<=7000000)hon=40000; else hon=70000;
     var custoInicial=valImov*itbiP/100+valImov*0.0075+hon+3000+1200;
     var manutAno=ST.alug>0?24000:12000, econAno=ST.alug*12*(0.275-0.1453), custoLiqAno=manutAno-econAno;
-    var payback=econAno>0?custoInicial/econAno:null;
+    var netBenefAno=econAno-manutAno;                 /* beneficio liquido anual: economia tributaria menos o custo recorrente de manutencao da PJ */
+    var payback=netBenefAno>0?custoInicial/netBenefAno:null; /* so ha payback se a economia superar a manutencao */
     var cobertura=ST.patr*0.20;                         /* capital segurado = 20% do patrimonio (liquidez sucessoria) */
     var premioAuto=cobertura*0.037*fatorIdade(ST.idade); /* premio nivelado — ancora real XP Toda Vida (3,70%/ano aos 36) */
     var premioAno=(ST.parcelaWL!=null&&ST.parcelaWL>0)?ST.parcelaWL:premioAuto; /* parcela anual EDITAVEL pelo usuario */
     /* resgate: curva real XP nos 10 primeiros anos; apos a quitacao a reserva e CORRIGIDA por IPCA+3 (RES_R) */
-    function wlRes(n){ if(n<=2) return 0; if(n<=10) return premioAno*Math.min(n,10)*Math.min(1,0.11*(n-1)); return (premioAno*10*0.99)*Math.pow(1+RES_R,n-10); }
+    /* resgate = aportes corrigidos por IPCA+3 (acumulacao): sempre >= o valor aportado, pela estrategia */
+    function wlRes(n){ var bal=0; for(var y=1;y<=n;y++){ if(y<=10) bal+=premioAno; bal*=(1+RES_R); } return bal; }
     var anos=[],hBruto=[],hLiq=[],wlBruto=[],wlResg=[],wlLiq=[];
     for(var n=0;n<=ST.hor;n++){ anos.push(n);
       hBruto.push(custoInicial+manutAno*n); hLiq.push(custoInicial+custoLiqAno*n);
@@ -4822,7 +4824,7 @@ html.theme-light .pm-alloc{ background:#fff; }
     var wlPb=10; /* resgate disponivel a partir de 10 anos (quitacao): valor devolvido ao investidor */
     var resg10=wlRes(10), premios10=premioAno*10;
     return {custoInicial:custoInicial,econAno:econAno,custoLiqAno:custoLiqAno,payback:payback,premioAno:premioAno,premioAuto:premioAuto,cobertura:cobertura,
-            custoTotalHolding:custoTotalHolding,custoSemReceita:custoSemReceita,manutSemReceita:manutSemReceita,wlPb:wlPb,resg10:resg10,premios10:premios10,
+            custoTotalHolding:custoTotalHolding,custoSemReceita:custoSemReceita,manutSemReceita:manutSemReceita,manutAno:manutAno,netBenefAno:netBenefAno,wlPb:wlPb,resg10:resg10,premios10:premios10,
             anos:anos,hBruto:hBruto,hLiq:hLiq,wlBruto:wlBruto,wlResg:wlResg,wlLiq:wlLiq};
   }
   function scores(){
@@ -4836,14 +4838,14 @@ html.theme-light .pm-alloc{ background:#fff; }
   function render(){
     var d=calc(), sc=scores();
     el('hcK1').textContent=brl(d.custoInicial); el('hcK2').textContent=brl(d.premioAno);
-    el('hcK3').textContent=d.payback?d.payback.toFixed(1)+' anos':'—'; el('hcK4').textContent=brl(d.econAno);
+    el('hcK3').innerHTML=d.payback?(d.payback.toFixed(1)+' anos'):'<span style="font-size:12px">n/a &middot; manut. &gt; economia</span>'; el('hcK4').textContent=brl(d.econAno);
     el('hcK5').textContent=brl(d.cobertura);
     el('hcK7').textContent=brl(d.custoTotalHolding); el('hcK7h').textContent='('+ST.hor+'a)';
     el('hcK10').textContent=brl(d.custoSemReceita); el('hcK10h').textContent='('+ST.hor+'a)';
     el('hcK8').textContent=brl(d.resg10); el('hcK9').textContent=d.wlPb?('~'+d.wlPb+' anos'):'—';
     var pc=el('hcParc'); if(pc && ST.parcelaWL==null && document.activeElement!==pc) pc.value=Math.round(d.premioAuto);
-    el('hcPbH').innerHTML='O payback da Holding é o tempo para a <b>economia tributária recorrente</b> cobrir o custo de abertura. Aqui: custo inicial de '+brl(d.custoInicial)+' ÷ economia de '+brl(d.econAno)+'/ano sobre o aluguel (PF 27,5% &rarr; PJ ~14,5%) = <b>'+(d.payback?d.payback.toFixed(1)+' anos':'—')+'</b>. Ele depende de haver <b>receita recorrente</b> (aluguel): sem ela não há lucro na PJ nem economia — a holding vira custo puro (<b>'+brl(d.custoSemReceita)+'</b> em '+ST.hor+' anos) e se justifica só pela organização sucessória.';
-    el('hcPbW').innerHTML='O prêmio é pago por <b>10 anos</b> e depois cessa. A partir do <b>10º ano o resgate devolve ao investidor</b> ~o valor aportado ('+brl(d.resg10)+' de resgate vs '+brl(d.premios10)+' pagos), por isso o payback é de <b>~'+d.wlPb+' anos</b> — e daí em diante a reserva segue crescendo por <b>IPCA+3</b>. Mas o valor principal do seguro <b>não é o resgate</b>: é a cobertura de '+brl(d.cobertura)+', isenta e fora do inventário, disponível desde o 1º ano para dar liquidez sucessória aos herdeiros.';
+    el('hcPbH').innerHTML='O payback da Holding é o tempo para o <b>benefício líquido</b> — economia tributária <b>menos</b> o custo recorrente de manutenção da PJ — cobrir o custo de abertura. Aqui: economia de '+brl(d.econAno)+'/ano &minus; manutenção de '+brl(d.manutAno)+'/ano = <b>'+brl(d.netBenefAno)+'/ano</b>; custo inicial '+brl(d.custoInicial)+' ÷ esse líquido = <b>'+(d.payback?d.payback.toFixed(1)+' anos':'não se paga pela via tributária')+'</b>. A manutenção é permanente enquanto a PJ existir, então entra na conta e no custo total (<b>'+brl(d.custoTotalHolding)+'</b> em '+ST.hor+' anos). Sem receita de aluguel não há economia e a holding vira custo puro ('+brl(d.custoSemReceita)+') — justificada só pela organização sucessória.';
+    el('hcPbW').innerHTML='O prêmio é pago por <b>10 anos</b> e cessa. O <b>resgate é corrigido por IPCA+3</b> e acompanha os aportes, por isso fica <b>sempre igual ou acima do valor aportado</b>. No <b>10º ano</b>, quando a parcela é quitada, o resgate já vale <b>'+brl(d.resg10)+'</b> contra '+brl(d.premios10)+' aportados (payback ~'+d.wlPb+' anos) e segue crescendo. E o principal: além do resgate, o cliente carrega a <b>cobertura de '+brl(d.cobertura)+'</b>, isenta e fora do inventário, desde o 1º ano.';
     el('hcSHp').textContent=sc.h; el('hcSHb').style.width=sc.h+'%'; var nh=nivel(sc.h); el('hcSHl').textContent=nh[0]; el('hcSHl').style.color=nh[1]; el('hcSHb').style.background=nh[1];
     el('hcSWp').textContent=sc.w; el('hcSWb').style.width=sc.w+'%'; var nw=nivel(sc.w); el('hcSWl').textContent=nw[0]; el('hcSWl').style.color=nw[1]; el('hcSWb').style.background=nw[1];
     var rec;
@@ -4852,7 +4854,7 @@ html.theme-light .pm-alloc{ background:#fff; }
     else rec=combo;
     el('hcRec').innerHTML=rec;
     var alvos=[1,2,3,5,10,15,20,25,30].filter(function(a){return a<=ST.hor;});
-    el('hcTbody').innerHTML=alvos.map(function(a){ return '<tr><td>'+a+'</td><td>'+brl(d.hBruto[a])+'</td><td>'+brl(d.hLiq[a])+'</td><td>'+brl(d.wlBruto[a])+'</td><td>'+brl(d.wlResg[a])+'</td><td>'+brl(d.wlLiq[a])+'</td></tr>'; }).join('');
+    el('hcTbody').innerHTML=alvos.map(function(a){ return '<tr><td>'+a+'</td><td>'+brl(d.hBruto[a])+'</td><td>'+brl(d.hLiq[a])+'</td><td>'+brl(d.wlBruto[a])+'</td><td>'+brl(d.wlResg[a])+'</td><td>'+brl(d.wlResg[a]-d.wlBruto[a])+'</td></tr>'; }).join('');
     desenharGrafico(d);
   }
   var paybackPlugin={ id:'pb', afterDraw:function(ch){ var ms=ch.$marks; if(!ms) return; var sx=ch.scales.x, ctx=ch.ctx, ca=ch.chartArea;
