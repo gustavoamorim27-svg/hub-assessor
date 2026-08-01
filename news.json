@@ -1,15 +1,85 @@
 {
-  "updated": "01/08/2026 09:07",
+  "updated": "01/08/2026 15:08",
   "items": [
-    { "region": "nacional", "title": "Ibovespa fecha julho em alta e volta aos 178 mil pontos", "resumo": "Bolsa encerra o mes no positivo, impulsionada por bancos e Vale, apesar de sexta-feira tumultuada.", "source": "Suno", "date": "30 jul 2026", "url": "https://www.suno.com.br/noticias/ibovespa-hoje-30-julho-2026-petr4-vale3-bancos-mt/" },
-    { "region": "nacional", "title": "IPCA-15 sobe apenas 0,06% em julho e amplia espaco para queda da Selic", "resumo": "Inflacao desacelera bem mais que o esperado, ajudada pela queda dos precos dos alimentos.", "source": "InfoMoney", "date": "28 jul 2026", "url": "https://www.infomoney.com.br/mercados/ibovespa-hoje-bolsa-de-valores-ao-vivo-28072026/" },
-    { "region": "nacional", "title": "Copom decide Selic na quarta; mercado espera novo corte de 0,25 ponto", "resumo": "Dados de inflacao reforcam a aposta em mais um corte gradual dos juros na reuniao de agosto.", "source": "B3 Bora Investir", "date": "31 jul 2026", "url": "https://borainvestir.b3.com.br/noticias/mercado/ibovespa-b3-recua-043-apos-decisao-do-fed-e-antes-do-copom-decidir-selic-dolar-vai-a-r-524/" },
-    { "region": "nacional", "title": "Dolar recua 1,82% em julho e fecha o mes proximo de R$ 5,07", "resumo": "Moeda americana cai na semana e no mes em meio a fluxo externo e expectativa fiscal.", "source": "Money Times", "date": "31 jul 2026", "url": "https://www.moneytimes.com.br/ibovespa-intradia-31-7-26-lils/" },
-    { "region": "nacional", "title": "B3 inicia pregao com atraso por falha tecnica no pos-negociacao", "resumo": "Bolsa comecou operacoes com cerca de duas horas e meia de atraso por problema no processamento.", "source": "Finance News", "date": "31 jul 2026", "url": "https://financenews.com.br/2026/07/ibovespa-em-alta-vale-cai-santander-brasil-salta-petrobras-no-positivo-e-outros-destaques-corporativos/" },
-    { "region": "internacional", "title": "Fed mantem juros em 3,50%-3,75%, mas tres diretores votam por alta", "resumo": "Banco central americano segura a taxa como esperado, com dissidencias e tom de juros altos por mais tempo.", "source": "CNBC", "date": "29 jul 2026", "url": "https://www.cnbc.com/2026/07/29/fed-meeting-today-live-updates.html" },
-    { "region": "internacional", "title": "Dow despenca mais de 1.100 pontos no pior dia desde abril de 2025", "resumo": "Wall Street cai forte apos o Fed, com temor de que o BC esteja atrasado no combate a inflacao.", "source": "CNBC", "date": "29 jul 2026", "url": "https://www.cnbc.com/2026/07/28/stock-market-today-live-updates.html" },
-    { "region": "internacional", "title": "Treasury de 30 anos atinge maior nivel desde 2007 apos decisao do Fed", "resumo": "Juro do titulo longo salta e reflete pressao inflacionaria e reprecificacao da politica monetaria.", "source": "CNBC", "date": "29 jul 2026", "url": "https://www.cnbc.com/2026/07/29/treasury-yields-fed-interest-rates.html" },
-    { "region": "internacional", "title": "Investidores giram para fora de chips e Nasdaq se aproxima de correcao", "resumo": "Preocupacao com retorno dos investimentos em IA e concorrencia da China pressiona o setor de tecnologia.", "source": "CNBC", "date": "27 jul 2026", "url": "https://www.cnbc.com/2026/07/27/stock-market-today-live-updates.html" },
-    { "region": "internacional", "title": "Petroleo recua com alivio das tensoes entre EUA e Ira", "resumo": "Queda dos precos do petroleo ajuda as bolsas americanas em meio a monitoramento do Oriente Medio.", "source": "CNBC", "date": "26 jul 2026", "url": "https://www.cnbc.com/2026/07/26/stock-market-today-live-updates.html" }
+    {
+      "region": "nacional",
+      "title": "Ibovespa fecha julho com alta de 3,47%, primeiro mes positivo em cinco",
+      "resumo": "Indice encerrou o mes aos 177.999 pontos, com alta de 2,27% na semana apos quatro meses de perdas.",
+      "source": "InfoMoney",
+      "date": "31 jul 2026",
+      "url": "https://www.infomoney.com.br/mercados/ibovespa-hoje-bolsa-de-valores-ao-vivo-31072026/"
+    },
+    {
+      "region": "nacional",
+      "title": "Dolar recua e encerra julho cotado a R$ 5,07",
+      "resumo": "Moeda americana teve leve alta de 0,17% na sexta, mas fechou o mes em queda ante o real.",
+      "source": "InfoMoney",
+      "date": "31 jul 2026",
+      "url": "https://www.infomoney.com.br/mercados/ibovespa-hoje-bolsa-de-valores-ao-vivo-31072026/"
+    },
+    {
+      "region": "nacional",
+      "title": "Copom reduz Selic a 14,25% e proxima reuniao ocorre em 4 e 5 de agosto",
+      "resumo": "Comite cortou os juros em 0,25 ponto; mercado acompanha proximo encontro na primeira semana de agosto.",
+      "source": "Investing.com",
+      "date": "30 jul 2026",
+      "url": "https://br.investing.com/news/stock-market-news/ibovespa-e-dolar-hoje-reagem-a-decisao-do-copom-de-manter-selic-a-1425-1976849"
+    },
+    {
+      "region": "nacional",
+      "title": "IPCA-15 desacelera para 0,06% em julho e reforca aposta em corte de juros",
+      "resumo": "Previa da inflacao ficou bem abaixo do 0,41% de junho; acumulado em 12 meses recuou para 4,52%.",
+      "source": "Agencia Brasil",
+      "date": "25 jul 2026",
+      "url": "https://agenciabrasil.ebc.com.br/economia/noticia/2026-07/previa-da-inflacao-oficial-fica-em-006-em-julho-diz-ibge"
+    },
+    {
+      "region": "nacional",
+      "title": "Inflacao mais fraca leva Ibovespa a superar 176 mil pontos pela primeira vez desde maio",
+      "resumo": "Dados abaixo do esperado derrubaram as taxas dos DIs em mais de 20 pontos-base e impulsionaram a bolsa.",
+      "source": "Money Times",
+      "date": "10 jul 2026",
+      "url": "https://www.moneytimes.com.br/tempo-real-ibovespa-hoje-mercado-ao-vivo-10-07-2026-jals-lils-apsa/"
+    },
+    {
+      "region": "internacional",
+      "title": "S&P 500 sobe com salto da Amazon e Dow acumula quarto mes seguido de ganhos",
+      "resumo": "Indice avancou 0,7% no fechamento; Dow registrou o quarto mes consecutivo de valorizacao.",
+      "source": "CNBC",
+      "date": "30 jul 2026",
+      "url": "https://www.cnbc.com/2026/07/30/stock-market-today-live-updates.html"
+    },
+    {
+      "region": "internacional",
+      "title": "Nasdaq encerra julho aos 25.373 pontos apesar de queda mensal de 3,2%",
+      "resumo": "Composite subiu 1% na ultima sessao do mes, mas fechou julho no vermelho com volatilidade em techs.",
+      "source": "Bloomberg",
+      "date": "31 jul 2026",
+      "url": "https://www.bloomberg.com/news/articles/2026-07-30/stock-market-today-dow-s-p-live-updates"
+    },
+    {
+      "region": "internacional",
+      "title": "Juros dos Treasuries sobem com petroleo e dirigentes do Fed defendem alta",
+      "resumo": "Alta do petroleo pressionou os rendimentos; membros do Fed sinalizam necessidade de novos aumentos.",
+      "source": "CNBC",
+      "date": "31 jul 2026",
+      "url": "https://www.cnbc.com/2026/07/31/treasury-yields-inflation-interest-rates-federal-reserve.html"
+    },
+    {
+      "region": "internacional",
+      "title": "Treasury de 30 anos atinge maior nivel desde 2007, a 5,25%",
+      "resumo": "Titulo longo disparou na semana com temor de inflacao persistente e postura mais dura do Fed.",
+      "source": "Advisor Perspectives",
+      "date": "31 jul 2026",
+      "url": "https://www.advisorperspectives.com/dshort/updates/2026/07/31/treasury-yields-snapshot-july-31-2026"
+    },
+    {
+      "region": "internacional",
+      "title": "Fed mantem juros estaveis, mas votos dissidentes pedem aperto monetario",
+      "resumo": "Tres membros do FOMC votaram por alta de juros com a inflacao ainda acima da meta de 2%.",
+      "source": "Yahoo Finance",
+      "date": "29 jul 2026",
+      "url": "https://finance.yahoo.com/markets/live/stock-market-today-wednesday-july-29-dow-sp-500-nasdaq-082009165.html"
+    }
   ]
 }
