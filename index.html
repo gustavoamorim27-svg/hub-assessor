@@ -1926,8 +1926,8 @@ body.mm .ajbtn{ padding:11px 16px !important; font-size:14px !important; }
   (function(){
     var PROFILES={
       "Conservadora":{"Renda Fixa":90,"Previdência":0,"Multimercados":2.5,"Renda Variável":0,"Fundos Listados":2.5,"Alternativos":0,"Internacional":5},
-      "Moderada":{"Renda Fixa":68,"Previdência":0,"Multimercados":14,"Renda Variável":5,"Fundos Listados":4,"Alternativos":3,"Internacional":6},
-      "Sofisticada":{"Renda Fixa":51,"Previdência":0,"Multimercados":10,"Renda Variável":15,"Fundos Listados":9.5,"Alternativos":7,"Internacional":7.5}
+      "Moderada":{"Renda Fixa":68,"Previdência":0,"Multimercados":13,"Renda Variável":5,"Fundos Listados":4,"Alternativos":3,"Internacional":7},
+      "Sofisticada":{"Renda Fixa":51,"Previdência":0,"Multimercados":8,"Renda Variável":15,"Fundos Listados":9.5,"Alternativos":7,"Internacional":9.5}
     };
     var ORDER=["Renda Fixa","Previdência","Multimercados","Fundo Aberto","Renda Variável","Fundos Listados","Alternativos","Internacional"];
     var COL={"Renda Fixa":"#3DD68C","Previdência":"#E8709B","Multimercados":"#7C8CFF","Fundo Aberto":"#5AC8A8","Renda Variável":"#F26522","Fundos Listados":"#FFB020","Alternativos":"#C77DFF","Internacional":"#36C5F0"};
@@ -5445,6 +5445,8 @@ const CLASS_COLORS = {
 };
 const CLASSES = Object.keys(CLASS_COLORS);
 const CDI_MULT = { Conservadora:108, Moderada:113, Sofisticada:120 };
+const IPCA_SPREAD = { Conservadora:6, Moderada:7, Sofisticada:8 };   /* retorno esperado IPCA+ (carteiras recomendadas XP) */
+const VOL_ALVO   = { Conservadora:1.25, Moderada:4.0, Sofisticada:8.0 }; /* volatilidade alvo */
 const CDI_DEFAULT = 14.25;
 
 const isIsento = (n)=>/(LCI|LCA|LCD)/i.test(n||"");
@@ -5646,18 +5648,18 @@ const TEMPLATES = {
     mk("Renda Fixa","NTN-B",22.5,"IPCA + 7,8% a.a. · Tesouro Direto","D+1"),
     mk("Renda Fixa","LTN",10,"14% a.a. · Tesouro Direto","No vencimento"),
     mk("Multimercados","XP Forças Armadas",7,"Exposição a empresas americanas ligadas à defesa e forças armadas, como a Palantir · 5 anos","No vencimento",null,true),
-    mk("Multimercados","ACE Multicenários",7,"Rentabilizou ~230% do CDI nos últimos anos","D+17"),
+    mk("Multimercados","ACE Multicenários",6,"Rentabilizou ~230% do CDI nos últimos anos","D+17"),
     Object.assign(mk("Renda Variável","BOVA11 Protegida",5,"Proteção total de capital · participa da alta até 28% (15% acima) · Collar UI de 2 anos","No vencimento"),{catalogOp:window.__BOVA_OP,_howOpen:false}),
     mk("Fundos Listados","JHSF Capital Malls",4,"Shoppings premium · trophy assets de alta renda"),
     mk("Alternativos","Ouro — Retorno Otimizado",3,"Exposição a ouro com estrutura otimizada · 3 a 5 anos","No vencimento"),
-    mk("Internacional","Wellington Global Quality",3.5,"100% ações dos EUA, Europa e Reino Unido · +75% em 3 anos","D+5"),
+    mk("Internacional","Wellington Global Quality",4.5,"100% ações dos EUA, Europa e Reino Unido · +75% em 3 anos","D+5"),
     mk("Internacional","CD de 1 ano",2.5,"Certificate of Deposit · 1 ano pré-fixado em dólar","No vencimento")
   ],
   Sofisticada: ()=>[
     mk("Renda Fixa","LCD",16,"Mesmo produto das demais carteiras","No vencimento"),
     mk("Renda Fixa","NTN-B",27.5,"IPCA + 7,8% a.a. · Tesouro Direto","D+1"),
     mk("Renda Fixa","LTN",7.5,"14% a.a. · Tesouro Direto","No vencimento"),
-    mk("Multimercados","ACE Multicenários",7,"Rentabilizou ~230% do CDI nos últimos anos","D+17"),
+    mk("Multimercados","ACE Multicenários",5,"Rentabilizou ~230% do CDI nos últimos anos","D+17"),
     mk("Multimercados","XP Terras Raras",3,"Exposição ao tema de terras raras e minerais críticos (eletrificação, defesa e disputa geopolítica EUA–China)","No vencimento"),
     mk("Renda Variável","BOVA11",3,"ETF do Ibovespa — exposição ampla às maiores empresas da bolsa brasileira · Collar UI de 2 anos, proteção total com alta limitada","No vencimento"),
     mk("Renda Variável","BPAC11",3,"BTG Pactual, maior banco de investimentos da América Latina · SmartCupom, cupom de 8% em operação de 8 meses","No vencimento"),
@@ -5670,7 +5672,7 @@ const TEMPLATES = {
     mk("Fundos Listados","XP Habitat 2",2,"FII de papel · CRIs pulverizados de incorporação residencial, com forte estrutura de garantias"),
     mk("Alternativos","XP Tecnologia",3,"QQQ protegido de 1 ano","No vencimento"),
     mk("Alternativos","Ouro Retorno Otimizado",4,"Exposição a ouro com estrutura otimizada","No vencimento"),
-    mk("Internacional","Wellington Global Quality",5,"100% ações dos EUA, Europa e Reino Unido · +75% em 3 anos","D+5"),
+    mk("Internacional","Wellington Global Quality",7,"100% ações dos EUA, Europa e Reino Unido · +75% em 3 anos","D+5"),
     mk("Internacional","Renda Fixa Global",2.5,"Crédito global em dólar · Certificate of Deposit","No vencimento")
   ]
 };
@@ -5690,6 +5692,8 @@ const GEN_AC_DET = "Bolsa local e global · direta ou via estruturadas";
 const GEN_FI_DET = "FIIs de tijolo e papel · Fiagro · renda mensal";
 const GEN_AL_DET = "Ouro, temáticos e estruturas com proteção";
 const GEN_IN_DET = "Exposição global em dólar · ações e crédito";
+const GEN_RFG_DET = "Renda fixa global em dólar (treasuries e crédito)";
+const GEN_RVG_DET = "Ações globais em dólar (EUA, Europa e Reino Unido)";
 const GENERIC_TEMPLATES = {
   Conservadora: ()=>[
     mk("Renda Fixa","Pós-fixado",72.5,GEN_RF_POS,"D+0 a vencimento"),
@@ -5697,27 +5701,30 @@ const GENERIC_TEMPLATES = {
     mk("Renda Fixa","Pré-fixado",5,GEN_RF_PRE,"No vencimento"),
     mk("Multimercados","Multimercados",2.5,GEN_MM_DET,"D+17"),
     mk("Fundos Listados","Fundos Imobiliários",2.5,GEN_FI_DET,"D+2"),
-    mk("Internacional","Internacional",5,GEN_IN_DET,"~D+5")
+    mk("Internacional","Renda Fixa Global",2.5,GEN_RFG_DET,"~D+5"),
+    mk("Internacional","Renda Variável Global",2.5,GEN_RVG_DET,"~D+5")
   ],
   Moderada: ()=>[
     mk("Renda Fixa","Pós-fixado",35.5,GEN_RF_POS,"D+0 a vencimento"),
     mk("Renda Fixa","Inflação",22.5,GEN_RF_INF,"D+1"),
     mk("Renda Fixa","Pré-fixado",10,GEN_RF_PRE,"No vencimento"),
-    mk("Multimercados","Multimercados",14,GEN_MM_DET,"D+17"),
+    mk("Multimercados","Multimercados",13,GEN_MM_DET,"D+17"),
     mk("Renda Variável","Ações",5,GEN_AC_DET,"D+2"),
     mk("Fundos Listados","Fundos Imobiliários",4,GEN_FI_DET,"D+2"),
     mk("Alternativos","Alternativos",3,GEN_AL_DET,"No vencimento"),
-    mk("Internacional","Internacional",6,GEN_IN_DET,"~D+5")
+    mk("Internacional","Renda Fixa Global",2.5,GEN_RFG_DET,"~D+5"),
+    mk("Internacional","Renda Variável Global",4.5,GEN_RVG_DET,"~D+5")
   ],
   Sofisticada: ()=>[
     mk("Renda Fixa","Pós-fixado",16,GEN_RF_POS,"D+0 a vencimento"),
     mk("Renda Fixa","Inflação",27.5,GEN_RF_INF,"D+1"),
     mk("Renda Fixa","Pré-fixado",7.5,GEN_RF_PRE,"No vencimento"),
-    mk("Multimercados","Multimercados",10,GEN_MM_DET,"D+17"),
+    mk("Multimercados","Multimercados",8,GEN_MM_DET,"D+17"),
     mk("Renda Variável","Ações",15,GEN_AC_DET,"D+2"),
     mk("Fundos Listados","Fundos Imobiliários",9.5,GEN_FI_DET,"D+2"),
     mk("Alternativos","Alternativos",7,GEN_AL_DET,"No vencimento"),
-    mk("Internacional","Internacional",7.5,GEN_IN_DET,"~D+5")
+    mk("Internacional","Renda Fixa Global",2.5,GEN_RFG_DET,"~D+5"),
+    mk("Internacional","Renda Variável Global",7,GEN_RVG_DET,"~D+5")
   ]
 };
 let CTOR_VIEW = "produtos";
@@ -6583,11 +6590,19 @@ function renderRetorno(D){
   const usar = D.usarItens;
   const multShown = usar ? D.multItens : (Number(S.cdiMult)||0);
   const fonteTxt = usar ? "calculado pelo <b style=\"color:#2BD9A6\">Retorno por ativo</b>" : "definido manualmente (% do CDI)";
+  var _prof = isAtual ? (S.recomendadaTemplate||"Moderada") : S.template;
+  var _ipcaSp = (typeof IPCA_SPREAD!=='undefined' && IPCA_SPREAD[_prof]!=null) ? IPCA_SPREAD[_prof] : Math.max(0,(Number(D.retAA)||0)-(Number(CTOR_IPCA)||0));
+  var _vol = (typeof VOL_ALVO!=='undefined' && VOL_ALVO[_prof]!=null) ? VOL_ALVO[_prof] : null;
+  var _rv = S.retView || 'ipca';
+  var _bigTxt = (_rv==='ipca') ? ('IPCA + '+fmtPct(_ipcaSp)+'%') : (fmtPct(D.retAA)+'%');
+  var _subTxt = (_rv==='ipca') ? ('retorno esperado a.a.'+(_vol!=null?' · vol. alvo '+fmtPct(_vol)+'%':'')) : ('a.a. · '+fmtPct(multShown)+'% do CDI');
+  var _tglTxt = (_rv==='ipca') ? 'ver % do CDI' : 'ver IPCA+';
   const _ex=document.getElementById("inpCdi");
   if(_ex){
     var _t=document.getElementById("retTitulo"); if(_t) _t.textContent=tituloRet;
-    var _a=document.getElementById("retAAval"); if(_a) _a.textContent=fmtPct(D.retAA)+"%";
-    var _m=document.getElementById("retMultlbl"); if(_m) _m.textContent="a.a. · "+fmtPct(multShown)+"% do CDI";
+    var _a=document.getElementById("retAAval"); if(_a) _a.textContent=_bigTxt;
+    var _m=document.getElementById("retMultlbl"); if(_m) _m.innerHTML=_subTxt;
+    var _tg=document.getElementById("retViewTgl"); if(_tg) _tg.textContent=_tglTxt;
     var _g=document.getElementById("retGanho"); if(_g) _g.textContent="≈ R$ "+fmtBRL(D.ganho12)+" em 12 meses";
     var _f=document.getElementById("retFonte"); if(_f) _f.innerHTML="Retorno "+fonteTxt+". <span style='display:block;margin-top:5px;color:#7E87BE;font-size:10.5px;line-height:1.45'>Isentos já com gross-up (líquido ÷ (1-IR)). Rentabilidade estimada — não é garantia de retorno futuro.</span>";
     var _c=document.getElementById("retMultCap"); if(_c) _c.textContent="% do CDI "+(usar?"(auto)":"(manual)");
@@ -6603,9 +6618,10 @@ function renderRetorno(D){
       <svg class="icon" viewBox="0 0 24 24" style="color:#2BD9A6;"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
       <span id="retTitulo" style="color:#A9B0D6; font-weight:700; font-size:13px; letter-spacing:1px;">${tituloRet}</span>
     </div>
-    <div style="display:flex; align-items:baseline; gap:10px;">
-      <span id="retAAval" style="font-weight:800; font-size:30px; color:#2BD9A6;">${fmtPct(D.retAA)}%</span>
-      <span id="retMultlbl" style="color:#A9B0D6; font-size:14px; font-weight:700;">a.a. · ${fmtPct(multShown)}% do CDI</span>
+    <div style="display:flex; align-items:baseline; gap:10px; flex-wrap:wrap;">
+      <span id="retAAval" style="font-weight:800; font-size:30px; color:#2BD9A6;">${_bigTxt}</span>
+      <span id="retMultlbl" style="color:#A9B0D6; font-size:14px; font-weight:700;">${_subTxt}</span>
+      <button id="retViewTgl" type="button" style="margin-left:auto; background:rgba(43,217,166,.12); border:1px solid rgba(43,217,166,.4); color:#8fe9c8; font-size:11px; font-weight:700; padding:4px 9px; border-radius:7px; cursor:pointer;">${_tglTxt}</button>
     </div>
     <div id="retGanho" style="font-size:13px; color:#cfd4ef; margin-top:6px;">≈ R$ ${fmtBRL(D.ganho12)} em 12 meses</div>
     <div id="retFonte" style="font-size:11.5px; color:#8A93D8; margin-top:6px;">Retorno ${fonteTxt}. <span style="display:block;margin-top:5px;color:#7E87BE;font-size:10.5px;line-height:1.45">Isentos já com gross-up (líquido ÷ (1-IR)). Rentabilidade estimada — não é garantia de retorno futuro.</span></div>
@@ -6629,6 +6645,7 @@ function renderRetorno(D){
     </div><div id="retNota">${notaAtual}</div>`;
   document.getElementById("inpCdi").addEventListener("input",e=>{ S.cdi=_parseNum(e.target.value); updateLight(); _refreshRetSums(); });
   document.getElementById("inpIpca").addEventListener("input",e=>{ CTOR_IPCA=_parseNum(e.target.value); updateLight(); _refreshRetSums(); });
+  var _tgb=document.getElementById("retViewTgl"); if(_tgb) _tgb.onclick=()=>{ S.retView=(S.retView==='cdi'?'ipca':'cdi'); try{ctorPersist();}catch(e){} updateLight(); };
   const um=document.getElementById("inpUsarRet"); if(um) um.addEventListener("change",e=>{ S.usarRetornoAtivo=!!e.target.checked; render(); });
   const im=document.getElementById("inpMult"); if(im) im.addEventListener("input",e=>{ if(!S.usarRetornoAtivo){ S.cdiMult=_parseNum(e.target.value); updateLight(); } });
 }
@@ -6816,6 +6833,9 @@ document.getElementById("btnCopy").onclick=()=>{
   const D=calc();
   let txt=`Carteira ${S.template}${S.cliente?" — "+S.cliente:""}\n`;
   txt+=`Patrimônio: R$ ${fmtBRL(S.patrimonio)}\n`;
+  var _cprof=(S.template==="Atual"?(S.recomendadaTemplate||"Moderada"):S.template);
+  var _csp=(typeof IPCA_SPREAD!=='undefined'?IPCA_SPREAD[_cprof]:null), _cvol=(typeof VOL_ALVO!=='undefined'?VOL_ALVO[_cprof]:null);
+  if(_csp!=null) txt+=`Retorno esperado: IPCA + ${fmtPct(_csp)}% a.a.${_cvol!=null?" · volatilidade alvo "+fmtPct(_cvol)+"%":""}\n`;
   txt+=`Retorno estimado (bruto): ${fmtPct(D.retAA)}% a.a. (${fmtPct(S.cdiMult)}% do CDI) ≈ R$ ${fmtBRL(D.ganho12)} em 12 meses\n\n`;
   CLASSES.forEach(c=>{
     const list=D.grouped[c]; if(!list||list.length===0) return;
