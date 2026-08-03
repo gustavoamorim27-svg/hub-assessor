@@ -1,85 +1,15 @@
 {
-  "updated": "02/08/2026 09:06",
+  "updated": "03/08/2026 15:07",
   "items": [
-    {
-      "region": "nacional",
-      "title": "Ibovespa fecha julho com alta de 3,47% e dolar recua a R$ 5,07",
-      "resumo": "Indice subiu 0,47% na sexta e acumulou ganho de 3,47% no mes; dolar caiu 1,79% em julho.",
-      "source": "B3 Bora Investir",
-      "date": "31 jul 2026",
-      "url": "https://borainvestir.b3.com.br/noticias/mercado/ibovespa-b3-sobe-047-e-fecha-julho-com-alta-de-347-dolar-vai-a-r-507/"
-    },
-    {
-      "region": "nacional",
-      "title": "IPCA de junho desacelera para 0,16% e reforca aposta em corte da Selic",
-      "resumo": "Inflacao mais fraca que o esperado consolidou expectativa de novo corte de juros pelo Copom.",
-      "source": "Money Times",
-      "date": "31 jul 2026",
-      "url": "https://www.moneytimes.com.br/tempo-real-ibovespa-hoje-mercado-ao-vivo-10-07-2026-jals-lils-apsa/"
-    },
-    {
-      "region": "nacional",
-      "title": "B3 abre com atraso de 2h30 por falha tecnica, mas Ibovespa fecha no positivo",
-      "resumo": "Problema no pos-negociacao adiou a abertura; bolsa reagiu e terminou o pregao em alta.",
-      "source": "Forbes Brasil",
-      "date": "31 jul 2026",
-      "url": "https://forbes.com.br/forbes-money/2026/07/ibovespa-alta-atraso-b3-dolar-estavel-petroleo-ira/"
-    },
-    {
-      "region": "nacional",
-      "title": "Petrobras impulsiona Ibovespa em linha com a alta do petroleo",
-      "resumo": "PETR4 subiu 1,35% acompanhando o avanco do barril e ajudou a sustentar o indice.",
-      "source": "Finance News",
-      "date": "31 jul 2026",
-      "url": "https://financenews.com.br/2026/07/ibovespa-em-alta-vale-cai-santander-brasil-salta-petrobras-no-positivo-e-outros-destaques-corporativos/"
-    },
-    {
-      "region": "nacional",
-      "title": "Mercado ve Copom cortando a Selic com IPCA-15 em desaceleracao",
-      "resumo": "Dados mais brandos de inflacao aliviam juros futuros e sustentam ciclo de corte gradual.",
-      "source": "InfoMoney",
-      "date": "28 jul 2026",
-      "url": "https://www.infomoney.com.br/mercados/ibovespa-hoje-bolsa-de-valores-ao-vivo-28072026/"
-    },
-    {
-      "region": "internacional",
-      "title": "Fed mantem juros pela 5a vez seguida, com tres dissidencias por alta",
-      "resumo": "Banco central dos EUA deixou a taxa em 3,50%-3,75%; tres membros queriam elevar em 0,25 ponto.",
-      "source": "CNBC",
-      "date": "29 jul 2026",
-      "url": "https://www.cnbc.com/2026/07/29/fed-meeting-today-live-updates.html"
-    },
-    {
-      "region": "internacional",
-      "title": "Dow despenca mais de 1.100 pontos apos postura hawkish do Fed",
-      "resumo": "S&P 500 e Nasdaq recuaram com salto dos yields dos Treasuries apos a decisao de juros.",
-      "source": "Yahoo Finance",
-      "date": "29 jul 2026",
-      "url": "https://finance.yahoo.com/markets/live/stock-market-today-wednesday-july-29-dow-sp-500-nasdaq-082009165.html"
-    },
-    {
-      "region": "internacional",
-      "title": "Nasdaq encerra sequencia de seis quedas e sobe 2,8%",
-      "resumo": "Acoes se recuperaram do selloff pos-Fed; Dow avancou 1,2% e S&P 500 subiu 1,7%.",
-      "source": "CNBC",
-      "date": "29 jul 2026",
-      "url": "https://www.cnbc.com/2026/07/29/stock-market-today-live-updates.html"
-    },
-    {
-      "region": "internacional",
-      "title": "Petroleo dispara apos ataque de misseis do Ira a forcas dos EUA",
-      "resumo": "WTI saltou cerca de 4,7% a US$ 82,93 com reacenamento das tensoes no Oriente Medio.",
-      "source": "Quartz",
-      "date": "29 jul 2026",
-      "url": "https://qz.com/oil-prices-iran-missile-attack-fed-rate-decision-072926"
-    },
-    {
-      "region": "internacional",
-      "title": "Juro do Treasury de 30 anos atinge maior nivel desde 2007",
-      "resumo": "Yield de 30 anos superou 5,2% e o de 10 anos passou de 4,67% com temor de inflacao.",
-      "source": "Barchart",
-      "date": "29 jul 2026",
-      "url": "https://www.barchart.com/story/news/30415328/stocks-pressured-by-rising-bond-yields-as-fed-rate-cut-hopes-fade"
-    }
+    { "region": "nacional", "title": "Ibovespa cai com foco no Oriente Medio e dolar volta a R$ 5,20", "resumo": "Bolsa recua com cautela sobre negociacoes de paz no Oriente Medio enquanto o cambio oscila no dia.", "source": "CNN Brasil", "date": "03 ago 2026", "url": "https://www.cnnbrasil.com.br/economia/mercado/mercado-financeiro-ibovespa-dolar-3-agosto-2026/" },
+    { "region": "nacional", "title": "Ibovespa recua pressionado por VALE3 e PETR4 com queda do petroleo", "resumo": "Acoes ligadas a commodities pesam sobre o indice, com Petrobras em baixa apos recuo do petroleo.", "source": "InfoMoney", "date": "03 ago 2026", "url": "https://www.infomoney.com.br/mercados/ibovespa-hoje-bolsa-de-valores-ao-vivo-03082026/" },
+    { "region": "nacional", "title": "Selic projetada para fim de 2026 recua a 13,75% com dois cortes no radar", "resumo": "Economistas passam a projetar dois cortes de 0,25 ponto na taxa basica ate o fim do ano.", "source": "Mais Retorno", "date": "03 ago 2026", "url": "https://maisretorno.com/portal/tudo-sobre/selic/page/32" },
+    { "region": "nacional", "title": "Copom decide juros na quarta com aposta majoritaria em corte de 0,25 ponto", "resumo": "Mercado aguarda a decisao do Copom nesta quarta-feira, com apostas concentradas em corte de 25 pontos-base.", "source": "InfoMoney", "date": "03 ago 2026", "url": "https://www.infomoney.com.br/mercados/ibovespa-hoje-bolsa-de-valores-ao-vivo-03082026/" },
+    { "region": "nacional", "title": "IPCA acumulado em 12 meses fica em 4,64% e no ano soma 3,36%", "resumo": "Indice oficial de inflacao segue dentro do horizonte relevante para as decisoes de politica monetaria.", "source": "Investidor10", "date": "03 ago 2026", "url": "https://investidor10.com.br/indices/ipca/" },
+    { "region": "internacional", "title": "Nasdaq lidera recuperacao e sobe mais de 2,7% apos venda generalizada", "resumo": "Acoes de tecnologia puxam a alta de Wall Street depois de sessao volatil na semana.", "source": "Yahoo Finance", "date": "03 ago 2026", "url": "https://finance.yahoo.com/markets/live/stock-market-today-wednesday-july-29-dow-sp-500-nasdaq-082009165.html" },
+    { "region": "internacional", "title": "Fed mantem juros com tres membros votando por alta", "resumo": "Banco central americano segura a taxa enquanto a inflacao permanece acima da meta de 2%.", "source": "Yahoo Finance", "date": "03 ago 2026", "url": "https://finance.yahoo.com/markets/live/stock-market-today-wednesday-july-29-dow-sp-500-nasdaq-082009165.html" },
+    { "region": "internacional", "title": "Petroleo cai com avanco das negociacoes de paz no Oriente Medio", "resumo": "Otimismo com um acordo duradouro reduz o premio de risco e derruba as cotacoes do barril.", "source": "Investing.com", "date": "03 ago 2026", "url": "https://investing.com/news/commodities-news/oil-prices-slide-on-us-rate-jitters-strong-dollar-3402259" },
+    { "region": "internacional", "title": "Rendimentos dos Treasuries sobem apos postura dura do Fed", "resumo": "Juros dos titulos longos avancam com o mercado ajustando expectativas de cortes em 2026.", "source": "Barchart", "date": "03 ago 2026", "url": "https://www.barchart.com/story/news/30415328/stocks-pressured-by-rising-bond-yields-as-fed-rate-cut-hopes-fade" },
+    { "region": "internacional", "title": "Mercados aguardam acordo de paz EUA-Ira e reuniao do Fed", "resumo": "Bolsas e petroleo operam estaveis a espera de definicoes geopoliticas e da politica monetaria americana.", "source": "Asia Financial", "date": "03 ago 2026", "url": "https://www.asiafinancial.com/oil-stock-markets-steady-ahead-of-us-iran-peace-deal-fed-meet" }
   ]
 }
