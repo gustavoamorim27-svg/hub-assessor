@@ -7009,9 +7009,18 @@ function buildCarteiraPNG(){
   ctx.fillStyle="rgba(43,217,166,.06)"; rr(cardX,cB,cardW,CARD_H,14); ctx.fill();
   ctx.strokeStyle="rgba(43,217,166,.22)"; ctx.lineWidth=1; rr(cardX,cB,cardW,CARD_H,14); ctx.stroke();
   spaced("RETORNO ESTIMADO (BRUTO)",cardX+18,cB+27,11.5,"#8FE9CB","700",1.5,"left");
-  ctx.font=`800 23px ${FF}`; const raaW=ctx.measureText(fmtPct(retAA)+"% a.a.").width;
-  T(fmtPct(retAA)+"% a.a.",cardX+18,cB+56,23,"#2BD9A6","800","left");
-  T("· "+fmtPct(cdiMult)+"% do CDI",cardX+18+raaW+12,cB+54,13.5,"#A9B0D6","600","left");
+  var _prof=(template==="Atual")?(S.recomendadaTemplate||"Moderada"):template;
+  var _ipcaSp=(typeof IPCA_SPREAD!=='undefined'&&IPCA_SPREAD[_prof]!=null)?IPCA_SPREAD[_prof]:Math.max(0,(Number(retAA)||0)-(Number(CTOR_IPCA)||0));
+  var _vol=(typeof VOL_ALVO!=='undefined'&&VOL_ALVO[_prof]!=null)?VOL_ALVO[_prof]:null;
+  if((S.retView||'ipca')==='ipca'){
+    var _big="IPCA + "+fmtPct(_ipcaSp)+"%"; ctx.font=`800 23px ${FF}`; const _bw=ctx.measureText(_big).width;
+    T(_big,cardX+18,cB+56,23,"#2BD9A6","800","left");
+    T("· retorno esperado a.a."+(_vol!=null?" · vol. alvo "+fmtPct(_vol)+"%":""),cardX+18+_bw+12,cB+54,13,"#A9B0D6","600","left");
+  } else {
+    ctx.font=`800 23px ${FF}`; const raaW=ctx.measureText(fmtPct(retAA)+"% a.a.").width;
+    T(fmtPct(retAA)+"% a.a.",cardX+18,cB+56,23,"#2BD9A6","800","left");
+    T("· "+fmtPct(cdiMult)+"% do CDI",cardX+18+raaW+12,cB+54,13.5,"#A9B0D6","600","left");
+  }
 
   /* legenda de classes (esquerda) */
   spaced("DISTRIBUIÇÃO POR CLASSE",LX,bodyTop+500,11.5,"#6F77A8","700",1.5,"left");
