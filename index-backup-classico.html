@@ -1539,40 +1539,6 @@ body.mm .ajbtn{ padding:11px 16px !important; font-size:14px !important; }
 </style>
 <div class="g-topbar"></div>
 
-<!-- ===== TEMA VIVA: fundo animado ===== -->
-<div id="vivaBg" aria-hidden="true">
-  <div class="vb vb1"></div><div class="vb vb2"></div><div class="vb vb3"></div>
-  <div class="vb vb4"></div><div class="vb vb5"></div>
-</div>
-<style id="viva-theme">
-#vivaBg{position:fixed;inset:0;z-index:-2;overflow:hidden;background:linear-gradient(160deg,#2a1470 0%,#241263 40%,#3b1060 100%);}
-#vivaBg .vb{position:absolute;border-radius:50%;filter:blur(90px);opacity:.85;will-change:transform;}
-#vivaBg .vb1{width:70vmax;height:70vmax;background:radial-gradient(circle,#ff3d00 0%,#ff470000 70%);top:-20vmax;left:-15vmax;animation:vivaF1 26s ease-in-out infinite alternate;}
-#vivaBg .vb2{width:60vmax;height:60vmax;background:radial-gradient(circle,#4533ff 0%,#4533ff00 70%);top:30%;right:-20vmax;animation:vivaF2 32s ease-in-out infinite alternate;}
-#vivaBg .vb3{width:55vmax;height:55vmax;background:radial-gradient(circle,#ff2d78 0%,#ff2d7800 70%);bottom:-15vmax;left:10%;animation:vivaF3 38s ease-in-out infinite alternate;opacity:.6;}
-#vivaBg .vb4{width:45vmax;height:45vmax;background:radial-gradient(circle,#ff6a00 0%,#ff6a0000 70%);top:55%;left:-18vmax;animation:vivaF4 29s ease-in-out infinite alternate;opacity:.7;}
-#vivaBg .vb5{width:40vmax;height:40vmax;background:radial-gradient(circle,#0e9fb5 0%,#0e9fb500 70%);top:8%;left:45%;animation:vivaF5 44s ease-in-out infinite alternate;opacity:.45;}
-@keyframes vivaF1{0%{transform:translate(0,0) scale(1);}50%{transform:translate(18vw,22vh) scale(1.15) rotate(20deg);}100%{transform:translate(6vw,45vh) scale(.95);}}
-@keyframes vivaF2{0%{transform:translate(0,0) scale(1);}50%{transform:translate(-22vw,-12vh) scale(1.2);}100%{transform:translate(-8vw,18vh) scale(.9);}}
-@keyframes vivaF3{0%{transform:translate(0,0) scale(1);}50%{transform:translate(20vw,-18vh) scale(1.15);}100%{transform:translate(-12vw,-6vh) scale(1.05);}}
-@keyframes vivaF4{0%{transform:translate(0,0);}50%{transform:translate(24vw,-14vh) scale(1.2);}100%{transform:translate(10vw,10vh) scale(.9);}}
-@keyframes vivaF5{0%{transform:translate(0,0);}50%{transform:translate(-16vw,26vh) scale(1.25);}100%{transform:translate(8vw,8vh) scale(1);}}
-#vivaBg::after{content:'';position:absolute;inset:-100% 0 0 0;background:repeating-linear-gradient(115deg,rgba(255,255,255,.025) 0 2px,transparent 2px 90px);animation:vivaCor 18s linear infinite;}
-@keyframes vivaCor{to{transform:translateY(50%);}}
-@media (prefers-reduced-motion:reduce){#vivaBg .vb,#vivaBg::after{animation:none;}}
-html:not(.theme-light) body{background:transparent !important;}
-html:not(.theme-light) .g-body,
-html:not(.theme-light) .g-panel,
-html:not(.theme-light) [data-tool]{background:transparent !important;background-attachment:scroll !important;}
-html:not(.theme-light) .g-nav{background:rgba(23,10,68,.72) !important;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid rgba(255,255,255,.10);}
-html:not(.theme-light) .card,
-html:not(.theme-light) .hcard,
-html:not(.theme-light) .pc-chip,
-html:not(.theme-light) .suc-cell{background:rgba(255,255,255,.07) !important;border-color:rgba(255,255,255,.15) !important;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);}
-html:not(.theme-light) .card:hover{background:rgba(255,255,255,.10) !important;}
-html.theme-light #vivaBg{display:none;}
-</style>
-
 <nav class="g-nav">
   <span class="g-logo" onclick="showPanel('home')">rico</span>
   <div class="g-tabs">
@@ -1604,10 +1570,6 @@ html.theme-light #vivaBg{display:none;}
       <svg viewBox="0 0 24 24"><path d="M3 21h18M5 21V8l7-4 7 4v13M10 21v-6h4v6"/></svg>
       Sucessão
     </button>
-    <button class="g-tab" data-panel="apresentacao" onclick="showPanel('apresentacao')">
-      <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
-      Apresentação
-    </button>
   </div>
 <style id="g-ticker-css">
 .g-ticker{ display:flex; align-items:center; gap:16px; margin-left:auto; padding-left:18px; flex-shrink:0; }
@@ -1632,18 +1594,6 @@ html.theme-light #vivaBg{display:none;}
 </nav>
 
 <div class="g-body">
-  <div class="g-panel" id="p-apresentacao" data-tool="apresentacao" style="padding:0">
-    <iframe id="apresentacaoFrame" title="Apresentação Rico" loading="lazy" style="display:block;width:100%;height:calc(100vh - 64px - env(safe-area-inset-top));border:0;background:#241263"></iframe>
-  </div>
-  <script>
-  (function(){
-    window._toolInit = window._toolInit || {};
-    window._toolInit["apresentacao"] = function(){
-      var f = document.getElementById("apresentacaoFrame");
-      if (f && !f.src) f.src = "apresentacao.html";
-    };
-  })();
-  </script>
   <div class="g-panel" id="p-ajustes" data-tool="ajustes">
     <style>
     #p-ajustes .ajbtn{ cursor:pointer;font-family:'Manrope',sans-serif;font-weight:700;font-size:13px;color:#cfd4ef;background:rgba(255,255,255,.05);border:1px solid rgba(120,130,210,.25);border-radius:10px;padding:9px 15px;transition:all .15s; }
