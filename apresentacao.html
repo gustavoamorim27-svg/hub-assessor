@@ -354,6 +354,21 @@
   .mini-legenda i{width:18px;height:3px;display:inline-block;flex:0 0 auto;}
 
   /* ============ MODO DE APRESENTAÇÃO ============ */
+  #btn-cheia{
+    position:fixed;bottom:22px;right:22px;z-index:200;
+    display:flex;align-items:center;justify-content:center;
+    width:46px;height:46px;border-radius:12px;cursor:pointer;color:#fff;
+    border:1px solid rgba(255,255,255,.28);background:rgba(20,10,60,.55);
+    backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+    box-shadow:0 8px 22px rgba(0,0,0,.35);transition:background .2s ease,transform .2s ease,opacity .3s ease;
+    opacity:.55;
+  }
+  #btn-cheia:hover{opacity:1;background:rgba(254,82,0,.85);transform:scale(1.06);}
+  #btn-cheia svg{width:20px;height:20px;display:block;}
+  body.tela-cheia #btn-cheia{opacity:.35;}
+  body.tela-cheia #btn-cheia:hover{opacity:1;}
+  #controles,.zona-dica{display:none !important;}
+  @media (max-width:640px){ #btn-cheia{width:42px;height:42px;bottom:16px;right:16px;} }
   #btn-apresentar{
     position:fixed;bottom:22px;left:22px;z-index:200;
     display:flex;align-items:center;gap:.55rem;
@@ -740,7 +755,7 @@
 </section>
 
 <!-- ============ EDIÇÃO ============ -->
-<button id="btn-apresentar" title="Iniciar modo de apresentação">▶ Apresentar</button>
+<button id="btn-cheia" title="Tela cheia (F)" aria-label="Tela cheia"></button>
 <button id="btn-proximo" title="Próxima seção" aria-label="Ir para a próxima seção">▼</button>
 <div class="zona-dica esquerda" aria-hidden="true">‹</div>
 <div class="zona-dica direita" aria-hidden="true">›</div>
@@ -926,7 +941,33 @@
     barra.style.width = (scrollY/(document.documentElement.scrollHeight-innerHeight)*100)+'%';
   }
 
-  document.getElementById('btn-apresentar').addEventListener('click',iniciarApresentacao);
+  // ===== TELA CHEIA (esconde a barra do Hub; o site segue normal, com rolagem) =====
+  const ICO_ENTRA = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3M16 3h3a2 2 0 0 1 2 2v3M8 21H5a2 2 0 0 1-2-2v-3M16 21h3a2 2 0 0 0 2-2v-3"/></svg>';
+  const ICO_SAI = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9h3a2 2 0 0 0 2-2V4M20 9h-3a2 2 0 0 1-2-2V4M4 15h3a2 2 0 0 1 2 2v3M20 15h-3a2 2 0 0 0-2 2v3"/></svg>';
+  const btnCheia = document.getElementById('btn-cheia');
+  const emIframe = (function(){ try{ return window.parent !== window; }catch(e){ return true; } })();
+  let cheia = false;
+  function pintarBtn(){ if(btnCheia){ btnCheia.innerHTML = cheia ? ICO_SAI : ICO_ENTRA; btnCheia.title = cheia ? 'Sair da tela cheia (Esc)' : 'Tela cheia (F)'; } }
+  function setCheia(on){
+    cheia = !!on;
+    document.body.classList.toggle('tela-cheia', cheia);
+    try{ if(emIframe) window.parent.postMessage({rico:'apresentar', on:cheia}, '*'); }catch(e){}
+    if(!emIframe){
+      try{
+        if(cheia && document.documentElement.requestFullscreen) document.documentElement.requestFullscreen().catch(()=>{});
+        if(!cheia && document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(()=>{});
+      }catch(e){}
+    }
+    pintarBtn();
+  }
+  pintarBtn();
+  if(btnCheia) btnCheia.addEventListener('click', ()=>setCheia(!cheia));
+  addEventListener('keydown', e=>{
+    if(document.body.classList.contains('editando')) return;
+    if(e.key==='f'||e.key==='F'){ e.preventDefault(); setCheia(!cheia); }
+    if(e.key==='Escape' && cheia){ e.preventDefault(); setCheia(false); }
+  });
+
   ctrlProx.addEventListener('click',()=>irPara(slideAtual+1));
   ctrlAnt.addEventListener('click',()=>irPara(slideAtual-1));
   ctrlInicio.addEventListener('click',()=>irPara(0));
@@ -944,7 +985,6 @@
   addEventListener('keydown',e=>{
     if(document.body.classList.contains('editando')) return;
     if(!apresentando){
-      if(e.key==='p'||e.key==='P'){ e.preventDefault(); iniciarApresentacao(); }
       return;
     }
     acordar();
