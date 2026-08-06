@@ -367,7 +367,8 @@
 
   body.apresentando{overflow:hidden;height:100dvh;position:fixed;inset:0;width:100%;-webkit-overflow-scrolling:auto;overscroll-behavior:none;touch-action:manipulation;}
   body.apresentando section{-webkit-tap-highlight-color:transparent;}
-  body.apresentando .conteudo{max-height:100%;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+  body.apresentando .conteudo{max-height:100%;overflow-y:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;-ms-overflow-style:none;overscroll-behavior:contain;}
+  body.apresentando .conteudo::-webkit-scrollbar{width:0;height:0;display:none;}
   body.apresentando #btn-editar,
   body.apresentando #btn-proximo,
   body.apresentando #btn-apresentar,
