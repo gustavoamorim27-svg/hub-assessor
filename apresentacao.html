@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rico — Assessoria de Investimentos | Viva Infinitamente</title>
+<style>
+  :root{
+    --laranja:#fe5200;
+    --laranja-vivo:#ff2e00;
+    --rosa:#ff2d78;
+    --roxo:#241263;
+    --roxo-claro:#4533d6;
+    --azul:#2b6cff;
+    --teal:#0e7f8f;
+    --branco:#ffffff;
+    --fonte:'Segoe UI', system-ui, -apple-system, 'Helvetica Neue', Arial, sans-serif;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    font-family:var(--fonte);
+    color:var(--branco);
+    background:#1a0b52;
+    overflow-x:hidden;
+  }
+
+  /* ============ FUNDO ANIMADO — "RIO" DE DEGRADÊ ============ */
+  .bg{
+    position:fixed;inset:0;z-index:-2;overflow:hidden;
+    background:linear-gradient(160deg,#2a1470 0%,#241263 40%,#3b1060 100%);
+  }
+  .blob{
+    position:absolute;border-radius:50%;
+    filter:blur(90px);opacity:.85;
+    will-change:transform;
+  }
+  .b1{width:70vmax;height:70vmax;background:radial-gradient(circle,#ff3d00 0%,#ff470000 70%);
+      top:-20vmax;left:-15vmax;animation:flow1 26s ease-in-out infinite alternate;}
+  .b2{width:60vmax;height:60vmax;background:radial-gradient(circle,#4533ff 0%,#4533ff00 70%);
+      top:30%;right:-20vmax;animation:flow2 32s ease-in-out infinite alternate;}
+  .b3{width:55vmax;height:55vmax;background:radial-gradient(circle,#ff2d78 0%,#ff2d7800 70%);
+      bottom:-15vmax;left:10%;animation:flow3 38s ease-in-out infinite alternate;opacity:.6;}
+  .b4{width:45vmax;height:45vmax;background:radial-gradient(circle,#ff6a00 0%,#ff6a0000 70%);
+      top:55%;left:-18vmax;animation:flow4 29s ease-in-out infinite alternate;opacity:.7;}
+  .b5{width:40vmax;height:40vmax;background:radial-gradient(circle,#0e9fb5 0%,#0e9fb500 70%);
+      top:8%;left:45%;animation:flow5 44s ease-in-out infinite alternate;opacity:.45;}
+  @keyframes flow1{
+    0%{transform:translate(0,0) scale(1);}
+    50%{transform:translate(18vw,22vh) scale(1.15) rotate(20deg);}
+    100%{transform:translate(6vw,45vh) scale(.95);}
+  }
+  @keyframes flow2{
+    0%{transform:translate(0,0) scale(1);}
+    50%{transform:translate(-22vw,-12vh) scale(1.2);}
+    100%{transform:translate(-8vw,18vh) scale(.9);}
+  }
+  @keyframes flow3{
+    0%{transform:translate(0,0) scale(1);}
+    50%{transform:translate(20vw,-18vh) scale(1.15);}
+    100%{transform:translate(-12vw,-6vh) scale(1.05);}
+  }
+  @keyframes flow4{
+    0%{transform:translate(0,0);}
+    50%{transform:translate(24vw,-14vh) scale(1.2);}
+    100%{transform:translate(10vw,10vh) scale(.9);}
+  }
+  @keyframes flow5{
+    0%{transform:translate(0,0);}
+    50%{transform:translate(-16vw,26vh) scale(1.25);}
+    100%{transform:translate(8vw,8vh) scale(1);}
+  }
+  /* textura sutil de "correnteza" */
+  .bg::after{
+    content:'';position:absolute;inset:-100% 0 0 0;
+    background:repeating-linear-gradient(115deg,
+      rgba(255,255,255,.025) 0 2px,transparent 2px 90px);
+    animation:correnteza 18s linear infinite;
+  }
+  @keyframes correnteza{to{transform:translateY(50%);}}
+
+  /* ============ BARRA DE PROGRESSO ============ */
+  #progresso{
+    position:fixed;top:0;left:0;height:4px;width:0;
+    background:linear-gradient(90deg,var(--laranja),var(--rosa));
+    z-index:100;border-radius:0 4px 4px 0;
+  }
+
+  /* ============ SEÇÕES ============ */
+  section{
+    min-height:100vh;
+    display:flex;flex-direction:column;justify-content:center;align-items:center;
+    padding:14vh 6vw;position:relative;
+  }
+  .conteudo{max-width:1100px;width:100%;}
+
+  /* animação de entrada */
+  .reveal{opacity:0;transform:translateY(60px);
+    transition:opacity .9s ease,transform .9s cubic-bezier(.22,.9,.3,1);}
+  .reveal.dir{transform:translateX(80px);}
+  .reveal.esq{transform:translateX(-80px);}
+  .reveal.zoom{transform:scale(.8);}
+  .reveal.visivel{opacity:1;transform:none;}
+  .atraso1{transition-delay:.15s;} .atraso2{transition-delay:.3s;}
+  .atraso3{transition-delay:.45s;} .atraso4{transition-delay:.6s;}
+  .atraso5{transition-delay:.75s;} .atraso6{transition-delay:.9s;}
+
+  .etiqueta{
+    display:inline-block;font-size:.78rem;letter-spacing:.25em;font-weight:700;
+    text-transform:uppercase;color:#ffd9cc;
+    border:1px solid rgba(255,255,255,.35);border-radius:999px;
+    padding:.45em 1.2em;margin-bottom:1.4rem;backdrop-filter:blur(6px);
+    background:rgba(255,255,255,.07);
+  }
+  h2{font-size:clamp(2rem,5.5vw,3.6rem);font-weight:800;line-height:1.05;margin-bottom:1rem;}
+  .sub{font-size:clamp(1rem,2.2vw,1.25rem);color:rgba(255,255,255,.85);max-width:640px;line-height:1.6;}
+
+  .cartao{
+    background:rgba(255,255,255,.08);
+    border:1px solid rgba(255,255,255,.14);
+    backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+    border-radius:22px;padding:1.6rem;
+    transition:transform .35s ease,background .35s ease;
+  }
+  .cartao:hover{transform:translateY(-6px);background:rgba(255,255,255,.13);}
+
+  /* ============ HERO ============ */
+  #hero{text-align:center;}
+  .logo-rico{display:block;margin:0 auto;color:#fff;height:auto;
+    width:clamp(230px,54vw,620px);
+    filter:drop-shadow(0 10px 40px rgba(0,0,0,.28));
+    animation:pulsar 5s ease-in-out infinite;}
+  @keyframes pulsar{0%,100%{transform:scale(1);}50%{transform:scale(1.03);}}
+  .tagline{
+    margin-top:1.8rem;font-size:clamp(.9rem,2.6vw,1.5rem);
+    letter-spacing:.45em;font-weight:600;text-indent:.45em;
+    color:rgba(255,255,255,.92);
+  }
+  .hero-sub{margin-top:2.2rem;font-size:clamp(.95rem,2vw,1.15rem);color:rgba(255,255,255,.75);}
+  .seta{
+    position:absolute;bottom:4vh;left:50%;transform:translateX(-50%);
+    font-size:1.6rem;animation:quicar 1.8s ease-in-out infinite;opacity:.8;
+  }
+  @keyframes quicar{0%,100%{transform:translate(-50%,0);}50%{transform:translate(-50%,14px);}}
+
+  /* ============ ECOSSISTEMA ============ */
+  #ecossistema .grade-eco{display:flex;flex-wrap:wrap;gap:3rem;align-items:center;justify-content:center;}
+  .orbita-wrap{position:relative;width:min(86vw,520px);height:min(86vw,520px);flex:0 0 auto;}
+  .orbita{
+    position:absolute;inset:14%;border:1.5px dashed rgba(255,255,255,.35);border-radius:50%;
+    animation:girar 60s linear infinite;
+  }
+  @keyframes girar{to{transform:rotate(360deg);}}
+  .no{
+    position:absolute;top:50%;left:50%;
+    width:98px;margin:-49px;text-align:center;
+    animation:contragirar 60s linear infinite;
+  }
+  @keyframes contragirar{to{transform:rotate(-360deg);}}
+  .no .icone{
+    width:56px;height:56px;border-radius:50%;margin:0 auto .4rem;
+    background:var(--roxo);border:2px solid rgba(255,255,255,.65);
+    display:flex;align-items:center;justify-content:center;font-size:1.35rem;
+    box-shadow:0 6px 18px rgba(0,0,0,.35);
+  }
+  .no small{font-size:.62rem;font-weight:600;line-height:1.25;display:block;
+    text-shadow:0 2px 6px rgba(0,0,0,.6);}
+  .centro-eco{
+    position:absolute;inset:0;margin:auto;
+    width:132px;height:132px;border-radius:50%;
+    background:radial-gradient(circle at 30% 30%,#ff6a3d,var(--laranja-vivo));
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    font-weight:800;font-size:.8rem;letter-spacing:.05em;text-align:center;
+    box-shadow:0 0 60px rgba(255,71,19,.55);
+    animation:pulsar 4s ease-in-out infinite;
+  }
+  .assessor-chip{
+    margin-top:1.6rem;display:inline-flex;align-items:center;gap:.6rem;
+    background:rgba(120,180,255,.18);border:1px solid rgba(160,200,255,.4);
+    border-radius:16px;padding:.8rem 1.3rem;font-weight:700;backdrop-filter:blur(8px);
+  }
+
+  /* ============ GLOBAL ============ */
+  #global .topo-global{display:flex;flex-wrap:wrap;gap:2.5rem;align-items:center;margin-bottom:2.5rem;}
+  .pin-mapa{flex:0 0 240px;display:flex;flex-direction:column;gap:1rem;}
+  .pin{
+    display:flex;align-items:center;gap:.7rem;font-weight:700;
+    background:rgba(255,71,19,.2);border:1px solid rgba(255,120,80,.5);
+    padding:.7rem 1.1rem;border-radius:14px;
+  }
+  .pin .ponto{width:12px;height:12px;border-radius:50%;background:var(--laranja);
+    box-shadow:0 0 0 0 rgba(255,71,19,.7);animation:sonar 2s infinite;}
+  @keyframes sonar{
+    0%{box-shadow:0 0 0 0 rgba(255,71,19,.7);}
+    70%{box-shadow:0 0 0 14px rgba(255,71,19,0);}
+    100%{box-shadow:0 0 0 0 rgba(255,71,19,0);}
+  }
+  .grade-cartoes{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1.2rem;}
+  .grade-cartoes .cartao{background:linear-gradient(145deg,rgba(255,71,19,.85),rgba(255,40,0,.75));
+    border:none;font-weight:600;line-height:1.5;font-size:.95rem;}
+  .grade-cartoes .cartao:hover{background:linear-gradient(145deg,rgba(255,90,40,.95),rgba(255,50,10,.85));}
+
+  /* ============ NÚMEROS ============ */
+  #numeros{text-align:center;}
+  .grade-num{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:2rem;margin-top:3rem;}
+  .num{font-size:clamp(2.6rem,7vw,4.5rem);font-weight:800;color:var(--laranja);
+    text-shadow:0 4px 30px rgba(255,71,19,.45);}
+  .num-desc{font-size:1.05rem;color:rgba(255,255,255,.85);margin-top:.3rem;}
+
+  /* ============ PROCESSO ============ */
+  .grade-processo{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:1.2rem;margin-top:2.5rem;}
+  .etapa{background:linear-gradient(160deg,rgba(255,71,19,.92),rgba(230,45,0,.85));
+    border-radius:20px;padding:1.4rem;position:relative;}
+  .etapa h3{font-size:1.02rem;letter-spacing:.03em;text-transform:uppercase;
+    border-bottom:2px solid rgba(255,255,255,.4);padding-bottom:.6rem;margin-bottom:.9rem;}
+  .etapa h4{font-size:.85rem;text-transform:uppercase;letter-spacing:.05em;
+    margin:.9rem 0 .4rem;color:#ffe3d6;}
+  .etapa ul{list-style:none;}
+  .etapa li{font-size:.88rem;padding:.22rem 0 .22rem 1.1rem;position:relative;line-height:1.35;}
+  .etapa li::before{content:'';position:absolute;left:0;top:.62em;width:6px;height:6px;
+    border-radius:50%;background:#fff;}
+  .num-etapa{position:absolute;top:-14px;right:14px;width:34px;height:34px;border-radius:50%;
+    background:var(--roxo);border:2px solid #fff;display:flex;align-items:center;justify-content:center;
+    font-weight:800;font-size:.95rem;box-shadow:0 4px 12px rgba(0,0,0,.35);}
+
+  /* ============ CONTATO ============ */
+  #contato{text-align:center;min-height:80vh;}
+  .infinito-footer{color:var(--laranja);}
+  .infinito-footer svg{width:min(230px,60vw);height:auto;opacity:.95;margin-bottom:1.6rem;}
+
+  /* ============ MODO EDIÇÃO ============ */
+  #btn-editar{
+    position:fixed;bottom:22px;right:22px;z-index:200;
+    width:58px;height:58px;border-radius:50%;border:none;cursor:pointer;
+    background:linear-gradient(145deg,var(--laranja),var(--rosa));color:#fff;font-size:1.5rem;
+    box-shadow:0 8px 26px rgba(0,0,0,.45);transition:transform .25s ease;
+  }
+  #btn-editar:hover{transform:scale(1.1) rotate(-8deg);}
+  #barra-edicao{
+    position:fixed;bottom:22px;left:50%;transform:translate(-50%,120px);
+    z-index:200;display:flex;gap:.7rem;
+    background:rgba(20,10,60,.92);border:1px solid rgba(255,255,255,.25);
+    border-radius:999px;padding:.6rem 1rem;backdrop-filter:blur(10px);
+    transition:transform .4s cubic-bezier(.22,.9,.3,1);
+  }
+  body.editando #barra-edicao{transform:translate(-50%,0);}
+  #barra-edicao button{
+    border:none;border-radius:999px;padding:.55em 1.2em;font-weight:700;cursor:pointer;
+    font-size:.85rem;background:var(--laranja);color:#fff;
+  }
+  #barra-edicao button.secundario{background:rgba(255,255,255,.15);}
+  body.editando [data-edit]{outline:2px dashed rgba(255,255,255,.55);outline-offset:4px;
+    border-radius:6px;cursor:text;}
+  body.editando [data-edit]:focus{outline-color:var(--laranja);}
+  #aviso{
+    position:fixed;top:18px;left:50%;transform:translate(-50%,-90px);
+    background:rgba(20,10,60,.95);border:1px solid rgba(255,255,255,.3);
+    padding:.7rem 1.4rem;border-radius:14px;font-size:.88rem;z-index:300;
+    transition:transform .4s ease;max-width:88vw;text-align:center;
+  }
+  #aviso.mostrar{transform:translate(-50%,0);}
+
+  /* ============ SETA PRÓXIMA SEÇÃO ============ */
+  #btn-proximo{
+    position:fixed;bottom:22px;left:calc(50% - 26px);z-index:200;
+    width:52px;height:52px;border-radius:50%;cursor:pointer;color:#fff;font-size:1.15rem;
+    border:1px solid rgba(255,255,255,.45);
+    background:rgba(28,13,80,.8);backdrop-filter:blur(8px);
+    box-shadow:0 8px 22px rgba(0,0,0,.45);
+    transition:opacity .35s ease;animation:quicar2 2.2s ease-in-out infinite;
+  }
+  #btn-proximo.oculto{opacity:0;pointer-events:none;}
+  @keyframes quicar2{0%,100%{transform:translateY(0);}50%{transform:translateY(6px);}}
+  .seta{cursor:pointer;}
+
+  /* ============ ALOCAÇÃO ============ */
+  .grade-aloc{display:flex;flex-wrap:wrap;gap:3rem;margin-top:2.5rem;align-items:center;}
+  .funil{flex:0 0 300px;display:flex;flex-direction:column;align-items:center;gap:.6rem;margin:0 auto;}
+  .funil .nivel{color:#fff;font-weight:700;text-align:center;font-size:.95rem;
+    display:flex;align-items:center;justify-content:center;padding:1.1rem 1rem;
+    background:linear-gradient(145deg,#ff5a28,#ff2e00);box-shadow:0 8px 24px rgba(255,46,0,.35);}
+  .funil .n1{width:300px;clip-path:polygon(0 0,100% 0,86% 100%,14% 100%);}
+  .funil .n2{width:250px;clip-path:polygon(0 0,100% 0,84% 100%,16% 100%);}
+  .funil .n3{width:200px;clip-path:polygon(0 0,100% 0,80% 100%,20% 100%);}
+  .funil .ponta{width:0;height:0;border-left:58px solid transparent;border-right:58px solid transparent;
+    border-top:42px solid #ff2e00;filter:drop-shadow(0 6px 12px rgba(255,46,0,.4));}
+  .passos{flex:1;min-width:280px;display:flex;flex-direction:column;gap:1.15rem;}
+  .passo{display:flex;gap:1rem;align-items:flex-start;}
+  .passo .selo{flex:0 0 auto;background:linear-gradient(145deg,var(--laranja),#ff2e00);border-radius:10px;
+    font-weight:800;padding:.45em .9em;font-size:.85rem;white-space:nowrap;
+    box-shadow:0 6px 16px rgba(255,46,0,.35);}
+  .passo p{font-size:.95rem;line-height:1.55;color:rgba(255,255,255,.9);}
+
+  /* ============ DIVERSIFICAÇÃO ============ */
+  .tabela-wrap{overflow-x:auto;margin-top:2rem;border-radius:18px;
+    border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.06);backdrop-filter:blur(12px);}
+  table.divers{width:100%;border-collapse:collapse;font-size:.85rem;min-width:660px;}
+  table.divers th{background:rgba(255,71,19,.85);padding:.7rem .8rem;text-align:center;
+    font-size:.78rem;text-transform:uppercase;letter-spacing:.04em;}
+  table.divers td{padding:.5rem .8rem;text-align:center;border-top:1px solid rgba(255,255,255,.12);}
+  table.divers td.fala{text-align:left;font-style:italic;color:#ffd9cc;font-size:.79rem;}
+  table.divers tr.destaque td{background:rgba(255,71,19,.28);font-weight:800;}
+  .neg{color:#ff7ab0;font-weight:700;}
+  .donut-wrap{display:flex;flex-wrap:wrap;gap:2.4rem;align-items:center;justify-content:center;margin-top:2.4rem;}
+  .donut{width:210px;height:210px;border-radius:50%;position:relative;flex:0 0 auto;
+    background:conic-gradient(#4aa8ff 0 33.33%,#ff2d78 33.33% 66.66%,#ff4713 66.66% 100%);
+    box-shadow:0 10px 40px rgba(0,0,0,.4);}
+  .donut::after{content:'';position:absolute;inset:52px;border-radius:50%;background:#241263;z-index:0;}
+  .donut .rotulo{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+    text-align:center;font-size:.82rem;font-weight:700;z-index:1;line-height:1.35;}
+  .legenda{display:flex;flex-direction:column;gap:.6rem;font-size:.9rem;}
+  .legenda span{display:flex;align-items:center;gap:.6rem;}
+  .legenda i{width:14px;height:14px;border-radius:4px;display:inline-block;flex:0 0 auto;}
+  .fonte-nota{margin-top:1.6rem;font-size:.68rem;color:rgba(255,255,255,.55);line-height:1.5;}
+
+  /* ============ PERFIL DE INVESTIDOR ============ */
+  .legenda-perfil{display:flex;flex-wrap:wrap;gap:1rem;margin:1.8rem 0 1.6rem;}
+  .chip-linha{display:flex;align-items:center;gap:.6rem;font-size:.83rem;line-height:1.45;
+    background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.16);
+    border-radius:12px;padding:.6rem .9rem;max-width:430px;}
+  .chip-linha i{width:26px;height:5px;border-radius:3px;flex:0 0 auto;}
+  .grade-perfil{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1.2rem;}
+  .grafico{position:relative;}
+  .grafico h3{font-size:.95rem;margin-bottom:.7rem;text-align:center;}
+  .grafico .queda{position:absolute;top:12px;right:14px;background:rgba(255,255,255,.16);
+    border-radius:8px;padding:.2em .55em;font-size:.8rem;font-weight:800;}
+  .grafico svg{width:100%;height:auto;display:block;}
+
+  /* ============ MODELOS DE SERVIR ============ */
+  .grade-modelos{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1.2rem;margin-top:2.5rem;}
+  .modelo h3{font-size:1.05rem;}
+  .modelo .apelido{font-size:.8rem;color:#ffd9cc;font-style:italic;display:block;
+    margin:.25rem 0 .8rem;border-bottom:2px solid rgba(255,71,19,.7);padding-bottom:.7rem;}
+  .modelo ul{list-style:none;}
+  .modelo li{font-size:.88rem;padding:.28rem 0 .28rem 1.1rem;position:relative;line-height:1.5;}
+  .modelo li::before{content:'';position:absolute;left:0;top:.62em;width:6px;height:6px;
+    border-radius:50%;background:var(--laranja);}
+  .modelo em{color:#ffb18f;font-style:normal;font-weight:700;}
+  .modelo.destaque{border:1px solid rgba(255,130,90,.65);box-shadow:0 0 30px rgba(255,71,19,.25);}
+
+  /* ============ FINANCIAL PLANNING ============ */
+  .grade-plan{display:flex;flex-wrap:wrap;gap:2.5rem;align-items:center;margin-top:2.5rem;}
+  .pilulas{flex:1 1 320px;min-width:280px;display:flex;flex-direction:column;gap:1rem;}
+  .pilula{display:flex;align-items:center;gap:1rem;font-weight:600;font-size:.93rem;line-height:1.45;
+    background:linear-gradient(120deg,rgba(255,71,19,.92),rgba(230,45,0,.8));
+    border-radius:999px;padding:.9rem 1.4rem;}
+  .pilula .ico{flex:0 0 auto;width:44px;height:44px;border-radius:50%;background:#fff;
+    color:var(--laranja-vivo);display:flex;align-items:center;justify-content:center;font-size:1.25rem;}
+  .proj{flex:1 1 300px;min-width:280px;}
+  .proj h3{font-size:.95rem;margin-bottom:.8rem;text-align:center;}
+  .proj svg{width:100%;height:auto;display:block;}
+  .mini-legenda{display:flex;flex-wrap:wrap;gap:.9rem;justify-content:center;margin-top:.8rem;font-size:.72rem;color:rgba(255,255,255,.8);}
+  .mini-legenda span{display:flex;align-items:center;gap:.4rem;}
+  .mini-legenda i{width:18px;height:3px;display:inline-block;flex:0 0 auto;}
+
+  /* ============ MODO DE APRESENTAÇÃO ============ */
+  #btn-apresentar{
+    position:fixed;bottom:22px;left:22px;z-index:200;
+    display:flex;align-items:center;gap:.55rem;
+    border:1px solid rgba(255,255,255,.3);border-radius:999px;cursor:pointer;
+    padding:.75em 1.25em;font-size:.88rem;font-weight:700;font-family:inherit;color:#fff;
+    background:rgba(28,13,80,.82);backdrop-filter:blur(8px);
+    box-shadow:0 8px 22px rgba(0,0,0,.45);transition:transform .25s ease,background .25s ease;
+  }
+  #btn-apresentar:hover{transform:translateY(-3px);background:rgba(254,82,0,.9);}
+  body.editando #btn-apresentar{display:none;}
+
+  body.apresentando{overflow:hidden;height:100vh;}
+  body.apresentando #btn-editar,
+  body.apresentando #btn-proximo,
+  body.apresentando #btn-apresentar,
+  body.apresentando .seta{display:none;}
+  body.apresentando section{
+    position:fixed;inset:0;height:100vh;min-height:0;
+    padding:6vh 6vw calc(5vh + 78px);overflow:hidden;
+    opacity:0;visibility:hidden;pointer-events:none;
+    transform:translateY(38px) scale(.985);
+    transition:opacity .55s ease,transform .55s cubic-bezier(.22,.9,.3,1);
+  }
+  body.apresentando section.slide-ativo{
+    opacity:1;visibility:visible;pointer-events:auto;transform:none;
+  }
+  body.apresentando .conteudo{transform-origin:center center;}
+  body.apresentando #progresso{height:5px;}
+
+  #controles{
+    position:fixed;bottom:20px;left:50%;transform:translate(-50%,140px);
+    z-index:250;display:flex;align-items:center;gap:.5rem;
+    background:rgba(18,8,52,.88);border:1px solid rgba(255,255,255,.22);
+    border-radius:999px;padding:.5rem .65rem;backdrop-filter:blur(12px);
+    box-shadow:0 10px 30px rgba(0,0,0,.5);
+    transition:transform .45s cubic-bezier(.22,.9,.3,1),opacity .45s ease;
+  }
+  body.apresentando #controles{transform:translate(-50%,0);}
+  body.apresentando.ocioso #controles{opacity:0;}
+  #controles button{
+    width:40px;height:40px;border-radius:50%;border:none;cursor:pointer;
+    background:rgba(255,255,255,.12);color:#fff;font-size:1.05rem;font-family:inherit;
+    display:flex;align-items:center;justify-content:center;transition:background .2s ease;
+  }
+  #controles button:hover:not(:disabled){background:var(--laranja);}
+  #controles button:disabled{opacity:.3;cursor:default;}
+  #controles .contagem{
+    font-size:.85rem;font-weight:700;letter-spacing:.06em;
+    padding:0 .7rem;min-width:74px;text-align:center;font-variant-numeric:tabular-nums;
+  }
+  #controles .divisor{width:1px;height:26px;background:rgba(255,255,255,.2);margin:0 .2rem;}
+  #controles .sair{background:rgba(255,255,255,.08);font-size:.95rem;}
+  #controles .sair:hover{background:#e0392b;}
+
+  @media (max-width:640px){
+    section{padding:12vh 7vw;}
+    #btn-apresentar{padding:.7em 1em;font-size:.8rem;}
+    body.apresentando section{padding:5vh 5vw calc(3vh + 84px);}
+    .no{width:78px;margin:-39px;}
+    .no .icone{width:44px;height:44px;font-size:1.05rem;}
+    .no small{font-size:.55rem;}
+    .centro-eco{width:104px;height:104px;font-size:.7rem;}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .blob,.orbita,.no,.logo-rico,.centro-eco,.seta{animation:none !important;}
+    .reveal{transition:none;opacity:1;transform:none;}
+  }
+</style>
+</head>
+<body>
+
+<div class="bg" aria-hidden="true">
+  <div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
+  <div class="blob b4"></div><div class="blob b5"></div>
+</div>
+<div id="progresso"></div>
+
+<!-- ============ HERO ============ -->
+<section id="hero">
+  <div class="conteudo">
+    <svg class="logo-rico reveal zoom visivel" viewBox="505.3 428.8 2944.9 1283.9" fill="currentColor" role="img" aria-label="rico"><path d="M 1321.2,429.5 c -21.3,1.7 -38.9,6.9 -56.5,16.9 c -19.1,10.9 -37.3,27.6 -47.2,42.8 c -3.7,5.9 -6.8,11.1 -6.8,11.5 c 0,0.4 -1.5,4 -3.3,7.9 c -6.8,14.4 -8.9,26.1 -9.1,50.8 c -0.1,31.9 3.6,47.1 18.1,72 c 13.1,22.4 31.2,38.3 60.5,53.1 c 10.7,5.3 20.9,8 44.1,11.5 c 18.7,2.8 40.9,1.1 65.5,-5.2 c 22.9,-5.7 57.7,-30.4 67.9,-48 c 1.9,-3.3 4.8,-7.7 6.4,-9.7 c 5.2,-6.1 12.4,-22.3 15.5,-34.3 c 4.3,-16.5 4.3,-52.9 0,-69.3 c -4.9,-18.7 -12.8,-33.5 -28,-52.4 c -7.7,-9.6 -25.1,-24.3 -34.1,-28.9 c -3.1,-1.6 -7.6,-4 -10.1,-5.3 c -20.4,-11.1 -49.9,-15.7 -82.8,-13.2 z M 2036.7,773.3 c -17.2,1.2 -41.5,4.7 -50,7.2 c -3.3,1.1 -8.7,2.3 -12,2.8 c -3.3,0.5 -7.6,1.9 -9.6,2.8 c -2,1.1 -5.3,1.9 -7.3,1.9 c -2.1,0 -6,1.2 -8.8,2.7 c -2.7,1.5 -6.1,2.7 -7.6,2.7 c -4.1,0 -27.9,6.4 -36.7,9.9 c -11.7,4.7 -27.5,12.1 -35.6,16.9 c -3.9,2.3 -15.2,8.4 -25.2,13.5 c -9.9,5.1 -21.5,12 -25.7,15.5 c -4.3,3.5 -8.8,6.8 -10,7.6 c -9.3,5.9 -21.1,14.5 -29.5,21.9 c -5.5,4.9 -12.7,10.9 -16,13.5 c -8.8,6.7 -32.7,31.9 -47.9,50.3 c -1.9,2.4 -5.2,6.3 -7.2,8.7 c -8.3,9.7 -14.4,18.4 -21.7,31.1 c -4.1,7.3 -8.3,13.9 -9.2,14.7 c -2.1,1.9 -11.7,16.5 -15.7,24.1 c -4,7.6 -14.3,31.9 -14.3,33.7 c 0,0.7 -2,5.1 -4.4,9.7 c -2.4,4.7 -6.3,13.3 -8.7,19.3 c -4.4,11.2 -13.6,42 -13.6,45.6 c 0,1.1 -0.8,4.9 -1.9,8.7 c -2.9,10.4 -7.2,34.4 -9.1,51.5 c -2.1,19.7 -2.1,89.9 0,112.7 c 1.7,17.2 5.5,41.2 8.4,52.7 c 0.9,3.3 2,8.7 2.5,12 c 2.1,12.9 12.3,47.3 14.8,50 c 0.7,0.7 1.2,2 1.2,3.1 c 0,1.1 2.3,6.8 5.1,12.8 c 5.1,10.7 6.5,14.4 10.7,26.1 c 3.3,9.6 12.9,27.9 19.3,37.3 c 3.3,4.8 8.9,13.5 12.4,19.3 c 11.2,18.9 26.4,38.1 47.1,59.3 c 6.1,6.3 12,12.7 13.1,14.4 c 2.5,3.7 44.8,37.7 52,41.9 c 2.8,1.5 5.7,3.5 6.4,4.4 c 3.2,3.6 24.9,16.8 34.7,21.2 c 5.9,2.5 18.3,8.5 27.6,13.3 c 25.1,12.9 40.1,18.4 66.1,24.1 c 8.4,1.9 16.9,3.3 19.1,3.3 c 2.1,0 6.1,1.2 8.8,2.7 c 2.8,1.5 7.5,2.7 10.5,2.7 c 3.1,0 7.6,0.8 10,1.9 c 2.5,1.1 9.1,2.3 14.5,2.8 c 5.5,0.5 13.9,1.9 18.7,3.1 c 6.9,1.6 17.9,2 54,2.1 c 41.6,0.1 46.8,-0.1 63.3,-2.9 c 9.9,-1.7 20.8,-4 24.1,-5.1 c 3.5,-0.9 8.3,-1.9 10.7,-1.9 c 2.5,0 6.5,-1.2 8.9,-2.7 c 2.4,-1.5 6.3,-2.7 8.7,-2.7 c 13.3,0 54.4,-13.7 73.5,-24.7 c 5.9,-3.3 17.9,-9.5 26.7,-13.9 c 15.5,-7.5 44.1,-25.7 56.8,-36 c 3.3,-2.7 14.1,-11.1 24.1,-18.5 c 10,-7.3 20.4,-16.3 23.1,-19.6 c 2.8,-3.3 10.5,-10.5 17.3,-15.9 c 6.8,-5.5 16,-14.3 20.4,-19.7 c 4.4,-5.3 11.5,-12.7 15.7,-16.3 c 4.1,-3.7 13.2,-13.3 20.1,-21.3 c 6.9,-8.1 17.3,-20.3 23.3,-26.8 c 5.9,-6.7 15.7,-18.8 22,-27.1 c 6.3,-8.3 12.3,-15.5 13.5,-15.9 c 2.4,-0.9 7.2,3.9 17.3,17.6 c 3.3,4.4 8.5,10.7 11.5,14 c 3.1,3.5 8.3,9.7 11.5,14 c 3.3,4.4 11.1,13.5 17.3,20.1 c 6.3,6.7 17.3,18.8 24.5,26.9 c 7.2,8.3 19.2,20.5 26.7,27.2 c 7.3,6.8 18.3,16.9 24.1,22.5 c 13.3,12.5 40.8,34.4 54.1,43.2 c 5.5,3.7 12.7,8.8 16,11.5 c 6.7,5.3 19.6,13.1 26.7,15.9 c 2.5,1.1 7.5,3.5 10.8,5.5 c 3.3,2 7.6,4 9.3,4.5 c 1.7,0.5 4.1,1.7 5.2,2.7 c 4,3.5 32.9,16.4 45.3,20.4 c 16.1,5.1 35.7,9.6 42.1,9.6 c 2.8,0 6,0.9 7.3,2.1 c 1.3,1.2 6.1,2.5 10.9,3.2 c 4.7,0.5 9.7,1.6 11.1,2.4 c 1.3,0.7 7.1,1.7 12.5,2.3 c 5.5,0.5 13.9,1.9 18.7,3.1 c 12.9,3.1 103.5,3.1 116,0 c 4.8,-1.2 12.9,-2.5 18,-3.1 c 5.2,-0.5 11.6,-1.9 14.5,-2.8 c 2.8,-1.1 7.1,-1.9 9.3,-1.9 c 2.3,0 6.8,-1.2 10,-2.7 c 3.2,-1.5 7.5,-2.7 9.5,-2.7 c 14.3,0 62.9,-14.9 78.7,-24 c 1.1,-0.7 13.5,-6.8 27.3,-13.9 c 14,-6.9 29.2,-15.5 34,-18.8 c 4.8,-3.3 12,-8.3 16,-10.9 c 36.5,-24 94.3,-82.1 112.3,-112.9 c 3.1,-5.2 8.7,-13.7 12.4,-18.9 c 12.7,-17.6 40.3,-76.9 46,-98.9 c 3.1,-11.9 6.3,-22.7 8.3,-28.3 c 12,-34 19.2,-105.2 15.7,-156.5 c -1.9,-29.9 -8.4,-74 -11.9,-80.5 c -0.7,-1.2 -1.6,-4.8 -2.1,-7.9 c -0.4,-2.9 -1.7,-6.5 -2.7,-8 c -1.1,-1.3 -2,-3.6 -2,-5.1 c 0,-4.5 -10.5,-35.1 -20.3,-58.7 c -4.7,-11.3 -20.4,-42.4 -25.2,-49.5 c -2.5,-3.7 -7.7,-11.5 -11.7,-17.3 c -3.9,-5.7 -7.6,-11.7 -8.1,-13.3 c -1.3,-3.5 -15.7,-22.5 -21.6,-28.5 c -2.5,-2.5 -7.9,-8.9 -12,-14 c -14.3,-18.1 -56.1,-55.9 -78.4,-70.7 c -3.2,-2.3 -9.9,-7.1 -14.8,-10.7 c -4.9,-3.7 -13.1,-8.7 -18.1,-11.2 c -4.9,-2.4 -10.8,-5.3 -13.1,-6.5 c -2.1,-1.2 -6.9,-3.9 -10.7,-5.9 c -19.3,-10.5 -34.4,-17.9 -45.2,-22 c -12.1,-4.7 -35.1,-11.1 -40.1,-11.1 c -1.6,0 -5.1,-1.2 -8,-2.7 c -2.9,-1.5 -6.9,-2.7 -8.9,-2.7 c -2,0 -5.6,-0.8 -8,-1.9 c -5.5,-2.4 -25.3,-6.8 -43.7,-9.6 c -47.9,-7.3 -107.5,-5.2 -151.3,5.5 c -5.1,1.2 -10.5,2.9 -12,3.7 c -1.5,0.8 -5.6,1.9 -9.2,2.4 c -3.6,0.7 -7.5,2 -8.7,2.9 c -1.2,1.1 -4.9,2.3 -8.5,2.7 c -18.5,2.5 -50.5,15.9 -78.3,32.9 c -1.1,0.7 -6.5,3.5 -12,6.3 c -9.7,4.8 -41.9,25.7 -47.3,30.7 c -1.5,1.3 -6.8,5.5 -12,9.1 c -13.6,9.5 -33.7,26.1 -40.7,33.3 c -3.3,3.5 -10.1,9.6 -15.3,13.7 c -10.5,8.5 -55.3,53.2 -55.3,55.2 c 0,0.8 -6.5,8.1 -14.7,16.3 c -8,8.1 -16,16.7 -17.6,18.9 c -2.9,3.9 -13.9,16.8 -31.9,37.6 c -4.7,5.5 -11.3,13.7 -14.9,18.5 c -3.5,4.9 -10.9,14.3 -16.7,20.9 c -14.9,17.6 -20.3,24.4 -27.3,34.8 c -3.5,5.1 -11.1,14.7 -16.9,21.3 c -5.9,6.5 -10.7,12.5 -10.7,13.1 c 0,1.3 -14,19.6 -21.5,28.1 c -2.5,3.1 -6.1,7.6 -7.9,10.1 c -1.7,2.5 -6.8,9.2 -11.3,14.7 c -4.5,5.5 -11.3,14.5 -15.3,20 c -3.9,5.5 -12.7,16.5 -19.3,24.7 c -14.3,17.3 -19.3,24 -19.3,25.7 c 0,0.8 -4.7,6.7 -10.4,13.2 c -14,16 -21.7,25.3 -26,31.7 c -2,3.1 -6.8,8.8 -10.7,12.7 c -3.9,4 -10.7,11.9 -14.9,17.3 c -13.9,17.5 -59.9,62.4 -76.9,75.1 c -8.5,6.4 -17.2,13.2 -19.3,15.3 c -2,2 -7.1,5.1 -11.1,6.8 c -4,1.7 -12.1,5.5 -18,8.1 c -16.7,7.9 -36.3,15.3 -43.3,16.7 c -2.5,0.5 -6.8,1.9 -9.3,3.1 c -6.9,3.2 -76,3.2 -82,0 c -2.3,-1.2 -6.5,-2.5 -9.3,-3.1 c -2.9,-0.4 -7.5,-1.6 -10,-2.7 c -21.5,-8.1 -27.5,-10.5 -37.3,-14.9 c -21.1,-9.6 -25.1,-12.3 -45.5,-30.8 c -25.3,-22.9 -25.7,-23.5 -35.2,-38.9 c -4.3,-6.9 -10,-15.9 -12.7,-20 c -10.7,-15.7 -16.8,-30.7 -22.1,-52.9 c -5.5,-23.3 -7.1,-33.3 -8.8,-53.5 c -1.9,-22.4 0,-52.7 4.4,-74.9 c 1.6,-7.7 3.3,-16.4 3.9,-19.3 c 1.6,-8.1 6.5,-24.3 8.8,-28.3 c 0.9,-2.1 1.9,-4.7 2,-5.7 c 0,-1.1 1.7,-4.5 3.6,-7.6 c 4.8,-7.5 15.9,-25.3 23.5,-37.9 c 4,-6.5 9.9,-13.5 17.1,-20.1 c 6.1,-5.6 15.3,-14.1 20.4,-19.1 c 7.9,-7.3 12.9,-10.5 31.3,-19.7 c 25.1,-12.4 34.9,-16.9 37.5,-16.9 c 1.1,0 3.1,-0.9 4.4,-2 c 1.5,-1.1 4.3,-2 6.3,-2 c 1.9,0 7.3,-1.3 12,-2.8 c 7.9,-2.7 11.5,-2.8 43.9,-2.8 c 32.4,0 36,0.1 43.9,2.8 c 4.7,1.5 9.7,2.8 11.3,2.8 c 1.6,0 5.2,1.2 8.1,2.7 c 2.9,1.5 6,2.7 7.1,2.7 c 1.1,0 3.5,0.8 5.3,1.9 c 3.9,2.1 13.1,6.3 37.9,17.6 c 8.7,3.9 17.3,8.3 19.3,9.9 c 6.4,4.9 33.7,25.7 41.6,31.7 c 4.1,3.2 8.9,7.5 10.8,9.5 c 5.7,6.5 8.8,6.5 14.4,0 c 2.7,-3.2 9.7,-10.8 15.6,-17.1 c 6,-6.4 14.1,-16 18.3,-21.5 c 4.1,-5.5 11.2,-13.9 15.7,-18.7 c 4.4,-4.8 10.9,-12.3 14.4,-16.5 c 3.5,-4.4 9.1,-10.9 12.4,-14.7 c 3.3,-3.7 10.5,-12.3 15.9,-18.8 c 5.5,-6.7 12.9,-15.3 16.7,-19.3 c 3.9,-4 10.9,-12.3 15.9,-18.3 c 10.7,-13.2 11.2,-16.8 4.1,-24.3 c -2.5,-2.7 -7.9,-8.4 -11.9,-12.9 c -4.1,-4.4 -12.9,-12.5 -19.6,-18 c -6.7,-5.5 -16.8,-13.6 -22.4,-18.3 c -13.7,-11.3 -39.9,-29.1 -49.2,-33.2 c -4.1,-2 -9.1,-4.5 -10.8,-6 c -1.7,-1.3 -4,-2.4 -4.9,-2.4 c -0.9,0 -5.3,-2.4 -9.9,-5.5 c -15.3,-10.1 -48.7,-23.5 -64.7,-25.7 c -3.6,-0.5 -7.9,-1.9 -9.5,-2.8 c -1.6,-0.9 -5.2,-2.3 -8,-2.8 c -2.8,-0.4 -6.7,-1.6 -8.5,-2.5 c -1.9,-0.9 -5.7,-2 -8.7,-2.5 c -2.9,-0.5 -8,-1.9 -11.3,-2.8 c -22.7,-7.1 -72.1,-10.1 -115.3,-7.3 z m 991.2,233.3 c 4.7,1.5 9.9,2.7 11.6,2.7 c 1.7,0 5.5,1.2 8.1,2.7 c 2.8,1.5 6.3,2.7 7.7,2.7 c 1.5,0 3.9,0.8 5.3,1.9 c 1.5,0.9 4.1,2.3 6,2.8 c 1.9,0.5 10.5,4.4 19.3,8.7 c 8.8,4.1 19.3,9.2 23.5,11.1 c 13.6,6.4 48.7,41.1 60.4,59.7 c 4.4,6.9 8.8,13.7 10,15.2 c 1.2,1.5 3.2,4.4 4.3,6.7 c 4,7.5 15.9,35.1 15.9,36.9 c 0,1.1 0.7,2.5 1.5,3.3 c 1.3,1.3 3.9,10.8 7.2,27.7 c 3.5,17.5 6.4,51.3 5.5,64 c -2.1,30.1 -7.7,63.6 -12.1,73.3 c -2,4.1 -3.3,7.5 -10.7,25.3 c -5.2,12.8 -7.2,16.3 -22.3,38.8 c -8.9,13.3 -14.1,19.7 -22,26.7 c -5.7,4.9 -13.7,12.1 -17.7,16 c -12.7,12 -19.7,16.1 -47.3,28.5 c -2.9,1.2 -10.7,4.3 -17.3,6.7 c -6.5,2.3 -13.9,5.1 -16.1,6 c -2.3,0.9 -7.1,2.3 -10.7,2.7 c -3.6,0.5 -8.3,2 -10.5,3.1 c -3.3,1.7 -10.3,2.1 -44,2.1 c -30,0 -40.9,-0.4 -44,-1.7 c -2.1,-1.1 -7.6,-2.5 -12,-3.5 c -4.4,-0.9 -9.7,-2.4 -12,-3.1 c -2.1,-0.8 -9.3,-3.3 -16,-5.7 c -6.5,-2.3 -16.8,-6.1 -22.7,-8.5 c -5.9,-2.4 -14.3,-5.7 -18.7,-7.5 c -4.4,-1.7 -14.3,-7.7 -22,-13.2 c -20.3,-14.5 -24.8,-17.7 -29.9,-20.7 c -2.5,-1.5 -9.9,-7.6 -16.4,-13.5 c -6.4,-6 -15.3,-13.9 -19.7,-17.6 c -4.4,-3.6 -14.5,-13.6 -22.7,-22.3 c -8,-8.5 -20.1,-21.3 -26.9,-28.4 c -6.7,-7.2 -15.2,-17.1 -18.8,-22.1 c -3.7,-5.1 -11.5,-14 -17.3,-20 c -5.9,-5.9 -11.6,-12.7 -12.8,-15.1 c -1.1,-2.3 -5.7,-8.7 -10.1,-14.1 c -4.4,-5.5 -8,-10.5 -8,-11.2 c 0,-0.7 2.7,-4.8 6,-8.9 c 3.3,-4.3 8.3,-11.5 10.9,-16 c 4.9,-8.1 12.1,-18.4 15.5,-22.1 c 7.3,-7.9 17.6,-20.9 21.2,-26.9 c 7.5,-12.1 9.7,-15.2 14.9,-19.7 c 2.7,-2.4 11.6,-12.3 19.7,-21.9 c 20.3,-24 53.3,-56.1 71.7,-69.9 c 8.4,-6.3 17.1,-13.1 19.2,-15.2 c 5.5,-5.3 13.2,-10.4 24.8,-16 c 21.3,-10.3 36.1,-17.1 36.9,-17.1 c 0.4,0 3.2,-1.1 6.3,-2.5 c 10.3,-4.7 20.1,-8.1 23.5,-8.1 c 1.9,-0.1 5.7,-1.1 8.7,-2.1 c 7.9,-3.1 28.7,-4.4 59.3,-3.7 c 22.1,0.5 28.9,1.2 35.9,3.2 z M 896,782.8 c -12.8,0.7 -26.9,2 -31.3,3.1 c -4.4,1.1 -11.7,2.3 -16.4,2.7 c -4.7,0.4 -9.7,1.7 -11.3,2.8 c -1.6,1.1 -5.6,2 -8.9,2 c -6,0.1 -30.7,4.9 -43.6,8.5 c -13.3,3.7 -34.4,12.3 -41.7,16.7 c -1.1,0.7 -11.9,6.1 -24,12 c -19.6,9.6 -33.5,17.7 -46,27.2 c -15.5,11.5 -40.7,33.2 -47.1,40.5 c -4.1,4.9 -13.3,14.9 -20.3,22.3 c -7.9,8.3 -15.1,17.6 -18.9,24.3 c -3.5,6 -9.5,15.2 -13.5,20.4 c -3.9,5.2 -10,15.3 -13.6,22.5 c -3.5,7.1 -8.1,16.5 -10.3,20.9 c -3.9,7.6 -10.8,26 -17.9,47.3 c -3.5,10 -6.1,20.3 -8.8,32.7 c -0.7,3.6 -2.1,8.1 -3.1,10 c -0.9,1.9 -2,6 -2.5,9.3 c -0.4,3.3 -1.7,9.9 -2.8,14.7 c -3.2,14.7 -6,38.3 -7.3,62.7 c -0.8,13.2 -1.3,127.1 -1.3,262.3 c 0,237.3 0,239.1 2.7,241.7 c 1.5,1.5 3.7,2.7 5.1,2.7 c 1.2,0 51.5,0 111.6,0 c 72.9,0 109.7,-0.5 110.7,-1.5 c 0.9,-0.9 1.6,-81.3 2,-246.9 c 0.8,-244.5 0.8,-245.7 3.7,-264.9 c 1.6,-10.7 3.5,-20.8 4.1,-22.7 c 0.8,-1.9 1.7,-5.5 2.1,-8 c 0.9,-5.5 2.1,-8.4 11.5,-30 c 7.5,-17.2 14.5,-29.1 25.5,-42.3 c 8.4,-10.3 10.5,-12.3 22.8,-22 c 5.3,-4.1 10,-8.3 10.5,-9.2 c 1.1,-1.6 12,-7.1 19.7,-9.7 c 2.5,-0.9 10.1,-3.6 16.7,-6.1 c 11.2,-4.1 22.7,-7.6 36.7,-11.2 c 3.3,-0.9 17.7,-2.8 32,-4.3 c 24.9,-2.5 27.2,-2.7 54,-0.7 c 15.5,1.2 32.3,3.1 37.3,4.1 c 5.2,1.1 12.7,2.5 16.7,3.3 c 4,0.7 11.9,2.7 17.3,4.1 c 5.5,1.6 12.7,2.9 16,3.1 c 5.1,0.1 6.1,-0.4 7.6,-3.2 c 1.3,-2.7 1.7,-25.2 1.5,-111.7 l -0.4,-108.5 l -2.9,-2.3 c -3.2,-2.7 -28.7,-8.1 -37.7,-8.1 c -3.3,0 -7.7,-0.9 -10,-2.1 c -2.1,-1.1 -8.1,-2.4 -13.3,-2.8 c -5.1,-0.3 -12,-1.5 -15.3,-2.4 c -3.3,-1.1 -18.1,-2.5 -32.9,-3.2 c -29.5,-1.6 -30.1,-1.6 -64.4,0 z M 1227.1,794.4 c -1.6,0.3 -3.5,1.2 -4.3,2.1 c -2.1,2.5 -2.1,891.1 0,893.6 c 1.3,1.6 20.8,1.9 113.1,1.9 c 67.9,0 112.3,-0.5 113.5,-1.3 c 1.7,-1.1 2,-52.4 2.4,-446.4 c 0.3,-355.6 0,-445.6 -1.3,-447.3 c -1.6,-2.1 -9.5,-2.4 -111.1,-2.7 c -60.1,-0.1 -110.7,-0.1 -112.3,0.1 z"/></svg>
+    <p class="tagline reveal atraso2" data-edit>VIVA INFINITAMENTE</p>
+    <p class="hero-sub reveal atraso3" data-edit>Apresentação Institucional · Assessoria de Investimentos</p>
+  </div>
+  <div class="seta">▼</div>
+</section>
+
+<!-- ============ ECOSSISTEMA ============ -->
+<section id="ecossistema">
+  <div class="conteudo">
+    <span class="etiqueta reveal">Ecossistema Rico</span>
+    <h2 class="reveal atraso1" data-edit>Um ecossistema completo ao seu redor</h2>
+    <p class="sub reveal atraso2" data-edit>Equipe multidisciplinar para cuidar de todas as esferas do seu patrimônio e da sua vida financeira.</p>
+    <div class="grade-eco" style="margin-top:2.5rem;">
+      <div class="orbita-wrap reveal zoom atraso2">
+        <div class="orbita" id="orbita"></div>
+        <div class="centro-eco" data-edit>CLIENTE<br>RICO</div>
+      </div>
+      <div style="flex:1;min-width:240px;" class="reveal dir atraso3">
+        <div class="assessor-chip" data-edit>🤝 Assessor de Investimentos — seu ponto central</div>
+        <p class="sub" style="margin-top:1.2rem;" data-edit>O assessor conecta você a todos os especialistas do ecossistema, coordenando cada frente do seu patrimônio de forma integrada.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ INVESTIMENTO GLOBAL ============ -->
+<section id="global">
+  <div class="conteudo">
+    <span class="etiqueta reveal">Produtos e Serviços</span>
+    <h2 class="reveal atraso1" data-edit>Investimento Global</h2>
+    <p class="sub reveal atraso2" data-edit><strong>A Rico é internacional.</strong> A XP International nasceu em 2011 em Nova York, capital mundial dos investimentos, com a missão de transformar a maneira como as pessoas investem globalmente. Em 2025, a Rico atravessou fronteiras e lançou a Conta Investimento Global, com abertura no mercado americano. Somos uma corretora de valores americana membro da FINRA, NFA e SIPC — com gestão de recursos oferecida pela XP Advisory International, regulada pela SEC.</p>
+    <div class="topo-global" style="margin-top:2rem;">
+      <div class="pin-mapa reveal esq atraso2">
+        <div class="pin" data-edit><span class="ponto"></span> Nova Iorque</div>
+        <div class="pin" data-edit><span class="ponto"></span> Miami</div>
+      </div>
+      <div class="grade-cartoes" style="flex:1;min-width:260px;">
+        <div class="cartao reveal atraso1" data-edit>Comitê Global de Alocação (GAAC) liderado por Paulo Leme, com mais de 35 profissionais focados em portfólios de alocação internacional.</div>
+        <div class="cartao reveal atraso2" data-edit>Atuação com ofertas de ativos e gestores em mais de 60 mercados.</div>
+        <div class="cartao reveal atraso3" data-edit>Acesso direto ao mercado de ações US e bonds de empresas brasileiras e globais.</div>
+        <div class="cartao reveal atraso4" data-edit>Parceria com o cartão de crédito American Express.</div>
+        <div class="cartao reveal atraso5" data-edit>Plataforma digital para acompanhamento da carteira em tempo real.</div>
+        <div class="cartao reveal atraso6" data-edit>Auxílio na estruturação de empresas offshore (Private Investment Company).</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ NÚMEROS ============ -->
+<section id="numeros">
+  <div class="conteudo">
+    <span class="etiqueta reveal">Nossos Números</span>
+    <h2 class="reveal atraso1" data-edit>Resultados que falam por si</h2>
+    <div class="grade-num">
+      <div class="reveal atraso1">
+        <div class="num"><span class="contador" data-alvo="14" data-prefixo="+">0</span> anos</div>
+        <div class="num-desc" data-edit>de mercado</div>
+      </div>
+      <div class="reveal atraso2">
+        <div class="num"><span class="contador" data-alvo="41" data-prefixo="+R$ ">0</span> bi</div>
+        <div class="num-desc" data-edit>sob custódia</div>
+      </div>
+      <div class="reveal atraso3">
+        <div class="num"><span class="contador" data-alvo="1.1" data-decimal="1" data-prefixo="+">0</span> mi</div>
+        <div class="num-desc" data-edit>de clientes ativos</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PROCESSO ============ -->
+<section id="processo">
+  <div class="conteudo">
+    <span class="etiqueta reveal">Experiência e Qualidade</span>
+    <h2 class="reveal atraso1" data-edit>Processo de Investimento</h2>
+    <p class="sub reveal atraso2" data-edit>Etapas de planejamento — do diagnóstico à carteira sob medida.</p>
+    <div class="grade-processo">
+      <div class="etapa reveal atraso1" data-edit>
+        <div class="num-etapa">1</div>
+        <h3>Planejamento Financeiro</h3>
+        <h4>Planejamento Sucessório e Tributário</h4>
+        <ul><li>Estado civil e regime de bens</li><li>Domicílio fiscal</li><li>Dependentes</li></ul>
+        <h4>Vida Profissional</h4>
+        <ul><li>Estabilidade profissional</li><li>Momento de carreira</li><li>Renda atual x custo de vida</li></ul>
+      </div>
+      <div class="etapa reveal atraso2" data-edit>
+        <div class="num-etapa">2</div>
+        <h3>Objetivos</h3>
+        <h4>Curto Prazo</h4>
+        <ul><li>Viagem</li><li>Compra de bens</li><li>Despesa relevante</li></ul>
+        <h4>Longo Prazo</h4>
+        <ul><li>Aposentadoria</li><li>Renda passiva</li><li>Sucessão</li></ul>
+      </div>
+      <div class="etapa reveal atraso3" data-edit>
+        <div class="num-etapa">3</div>
+        <h3>Carteira Global e Open Investments</h3>
+        <h4>Patrimônio Total</h4>
+        <ul><li>Investimentos locais</li><li>Ativos internacionais</li><li>Imóveis</li><li>Empresa</li><li>Recebíveis</li></ul>
+      </div>
+      <div class="etapa reveal atraso4" data-edit>
+        <div class="num-etapa">4</div>
+        <h3>Produtos e Serviços</h3>
+        <h4>Restrições e Preferências</h4>
+        <ul><li>Nível de risco</li><li>Prazo</li><li>Classe de ativo</li><li>Gestores</li><li>Riscos de crédito</li><li>Nível de volatilidade</li></ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PROCESSO · ALOCAÇÃO ============ -->
+<section id="alocacao">
+  <div class="conteudo">
+    <span class="etiqueta reveal">Processo de Investimento</span>
+    <h2 class="reveal atraso1" data-edit>Alocação</h2>
+    <p class="sub reveal atraso2" data-edit>Comitê Global de Alocação Rico — da estratégia ao acompanhamento contínuo.</p>
+    <div class="grade-aloc">
+      <div class="funil reveal esq atraso2">
+        <div class="nivel n1" data-edit>Asset Allocation estratégico</div>
+        <div class="nivel n2" data-edit>Escolha de ativos</div>
+        <div class="nivel n3" data-edit>Asset Allocation tático</div>
+        <div class="ponta"></div>
+      </div>
+      <div class="passos">
+        <div class="passo reveal dir atraso1"><span class="selo">1º passo</span>
+          <p data-edit>Distribuição dos recursos em diversas classes de ativos, de acordo com o perfil de investimento e os objetivos de longo prazo do cliente.</p></div>
+        <div class="passo reveal dir atraso2"><span class="selo">2º passo</span>
+          <p data-edit>Rigorosa curadoria de ativos e/ou fundos que componham cada classe de ativo (Pós-Fixado, Inflação, Multimercado, Ações, Internacional etc.).</p></div>
+        <div class="passo reveal dir atraso3"><span class="selo">3º passo</span>
+          <p data-edit>Aumentos e reduções táticos de acordo com os objetivos predeterminados e condições de mercado, com o objetivo de maximizar o retorno nas oportunidades de curto e médio prazos.</p></div>
+        <div class="passo reveal dir atraso4"><span class="selo">4º passo</span>
+          <p data-edit>Acompanhamento ativo do portfólio e reuniões periódicas de manutenção e atualização de mercado.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PROCESSO · DIVERSIFICAÇÃO ============ -->
+<section id="diversificacao">
+  <div class="conteudo">
+    <span class="etiqueta reveal">Processo de Investimento</span>
+    <h2 class="reveal atraso1" data-edit>Diversificação</h2>
+    <p class="sub reveal atraso2" data-edit>O que o investidor sente em cada ciclo — e o que a diversificação entrega no longo prazo.</p>
+    <div class="tabela-wrap reveal atraso2">
+      <table class="divers">
+        <thead><tr><th>Período</th><th>CDI</th><th>Ibovespa</th><th>Portfólio diversificado</th><th>Percepção do investidor</th></tr></thead>
+        <tbody>
+          <tr><td>2003-2007</td><td>83%</td><td>291%</td><td>116%</td><td class="fala" data-edit>"Perdi do Ibovespa. Deveria ter tomado mais risco."</td></tr>
+          <tr><td>2007-2008</td><td>12%</td><td class="neg">-54%</td><td class="neg">-33%</td><td class="fala" data-edit>"Perdi dinheiro! Vou voltar para a Renda Fixa."</td></tr>
+          <tr><td>2008-2009</td><td>11%</td><td>115%</td><td>46%</td><td class="fala" data-edit>"Deveria ter feito um portfólio mais agressivo!"</td></tr>
+          <tr><td>2009-2016</td><td>84%</td><td class="neg">-40%</td><td>78%</td><td class="fala" data-edit>"O CDI é a melhor opção para investir no Brasil."</td></tr>
+          <tr><td>2016-2017</td><td>14%</td><td>75%</td><td>33%</td><td class="fala" data-edit>"Hora de comprar na Bolsa!"</td></tr>
+          <tr><td>2017-2020</td><td>24%</td><td class="neg">-3%</td><td>32%</td><td class="fala" data-edit>"Diversificar para ganhar tão pouco acima do CDI?"</td></tr>
+          <tr><td>2020-2021</td><td>2%</td><td>76%</td><td>60%</td><td class="fala" data-edit>"Era melhor ter investido no Ibovespa!"</td></tr>
+          <tr><td>2021-2023</td><td>22%</td><td class="neg">-2%</td><td>4%</td><td class="fala" data-edit>"Não rendeu nem o CDI nesse período!"</td></tr>
+          <tr class="destaque"><td>Retorno total</td><td>643%</td><td>573%</td><td>1001%</td><td class="fala" data-edit>"A diversificação venceu mesmo quando parecia que eu estava perdendo."</td></tr>
+          <tr><td>Saldo inicial 100 mil</td><td>742 mil</td><td>672 mil</td><td>1,1 milhão</td><td class="fala"></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="donut-wrap">
+      <div class="donut reveal zoom atraso2">
+        <div class="rotulo" data-edit>Portfólio<br>diversificado</div>
+      </div>
+      <div class="legenda reveal dir atraso3" data-edit>
+        <span><i style="background:#4aa8ff"></i> Ibovespa (B3) — 33,33%</span>
+        <span><i style="background:#ff2d78"></i> IMA-B 5+ (Anbima) — 33,33%</span>
+        <span><i style="background:#ff4713"></i> S&amp;P 500 BRL (S&amp;P Global) — 33,33%</span>
+      </div>
+    </div>
+    <p class="fonte-nota reveal atraso4" data-edit>Fonte: Bloomberg, dados desde 09/2003 até 05/2023. O portfólio diversificado é composto por 33,33% do índice Ibovespa produzido pela B3, 33,33% do índice IMA-B5+ produzido pela Anbima e 33,33% da S&amp;P 500 BRL produzida pela S&amp;P Global. A performance do índice composto é de caráter ilustrativo, considerando pesos fixos diariamente, sem o efeito dos custos e efeitos de impostos envolvidos.</p>
+  </div>
+</section>
+
+<!-- ============ PROCESSO · PERFIL DE INVESTIDOR ============ -->
+<section id="perfil">
+  <div class="conteudo">
+    <span class="etiqueta reveal">Processo de Investimento</span>
+    <h2 class="reveal atraso1" data-edit>Perfil de Investidor</h2>
+    <p class="sub reveal atraso2" data-edit>A real percepção do perfil de investimento se mostra nos momentos críticos e em grandes correções de mercado. Abaixo, exemplos de portfólio que fizeram redução de risco em eventos de forte queda.</p>
+    <div class="legenda-perfil">
+      <div class="chip-linha reveal esq atraso2" data-edit><i style="background:#ffd23f"></i> Portfólio diversificado: alocação composta por 70% de CDI e 30% de Renda Variável.</div>
+      <div class="chip-linha reveal dir atraso3" data-edit><i style="background:#35e0e0"></i> Carteira com redução de risco: alocação composta por 100% de pós-fixado, representando uma redução total de risco após o momento de estresse do mercado.</div>
+    </div>
+    <div class="grade-perfil">
+      <div class="cartao grafico reveal atraso1">
+        <h3 data-edit>Joesley Day</h3><span class="queda">↕ 10%</span>
+        <svg viewBox="0 0 200 100" fill="none">
+          <path d="M0 90 H200 M0 65 H200 M0 40 H200 M0 15 H200" stroke="rgba(255,255,255,.12)" stroke-width="1"/>
+          <path d="M0 72 C 18 66, 32 62, 46 56 L 52 70 C 66 62, 90 52, 120 46 C 150 40, 175 36, 200 30" stroke="#ffd23f" stroke-width="3.5" stroke-linecap="round"/>
+          <path d="M52 70 C 100 68, 150 65, 200 62" stroke="#35e0e0" stroke-width="3.5" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="cartao grafico reveal atraso2">
+        <h3 data-edit>Covid-19</h3><span class="queda">↕ 15%</span>
+        <svg viewBox="0 0 200 100" fill="none">
+          <path d="M0 90 H200 M0 65 H200 M0 40 H200 M0 15 H200" stroke="rgba(255,255,255,.12)" stroke-width="1"/>
+          <path d="M0 60 C 25 54, 55 48, 78 44 L 94 84 C 118 60, 152 44, 200 34" stroke="#ffd23f" stroke-width="3.5" stroke-linecap="round"/>
+          <path d="M94 84 C 130 81, 165 78, 200 76" stroke="#35e0e0" stroke-width="3.5" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="cartao grafico reveal atraso3">
+        <h3 data-edit>Crash de 2008</h3><span class="queda">↕ 13%</span>
+        <svg viewBox="0 0 200 100" fill="none">
+          <path d="M0 90 H200 M0 65 H200 M0 40 H200 M0 15 H200" stroke="rgba(255,255,255,.12)" stroke-width="1"/>
+          <path d="M0 50 C 18 44, 34 56, 50 48 C 64 41, 74 62, 88 76 C 104 88, 128 60, 156 50 C 176 44, 190 42, 200 40" stroke="#ffd23f" stroke-width="3.5" stroke-linecap="round"/>
+          <path d="M88 79 C 125 76, 165 73, 200 70" stroke="#35e0e0" stroke-width="3.5" stroke-linecap="round"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ MODELOS DE SERVIR ============ -->
+<section id="modelos">
+  <div class="conteudo">
+    <span class="etiqueta reveal">Como trabalhamos</span>
+    <h2 class="reveal atraso1" data-edit>Modelos de Servir</h2>
+    <p class="sub reveal atraso2" data-edit>Quatro formas de cuidar do seu patrimônio — você escolhe a que combina com o seu momento.</p>
+    <div class="grade-modelos">
+      <div class="cartao modelo reveal atraso1" data-edit>
+        <h3>Tradicional</h3><span class="apelido">"Pay Per Use"</span>
+        <ul>
+          <li>Modelo preponderante na indústria até hoje, no qual <em>o cliente não paga</em> pela manutenção e gestão dos seus investimentos.</li>
+          <li>A instituição é remunerada através da <em>distribuição dos produtos oferecidos</em>.</li>
+        </ul>
+      </div>
+      <div class="cartao modelo reveal atraso2" data-edit>
+        <h3>Fee Fixo</h3><span class="apelido">"Assinatura"</span>
+        <ul>
+          <li>Modelo em ascensão no mercado brasileiro e consolidado em países desenvolvidos.</li>
+          <li>A cobrança é um <em>percentual fixo</em> sobre o patrimônio investido na XP.</li>
+        </ul>
+      </div>
+      <div class="cartao modelo reveal atraso3" data-edit>
+        <h3>Consultoria</h3><span class="apelido">"Consolidação"</span>
+        <ul>
+          <li>Modelo de gestão centralizada e consolidação do patrimônio global do cliente, dentro ou fora da XP.</li>
+          <li>A cobrança é um <em>percentual fixo</em> sobre o patrimônio total do cliente (em diferentes instituições).</li>
+        </ul>
+      </div>
+      <div class="cartao modelo destaque reveal atraso4" data-edit>
+        <h3>Carteiras Administradas</h3><span class="apelido">"Gestão Profissional"</span>
+        <ul>
+          <li>Modelo de gestão personalizado realizado por gestores profissionais da XP Asset.</li>
+          <li>A cobrança é um <em>percentual fixo pré-acordado</em> sobre o patrimônio total do cliente.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FINANCIAL PLANNING ============ -->
+<section id="planning">
+  <div class="conteudo">
+    <span class="etiqueta reveal">Experiência e Qualidade</span>
+    <h2 class="reveal atraso1" data-edit>Financial Planning</h2>
+    <p class="sub reveal atraso2" data-edit>Conectamos seus investimentos com sua vida e seus objetivos.</p>
+    <div class="grade-plan">
+      <div class="pilulas">
+        <div class="pilula reveal esq atraso1" data-edit><span class="ico">🎚️</span> Controle de receitas e despesas para garantir conforto no presente e poupança para o futuro.</div>
+        <div class="pilula reveal esq atraso2" data-edit><span class="ico">🧩</span> Estruturas de economia e investimento que asseguram uma renda estável na aposentadoria.</div>
+        <div class="pilula reveal esq atraso3" data-edit><span class="ico">🔒</span> Seguros e estratégias legais para proteger seus bens mais valiosos.</div>
+        <div class="pilula reveal esq atraso4" data-edit><span class="ico">↘️</span> Redução de carga tributária por meio de estratégias eficazes.</div>
+      </div>
+      <div class="cartao proj reveal dir atraso3">
+        <h3 data-edit>Projeção do patrimônio ao longo da vida</h3>
+        <svg viewBox="0 0 260 130" fill="none">
+          <path d="M10 120 H250 M10 90 H250 M10 60 H250 M10 30 H250" stroke="rgba(255,255,255,.12)" stroke-width="1"/>
+          <path d="M10 118 C 70 112, 120 98, 160 78 C 195 60, 225 38, 250 18" stroke="#ffd23f" stroke-width="3" stroke-linecap="round" stroke-dasharray="7 6"/>
+          <path d="M10 118 C 70 113, 125 104, 165 96 C 200 89, 228 84, 250 80" stroke="#35e0e0" stroke-width="3" stroke-linecap="round"/>
+          <path d="M10 118 C 70 114, 130 108, 170 106 C 205 106, 230 112, 250 120" stroke="#ff7ab0" stroke-width="3" stroke-linecap="round" stroke-dasharray="3 5"/>
+          <circle cx="160" cy="78" r="6" fill="#ff4713" stroke="#fff" stroke-width="2"/>
+        </svg>
+        <div class="mini-legenda" data-edit>
+          <span><i style="background:#ffd23f"></i> Projeção atual</span>
+          <span><i style="background:#35e0e0"></i> Preservação do patrimônio</span>
+          <span><i style="background:#ff7ab0"></i> Consumo do patrimônio</span>
+          <span><i style="background:#ff4713;height:8px;width:8px;border-radius:50%"></i> Aposentadoria</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CONTATO ============ -->
+<section id="contato">
+  <div class="conteudo">
+    <div class="infinito-footer reveal zoom">
+      <svg viewBox="505.3 428.8 2944.9 1283.9" fill="currentColor" role="img" aria-label="rico"><path d="M 1321.2,429.5 c -21.3,1.7 -38.9,6.9 -56.5,16.9 c -19.1,10.9 -37.3,27.6 -47.2,42.8 c -3.7,5.9 -6.8,11.1 -6.8,11.5 c 0,0.4 -1.5,4 -3.3,7.9 c -6.8,14.4 -8.9,26.1 -9.1,50.8 c -0.1,31.9 3.6,47.1 18.1,72 c 13.1,22.4 31.2,38.3 60.5,53.1 c 10.7,5.3 20.9,8 44.1,11.5 c 18.7,2.8 40.9,1.1 65.5,-5.2 c 22.9,-5.7 57.7,-30.4 67.9,-48 c 1.9,-3.3 4.8,-7.7 6.4,-9.7 c 5.2,-6.1 12.4,-22.3 15.5,-34.3 c 4.3,-16.5 4.3,-52.9 0,-69.3 c -4.9,-18.7 -12.8,-33.5 -28,-52.4 c -7.7,-9.6 -25.1,-24.3 -34.1,-28.9 c -3.1,-1.6 -7.6,-4 -10.1,-5.3 c -20.4,-11.1 -49.9,-15.7 -82.8,-13.2 z M 2036.7,773.3 c -17.2,1.2 -41.5,4.7 -50,7.2 c -3.3,1.1 -8.7,2.3 -12,2.8 c -3.3,0.5 -7.6,1.9 -9.6,2.8 c -2,1.1 -5.3,1.9 -7.3,1.9 c -2.1,0 -6,1.2 -8.8,2.7 c -2.7,1.5 -6.1,2.7 -7.6,2.7 c -4.1,0 -27.9,6.4 -36.7,9.9 c -11.7,4.7 -27.5,12.1 -35.6,16.9 c -3.9,2.3 -15.2,8.4 -25.2,13.5 c -9.9,5.1 -21.5,12 -25.7,15.5 c -4.3,3.5 -8.8,6.8 -10,7.6 c -9.3,5.9 -21.1,14.5 -29.5,21.9 c -5.5,4.9 -12.7,10.9 -16,13.5 c -8.8,6.7 -32.7,31.9 -47.9,50.3 c -1.9,2.4 -5.2,6.3 -7.2,8.7 c -8.3,9.7 -14.4,18.4 -21.7,31.1 c -4.1,7.3 -8.3,13.9 -9.2,14.7 c -2.1,1.9 -11.7,16.5 -15.7,24.1 c -4,7.6 -14.3,31.9 -14.3,33.7 c 0,0.7 -2,5.1 -4.4,9.7 c -2.4,4.7 -6.3,13.3 -8.7,19.3 c -4.4,11.2 -13.6,42 -13.6,45.6 c 0,1.1 -0.8,4.9 -1.9,8.7 c -2.9,10.4 -7.2,34.4 -9.1,51.5 c -2.1,19.7 -2.1,89.9 0,112.7 c 1.7,17.2 5.5,41.2 8.4,52.7 c 0.9,3.3 2,8.7 2.5,12 c 2.1,12.9 12.3,47.3 14.8,50 c 0.7,0.7 1.2,2 1.2,3.1 c 0,1.1 2.3,6.8 5.1,12.8 c 5.1,10.7 6.5,14.4 10.7,26.1 c 3.3,9.6 12.9,27.9 19.3,37.3 c 3.3,4.8 8.9,13.5 12.4,19.3 c 11.2,18.9 26.4,38.1 47.1,59.3 c 6.1,6.3 12,12.7 13.1,14.4 c 2.5,3.7 44.8,37.7 52,41.9 c 2.8,1.5 5.7,3.5 6.4,4.4 c 3.2,3.6 24.9,16.8 34.7,21.2 c 5.9,2.5 18.3,8.5 27.6,13.3 c 25.1,12.9 40.1,18.4 66.1,24.1 c 8.4,1.9 16.9,3.3 19.1,3.3 c 2.1,0 6.1,1.2 8.8,2.7 c 2.8,1.5 7.5,2.7 10.5,2.7 c 3.1,0 7.6,0.8 10,1.9 c 2.5,1.1 9.1,2.3 14.5,2.8 c 5.5,0.5 13.9,1.9 18.7,3.1 c 6.9,1.6 17.9,2 54,2.1 c 41.6,0.1 46.8,-0.1 63.3,-2.9 c 9.9,-1.7 20.8,-4 24.1,-5.1 c 3.5,-0.9 8.3,-1.9 10.7,-1.9 c 2.5,0 6.5,-1.2 8.9,-2.7 c 2.4,-1.5 6.3,-2.7 8.7,-2.7 c 13.3,0 54.4,-13.7 73.5,-24.7 c 5.9,-3.3 17.9,-9.5 26.7,-13.9 c 15.5,-7.5 44.1,-25.7 56.8,-36 c 3.3,-2.7 14.1,-11.1 24.1,-18.5 c 10,-7.3 20.4,-16.3 23.1,-19.6 c 2.8,-3.3 10.5,-10.5 17.3,-15.9 c 6.8,-5.5 16,-14.3 20.4,-19.7 c 4.4,-5.3 11.5,-12.7 15.7,-16.3 c 4.1,-3.7 13.2,-13.3 20.1,-21.3 c 6.9,-8.1 17.3,-20.3 23.3,-26.8 c 5.9,-6.7 15.7,-18.8 22,-27.1 c 6.3,-8.3 12.3,-15.5 13.5,-15.9 c 2.4,-0.9 7.2,3.9 17.3,17.6 c 3.3,4.4 8.5,10.7 11.5,14 c 3.1,3.5 8.3,9.7 11.5,14 c 3.3,4.4 11.1,13.5 17.3,20.1 c 6.3,6.7 17.3,18.8 24.5,26.9 c 7.2,8.3 19.2,20.5 26.7,27.2 c 7.3,6.8 18.3,16.9 24.1,22.5 c 13.3,12.5 40.8,34.4 54.1,43.2 c 5.5,3.7 12.7,8.8 16,11.5 c 6.7,5.3 19.6,13.1 26.7,15.9 c 2.5,1.1 7.5,3.5 10.8,5.5 c 3.3,2 7.6,4 9.3,4.5 c 1.7,0.5 4.1,1.7 5.2,2.7 c 4,3.5 32.9,16.4 45.3,20.4 c 16.1,5.1 35.7,9.6 42.1,9.6 c 2.8,0 6,0.9 7.3,2.1 c 1.3,1.2 6.1,2.5 10.9,3.2 c 4.7,0.5 9.7,1.6 11.1,2.4 c 1.3,0.7 7.1,1.7 12.5,2.3 c 5.5,0.5 13.9,1.9 18.7,3.1 c 12.9,3.1 103.5,3.1 116,0 c 4.8,-1.2 12.9,-2.5 18,-3.1 c 5.2,-0.5 11.6,-1.9 14.5,-2.8 c 2.8,-1.1 7.1,-1.9 9.3,-1.9 c 2.3,0 6.8,-1.2 10,-2.7 c 3.2,-1.5 7.5,-2.7 9.5,-2.7 c 14.3,0 62.9,-14.9 78.7,-24 c 1.1,-0.7 13.5,-6.8 27.3,-13.9 c 14,-6.9 29.2,-15.5 34,-18.8 c 4.8,-3.3 12,-8.3 16,-10.9 c 36.5,-24 94.3,-82.1 112.3,-112.9 c 3.1,-5.2 8.7,-13.7 12.4,-18.9 c 12.7,-17.6 40.3,-76.9 46,-98.9 c 3.1,-11.9 6.3,-22.7 8.3,-28.3 c 12,-34 19.2,-105.2 15.7,-156.5 c -1.9,-29.9 -8.4,-74 -11.9,-80.5 c -0.7,-1.2 -1.6,-4.8 -2.1,-7.9 c -0.4,-2.9 -1.7,-6.5 -2.7,-8 c -1.1,-1.3 -2,-3.6 -2,-5.1 c 0,-4.5 -10.5,-35.1 -20.3,-58.7 c -4.7,-11.3 -20.4,-42.4 -25.2,-49.5 c -2.5,-3.7 -7.7,-11.5 -11.7,-17.3 c -3.9,-5.7 -7.6,-11.7 -8.1,-13.3 c -1.3,-3.5 -15.7,-22.5 -21.6,-28.5 c -2.5,-2.5 -7.9,-8.9 -12,-14 c -14.3,-18.1 -56.1,-55.9 -78.4,-70.7 c -3.2,-2.3 -9.9,-7.1 -14.8,-10.7 c -4.9,-3.7 -13.1,-8.7 -18.1,-11.2 c -4.9,-2.4 -10.8,-5.3 -13.1,-6.5 c -2.1,-1.2 -6.9,-3.9 -10.7,-5.9 c -19.3,-10.5 -34.4,-17.9 -45.2,-22 c -12.1,-4.7 -35.1,-11.1 -40.1,-11.1 c -1.6,0 -5.1,-1.2 -8,-2.7 c -2.9,-1.5 -6.9,-2.7 -8.9,-2.7 c -2,0 -5.6,-0.8 -8,-1.9 c -5.5,-2.4 -25.3,-6.8 -43.7,-9.6 c -47.9,-7.3 -107.5,-5.2 -151.3,5.5 c -5.1,1.2 -10.5,2.9 -12,3.7 c -1.5,0.8 -5.6,1.9 -9.2,2.4 c -3.6,0.7 -7.5,2 -8.7,2.9 c -1.2,1.1 -4.9,2.3 -8.5,2.7 c -18.5,2.5 -50.5,15.9 -78.3,32.9 c -1.1,0.7 -6.5,3.5 -12,6.3 c -9.7,4.8 -41.9,25.7 -47.3,30.7 c -1.5,1.3 -6.8,5.5 -12,9.1 c -13.6,9.5 -33.7,26.1 -40.7,33.3 c -3.3,3.5 -10.1,9.6 -15.3,13.7 c -10.5,8.5 -55.3,53.2 -55.3,55.2 c 0,0.8 -6.5,8.1 -14.7,16.3 c -8,8.1 -16,16.7 -17.6,18.9 c -2.9,3.9 -13.9,16.8 -31.9,37.6 c -4.7,5.5 -11.3,13.7 -14.9,18.5 c -3.5,4.9 -10.9,14.3 -16.7,20.9 c -14.9,17.6 -20.3,24.4 -27.3,34.8 c -3.5,5.1 -11.1,14.7 -16.9,21.3 c -5.9,6.5 -10.7,12.5 -10.7,13.1 c 0,1.3 -14,19.6 -21.5,28.1 c -2.5,3.1 -6.1,7.6 -7.9,10.1 c -1.7,2.5 -6.8,9.2 -11.3,14.7 c -4.5,5.5 -11.3,14.5 -15.3,20 c -3.9,5.5 -12.7,16.5 -19.3,24.7 c -14.3,17.3 -19.3,24 -19.3,25.7 c 0,0.8 -4.7,6.7 -10.4,13.2 c -14,16 -21.7,25.3 -26,31.7 c -2,3.1 -6.8,8.8 -10.7,12.7 c -3.9,4 -10.7,11.9 -14.9,17.3 c -13.9,17.5 -59.9,62.4 -76.9,75.1 c -8.5,6.4 -17.2,13.2 -19.3,15.3 c -2,2 -7.1,5.1 -11.1,6.8 c -4,1.7 -12.1,5.5 -18,8.1 c -16.7,7.9 -36.3,15.3 -43.3,16.7 c -2.5,0.5 -6.8,1.9 -9.3,3.1 c -6.9,3.2 -76,3.2 -82,0 c -2.3,-1.2 -6.5,-2.5 -9.3,-3.1 c -2.9,-0.4 -7.5,-1.6 -10,-2.7 c -21.5,-8.1 -27.5,-10.5 -37.3,-14.9 c -21.1,-9.6 -25.1,-12.3 -45.5,-30.8 c -25.3,-22.9 -25.7,-23.5 -35.2,-38.9 c -4.3,-6.9 -10,-15.9 -12.7,-20 c -10.7,-15.7 -16.8,-30.7 -22.1,-52.9 c -5.5,-23.3 -7.1,-33.3 -8.8,-53.5 c -1.9,-22.4 0,-52.7 4.4,-74.9 c 1.6,-7.7 3.3,-16.4 3.9,-19.3 c 1.6,-8.1 6.5,-24.3 8.8,-28.3 c 0.9,-2.1 1.9,-4.7 2,-5.7 c 0,-1.1 1.7,-4.5 3.6,-7.6 c 4.8,-7.5 15.9,-25.3 23.5,-37.9 c 4,-6.5 9.9,-13.5 17.1,-20.1 c 6.1,-5.6 15.3,-14.1 20.4,-19.1 c 7.9,-7.3 12.9,-10.5 31.3,-19.7 c 25.1,-12.4 34.9,-16.9 37.5,-16.9 c 1.1,0 3.1,-0.9 4.4,-2 c 1.5,-1.1 4.3,-2 6.3,-2 c 1.9,0 7.3,-1.3 12,-2.8 c 7.9,-2.7 11.5,-2.8 43.9,-2.8 c 32.4,0 36,0.1 43.9,2.8 c 4.7,1.5 9.7,2.8 11.3,2.8 c 1.6,0 5.2,1.2 8.1,2.7 c 2.9,1.5 6,2.7 7.1,2.7 c 1.1,0 3.5,0.8 5.3,1.9 c 3.9,2.1 13.1,6.3 37.9,17.6 c 8.7,3.9 17.3,8.3 19.3,9.9 c 6.4,4.9 33.7,25.7 41.6,31.7 c 4.1,3.2 8.9,7.5 10.8,9.5 c 5.7,6.5 8.8,6.5 14.4,0 c 2.7,-3.2 9.7,-10.8 15.6,-17.1 c 6,-6.4 14.1,-16 18.3,-21.5 c 4.1,-5.5 11.2,-13.9 15.7,-18.7 c 4.4,-4.8 10.9,-12.3 14.4,-16.5 c 3.5,-4.4 9.1,-10.9 12.4,-14.7 c 3.3,-3.7 10.5,-12.3 15.9,-18.8 c 5.5,-6.7 12.9,-15.3 16.7,-19.3 c 3.9,-4 10.9,-12.3 15.9,-18.3 c 10.7,-13.2 11.2,-16.8 4.1,-24.3 c -2.5,-2.7 -7.9,-8.4 -11.9,-12.9 c -4.1,-4.4 -12.9,-12.5 -19.6,-18 c -6.7,-5.5 -16.8,-13.6 -22.4,-18.3 c -13.7,-11.3 -39.9,-29.1 -49.2,-33.2 c -4.1,-2 -9.1,-4.5 -10.8,-6 c -1.7,-1.3 -4,-2.4 -4.9,-2.4 c -0.9,0 -5.3,-2.4 -9.9,-5.5 c -15.3,-10.1 -48.7,-23.5 -64.7,-25.7 c -3.6,-0.5 -7.9,-1.9 -9.5,-2.8 c -1.6,-0.9 -5.2,-2.3 -8,-2.8 c -2.8,-0.4 -6.7,-1.6 -8.5,-2.5 c -1.9,-0.9 -5.7,-2 -8.7,-2.5 c -2.9,-0.5 -8,-1.9 -11.3,-2.8 c -22.7,-7.1 -72.1,-10.1 -115.3,-7.3 z m 991.2,233.3 c 4.7,1.5 9.9,2.7 11.6,2.7 c 1.7,0 5.5,1.2 8.1,2.7 c 2.8,1.5 6.3,2.7 7.7,2.7 c 1.5,0 3.9,0.8 5.3,1.9 c 1.5,0.9 4.1,2.3 6,2.8 c 1.9,0.5 10.5,4.4 19.3,8.7 c 8.8,4.1 19.3,9.2 23.5,11.1 c 13.6,6.4 48.7,41.1 60.4,59.7 c 4.4,6.9 8.8,13.7 10,15.2 c 1.2,1.5 3.2,4.4 4.3,6.7 c 4,7.5 15.9,35.1 15.9,36.9 c 0,1.1 0.7,2.5 1.5,3.3 c 1.3,1.3 3.9,10.8 7.2,27.7 c 3.5,17.5 6.4,51.3 5.5,64 c -2.1,30.1 -7.7,63.6 -12.1,73.3 c -2,4.1 -3.3,7.5 -10.7,25.3 c -5.2,12.8 -7.2,16.3 -22.3,38.8 c -8.9,13.3 -14.1,19.7 -22,26.7 c -5.7,4.9 -13.7,12.1 -17.7,16 c -12.7,12 -19.7,16.1 -47.3,28.5 c -2.9,1.2 -10.7,4.3 -17.3,6.7 c -6.5,2.3 -13.9,5.1 -16.1,6 c -2.3,0.9 -7.1,2.3 -10.7,2.7 c -3.6,0.5 -8.3,2 -10.5,3.1 c -3.3,1.7 -10.3,2.1 -44,2.1 c -30,0 -40.9,-0.4 -44,-1.7 c -2.1,-1.1 -7.6,-2.5 -12,-3.5 c -4.4,-0.9 -9.7,-2.4 -12,-3.1 c -2.1,-0.8 -9.3,-3.3 -16,-5.7 c -6.5,-2.3 -16.8,-6.1 -22.7,-8.5 c -5.9,-2.4 -14.3,-5.7 -18.7,-7.5 c -4.4,-1.7 -14.3,-7.7 -22,-13.2 c -20.3,-14.5 -24.8,-17.7 -29.9,-20.7 c -2.5,-1.5 -9.9,-7.6 -16.4,-13.5 c -6.4,-6 -15.3,-13.9 -19.7,-17.6 c -4.4,-3.6 -14.5,-13.6 -22.7,-22.3 c -8,-8.5 -20.1,-21.3 -26.9,-28.4 c -6.7,-7.2 -15.2,-17.1 -18.8,-22.1 c -3.7,-5.1 -11.5,-14 -17.3,-20 c -5.9,-5.9 -11.6,-12.7 -12.8,-15.1 c -1.1,-2.3 -5.7,-8.7 -10.1,-14.1 c -4.4,-5.5 -8,-10.5 -8,-11.2 c 0,-0.7 2.7,-4.8 6,-8.9 c 3.3,-4.3 8.3,-11.5 10.9,-16 c 4.9,-8.1 12.1,-18.4 15.5,-22.1 c 7.3,-7.9 17.6,-20.9 21.2,-26.9 c 7.5,-12.1 9.7,-15.2 14.9,-19.7 c 2.7,-2.4 11.6,-12.3 19.7,-21.9 c 20.3,-24 53.3,-56.1 71.7,-69.9 c 8.4,-6.3 17.1,-13.1 19.2,-15.2 c 5.5,-5.3 13.2,-10.4 24.8,-16 c 21.3,-10.3 36.1,-17.1 36.9,-17.1 c 0.4,0 3.2,-1.1 6.3,-2.5 c 10.3,-4.7 20.1,-8.1 23.5,-8.1 c 1.9,-0.1 5.7,-1.1 8.7,-2.1 c 7.9,-3.1 28.7,-4.4 59.3,-3.7 c 22.1,0.5 28.9,1.2 35.9,3.2 z M 896,782.8 c -12.8,0.7 -26.9,2 -31.3,3.1 c -4.4,1.1 -11.7,2.3 -16.4,2.7 c -4.7,0.4 -9.7,1.7 -11.3,2.8 c -1.6,1.1 -5.6,2 -8.9,2 c -6,0.1 -30.7,4.9 -43.6,8.5 c -13.3,3.7 -34.4,12.3 -41.7,16.7 c -1.1,0.7 -11.9,6.1 -24,12 c -19.6,9.6 -33.5,17.7 -46,27.2 c -15.5,11.5 -40.7,33.2 -47.1,40.5 c -4.1,4.9 -13.3,14.9 -20.3,22.3 c -7.9,8.3 -15.1,17.6 -18.9,24.3 c -3.5,6 -9.5,15.2 -13.5,20.4 c -3.9,5.2 -10,15.3 -13.6,22.5 c -3.5,7.1 -8.1,16.5 -10.3,20.9 c -3.9,7.6 -10.8,26 -17.9,47.3 c -3.5,10 -6.1,20.3 -8.8,32.7 c -0.7,3.6 -2.1,8.1 -3.1,10 c -0.9,1.9 -2,6 -2.5,9.3 c -0.4,3.3 -1.7,9.9 -2.8,14.7 c -3.2,14.7 -6,38.3 -7.3,62.7 c -0.8,13.2 -1.3,127.1 -1.3,262.3 c 0,237.3 0,239.1 2.7,241.7 c 1.5,1.5 3.7,2.7 5.1,2.7 c 1.2,0 51.5,0 111.6,0 c 72.9,0 109.7,-0.5 110.7,-1.5 c 0.9,-0.9 1.6,-81.3 2,-246.9 c 0.8,-244.5 0.8,-245.7 3.7,-264.9 c 1.6,-10.7 3.5,-20.8 4.1,-22.7 c 0.8,-1.9 1.7,-5.5 2.1,-8 c 0.9,-5.5 2.1,-8.4 11.5,-30 c 7.5,-17.2 14.5,-29.1 25.5,-42.3 c 8.4,-10.3 10.5,-12.3 22.8,-22 c 5.3,-4.1 10,-8.3 10.5,-9.2 c 1.1,-1.6 12,-7.1 19.7,-9.7 c 2.5,-0.9 10.1,-3.6 16.7,-6.1 c 11.2,-4.1 22.7,-7.6 36.7,-11.2 c 3.3,-0.9 17.7,-2.8 32,-4.3 c 24.9,-2.5 27.2,-2.7 54,-0.7 c 15.5,1.2 32.3,3.1 37.3,4.1 c 5.2,1.1 12.7,2.5 16.7,3.3 c 4,0.7 11.9,2.7 17.3,4.1 c 5.5,1.6 12.7,2.9 16,3.1 c 5.1,0.1 6.1,-0.4 7.6,-3.2 c 1.3,-2.7 1.7,-25.2 1.5,-111.7 l -0.4,-108.5 l -2.9,-2.3 c -3.2,-2.7 -28.7,-8.1 -37.7,-8.1 c -3.3,0 -7.7,-0.9 -10,-2.1 c -2.1,-1.1 -8.1,-2.4 -13.3,-2.8 c -5.1,-0.3 -12,-1.5 -15.3,-2.4 c -3.3,-1.1 -18.1,-2.5 -32.9,-3.2 c -29.5,-1.6 -30.1,-1.6 -64.4,0 z M 1227.1,794.4 c -1.6,0.3 -3.5,1.2 -4.3,2.1 c -2.1,2.5 -2.1,891.1 0,893.6 c 1.3,1.6 20.8,1.9 113.1,1.9 c 67.9,0 112.3,-0.5 113.5,-1.3 c 1.7,-1.1 2,-52.4 2.4,-446.4 c 0.3,-355.6 0,-445.6 -1.3,-447.3 c -1.6,-2.1 -9.5,-2.4 -111.1,-2.7 c -60.1,-0.1 -110.7,-0.1 -112.3,0.1 z"/></svg>
+    </div>
+    <h2 class="reveal atraso1" data-edit>Vamos conversar?</h2>
+    <p class="sub reveal atraso2" style="margin:0 auto;" data-edit>Gustavo Amorim · Assessor de Investimentos — Rico (Grupo XP)<br>gustavo.amorim27@gmail.com</p>
+    <p class="reveal atraso3" style="margin-top:3rem;letter-spacing:.4em;font-weight:700;color:rgba(255,255,255,.7);font-size:.85rem;" data-edit>VIVA INFINITAMENTE</p>
+  </div>
+</section>
+
+<!-- ============ EDIÇÃO ============ -->
+<button id="btn-apresentar" title="Iniciar modo de apresentação">▶ Apresentar</button>
+<button id="btn-proximo" title="Próxima seção" aria-label="Ir para a próxima seção">▼</button>
+<div id="controles">
+  <button id="ctrl-inicio" title="Primeiro slide (Home)">⏮</button>
+  <button id="ctrl-ant" title="Slide anterior (←)">‹</button>
+  <span class="contagem"><span id="ctrl-atual">1</span> / <span id="ctrl-total">10</span></span>
+  <button id="ctrl-prox" title="Próximo slide (→ ou espaço)">›</button>
+  <div class="divisor"></div>
+  <button id="ctrl-tela" title="Tela cheia (F)">⛶</button>
+  <button id="ctrl-sair" class="sair" title="Sair da apresentação (Esc)">✕</button>
+</div>
+<button id="btn-editar" title="Editar conteúdo">✏️</button>
+<div id="barra-edicao">
+  <button id="btn-concluir">✔ Concluir edição</button>
+  <button id="btn-baixar" class="secundario">⬇ Baixar cópia editada</button>
+</div>
+<div id="aviso"></div>
+
+<script>
+  /* ---------- nós do ecossistema em órbita ---------- */
+  const nos = [
+    ['🏛️','Advogados de Planejamento Patrimonial'],
+    ['📈','Especialista em Renda Fixa'],
+    ['🎚️','Especialista em Renda Variável'],
+    ['🌎','Especialista de Investimentos Offshore'],
+    ['💼','Planner de Consórcio'],
+    ['💱','Especialista em Crédito e Câmbio'],
+    ['💵','Investors'],
+    ['🛡️','Planner de Seguros'],
+    ['🏦','Equipe de Suporte Banking'],
+    ['🏢','Acompanhamento de PJ (Pessoa Jurídica)'],
+  ];
+  const orbita = document.getElementById('orbita');
+  nos.forEach((n,i)=>{
+    const ang = (i/nos.length)*2*Math.PI - Math.PI/2;
+    const el = document.createElement('div');
+    el.className='no';
+    el.style.transform=''; // rotação via keyframes; posição via left/top
+    const raio = 50; // %
+    el.style.left = (50 + raio*Math.cos(ang)) + '%';
+    el.style.top  = (50 + raio*Math.sin(ang)) + '%';
+    el.innerHTML = '<div class="icone">'+n[0]+'</div><small data-edit>'+n[1]+'</small>';
+    orbita.appendChild(el);
+  });
+
+  /* ---------- revelar ao rolar ---------- */
+  const obs = new IntersectionObserver(entries=>{
+    entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('visivel'); } });
+  },{threshold:.18});
+  document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+
+  /* ---------- barra de progresso + seta próxima seção ---------- */
+  const barra = document.getElementById('progresso');
+  const btnProx = document.getElementById('btn-proximo');
+  const secoes = Array.from(document.querySelectorAll('section'));
+  function proximaSecao(){
+    const alvo = secoes.find(s => s.offsetTop > scrollY + 60);
+    if(alvo) alvo.scrollIntoView({behavior:'smooth'});
+  }
+  btnProx.addEventListener('click',proximaSecao);
+  document.querySelector('.seta').addEventListener('click',proximaSecao);
+  addEventListener('scroll',()=>{
+    const h = document.documentElement;
+    barra.style.width = (h.scrollTop/(h.scrollHeight-h.clientHeight)*100)+'%';
+    const fim = scrollY + innerHeight >= h.scrollHeight - 140;
+    btnProx.classList.toggle('oculto', fim);
+  },{passive:true});
+
+  /* ---------- contadores ---------- */
+  function animarContador(el){
+    const alvo = parseFloat(el.dataset.alvo);
+    const dec = parseInt(el.dataset.decimal||'0');
+    const pref = el.dataset.prefixo||'';
+    const t0 = performance.now(), dur=1800;
+    function passo(t){
+      const p = Math.min((t-t0)/dur,1);
+      const suave = 1-Math.pow(1-p,3);
+      el.textContent = pref + (alvo*suave).toFixed(dec).replace('.',',');
+      if(p<1) requestAnimationFrame(passo);
+    }
+    requestAnimationFrame(passo);
+  }
+  const obsNum = new IntersectionObserver(entries=>{
+    entries.forEach(e=>{
+      if(!e.isIntersecting || e.target.dataset.feito) return;
+      e.target.dataset.feito='1';
+      animarContador(e.target);
+    });
+  },{threshold:.6});
+  document.querySelectorAll('.contador').forEach(el=>obsNum.observe(el));
+
+  /* ---------- modo de apresentação ---------- */
+  let slideAtual = 0, apresentando = false, ocioTimer;
+  const elAtual = document.getElementById('ctrl-atual');
+  const elTotal = document.getElementById('ctrl-total');
+  const ctrlAnt = document.getElementById('ctrl-ant');
+  const ctrlProx = document.getElementById('ctrl-prox');
+  const ctrlInicio = document.getElementById('ctrl-inicio');
+  elTotal.textContent = secoes.length;
+
+  // reproduz as animações de entrada do slide
+  function reanimar(sec){
+    const itens = sec.querySelectorAll('.reveal');
+    itens.forEach(el=>el.classList.remove('visivel'));
+    sec.querySelectorAll('.contador').forEach(c=>{
+      delete c.dataset.feito;
+      c.textContent = (c.dataset.prefixo||'') + '0';
+    });
+    void sec.offsetWidth; // força reflow
+    requestAnimationFrame(()=>{
+      itens.forEach(el=>el.classList.add('visivel'));
+      sec.querySelectorAll('.contador').forEach(c=>{
+        c.dataset.feito='1';
+        setTimeout(()=>animarContador(c),350);
+      });
+    });
+  }
+
+  // encaixa o conteúdo na tela, reduzindo a escala se necessário
+  function ajustar(sec){
+    const c = sec.querySelector('.conteudo');
+    if(!c) return;
+    c.style.transform='';
+    const estilo = getComputedStyle(sec);
+    // offsetHeight é estável (scrollHeight oscila por causa dos ícones que giram)
+    const disp = (sec.clientHeight - parseFloat(estilo.paddingTop) - parseFloat(estilo.paddingBottom)) * .96;
+    const h = c.offsetHeight;
+    if(h > disp) c.style.transform = 'scale('+Math.max(.45, disp/h)+')';
+  }
+
+  function irPara(i,animar){
+    slideAtual = Math.max(0, Math.min(secoes.length-1, i));
+    secoes.forEach((s,k)=>s.classList.toggle('slide-ativo', k===slideAtual));
+    const sec = secoes[slideAtual];
+    ajustar(sec);
+    if(animar!==false) reanimar(sec);
+    elAtual.textContent = slideAtual+1;
+    ctrlAnt.disabled = ctrlInicio.disabled = slideAtual===0;
+    ctrlProx.disabled = slideAtual===secoes.length-1;
+    barra.style.width = (slideAtual/(secoes.length-1)*100)+'%';
+    acordar();
+  }
+
+  function acordar(){
+    document.body.classList.remove('ocioso');
+    clearTimeout(ocioTimer);
+    ocioTimer = setTimeout(()=>{
+      if(apresentando) document.body.classList.add('ocioso');
+    },3200);
+  }
+
+  function iniciarApresentacao(){
+    if(apresentando) return;
+    setEdicao(false);
+    apresentando = true;
+    // parte do trecho que já estava sendo visto
+    const visivel = secoes.findIndex(s => s.offsetTop + s.offsetHeight > scrollY + innerHeight/2);
+    document.body.classList.add('apresentando');
+    irPara(visivel < 0 ? 0 : visivel);
+    const d = document.documentElement;
+    if(d.requestFullscreen) d.requestFullscreen().catch(()=>{});
+    avisar('▶ Modo apresentação — use as setas ← → ou a barra de espaço. Esc para sair.');
+  }
+
+  function sairApresentacao(){
+    if(!apresentando) return;
+    apresentando = false;
+    document.body.classList.remove('apresentando','ocioso');
+    secoes.forEach(s=>{
+      s.classList.remove('slide-ativo');
+      const c = s.querySelector('.conteudo'); if(c) c.style.transform='';
+    });
+    if(document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(()=>{});
+    secoes[slideAtual].scrollIntoView({behavior:'instant', block:'start'});
+    barra.style.width = (scrollY/(document.documentElement.scrollHeight-innerHeight)*100)+'%';
+  }
+
+  document.getElementById('btn-apresentar').addEventListener('click',iniciarApresentacao);
+  ctrlProx.addEventListener('click',()=>irPara(slideAtual+1));
+  ctrlAnt.addEventListener('click',()=>irPara(slideAtual-1));
+  ctrlInicio.addEventListener('click',()=>irPara(0));
+  document.getElementById('ctrl-sair').addEventListener('click',sairApresentacao);
+  document.getElementById('ctrl-tela').addEventListener('click',()=>{
+    if(document.fullscreenElement) document.exitFullscreen();
+    else document.documentElement.requestFullscreen().catch(()=>{});
+  });
+
+  // se o usuário sair da tela cheia pelo Esc do navegador, encerra o modo
+  document.addEventListener('fullscreenchange',()=>{
+    if(!document.fullscreenElement && apresentando) sairApresentacao();
+  });
+
+  addEventListener('keydown',e=>{
+    if(document.body.classList.contains('editando')) return;
+    if(!apresentando){
+      if(e.key==='p'||e.key==='P'){ e.preventDefault(); iniciarApresentacao(); }
+      return;
+    }
+    acordar();
+    switch(e.key){
+      case 'ArrowRight': case 'ArrowDown': case 'PageDown': case ' ': case 'Enter':
+        e.preventDefault(); irPara(slideAtual+1); break;
+      case 'ArrowLeft': case 'ArrowUp': case 'PageUp':
+        e.preventDefault(); irPara(slideAtual-1); break;
+      case 'Home': e.preventDefault(); irPara(0); break;
+      case 'End': e.preventDefault(); irPara(secoes.length-1); break;
+      case 'Escape': e.preventDefault(); sairApresentacao(); break;
+      case 'f': case 'F':
+        e.preventDefault();
+        if(document.fullscreenElement) document.exitFullscreen();
+        else document.documentElement.requestFullscreen().catch(()=>{});
+        break;
+    }
+  });
+
+  addEventListener('mousemove',()=>{ if(apresentando) acordar(); });
+
+  // deslizar com o dedo no celular
+  let tx=0, ty=0;
+  addEventListener('touchstart',e=>{ tx=e.changedTouches[0].clientX; ty=e.changedTouches[0].clientY; },{passive:true});
+  addEventListener('touchend',e=>{
+    if(!apresentando) return;
+    const dx = e.changedTouches[0].clientX - tx, dy = e.changedTouches[0].clientY - ty;
+    if(Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy)) irPara(slideAtual + (dx<0?1:-1));
+    else if(Math.abs(dy) > 70 && Math.abs(dy) > Math.abs(dx)) irPara(slideAtual + (dy<0?1:-1));
+  },{passive:true});
+
+  addEventListener('resize',()=>{ if(apresentando) ajustar(secoes[slideAtual]); });
+
+  /* ---------- modo edição ---------- */
+  const aviso = document.getElementById('aviso');
+  let avisoTimer;
+  function avisar(msg){
+    aviso.textContent=msg;aviso.classList.add('mostrar');
+    clearTimeout(avisoTimer);
+    avisoTimer=setTimeout(()=>aviso.classList.remove('mostrar'),3500);
+  }
+  function setEdicao(on){
+    document.body.classList.toggle('editando',on);
+    document.querySelectorAll('[data-edit]').forEach(el=>{
+      el.contentEditable = on ? 'true' : 'false';
+    });
+    if(on) avisar('✏️ Modo edição ativo — toque em qualquer texto para alterar.');
+    else avisar('Edição concluída. As alterações valem enquanto a página estiver aberta — baixe a cópia para salvar.');
+  }
+  document.getElementById('btn-editar').addEventListener('click',()=>{
+    setEdicao(!document.body.classList.contains('editando'));
+  });
+  document.getElementById('btn-concluir').addEventListener('click',()=>setEdicao(false));
+  document.getElementById('btn-baixar').addEventListener('click',()=>{
+    const clone = document.documentElement.cloneNode(true);
+    clone.querySelectorAll('[contenteditable]').forEach(el=>el.removeAttribute('contenteditable'));
+    const b = clone.querySelector('body'); if(b) b.classList.remove('editando','apresentando','ocioso');
+    clone.querySelectorAll('section').forEach(s=>{
+      s.classList.remove('slide-ativo');
+      const c = s.querySelector('.conteudo'); if(c) c.removeAttribute('style');
+    });
+    const html = '<!DOCTYPE html>\n'+clone.outerHTML;
+    const blob = new Blob([html],{type:'text/html'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'rico-apresentacao-editada.html';
+    a.click();
+    URL.revokeObjectURL(a.href);
+    avisar('⬇ Cópia editada baixada!');
+  });
+</script>
+</body>
+</html>
