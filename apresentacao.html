@@ -395,6 +395,11 @@
     transition:transform .45s cubic-bezier(.22,.9,.3,1),opacity .45s ease;
   }
   body.apresentando #controles{transform:translate(-50%,0);}
+  .zona-dica{position:fixed;top:0;bottom:0;width:12vw;max-width:110px;z-index:120;display:none;align-items:center;justify-content:center;pointer-events:none;color:#fff;font-size:1.6rem;opacity:0;transition:opacity .35s ease;text-shadow:0 2px 10px rgba(0,0,0,.5);}
+  .zona-dica.esquerda{left:0;background:linear-gradient(90deg,rgba(0,0,0,.18),transparent);}
+  .zona-dica.direita{right:0;background:linear-gradient(-90deg,rgba(0,0,0,.18),transparent);}
+  body.apresentando .zona-dica{display:flex;opacity:.5;}
+  body.apresentando.ocioso .zona-dica{opacity:0;}
   body.apresentando.ocioso #controles{opacity:0;}
   #controles button{
     width:40px;height:40px;border-radius:50%;border:none;cursor:pointer;
@@ -737,6 +742,8 @@
 <!-- ============ EDIÇÃO ============ -->
 <button id="btn-apresentar" title="Iniciar modo de apresentação">▶ Apresentar</button>
 <button id="btn-proximo" title="Próxima seção" aria-label="Ir para a próxima seção">▼</button>
+<div class="zona-dica esquerda" aria-hidden="true">‹</div>
+<div class="zona-dica direita" aria-hidden="true">›</div>
 <div id="controles">
   <button id="ctrl-inicio" title="Primeiro slide (Home)">⏮</button>
   <button id="ctrl-ant" title="Slide anterior (←)">‹</button>
@@ -898,14 +905,17 @@
     const visivel = secoes.findIndex(s => s.offsetTop + s.offsetHeight > scrollY + innerHeight/2);
     document.body.classList.add('apresentando');
     irPara(visivel < 0 ? 0 : visivel);
+    try{ if(window.parent && window.parent !== window) window.parent.postMessage({rico:'apresentar', on:true}, '*'); }catch(e){}
     const d = document.documentElement;
-    if(d.requestFullscreen) { try{ d.requestFullscreen().catch(()=>{}); }catch(e){} }
+    const dentroDeIframe = (function(){ try{ return window.parent !== window; }catch(e){ return true; } })();
+    if(!dentroDeIframe && d.requestFullscreen) { try{ d.requestFullscreen().catch(()=>{}); }catch(e){} }
     avisar('▶ Modo apresentação — use as setas ← → ou a barra de espaço. Esc para sair.');
   }
 
   function sairApresentacao(){
     if(!apresentando) return;
     apresentando = false;
+    try{ if(window.parent && window.parent !== window) window.parent.postMessage({rico:'apresentar', on:false}, '*'); }catch(e){}
     document.body.classList.remove('apresentando','ocioso');
     secoes.forEach(s=>{
       s.classList.remove('slide-ativo');
@@ -956,6 +966,16 @@
 
   addEventListener('mousemove',()=>{ if(apresentando) acordar(); });
 
+  // toque/clique nas laterais navega (como num leitor de e-book)
+  document.addEventListener('click', e=>{
+    if(!apresentando) return;
+    if(e.target && e.target.closest && e.target.closest('#controles,button,a,input,select,textarea,[contenteditable="true"],.tabela-wrap,.zona-nav')) return;
+    const f = e.clientX / innerWidth;
+    if(f < 0.32) irPara(slideAtual-1);
+    else if(f > 0.68) irPara(slideAtual+1);
+    else acordar();
+  });
+
   // deslizar com o dedo no celular
   let tx=0, ty=0;
   addEventListener('touchstart',e=>{ tx=e.changedTouches[0].clientX; ty=e.changedTouches[0].clientY; },{passive:true});
@@ -964,7 +984,6 @@
     if(e.target && e.target.closest && e.target.closest('#controles,button,a,input,select,textarea,[contenteditable="true"],.tabela-wrap')) return;
     const dx = e.changedTouches[0].clientX - tx, dy = e.changedTouches[0].clientY - ty;
     if(Math.abs(dx) > 55 && Math.abs(dx) > Math.abs(dy)*1.4) { irPara(slideAtual + (dx<0?1:-1)); return; }
-    if(Math.abs(dx) < 12 && Math.abs(dy) < 12) irPara(slideAtual + 1);
   },{passive:true});
 
   function reajustar(){ if(apresentando){ ajustar(secoes[slideAtual]); setTimeout(()=>ajustar(secoes[slideAtual]),260); } }
