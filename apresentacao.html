@@ -846,8 +846,10 @@
       c.textContent = (c.dataset.prefixo||'') + '0';
     });
     void sec.offsetWidth; // força reflow
+    const mostrar = ()=>{ itens.forEach(el=>el.classList.add('visivel')); };
+    setTimeout(mostrar, 90); // garantia: rAF pode nao rodar (aba em segundo plano / iPad)
     requestAnimationFrame(()=>{
-      itens.forEach(el=>el.classList.add('visivel'));
+      mostrar();
       sec.querySelectorAll('.contador').forEach(c=>{
         c.dataset.feito='1';
         setTimeout(()=>animarContador(c),350);
