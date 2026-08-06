@@ -1566,6 +1566,68 @@ window.addEventListener("message", function(ev){
   }catch(e){}
 });
 </script>
+<style id="vidro-theme">
+/* ===== VIDRO: superficies transparentes sobre o fundo animado (nao vale no Modo simples) ===== */
+html:not(.modo-simples) .card,
+html:not(.modo-simples) .hcard,
+html:not(.modo-simples) .pc-chip,
+html:not(.modo-simples) .suc-cell,
+html:not(.modo-simples) .kpi,
+html:not(.modo-simples) .control,
+html:not(.modo-simples) .tpl-btn,
+html:not(.modo-simples) .goal-card,
+html:not(.modo-simples) .alloc-controls,
+html:not(.modo-simples) .alloc-donut-card,
+html:not(.modo-simples) .hp-card,
+html:not(.modo-simples) .hp-kpi,
+html:not(.modo-simples) .hp-box,
+html:not(.modo-simples) .qc-card,
+html:not(.modo-simples) .qc-panel,
+html:not(.modo-simples) .qc-box,
+html:not(.modo-simples) .cmp-card,
+html:not(.modo-simples) .ir-card,
+html:not(.modo-simples) .pm-card,
+html:not(.modo-simples) .rv-card,
+html:not(.modo-simples) .ad-card,
+html:not(.modo-simples) .item,
+html:not(.modo-simples) .ativo-row,
+html:not(.modo-simples) .alloc-row{
+  background:rgba(255,255,255,.075) !important;
+  border-color:rgba(255,255,255,.16) !important;
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  box-shadow:0 10px 30px rgba(0,0,0,.16);
+}
+html:not(.modo-simples) .card:hover,
+html:not(.modo-simples) .hcard:hover,
+html:not(.modo-simples) .tpl-btn:hover{background:rgba(255,255,255,.11) !important;}
+/* campos, selects, chips e tabelas */
+html:not(.modo-simples) input[type="text"],
+html:not(.modo-simples) input[type="number"],
+html:not(.modo-simples) input[type="date"],
+html:not(.modo-simples) select,
+html:not(.modo-simples) textarea,
+html:not(.modo-simples) .num-input,
+html:not(.modo-simples) .pc-input,
+html:not(.modo-simples) .det-input,
+html:not(.modo-simples) .quick button,
+html:not(.modo-simples) .tab,
+html:not(.modo-simples) .chip,
+html:not(.modo-simples) .pill{
+  background:rgba(255,255,255,.06) !important;
+  border-color:rgba(255,255,255,.16) !important;
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+}
+html:not(.modo-simples) select option{background:#241263;color:#fff;}
+html:not(.modo-simples) table th{background:rgba(255,255,255,.10) !important;}
+html:not(.modo-simples) table td{border-color:rgba(255,255,255,.10) !important;}
+html:not(.modo-simples) tr:nth-child(even) td{background:rgba(255,255,255,.03) !important;}
+/* mantem o laranja/verde/vermelho de destaque intactos */
+html:not(.modo-simples) .btn-solid,
+html:not(.modo-simples) .btn.primary,
+html:not(.modo-simples) .tpl-btn.active,
+html:not(.modo-simples) .tab.active,
+html:not(.modo-simples) .quick button.on{backdrop-filter:none;-webkit-backdrop-filter:none;}
+</style>
 <style id="rico-logo-css">
 .rico-logo-svg{display:inline-block;vertical-align:baseline;height:1em;width:auto;line-height:0;}
 .rico-logo-svg svg{height:100%;width:auto;display:block;fill:currentColor;}
