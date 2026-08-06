@@ -365,13 +365,15 @@
   #btn-apresentar:hover{transform:translateY(-3px);background:rgba(254,82,0,.9);}
   body.editando #btn-apresentar{display:none;}
 
-  body.apresentando{overflow:hidden;height:100vh;}
+  body.apresentando{overflow:hidden;height:100dvh;position:fixed;inset:0;width:100%;-webkit-overflow-scrolling:auto;overscroll-behavior:none;touch-action:manipulation;}
+  body.apresentando section{-webkit-tap-highlight-color:transparent;}
+  body.apresentando .conteudo{max-height:100%;overflow-y:auto;-webkit-overflow-scrolling:touch;}
   body.apresentando #btn-editar,
   body.apresentando #btn-proximo,
   body.apresentando #btn-apresentar,
   body.apresentando .seta{display:none;}
   body.apresentando section{
-    position:fixed;inset:0;height:100vh;min-height:0;
+    position:fixed;inset:0;height:100dvh;min-height:0;
     padding:6vh 6vw calc(5vh + 78px);overflow:hidden;
     opacity:0;visibility:hidden;pointer-events:none;
     transform:translateY(38px) scale(.985);
@@ -802,17 +804,19 @@
 
   /* ---------- contadores ---------- */
   function animarContador(el){
+    if(el.__anim) cancelAnimationFrame(el.__anim);
     const alvo = parseFloat(el.dataset.alvo);
     const dec = parseInt(el.dataset.decimal||'0');
     const pref = el.dataset.prefixo||'';
-    const t0 = performance.now(), dur=1800;
+    let t0 = null; const dur=1800;
     function passo(t){
-      const p = Math.min((t-t0)/dur,1);
+      if(t0===null) t0 = t;
+      const p = Math.min(Math.max((t-t0)/dur,0),1);
       const suave = 1-Math.pow(1-p,3);
       el.textContent = pref + (alvo*suave).toFixed(dec).replace('.',',');
-      if(p<1) requestAnimationFrame(passo);
+      if(p<1) el.__anim = requestAnimationFrame(passo);
     }
-    requestAnimationFrame(passo);
+    el.__anim = requestAnimationFrame(passo);
   }
   const obsNum = new IntersectionObserver(entries=>{
     entries.forEach(e=>{
@@ -892,7 +896,7 @@
     document.body.classList.add('apresentando');
     irPara(visivel < 0 ? 0 : visivel);
     const d = document.documentElement;
-    if(d.requestFullscreen) d.requestFullscreen().catch(()=>{});
+    if(d.requestFullscreen) { try{ d.requestFullscreen().catch(()=>{}); }catch(e){} }
     avisar('▶ Modo apresentação — use as setas ← → ou a barra de espaço. Esc para sair.');
   }
 
@@ -954,12 +958,16 @@
   addEventListener('touchstart',e=>{ tx=e.changedTouches[0].clientX; ty=e.changedTouches[0].clientY; },{passive:true});
   addEventListener('touchend',e=>{
     if(!apresentando) return;
+    if(e.target && e.target.closest && e.target.closest('#controles,button,a,input,select,textarea,[contenteditable="true"],.tabela-wrap')) return;
     const dx = e.changedTouches[0].clientX - tx, dy = e.changedTouches[0].clientY - ty;
-    if(Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy)) irPara(slideAtual + (dx<0?1:-1));
-    else if(Math.abs(dy) > 70 && Math.abs(dy) > Math.abs(dx)) irPara(slideAtual + (dy<0?1:-1));
+    if(Math.abs(dx) > 55 && Math.abs(dx) > Math.abs(dy)*1.4) { irPara(slideAtual + (dx<0?1:-1)); return; }
+    if(Math.abs(dx) < 12 && Math.abs(dy) < 12) irPara(slideAtual + 1);
   },{passive:true});
 
-  addEventListener('resize',()=>{ if(apresentando) ajustar(secoes[slideAtual]); });
+  function reajustar(){ if(apresentando){ ajustar(secoes[slideAtual]); setTimeout(()=>ajustar(secoes[slideAtual]),260); } }
+  addEventListener('resize', reajustar);
+  addEventListener('orientationchange', reajustar);
+  if(window.visualViewport) visualViewport.addEventListener('resize', reajustar);
 
   /* ---------- modo edição ---------- */
   const aviso = document.getElementById('aviso');
