@@ -1621,6 +1621,30 @@ html:not(.modo-simples) select option{background:#241263;color:#fff;}
 html:not(.modo-simples) table th{background:rgba(255,255,255,.10) !important;}
 html:not(.modo-simples) table td{border-color:rgba(255,255,255,.10) !important;}
 html:not(.modo-simples) tr:nth-child(even) td{background:rgba(255,255,255,.03) !important;}
+/* legibilidade: chips, pills e botoes pequenos sobre vidro */
+html:not(.modo-simples) .chip,
+html:not(.modo-simples) .pill,
+html:not(.modo-simples) .seg,
+html:not(.modo-simples) .quick button,
+html:not(.modo-simples) .tab,
+html:not(.modo-simples) .cmp-tab,
+html:not(.modo-simples) .btn-ghost{
+  background:rgba(255,255,255,.13) !important;
+  border-color:rgba(255,255,255,.24) !important;
+  color:#fff !important;
+}
+html:not(.modo-simples) .chip:hover,
+html:not(.modo-simples) .pill:hover,
+html:not(.modo-simples) .quick button:hover,
+html:not(.modo-simples) .tab:hover,
+html:not(.modo-simples) .cmp-tab:hover{background:rgba(255,255,255,.2) !important;}
+html:not(.modo-simples) .chip.on,
+html:not(.modo-simples) .pill.on,
+html:not(.modo-simples) .quick button.on,
+html:not(.modo-simples) .tab.active,
+html:not(.modo-simples) .cmp-tab.active,
+html:not(.modo-simples) .seg.on,
+html:not(.modo-simples) .seg.active{background:rgba(255,78,0,.9) !important;border-color:rgba(255,140,80,.7) !important;color:#fff !important;}
 /* superficies das demais ferramentas */
 html:not(.modo-simples) .cmp-tab,
 html:not(.modo-simples) .assetcard,
