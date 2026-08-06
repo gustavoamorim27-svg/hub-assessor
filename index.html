@@ -46,15 +46,7 @@
   });
   window.__hubShowErr=show;
   /* selo de versão, para confirmar qual build o aparelho carregou */
-  document.addEventListener("DOMContentLoaded",function(){
-    try{
-      var t=document.createElement("div");
-      t.textContent="build "+window.__HUB_BUILD;
-      t.style.cssText="position:fixed;right:6px;bottom:5px;z-index:99998;font:10px/1 -apple-system,system-ui,sans-serif;"
-        +"color:rgba(169,176,214,.55);background:rgba(10,15,56,.6);padding:3px 7px;border-radius:6px;pointer-events:none";
-      document.body.appendChild(t);
-    }catch(_){}
-  });
+  /* selo de build removido */
 })();
 </script>
 

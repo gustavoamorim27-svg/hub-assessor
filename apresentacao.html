@@ -17,7 +17,9 @@
     --fonte:'Segoe UI', system-ui, -apple-system, 'Helvetica Neue', Arial, sans-serif;
   }
   *{margin:0;padding:0;box-sizing:border-box;}
-  html{scroll-behavior:smooth;}
+  html{scroll-behavior:smooth;overflow-x:hidden;scrollbar-width:none;-ms-overflow-style:none;}
+  html::-webkit-scrollbar,body::-webkit-scrollbar{width:0;height:0;display:none;}
+  body{scrollbar-width:none;-ms-overflow-style:none;}
   body{
     font-family:var(--fonte);
     color:var(--branco);
@@ -355,7 +357,7 @@
 
   /* ============ MODO DE APRESENTAÇÃO ============ */
   #btn-cheia{
-    position:fixed;bottom:22px;right:22px;z-index:200;
+    position:fixed;bottom:22px;left:22px;z-index:210;
     display:flex;align-items:center;justify-content:center;
     width:46px;height:46px;border-radius:12px;cursor:pointer;color:#fff;
     border:1px solid rgba(255,255,255,.28);background:rgba(20,10,60,.55);
@@ -368,7 +370,7 @@
   body.tela-cheia #btn-cheia{opacity:.35;}
   body.tela-cheia #btn-cheia:hover{opacity:1;}
   #controles,.zona-dica{display:none !important;}
-  @media (max-width:640px){ #btn-cheia{width:42px;height:42px;bottom:16px;right:16px;} }
+  @media (max-width:640px){ #btn-cheia{width:42px;height:42px;bottom:16px;left:16px;} }
   #btn-apresentar{
     position:fixed;bottom:22px;left:22px;z-index:200;
     display:flex;align-items:center;gap:.55rem;
