@@ -4,51 +4,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<script>
-/* ===== Diagnóstico (build stamp + erros na tela) =====
-   Serve para depurar em aparelhos onde não dá para abrir o console (iPad/iPhone).
-   Só aparece se algo realmente quebrar. */
-(function(){
-  window.__HUB_BUILD = "2026-07-21-b";
-  var box=null;
-  function show(kind,msg){
-    try{
-      if(!box){
-        box=document.createElement("div");
-        box.id="hubErrBox";
-        box.style.cssText="position:fixed;left:0;right:0;bottom:0;z-index:2147483647;background:#6d1020;color:#fff;"
-          +"font:12px/1.45 -apple-system,BlinkMacSystemFont,system-ui,sans-serif;padding:10px 12px;"
-          +"max-height:46vh;overflow:auto;white-space:pre-wrap;border-top:3px solid #FF4E00;-webkit-overflow-scrolling:touch";
-        var b=document.createElement("button");
-        b.textContent="fechar";
-        b.style.cssText="float:right;background:#fff;color:#6d1020;border:0;border-radius:7px;padding:5px 12px;font-weight:800;margin-left:10px";
-        b.onclick=function(){ box.style.display="none"; };
-        box.appendChild(b);
-        var h=document.createElement("div");
-        h.textContent="Erro no app · build "+window.__HUB_BUILD;
-        h.style.cssText="font-weight:800;margin-bottom:6px";
-        box.appendChild(h);
-        (document.body||document.documentElement).appendChild(box);
-      }
-      var p=document.createElement("div");
-      p.style.cssText="border-top:1px solid rgba(255,255,255,.25);padding-top:6px;margin-top:6px";
-      p.textContent=kind+": "+msg;
-      box.appendChild(p);
-      box.style.display="block";
-    }catch(_){}
-  }
-  window.addEventListener("error",function(e){
-    var where=(e.filename||"").split("/").pop();
-    show("ERRO",(e.message||"?")+(where?("  ["+where+":"+(e.lineno||"?")+"]"):""));
-  });
-  window.addEventListener("unhandledrejection",function(e){
-    var r=e.reason; show("PROMISE",(r&&(r.message||r.toString&&r.toString()))||"?");
-  });
-  window.__hubShowErr=show;
-  /* selo de versão, para confirmar qual build o aparelho carregou */
-  /* selo de build removido */
-})();
-</script>
+<script>window.__hubShowErr=function(){};</script>
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
@@ -1567,7 +1523,7 @@ window.addEventListener("message", function(ev){
 });
 </script>
 <style id="vidro-theme">
-/* ===== VIDRO: superficies transparentes sobre o fundo animado (nao vale no Modo simples) ===== */
+/* ===== VIDRO v2: superficies translucidas + controles em navy (padrao RV) ===== */
 html:not(.modo-simples) .card,
 html:not(.modo-simples) .hcard,
 html:not(.modo-simples) .pc-chip,
@@ -1578,19 +1534,14 @@ html:not(.modo-simples) .tpl-btn,
 html:not(.modo-simples) .goal-card,
 html:not(.modo-simples) .alloc-controls,
 html:not(.modo-simples) .alloc-donut-card,
-html:not(.modo-simples) .hp-card,
-html:not(.modo-simples) .hp-kpi,
-html:not(.modo-simples) .hp-box,
-html:not(.modo-simples) .qc-card,
-html:not(.modo-simples) .qc-panel,
-html:not(.modo-simples) .qc-box,
-html:not(.modo-simples) .cmp-card,
-html:not(.modo-simples) .ir-card,
-html:not(.modo-simples) .pm-card,
-html:not(.modo-simples) .rv-card,
-html:not(.modo-simples) .ad-card,
+html:not(.modo-simples) .hc-inputs,
+html:not(.modo-simples) .hc-kpi,
+html:not(.modo-simples) .hc-chartwrap,
+html:not(.modo-simples) .hc-score,
+html:not(.modo-simples) .hc-tblwrap,
+html:not(.modo-simples) .hc-pbbox,
+html:not(.modo-simples) .assetcard,
 html:not(.modo-simples) .item,
-html:not(.modo-simples) .ativo-row,
 html:not(.modo-simples) .alloc-row{
   background:rgba(255,255,255,.075) !important;
   border-color:rgba(255,255,255,.16) !important;
@@ -1600,79 +1551,59 @@ html:not(.modo-simples) .alloc-row{
 html:not(.modo-simples) .card:hover,
 html:not(.modo-simples) .hcard:hover,
 html:not(.modo-simples) .tpl-btn:hover{background:rgba(255,255,255,.11) !important;}
-/* campos, selects, chips e tabelas */
 html:not(.modo-simples) input[type="text"],
 html:not(.modo-simples) input[type="number"],
 html:not(.modo-simples) input[type="date"],
+html:not(.modo-simples) input.num,
 html:not(.modo-simples) select,
 html:not(.modo-simples) textarea,
 html:not(.modo-simples) .num-input,
 html:not(.modo-simples) .pc-input,
 html:not(.modo-simples) .det-input,
-html:not(.modo-simples) .quick button,
-html:not(.modo-simples) .tab,
-html:not(.modo-simples) .chip,
-html:not(.modo-simples) .pill{
-  background:rgba(255,255,255,.06) !important;
+html:not(.modo-simples) .pct-input,
+html:not(.modo-simples) .mini-input,
+html:not(.modo-simples) .hp-inp,
+html:not(.modo-simples) .lib-search-inp,
+html:not(.modo-simples) .oc-search{
+  background:rgba(8,12,44,.60) !important;
   border-color:rgba(255,255,255,.16) !important;
+  color:#fff;
   backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
 }
-html:not(.modo-simples) select option{background:#241263;color:#fff;}
-html:not(.modo-simples) table th{background:rgba(255,255,255,.10) !important;}
-html:not(.modo-simples) table td{border-color:rgba(255,255,255,.10) !important;}
-html:not(.modo-simples) tr:nth-child(even) td{background:rgba(255,255,255,.03) !important;}
-/* legibilidade: chips, pills e botoes pequenos sobre vidro */
+html:not(.modo-simples) select option{background:#141A52;color:#fff;}
 html:not(.modo-simples) .chip,
 html:not(.modo-simples) .pill,
 html:not(.modo-simples) .seg,
-html:not(.modo-simples) .quick button,
 html:not(.modo-simples) .tab,
 html:not(.modo-simples) .cmp-tab,
+html:not(.modo-simples) .quick button,
+html:not(.modo-simples) .oc-tab,
+html:not(.modo-simples) .oc-btn,
 html:not(.modo-simples) .btn-ghost{
-  background:rgba(255,255,255,.13) !important;
-  border-color:rgba(255,255,255,.24) !important;
+  background:rgba(8,12,44,.48) !important;
+  border-color:rgba(255,255,255,.20) !important;
   color:#fff !important;
 }
 html:not(.modo-simples) .chip:hover,
 html:not(.modo-simples) .pill:hover,
-html:not(.modo-simples) .quick button:hover,
 html:not(.modo-simples) .tab:hover,
-html:not(.modo-simples) .cmp-tab:hover{background:rgba(255,255,255,.2) !important;}
+html:not(.modo-simples) .cmp-tab:hover,
+html:not(.modo-simples) .quick button:hover,
+html:not(.modo-simples) .oc-tab:hover,
+html:not(.modo-simples) .oc-btn:hover,
+html:not(.modo-simples) .btn-ghost:hover{background:rgba(20,26,82,.75) !important;border-color:rgba(255,255,255,.34) !important;}
 html:not(.modo-simples) .chip.on,
 html:not(.modo-simples) .pill.on,
 html:not(.modo-simples) .quick button.on,
 html:not(.modo-simples) .tab.active,
 html:not(.modo-simples) .cmp-tab.active,
+html:not(.modo-simples) .oc-tab.active,
+html:not(.modo-simples) .oc-tab.on,
 html:not(.modo-simples) .seg.on,
 html:not(.modo-simples) .seg.active{background:rgba(255,78,0,.9) !important;border-color:rgba(255,140,80,.7) !important;color:#fff !important;}
-/* superficies das demais ferramentas */
-html:not(.modo-simples) .cmp-tab,
-html:not(.modo-simples) .assetcard,
-html:not(.modo-simples) .seg,
-html:not(.modo-simples) .btn-ghost,
-html:not(.modo-simples) .hc-inputs,
-html:not(.modo-simples) .hc-kpi,
-html:not(.modo-simples) .hc-chartwrap,
-html:not(.modo-simples) .hc-score,
-html:not(.modo-simples) .hc-tblwrap,
-html:not(.modo-simples) .hc-pbbox,
-html:not(.modo-simples) .hp-inp,
-html:not(.modo-simples) .sel,
-html:not(.modo-simples) .ir-box,
-html:not(.modo-simples) .rv-box{
-  background:rgba(255,255,255,.075) !important;
-  border-color:rgba(255,255,255,.16) !important;
-  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
-}
-html:not(.modo-simples) .cmp-tab.active,
-html:not(.modo-simples) .seg.on,
-html:not(.modo-simples) .seg.active{background:rgba(255,78,0,.85) !important;border-color:rgba(255,120,60,.6) !important;}
-/* mantem o laranja/verde/vermelho de destaque intactos */
-html:not(.modo-simples) .btn-solid,
-html:not(.modo-simples) .btn.primary,
-html:not(.modo-simples) .tpl-btn.active,
-html:not(.modo-simples) .tab.active,
-html:not(.modo-simples) .quick button.on{backdrop-filter:none;-webkit-backdrop-filter:none;}
+html:not(.modo-simples) table th{background:rgba(8,12,44,.55) !important;}
+html:not(.modo-simples) table td{border-color:rgba(255,255,255,.10) !important;}
+html:not(.modo-simples) tr:nth-child(even) td{background:rgba(255,255,255,.03) !important;}
 </style>
 <style id="rico-logo-css">
 .rico-logo-svg{display:inline-block;vertical-align:baseline;height:1em;width:auto;line-height:0;}
