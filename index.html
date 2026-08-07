@@ -1612,6 +1612,46 @@ html:not(.modo-simples) .seg.active{background:rgba(255,78,0,.92) !important;bor
 html:not(.modo-simples) table th{background:rgba(255,255,255,.12) !important;color:#fff !important;}
 html:not(.modo-simples) table td{border-color:rgba(255,255,255,.10) !important;}
 html:not(.modo-simples) tr:nth-child(even) td{background:rgba(255,255,255,.03) !important;}
+
+/* ===== v3.1: forca vidro por cima das regras com ID de cada ferramenta ===== */
+html:not(.modo-simples):not(#_) input:not([type=range]):not([type=checkbox]):not([type=radio]),
+html:not(.modo-simples):not(#_) select,
+html:not(.modo-simples):not(#_) textarea{
+  background:rgba(255,255,255,.10) !important;
+  border-color:rgba(255,255,255,.26) !important;
+  color:#fff !important;
+  border-radius:10px;
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+}
+html:not(.modo-simples):not(#_) input::placeholder,
+html:not(.modo-simples):not(#_) textarea::placeholder{color:rgba(255,255,255,.55) !important;}
+/* wrappers de valor (caixinha preta do retorno etc.) */
+html:not(.modo-simples):not(#_) .num-input,
+html:not(.modo-simples):not(#_) .item .ret-num,
+html:not(.modo-simples):not(#_) .item input.money,
+html:not(.modo-simples):not(#_) .item .num,
+html:not(.modo-simples):not(#_) .im-valor{
+  background:rgba(255,255,255,.10) !important;
+  border-color:rgba(255,255,255,.26) !important;
+  border-radius:10px;
+}
+/* inputs dentro de wrapper vidro ficam sem fundo proprio (evita camada dupla) */
+html:not(.modo-simples):not(#_) .num-input input,
+html:not(.modo-simples):not(#_) .im-valor input{background:transparent !important;border:none !important;backdrop-filter:none;-webkit-backdrop-filter:none;}
+/* paineis da Sucessao e afins que usam ID nas regras */
+html:not(.modo-simples):not(#_) .hc-inputs,
+html:not(.modo-simples):not(#_) .hc-kpi,
+html:not(.modo-simples):not(#_) .hc-chartwrap,
+html:not(.modo-simples):not(#_) .hc-score,
+html:not(.modo-simples):not(#_) .hc-tblwrap,
+html:not(.modo-simples):not(#_) .hc-pbbox,
+html:not(.modo-simples):not(#_) .assetcard{
+  background:rgba(255,255,255,.075) !important;
+  border-color:rgba(255,255,255,.16) !important;
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+}
+html:not(.modo-simples):not(#_) table th{background:rgba(255,255,255,.12) !important;color:#fff !important;}
+html:not(.modo-simples):not(#_) table td{border-color:rgba(255,255,255,.10) !important;}
 </style>
 <style id="rico-logo-css">
 .rico-logo-svg{display:inline-block;vertical-align:baseline;height:1em;width:auto;line-height:0;}
