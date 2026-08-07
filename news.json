@@ -1,15 +1,85 @@
 {
-  "updated": "06/08/2026 15:07",
+  "updated": "07/08/2026 09:07",
   "items": [
-    { "region": "nacional", "title": "Copom corta Selic em 0,25 ponto, para 14% ao ano", "resumo": "Banco Central reduz juros citando desaceleracao gradual da atividade e melhora da inflacao corrente.", "source": "Money Times", "date": "06 ago 2026", "url": "https://www.moneytimes.com.br/tempo-real-tempo-real-ibovespa-hoje-mercado-ao-vivo-06-08-2026-jals-lils-apsa-repercute-copom/" },
-    { "region": "nacional", "title": "Ibovespa opera em queda no pos-Copom, aos 176,9 mil pontos", "resumo": "Bolsa recua com Bradesco pressionando, apos fechar a vespera aos 177.726 pontos; mercado digere corte da Selic.", "source": "InfoMoney", "date": "06 ago 2026", "url": "https://www.infomoney.com.br/mercados/ibovespa-hoje-bolsa-de-valores-ao-vivo-06082026/" },
-    { "region": "nacional", "title": "Dolar recua a R$ 5,11 com real entre as moedas mais fortes do dia", "resumo": "Moeda americana cai 0,36% ante o real, favorecida pelo diferencial de juros apos a decisao do Copom.", "source": "Rio Times", "date": "06 ago 2026", "url": "https://www.riotimesonline.com/brazil-markets-ibovespa-real-thursday-august-6-2026/" },
-    { "region": "nacional", "title": "Petrobras divulga balanco do 2T26 hoje com producao recorde", "resumo": "Producao de 3,34 milhoes de boe/dia reforca projecao de trimestre forte e dividendos de cerca de US$ 3 bilhoes.", "source": "InfoMoney", "date": "06 ago 2026", "url": "https://www.infomoney.com.br/mercados/petrobras-petr4-producao-2t26-recorde-reforca-projecao-de-forte-tri-e-dividendo-de-us-3-bi/" },
-    { "region": "nacional", "title": "Mercado ja precifica novo corte de 0,25 ponto na Selic em setembro", "resumo": "Parte dos economistas espera continuidade do ciclo de afrouxamento monetario na proxima reuniao do Copom.", "source": "Remessa Online", "date": "06 ago 2026", "url": "https://www.remessaonline.com.br/blog/ibovespa-hoje-06-08-2026/" },
-    { "region": "internacional", "title": "Fed mantem juros em 3,50%-3,75% e ainda sinaliza cortes em 2026", "resumo": "Decisao por 11 votos a 1 veio com revisao para cima do crescimento, apesar da inflacao acima do esperado.", "source": "TheStreet", "date": "06 ago 2026", "url": "https://www.thestreet.com/stock-market-today/stock-market-today-dow-jones-sp-500-nasdaq-updates-aug-6-2026" },
-    { "region": "internacional", "title": "S&P 500 e Nasdaq recuam com alta dos yields dos Treasuries", "resumo": "Yield de 10 anos sobe a 4,67% e o de 30 anos a 5,21%, pressionando as bolsas em dia cheio de balancos.", "source": "Yahoo Finance", "date": "06 ago 2026", "url": "https://finance.yahoo.com/markets/live/stock-market-today-thursday-august-6-dow-sp-nasdaq-091620000.html" },
-    { "region": "internacional", "title": "Petroleo sobe com tensoes entre Ira e paises do Golfo", "resumo": "Brent avanca 1,7% para US$ 80,80 com riscos no Estreito de Ormuz e ataques a navios no Mar Vermelho.", "source": "Barchart", "date": "06 ago 2026", "url": "https://www.barchart.com/story/news/822574/stocks-pressured-by-inflation-concerns-and-iran-war-jitters" },
-    { "region": "internacional", "title": "Energia lidera ganhos em Wall Street enquanto techs perdem folego", "resumo": "Setor de energia sobe com o petroleo mais caro; investidores aguardam dados do mercado de trabalho dos EUA.", "source": "StockMarketWatch", "date": "06 ago 2026", "url": "https://stockmarketwatch.com/live/stock-market-today" },
-    { "region": "internacional", "title": "Indices renovam maximas no inicio do pregao apesar de AMD e SpaceX", "resumo": "Abertura teve novas maximas intradiarias mesmo com fraqueza em AMD e noticias negativas da SpaceX.", "source": "Charles Schwab", "date": "06 ago 2026", "url": "https://www.schwab.com/learn/story/stock-market-update-open" }
+    {
+      "region": "nacional",
+      "title": "Ibovespa cai 1,23% após decisão do Copom; dólar recua a R$ 5,11",
+      "resumo": "Bolsa fechou aos 175.546 pontos no dia seguinte ao corte de juros, com Vale pesando no índice; real firmou-se 0,20%.",
+      "source": "CNN Brasil",
+      "date": "07 ago 2026",
+      "url": "https://www.cnnbrasil.com.br/economia/mercado/mercado-financeiro-ibovespa-dolar-7-agosto-2026/"
+    },
+    {
+      "region": "nacional",
+      "title": "Copom corta 0,25 p.p. e reduz Selic a 14% ao ano",
+      "resumo": "Quarta redução consecutiva, aprovada por unanimidade, em cenário de incerteza e inflação ainda acima da meta.",
+      "source": "Movimento Econômico",
+      "date": "05 ago 2026",
+      "url": "https://movimentoeconomico.com.br/economia/2026/08/05/copom-corta-025-p-p-e-reduz-selic-a-14-em-cenario-de-incerteza-e-inflacao-alta/"
+    },
+    {
+      "region": "nacional",
+      "title": "Governo incorpora Selic de 14% e eleva previsão de inflação de 2026",
+      "resumo": "Projeção do IPCA para 2026 subiu de 4,5% para 5,1%, acima do teto da meta, com serviços e petróleo pressionando.",
+      "source": "Money Times",
+      "date": "06 ago 2026",
+      "url": "https://www.moneytimes.com.br/governo-incorpora-selic-de-14-e-aumenta-previsao-para-a-inflacao-de-2026-jcav/"
+    },
+    {
+      "region": "nacional",
+      "title": "Petrobras lucra R$ 52,4 bilhões no 2T26, alta de 96,8%, e supera consenso",
+      "resumo": "Resultado impulsionado por Brent mais alto, produção recorde e exportações; mercado esperava R$ 50,8 bi.",
+      "source": "Money Times",
+      "date": "06 ago 2026",
+      "url": "https://www.moneytimes.com.br/petrobras-petr4-lucra-r-524-bilhoes-no-2t26-e-supera-consenso/"
+    },
+    {
+      "region": "nacional",
+      "title": "Petrobras aprova R$ 17,4 bilhões em dividendos e JCP aos acionistas",
+      "resumo": "Distribuição referente ao 2T26 veio no topo das projeções e recoloca PETR4 no radar dos dividendos.",
+      "source": "InfoMoney",
+      "date": "06 ago 2026",
+      "url": "https://www.infomoney.com.br/mercados/petrobras-petr4-balanco-forte-e-dividendos-no-topo-das-projecoes-mais-esta-por-vir-no-3t/"
+    },
+    {
+      "region": "internacional",
+      "title": "Wall Street recua à espera do payroll; S&P 500 cede a 7.710 pontos",
+      "resumo": "Dow caiu 0,85% e Nasdaq ficou estável, com investidores ajustando posições antes do relatório de empregos dos EUA.",
+      "source": "Bloomberg",
+      "date": "06 ago 2026",
+      "url": "https://www.bloomberg.com/news/articles/2026-08-06/stock-market-today-dow-s-p-live-updates"
+    },
+    {
+      "region": "internacional",
+      "title": "Payroll de julho sai hoje e pode definir chance de alta do Fed em setembro",
+      "resumo": "Consenso espera 83 mil vagas e desemprego em 4,2%; mercado precifica cerca de 55% de chance de alta de juros.",
+      "source": "CNBC",
+      "date": "07 ago 2026",
+      "url": "https://www.cnbc.com/2026/08/06/the-july-jobs-numbers-are-due-out-friday-heres-what-to-expect.html"
+    },
+    {
+      "region": "internacional",
+      "title": "Fed mantém juros em julho, mas mercado vê aperto em setembro",
+      "resumo": "FOMC de Kevin Warsh manteve a taxa estável; futuros indicam alta probabilidade de elevação na próxima reunião.",
+      "source": "CNBC",
+      "date": "29 jul 2026",
+      "url": "https://www.cnbc.com/2026/07/29/fed-meeting-today-live-updates.html"
+    },
+    {
+      "region": "internacional",
+      "title": "Petróleo acumula alta de mais de 38% em 2026 com tensão no Estreito de Ormuz",
+      "resumo": "Conflito no Oriente Médio restringe o transporte da commodity e mantém pressão sobre a inflação global.",
+      "source": "CNBC",
+      "date": "23 jul 2026",
+      "url": "https://www.cnbc.com/2026/07/23/fed-interest-rate-odds-oil-jobless-claims.html"
+    },
+    {
+      "region": "internacional",
+      "title": "Treasury de 10 anos sobe a 4,68% e dólar avança; ouro recua",
+      "resumo": "Alta dos rendimentos aperta condições financeiras globais; DXY subiu 0,31% e ouro caiu 0,59%, a US$ 4.253.",
+      "source": "The Rio Times",
+      "date": "07 ago 2026",
+      "url": "https://www.riotimesonline.com/global-economy-briefing-august-7-2026/"
+    }
   ]
 }
