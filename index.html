@@ -1523,7 +1523,8 @@ window.addEventListener("message", function(ev){
 });
 </script>
 <style id="vidro-theme">
-/* ===== VIDRO v2: superficies translucidas + controles em navy (padrao RV) ===== */
+/* ===== VIDRO v3: tudo translucido (padrao Modelos de Servir), sem caixas navy ===== */
+/* --- cartoes e paineis --- */
 html:not(.modo-simples) .card,
 html:not(.modo-simples) .hcard,
 html:not(.modo-simples) .pc-chip,
@@ -1551,6 +1552,7 @@ html:not(.modo-simples) .alloc-row{
 html:not(.modo-simples) .card:hover,
 html:not(.modo-simples) .hcard:hover,
 html:not(.modo-simples) .tpl-btn:hover{background:rgba(255,255,255,.11) !important;}
+/* --- campos e selects: vidro com texto branco --- */
 html:not(.modo-simples) input[type="text"],
 html:not(.modo-simples) input[type="number"],
 html:not(.modo-simples) input[type="date"],
@@ -1565,12 +1567,16 @@ html:not(.modo-simples) .mini-input,
 html:not(.modo-simples) .hp-inp,
 html:not(.modo-simples) .lib-search-inp,
 html:not(.modo-simples) .oc-search{
-  background:rgba(8,12,44,.60) !important;
-  border-color:rgba(255,255,255,.16) !important;
-  color:#fff;
-  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  background:rgba(255,255,255,.10) !important;
+  border-color:rgba(255,255,255,.26) !important;
+  color:#fff !important;
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
 }
-html:not(.modo-simples) select option{background:#141A52;color:#fff;}
+html:not(.modo-simples) input::placeholder,
+html:not(.modo-simples) textarea::placeholder{color:rgba(255,255,255,.55) !important;}
+html:not(.modo-simples) .det-input{color:rgba(255,255,255,.92) !important;}
+html:not(.modo-simples) select option{background:#241263;color:#fff;}
+/* --- chips, abas e botoezinhos: vidro --- */
 html:not(.modo-simples) .chip,
 html:not(.modo-simples) .pill,
 html:not(.modo-simples) .seg,
@@ -1580,9 +1586,10 @@ html:not(.modo-simples) .quick button,
 html:not(.modo-simples) .oc-tab,
 html:not(.modo-simples) .oc-btn,
 html:not(.modo-simples) .btn-ghost{
-  background:rgba(8,12,44,.48) !important;
-  border-color:rgba(255,255,255,.20) !important;
+  background:rgba(255,255,255,.12) !important;
+  border-color:rgba(255,255,255,.30) !important;
   color:#fff !important;
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
 }
 html:not(.modo-simples) .chip:hover,
 html:not(.modo-simples) .pill:hover,
@@ -1591,7 +1598,7 @@ html:not(.modo-simples) .cmp-tab:hover,
 html:not(.modo-simples) .quick button:hover,
 html:not(.modo-simples) .oc-tab:hover,
 html:not(.modo-simples) .oc-btn:hover,
-html:not(.modo-simples) .btn-ghost:hover{background:rgba(20,26,82,.75) !important;border-color:rgba(255,255,255,.34) !important;}
+html:not(.modo-simples) .btn-ghost:hover{background:rgba(255,255,255,.20) !important;border-color:rgba(255,255,255,.45) !important;}
 html:not(.modo-simples) .chip.on,
 html:not(.modo-simples) .pill.on,
 html:not(.modo-simples) .quick button.on,
@@ -1600,8 +1607,9 @@ html:not(.modo-simples) .cmp-tab.active,
 html:not(.modo-simples) .oc-tab.active,
 html:not(.modo-simples) .oc-tab.on,
 html:not(.modo-simples) .seg.on,
-html:not(.modo-simples) .seg.active{background:rgba(255,78,0,.9) !important;border-color:rgba(255,140,80,.7) !important;color:#fff !important;}
-html:not(.modo-simples) table th{background:rgba(8,12,44,.55) !important;}
+html:not(.modo-simples) .seg.active{background:rgba(255,78,0,.92) !important;border-color:rgba(255,140,80,.7) !important;color:#fff !important;}
+/* --- tabelas --- */
+html:not(.modo-simples) table th{background:rgba(255,255,255,.12) !important;color:#fff !important;}
 html:not(.modo-simples) table td{border-color:rgba(255,255,255,.10) !important;}
 html:not(.modo-simples) tr:nth-child(even) td{background:rgba(255,255,255,.03) !important;}
 </style>
