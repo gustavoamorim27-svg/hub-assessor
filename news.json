@@ -1,15 +1,85 @@
 {
-    "updated": "07/08/2026 15:08",
-    "items": [
-          { "region": "nacional", "title": "Ibovespa fecha em queda no dia seguinte à decisão de juros; dólar recua a R$ 5,11", "resumo": "Índice caiu 1,23% a 175.546 pontos após o Copom não sinalizar os próximos passos, enquanto o real se fortaleceu.", "source": "CNN Brasil", "date": "07 ago 2026", "url": "https://www.cnnbrasil.com.br/economia/mercado/mercado-financeiro-ibovespa-dolar-7-agosto-2026/" },
-          { "region": "nacional", "title": "Copom corta Selic para 14% ao ano e deixa próximos passos em aberto", "resumo": "Quarto corte consecutivo de 0,25 p.p. foi unânime; comunicado de tom cauteloso reforça aposta de pausa no ciclo ainda em 2026.", "source": "Seu Dinheiro", "date": "05 ago 2026", "url": "https://www.seudinheiro.com/2026/economia/copom-corta-selic-para-14-ao-ano-e-deixa-em-aberto-os-proximos-passos-mas-mercado-ja-espera-mais-cortes-mlim/" },
-          { "region": "nacional", "title": "Petrobras lucra R$ 52,4 bilhões no 2T26, quase o dobro do ano anterior", "resumo": "Resultado superou o consenso com produção recorde de 2,7 milhões de barris/dia e R$ 17,4 bi anunciados em dividendos.", "source": "Agência Brasil", "date": "06 ago 2026", "url": "https://agenciabrasil.ebc.com.br/economia/noticia/2026-08/petrobras-tem-lucro-liquido-de-r-524-bi-no-segundo-trimestre" },
-          { "region": "nacional", "title": "Bradesco tem lucro recorrente de R$ 7,1 bi no 2T26, alta de 16,2%", "resumo": "Número veio acima do consenso e reforça leitura de virada dos grandes bancos na inadimplência.", "source": "Money Times", "date": "06 ago 2026", "url": "https://www.moneytimes.com.br/bradesco-bbdc4-petrobras-petr4-brava-brav3-e-outros-destaques-desta-quinta-6-ceci/" },
-          { "region": "nacional", "title": "IPCA-15 sobe 0,06% em julho, bem abaixo do esperado pelo mercado", "resumo": "Prévia da inflação desacelerou ante 0,41% em junho e acumula 4,52% em 12 meses, reforçando o cenário de desinflação.", "source": "InfoMoney", "date": "24 jul 2026", "url": "https://www.infomoney.com.br/economia/ipca-15-previa-inflacao-ibge-julho-2026/" },
-          { "region": "internacional", "title": "EUA perdem 23 mil vagas em julho e bolsas sobem com aposta de Fed parado", "resumo": "Payroll surpreendeu para baixo com desemprego em 4,1%; Nasdaq subiu 1,1% e S&P 500 avançou 0,5% na abertura.", "source": "Yahoo Finance", "date": "07 ago 2026", "url": "https://finance.yahoo.com/markets/live/stock-market-today-friday-august-7-nasdaq-dow-sp-500-july-jobs-report-surprises-100009572.html" },
-          { "region": "internacional", "title": "S&P 500 supera 7.700 pontos pela primeira vez e caminha para semana forte", "resumo": "Índice acumula alta de mais de 3% na semana e Nasdaq mira o melhor desempenho semanal desde abril, com quase 5%.", "source": "CNBC", "date": "06 ago 2026", "url": "https://www.cnbc.com/2026/08/06/stock-market-today-live-updates.html" },
-          { "region": "internacional", "title": "Mercado só precifica alta de juros do Fed em dezembro após dados fracos", "resumo": "Curva futura ainda projeta um aperto em 2026, mas dados de emprego fracos dão espaço para o Fed manter a política em espera.", "source": "Bloomberg", "date": "06 ago 2026", "url": "https://www.bloomberg.com/news/articles/2026-08-06/stock-market-today-dow-s-p-live-updates" },
-          { "region": "internacional", "title": "Petróleo oscila com incerteza sobre rumo da guerra entre EUA e Irã", "resumo": "Brent chegou a subir para perto de US$ 82,55 com riscos de oferta no Golfo, antes de devolver parte dos ganhos.", "source": "Transport Topics", "date": "07 ago 2026", "url": "https://www.ttnews.com/articles/oil-prices-steady-uncertainty" },
-          { "region": "internacional", "title": "Treasury de 10 anos volta a subir e rende 4,68% com fiscal em foco", "resumo": "Juros longos americanos avançaram mesmo com dados fracos de emprego, pressionados por oferta de títulos e petróleo.", "source": "Rio Times", "date": "07 ago 2026", "url": "https://www.riotimesonline.com/global-economy-briefing-august-7-2026/" }
-    ]
+  "updated": "29/08/2026 23:21",
+  "items": [
+    {
+      "region": "nacional",
+      "title": "Ibovespa rompe os 175 mil pontos apos corte da Selic",
+      "resumo": "Indice consolidou ganhos e fechou acima dos 175.135 pontos com o mercado reagindo ao afrouxamento monetario.",
+      "source": "IstoE Dinheiro",
+      "date": "28 ago 2026",
+      "url": "https://istoedinheiro.com.br/corte-selic-mercado-financeiro-reage-ibovespa"
+    },
+    {
+      "region": "nacional",
+      "title": "Dolar recua para R$ 5,16 com fluxo estrangeiro positivo",
+      "resumo": "A moeda americana perdeu forca ante o real em meio a expectativa de juros menores no Brasil.",
+      "source": "IstoE Dinheiro",
+      "date": "28 ago 2026",
+      "url": "https://istoedinheiro.com.br/corte-selic-mercado-financeiro-reage-ibovespa"
+    },
+    {
+      "region": "nacional",
+      "title": "IPCA-15 cai 0,40% em agosto e acumula 4,24% em 12 meses",
+      "resumo": "Previa da inflacao oficial voltou a ficar abaixo do teto da meta de 4,5%, reforcando o ciclo de cortes.",
+      "source": "InfoMoney",
+      "date": "26 ago 2026",
+      "url": "https://www.infomoney.com.br/mercados/ibovespa-hoje-bolsa-de-valores-ao-vivo-26082026/"
+    },
+    {
+      "region": "nacional",
+      "title": "Mercado ve Selic em 13,25% ate dezembro",
+      "resumo": "Precificacao aponta corte adicional de 25 pontos-base na proxima reuniao do Copom, com juro saindo de 14,00%.",
+      "source": "InfoMoney",
+      "date": "26 ago 2026",
+      "url": "https://www.infomoney.com.br/mercados/ibovespa-hoje-bolsa-de-valores-ao-vivo-26082026/"
+    },
+    {
+      "region": "nacional",
+      "title": "Ibovespa emenda quinta alta seguida puxado por Vale e bancos",
+      "resumo": "Commodities e o setor financeiro sustentaram a sequencia positiva da bolsa, com dolar a R$ 5,14.",
+      "source": "InfoMoney",
+      "date": "25 ago 2026",
+      "url": "https://www.infomoney.com.br/mercados/ibovespa-hoje-bolsa-de-valores-ao-vivo-25082026/"
+    },
+    {
+      "region": "internacional",
+      "title": "Warsh reforca preocupacao com inflacao em Jackson Hole",
+      "resumo": "Presidente do Fed disse que dados melhores de PCE e CPI ainda nao indicam melhora consistente da tendencia.",
+      "source": "CNBC",
+      "date": "27 ago 2026",
+      "url": "https://www.cnbc.com/2026/08/27/stock-market-today-live-updates.html"
+    },
+    {
+      "region": "internacional",
+      "title": "S&P 500 cede na sexta mas fecha a semana no azul",
+      "resumo": "Indice subiu 0,5% na semana e o Nasdaq avancou 0,9%, apesar da realizacao no ultimo pregao.",
+      "source": "CNBC",
+      "date": "27 ago 2026",
+      "url": "https://www.cnbc.com/2026/08/27/stock-market-today-live-updates.html"
+    },
+    {
+      "region": "internacional",
+      "title": "Treasury de 10 anos recua a 4,625% e impulsiona acoes",
+      "resumo": "Queda de mais de 7 pontos-base no juro longo americano deu folego a Wall Street e ao Dow Jones.",
+      "source": "CNBC",
+      "date": "24 ago 2026",
+      "url": "https://www.cnbc.com/2026/08/24/stock-market-today-live-updates.html"
+    },
+    {
+      "region": "internacional",
+      "title": "Petroleo cai mais de 3% com pressao economica sobre o Ira",
+      "resumo": "Brent recuou 3,9% e fechou a US$ 88,58 o barril apos mudanca de estrategia dos EUA.",
+      "source": "Barchart",
+      "date": "24 ago 2026",
+      "url": "https://www.barchart.com/story/news/822574/stocks-pressured-by-inflation-concerns-and-iran-war-jitters"
+    },
+    {
+      "region": "internacional",
+      "title": "Acoes de chips lideram queda no inicio da semana",
+      "resumo": "Sell-off no setor de semicondutores derrubou o S&P 500 na abertura da semana em Nova York.",
+      "source": "CNBC",
+      "date": "23 ago 2026",
+      "url": "https://www.cnbc.com/2026/08/23/stock-market-today-live-updates.html"
+    }
+  ]
 }
