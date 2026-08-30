@@ -1,85 +1,85 @@
 {
-  "updated": "29/08/2026 23:21",
+  "updated": "30/08/2026 18:38",
   "items": [
     {
       "region": "nacional",
-      "title": "Ibovespa rompe os 175 mil pontos apos corte da Selic",
-      "resumo": "Indice consolidou ganhos e fechou acima dos 175.135 pontos com o mercado reagindo ao afrouxamento monetario.",
-      "source": "IstoE Dinheiro",
+      "title": "Ibovespa fecha aos 175.664 pontos na oitava alta seguida; dólar sobe a R$ 5,19",
+      "resumo": "Índice subiu 0,30% na sexta-feira e acumulou 2,7% na semana com impulso de Petrobras, enquanto o dólar à vista avançou 0,67%.",
+      "source": "Money Times",
       "date": "28 ago 2026",
-      "url": "https://istoedinheiro.com.br/corte-selic-mercado-financeiro-reage-ibovespa"
+      "url": "https://www.moneytimes.com.br/ibovespa-28-8-26-lils/"
     },
     {
       "region": "nacional",
-      "title": "Dolar recua para R$ 5,16 com fluxo estrangeiro positivo",
-      "resumo": "A moeda americana perdeu forca ante o real em meio a expectativa de juros menores no Brasil.",
-      "source": "IstoE Dinheiro",
-      "date": "28 ago 2026",
-      "url": "https://istoedinheiro.com.br/corte-selic-mercado-financeiro-reage-ibovespa"
-    },
-    {
-      "region": "nacional",
-      "title": "IPCA-15 cai 0,40% em agosto e acumula 4,24% em 12 meses",
-      "resumo": "Previa da inflacao oficial voltou a ficar abaixo do teto da meta de 4,5%, reforcando o ciclo de cortes.",
+      "title": "IPCA-15 cai 0,40% em agosto, queda maior que a esperada pelo mercado",
+      "resumo": "Prévia da inflação desacelerou para 4,24% em 12 meses, puxada por habitação, transportes e alimentação, reforçando espaço para novos cortes de juros.",
       "source": "InfoMoney",
       "date": "26 ago 2026",
-      "url": "https://www.infomoney.com.br/mercados/ibovespa-hoje-bolsa-de-valores-ao-vivo-26082026/"
+      "url": "https://www.infomoney.com.br/economia/ipca-15-previa-inflacao-ibge-agosto-2026/"
     },
     {
       "region": "nacional",
-      "title": "Mercado ve Selic em 13,25% ate dezembro",
-      "resumo": "Precificacao aponta corte adicional de 25 pontos-base na proxima reuniao do Copom, com juro saindo de 14,00%.",
-      "source": "InfoMoney",
-      "date": "26 ago 2026",
-      "url": "https://www.infomoney.com.br/mercados/ibovespa-hoje-bolsa-de-valores-ao-vivo-26082026/"
+      "title": "Copom corta a Selic para 14,00% ao ano e mantém a porta aberta",
+      "resumo": "Decisão unânime marcou o quarto corte consecutivo de 2026, com o comitê citando ambiente externo ainda incerto.",
+      "source": "CNN Brasil",
+      "date": "05 ago 2026",
+      "url": "https://www.cnnbrasil.com.br/economia/macroeconomia/bc-copom-agosto-2026/"
     },
     {
       "region": "nacional",
-      "title": "Ibovespa emenda quinta alta seguida puxado por Vale e bancos",
-      "resumo": "Commodities e o setor financeiro sustentaram a sequencia positiva da bolsa, com dolar a R$ 5,14.",
+      "title": "Analistas avaliam até onde vai a sequência de altas da Bolsa brasileira",
+      "resumo": "Com o Ibovespa em máximas históricas, casas de análise discutem níveis técnicos e o risco de realização de lucros no curto prazo.",
       "source": "InfoMoney",
-      "date": "25 ago 2026",
-      "url": "https://www.infomoney.com.br/mercados/ibovespa-hoje-bolsa-de-valores-ao-vivo-25082026/"
+      "date": "28 ago 2026",
+      "url": "https://www.infomoney.com.br/mercados/mercados-day-trade-hoje-analistas-28082026/"
+    },
+    {
+      "region": "nacional",
+      "title": "Prévia do PIB, leilão do Banco Central e falas de Galípolo movimentam a agenda",
+      "resumo": "Indicadores de atividade e sinalizações do BC concentram a atenção do mercado local antes da divulgação oficial do PIB do segundo trimestre.",
+      "source": "InfoMoney",
+      "date": "17 ago 2026",
+      "url": "https://www.infomoney.com.br/mercados/previa-pib-brasil-leilao-bc-galipolo-17082026/"
     },
     {
       "region": "internacional",
-      "title": "Warsh reforca preocupacao com inflacao em Jackson Hole",
-      "resumo": "Presidente do Fed disse que dados melhores de PCE e CPI ainda nao indicam melhora consistente da tendencia.",
+      "title": "S&P 500 cai após Warsh reforçar preocupação com a inflação em Jackson Hole",
+      "resumo": "Índice recuou 0,25% aos 7.711 pontos e o Nasdaq cedeu 0,52%, mas ambos fecharam a semana no positivo.",
       "source": "CNBC",
-      "date": "27 ago 2026",
+      "date": "28 ago 2026",
       "url": "https://www.cnbc.com/2026/08/27/stock-market-today-live-updates.html"
     },
     {
       "region": "internacional",
-      "title": "S&P 500 cede na sexta mas fecha a semana no azul",
-      "resumo": "Indice subiu 0,5% na semana e o Nasdaq avancou 0,9%, apesar da realizacao no ultimo pregao.",
-      "source": "CNBC",
-      "date": "27 ago 2026",
-      "url": "https://www.cnbc.com/2026/08/27/stock-market-today-live-updates.html"
+      "title": "Investidores elevam a aposta em alta de juros do Fed em setembro",
+      "resumo": "Após o discurso duro do presidente do Fed em Jackson Hole, a probabilidade precificada de aperto em setembro saltou para perto de 60%.",
+      "source": "TheStreet",
+      "date": "28 ago 2026",
+      "url": "https://www.thestreet.com/fed/kevin-warsh-jackson-hole-fed-september-rate-hike-odds"
     },
     {
       "region": "internacional",
-      "title": "Treasury de 10 anos recua a 4,625% e impulsiona acoes",
-      "resumo": "Queda de mais de 7 pontos-base no juro longo americano deu folego a Wall Street e ao Dow Jones.",
+      "title": "Petróleo recua com os EUA anunciando pacote global de sanções contra o Irã",
+      "resumo": "O Tesouro americano incluiu cerca de 60 entidades ligadas à receita do petróleo iraniano e à frota sombra do país.",
       "source": "CNBC",
       "date": "24 ago 2026",
-      "url": "https://www.cnbc.com/2026/08/24/stock-market-today-live-updates.html"
+      "url": "https://www.cnbc.com/2026/08/24/oil-price-today-wti-brent-us-sanctions-iran.html"
     },
     {
       "region": "internacional",
-      "title": "Petroleo cai mais de 3% com pressao economica sobre o Ira",
-      "resumo": "Brent recuou 3,9% e fechou a US$ 88,58 o barril apos mudanca de estrategia dos EUA.",
-      "source": "Barchart",
-      "date": "24 ago 2026",
-      "url": "https://www.barchart.com/story/news/822574/stocks-pressured-by-inflation-concerns-and-iran-war-jitters"
-    },
-    {
-      "region": "internacional",
-      "title": "Acoes de chips lideram queda no inicio da semana",
-      "resumo": "Sell-off no setor de semicondutores derrubou o S&P 500 na abertura da semana em Nova York.",
+      "title": "Bolsas americanas iniciam a semana em queda com venda em ações de chips",
+      "resumo": "O setor de semicondutores liderou as perdas e puxou o S&P 500 para baixo no pregão de segunda-feira.",
       "source": "CNBC",
       "date": "23 ago 2026",
       "url": "https://www.cnbc.com/2026/08/23/stock-market-today-live-updates.html"
+    },
+    {
+      "region": "internacional",
+      "title": "Juros globais elevados e petróleo caro pressionam o S&P 500 pelo terceiro dia",
+      "resumo": "Preocupações com déficit fiscal e inflação acima da meta do Fed mantiveram a volatilidade nos mercados acionários.",
+      "source": "CNBC",
+      "date": "17 ago 2026",
+      "url": "https://www.cnbc.com/2026/08/17/stock-market-today-live-updates.html"
     }
   ]
 }
