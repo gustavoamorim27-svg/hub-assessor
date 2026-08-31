@@ -1715,8 +1715,10 @@ html:not(.modo-simples):not(.theme-light) .home-wordmark,
 html:not(.modo-simples):not(.theme-light) .home-sub{
   text-shadow:0 1px 2px rgba(4,7,30,.55);
 }
-/* Cinza mais escuro da paleta so batia 3,6:1 ate sobre navy solido. */
-html:not(.modo-simples):not(.theme-light){ --cinza-2:#8E97C4; }
+/* O cinza #6F77A8 batia so 3,6:1 ate sobre navy solido. Trocado por um azul
+   da familia da marca (satur. 70% contra 31% do cinza), para o texto secundario
+   ficar no eixo azul/laranja/branco em vez de puxar para o neutro. */
+html:not(.modo-simples):not(.theme-light){ --cinza-2:#94ACEC; }
 </style>
 <style id="rico-logo-css">
 .rico-logo-svg{display:inline-block;vertical-align:baseline;height:1em;width:auto;line-height:0;}
@@ -1869,6 +1871,14 @@ html.modo-simples .card:hover{background:linear-gradient(160deg,rgba(28,36,112,.
 #painelOpcoes #btnPngPaleta,#painelOpcoes #btnModoSimples{width:100%;justify-content:flex-start;margin-left:0;border-radius:10px;padding:9px 12px;font-size:12px;}
 #painelOpcoes span.rot{display:inline !important;}
 @media (max-width:900px){ #btnOpcoes span.rot{display:none;} #btnOpcoes{padding:7px 10px;} }
+/* Opcoes saiu da barra do topo e passou a viver na home (onde ficava o seletor
+   de tema). A .home e flex column com align-items:center, entao o bloco ja
+   centraliza sozinho; so o menu suspenso precisa abrir centrado em vez de
+   alinhado a direita. */
+#p-home #areaOpcoes{ margin:-16px 0 40px; }
+#p-home #painelOpcoes{ right:auto; left:50%; transform:translateX(-50%); }
+#p-home #btnOpcoes{ padding:8px 16px; font-size:12.5px; }
+#p-home #btnOpcoes span.rot{ display:inline !important; }
 #btnPngPaleta,#btnModoSimples{display:inline-flex;align-items:center;gap:6px;flex-shrink:0;margin-left:14px;cursor:pointer;font-family:'Manrope',sans-serif;font-weight:700;font-size:11.5px;letter-spacing:.2px;color:#cfd4ef;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);border-radius:100px;padding:7px 13px;transition:all .15s;white-space:nowrap;}
 #btnPngPaleta:hover,#btnModoSimples:hover{color:#fff;background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.3);}
 html.modo-simples #btnModoSimples{background:rgba(242,101,34,.16);border-color:rgba(242,101,34,.45);color:#FF8B52;}
@@ -1939,15 +1949,6 @@ html.modo-simples #btnModoSimples{background:rgba(242,101,34,.16);border-color:r
   if(document.readyState==="loading") document.addEventListener("DOMContentLoaded", ligar);
 })();
 </script>
-  <div id="areaOpcoes">
-  <button id="btnOpcoes" type="button" title="Opções de exibição" aria-haspopup="true" aria-expanded="false"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-1.8-.3 1.6 1.6 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1A1.6 1.6 0 0 0 9 19.4a1.6 1.6 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.6 1.6 0 0 0 .3-1.8 1.6 1.6 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1A1.6 1.6 0 0 0 4.6 9a1.6 1.6 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.6 1.6 0 0 0 1.8.3H9a1.6 1.6 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.6 1.6 0 0 0 1 1.5 1.6 1.6 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0-.3 1.8V9a1.6 1.6 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.6 1.6 0 0 0-1.5 1z"/></svg><span class="rot">Opções</span></button>
-  <div id="painelOpcoes" hidden>
-    <div class="po-tit">Exibição</div>
-    <button id="btnModoSimples" type="button" title="Alterna entre o visual animado e um visual sobrio, sem distracoes"></button>
-    <button id="btnPngPaleta" type="button" title="Paleta usada nos PNGs gerados (clara ou escura)"></button>
-    <div class="po-nota">Preferências salvas neste navegador.</div>
-  </div>
-</div>
   <div class="g-ticker" id="gTicker" role="group" aria-label="Cotações de mercado">
     <div class="g-tk-item" id="tk-dolar"><span class="g-tk-lbl">Dólar</span><span class="g-tk-row"><span class="g-tk-val">—</span><span class="g-tk-chg flat"></span></span></div>
     <div class="g-tk-item" id="tk-sp500"><span class="g-tk-lbl">S&amp;P 500</span><span class="g-tk-row"><span class="g-tk-val">—</span><span class="g-tk-chg flat"></span></span></div>
@@ -2103,6 +2104,16 @@ html.modo-simples #btnModoSimples{background:rgba(242,101,34,.16);border-color:r
           <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>Claro
         </button>
       </div>
+  <div id="areaOpcoes">
+  <button id="btnOpcoes" type="button" title="Opções de exibição" aria-haspopup="true" aria-expanded="false"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-1.8-.3 1.6 1.6 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1A1.6 1.6 0 0 0 9 19.4a1.6 1.6 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.6 1.6 0 0 0 .3-1.8 1.6 1.6 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1A1.6 1.6 0 0 0 4.6 9a1.6 1.6 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.6 1.6 0 0 0 1.8.3H9a1.6 1.6 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.6 1.6 0 0 0 1 1.5 1.6 1.6 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0-.3 1.8V9a1.6 1.6 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.6 1.6 0 0 0-1.5 1z"/></svg><span class="rot">Opções</span></button>
+  <div id="painelOpcoes" hidden>
+    <div class="po-tit">Exibição</div>
+    <button id="btnModoSimples" type="button" title="Alterna entre o visual animado e um visual sobrio, sem distracoes"></button>
+    <button id="btnPngPaleta" type="button" title="Paleta usada nos PNGs gerados (clara ou escura)"></button>
+    <div class="po-nota">Preferências salvas neste navegador.</div>
+  </div>
+</div>
+
       <div class="home-grid">
         <div class="hcard" onclick="showPanel('construtor')">
           <div class="hcard-ic"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></div>
