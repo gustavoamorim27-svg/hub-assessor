@@ -5008,642 +5008,350 @@ html.theme-light .pm-alloc{ background:#fff; }
 })();
 </script>
 <div class="g-panel" id="p-holding" data-tool="holding">
-  <style>
-    #p-holding .hp-wrap{max-width:1400px;margin:0 auto;padding:6px 4px 40px;font-family:'Manrope',-apple-system,sans-serif;color:#EAECFB}
-    #p-holding .hp-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:18px}
-    #p-holding .hp-logo{font-family:'Sora',sans-serif;font-weight:800;font-size:19px;color:#F26522;letter-spacing:-.5px}
-    #p-holding .hp-sub{color:#9AA2D0;font-size:13px;line-height:1.5;margin-top:3px;max-width:640px}
-    #p-holding .hp-png{background:#F26522;color:#fff;border:none;font-family:'Sora',sans-serif;font-weight:700;font-size:13.5px;padding:11px 20px;border-radius:100px;cursor:pointer;white-space:nowrap}
-    #p-holding .hp-png:hover{filter:brightness(1.08)}
-    #p-holding .hp-grid{display:grid;grid-template-columns:340px 1fr;gap:18px;align-items:start}
-    @media(max-width:820px){#p-holding .hp-grid{grid-template-columns:1fr}}
-    #p-holding .hp-card{background:linear-gradient(160deg,#111845,#0C1138);border:1px solid rgba(120,130,210,.20);border-radius:16px;padding:18px 18px}
-    #p-holding .hp-card h3{font-family:'Sora',sans-serif;font-size:14px;font-weight:800;margin:0 0 14px;color:#fff;letter-spacing:.2px}
-    #p-holding .hp-field{margin-bottom:16px}
-    #p-holding .hp-field label{display:flex;justify-content:space-between;align-items:baseline;font-size:12px;color:#9AA2D0;font-weight:600;margin-bottom:6px}
-    #p-holding .hp-field label b{color:#F5B942;font-family:'Sora',sans-serif;font-size:13.5px}
-    #p-holding .hp-inp{width:100%;background:#0A0E3F;border:1px solid rgba(120,130,210,.28);border-radius:9px;color:#fff;font-family:'Manrope';font-size:14px;padding:10px 12px;outline:none;box-sizing:border-box}
-    #p-holding .hp-inp:focus{border-color:#F26522}
-    #p-holding input[type=range]{width:100%;accent-color:#F26522;margin-top:8px}
-    #p-holding .hp-seg{display:flex;gap:8px;margin-top:6px}
-    #p-holding .hp-seg button{flex:1;background:#0A0E3F;border:1px solid rgba(120,130,210,.28);color:#c8cdf0;font-family:'Sora';font-weight:700;font-size:12px;padding:9px 6px;border-radius:9px;cursor:pointer}
-    #p-holding .hp-seg button.on{background:#F26522;border-color:#F26522;color:#fff}
-    #p-holding .hp-block{margin-bottom:16px}
-    #p-holding .hp-blocktitle{display:flex;align-items:center;gap:8px;font-family:'Sora';font-size:12px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;color:#F26522;margin:2px 0 10px}
-    #p-holding .hp-blocktitle .n{width:20px;height:20px;border-radius:50%;background:rgba(242,101,34,.16);color:#F26522;display:inline-flex;align-items:center;justify-content:center;font-size:11px}
-    #p-holding table.hp-t{width:100%;border-collapse:collapse;font-size:13px}
-    #p-holding table.hp-t td{padding:8px 6px;border-bottom:1px solid rgba(120,130,210,.13);color:#DDE0F5}
-    #p-holding table.hp-t td.v{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap;color:#fff;font-weight:600}
-    #p-holding table.hp-t tr.tot td{border-top:1px solid rgba(242,101,34,.4);border-bottom:none;font-weight:800;color:#fff;padding-top:10px}
-    #p-holding table.hp-t tr.tot td.v{color:#F5B942;font-size:15px}
-    #p-holding .hp-kpis{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
-    #p-holding .hp-kpi{background:#0A0E3F;border:1px solid rgba(120,130,210,.18);border-radius:12px;padding:12px 14px}
-    #p-holding .hp-kpi .lbl{font-size:10.5px;color:#9AA2D0;text-transform:uppercase;letter-spacing:.5px;font-weight:700}
-    #p-holding .hp-kpi .val{font-family:'Sora';font-weight:800;font-size:18px;color:#fff;margin-top:4px}
-    #p-holding .hp-kpi .val.acc{color:#F5B942}
-    #p-holding .hp-succ{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px}
-    @media(max-width:680px){#p-holding .hp-succ{grid-template-columns:1fr}}
-    #p-holding .hp-scard{background:#0A0E3F;border:1px solid rgba(120,130,210,.2);border-radius:12px;padding:14px}
-    #p-holding .hp-scard.best{border-color:#2BD9A6}
-    #p-holding .hp-scard .st{font-family:'Sora';font-weight:800;font-size:13px;color:#fff}
-    #p-holding .hp-scard .sv{font-family:'Sora';font-weight:800;font-size:19px;margin:8px 0 4px}
-    #p-holding .hp-scard .sd{font-size:11.5px;color:#9AA2D0;line-height:1.5}
-    #p-holding .hp-badge{display:inline-block;font-size:9.5px;font-weight:800;letter-spacing:.4px;text-transform:uppercase;padding:2px 8px;border-radius:20px;margin-bottom:8px}
-    #p-holding .hp-badge.g{background:rgba(43,217,166,.16);color:#2BD9A6}
-    #p-holding .hp-badge.o{background:rgba(242,101,34,.16);color:#F26522}
-    #p-holding .hp-badge.r{background:rgba(248,113,113,.16);color:#F87171}
-    #p-holding .hp-note{background:rgba(245,185,66,.08);border-left:3px solid #F5B942;border-radius:0 8px 8px 0;padding:9px 12px;font-size:12px;color:#E7D9B4;line-height:1.5;margin:12px 0}
-    #p-holding .hp-ssub{font-size:10.5px;color:#9AA2D0;margin:-2px 0 6px;line-height:1.4}
-    #p-holding .hp-warn{font-size:11px;color:#F5B942;line-height:1.45;margin-top:9px;border-top:1px dashed rgba(245,185,66,.28);padding-top:7px}
-    #p-holding .hp-warn b{color:#F5B942}
-    #p-holding .hp-disc{color:#7A83AD;font-size:11px;line-height:1.55;margin-top:20px;border-top:1px solid rgba(120,130,210,.14);padding-top:14px}
-  </style>
+<style>
+  #p-holding .wl-toprow{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin:0 0 14px}
+  #p-holding .wl-switch{display:inline-flex;align-items:center;gap:9px;cursor:pointer;user-select:none;
+    background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.16);border-radius:100px;padding:8px 15px;
+    font-size:12.5px;font-weight:700;color:#cfd4ef;transition:all .15s}
+  #p-holding .wl-switch:hover{background:rgba(255,255,255,.11);color:#fff}
+  #p-holding .wl-switch input{appearance:none;width:34px;height:19px;border-radius:100px;background:rgba(255,255,255,.18);
+    position:relative;cursor:pointer;transition:background .18s;flex-shrink:0;margin:0}
+  #p-holding .wl-switch input::after{content:'';position:absolute;top:2.5px;left:2.5px;width:14px;height:14px;border-radius:50%;
+    background:#fff;transition:transform .18s}
+  #p-holding .wl-switch input:checked{background:#F26522}
+  #p-holding .wl-switch input:checked::after{transform:translateX(15px)}
+  #p-holding .wl-hero{display:grid;grid-template-columns:1.1fr 1fr 1fr;gap:12px;margin-bottom:16px}
+  #p-holding .wl-big{background:linear-gradient(150deg,rgba(242,101,34,.20),rgba(242,101,34,.06));
+    border:1px solid rgba(242,101,34,.42);border-radius:14px;padding:16px 18px}
+  #p-holding .wl-big .k{font-size:10px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;color:#FFB089;margin-bottom:6px}
+  #p-holding .wl-big .v{font-family:'Sora',sans-serif;font-size:38px;font-weight:800;color:#fff;line-height:1}
+  #p-holding .wl-big .s{font-size:11.5px;color:#94ACEC;margin-top:6px;line-height:1.45}
+  #p-holding .wl-meter{height:9px;border-radius:100px;background:rgba(255,255,255,.13);overflow:hidden;margin-top:11px}
+  #p-holding .wl-meter i{display:block;height:100%;border-radius:100px;background:linear-gradient(90deg,#F26522,#FF8B52);transition:width .35s}
+  #p-holding .wl-uf{font-size:11px;color:#94ACEC;margin-top:7px;line-height:1.45}
+  #p-holding .wl-flag{display:inline-block;background:rgba(245,185,66,.16);border:1px solid rgba(245,185,66,.4);
+    color:#F5B942;border-radius:6px;padding:1px 6px;font-size:9.5px;font-weight:800;margin-left:5px;vertical-align:middle}
+  #p-holding .wl-legal{font-size:11.5px;color:#94ACEC;line-height:1.6;background:rgba(255,255,255,.05);
+    border:1px solid rgba(255,255,255,.13);border-left:3px solid #F26522;border-radius:11px;padding:13px 15px;margin-bottom:16px}
+  #p-holding .wl-legal b{color:#fff}
+  #p-holding .hc-kpis{grid-template-columns:repeat(4,1fr)}
+  @media (max-width:1000px){ #p-holding .wl-hero{grid-template-columns:1fr} #p-holding .hc-kpis{grid-template-columns:repeat(2,1fr)} }
+</style>
 
-  <div class="hp-wrap">
-    <div class="hc-sec">
-  <style>
-    #p-holding .hc-sec{background:linear-gradient(160deg,#0d1240,#090d2e);border:1px solid rgba(242,101,34,.25);border-radius:18px;margin:2px 0 24px;padding:22px 24px;font-family:'Manrope',-apple-system,sans-serif;color:#EAECFB}
-    #p-holding .hc-sec *{box-sizing:border-box}
-    #p-holding .hc-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:16px}
-    #p-holding .hc-h{font-family:'Sora',sans-serif;font-weight:800;font-size:21px;color:#fff;margin:0 0 3px}
-    #p-holding .hc-h b{color:#F26522}
-    #p-holding .hc-hs{color:#9AA2D0;font-size:13px;margin:0;line-height:1.5;max-width:640px}
-    #p-holding .hc-actions{display:flex;gap:10px;flex-wrap:wrap}
-    #p-holding .hc-btn{background:#F26522;color:#fff;border:none;font-family:'Sora';font-weight:700;font-size:13px;padding:10px 18px;border-radius:100px;cursor:pointer;white-space:nowrap}
-    #p-holding .hc-btn:hover{filter:brightness(1.08)}
-    #p-holding .hc-btn.sec{background:rgba(255,255,255,.08);color:#cdd3e3;border:1px solid rgba(120,130,210,.28)}
-    #p-holding .hc-inputs{display:grid;grid-template-columns:repeat(4,1fr);gap:14px 18px;background:#0A0E3F;border:1px solid rgba(120,130,210,.18);border-radius:14px;padding:16px 18px;margin-bottom:16px}
-    @media(max-width:1024px){#p-holding .hc-inputs{grid-template-columns:repeat(2,1fr)}}
-    @media(max-width:560px){#p-holding .hc-inputs{grid-template-columns:1fr}}
-    #p-holding .hc-f label{display:flex;justify-content:space-between;align-items:baseline;font-size:12px;color:#9AA2D0;font-weight:600;margin-bottom:6px}
-    #p-holding .hc-f label b{color:#F5B942;font-weight:700;font-size:13px}
-    #p-holding .hc-f label .tip{color:#6b7392;cursor:help;font-size:10px;border:1px solid #3a4256;border-radius:50%;width:14px;height:14px;display:inline-flex;align-items:center;justify-content:center;margin-left:4px}
-    #p-holding .hc-sel{width:100%;background:#0f1330;border:1px solid rgba(120,130,210,.3);border-radius:9px;color:#fff;font-family:'Manrope';font-size:13px;padding:8px 10px;outline:none}
-    #p-holding .hc-sel:focus{border-color:#F26522}
-    #p-holding .hc-sec input[type=range]{width:100%;accent-color:#F26522;margin-top:3px}
-    #p-holding .hc-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
-    #p-holding .hc-f input[type=number]{width:100%;background:#0b1136;border:1px solid rgba(120,130,210,.3);color:#eaf0ff;border-radius:8px;padding:7px 9px;font-family:Manrope;font-size:13px}
-    #p-holding .hc-auto{cursor:pointer;font-size:10px;color:#5B8DEF;border:1px solid rgba(91,141,239,.45);border-radius:5px;padding:1px 6px;margin-left:6px;vertical-align:middle}
-    #p-holding .hc-pbrow{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:2px 0 16px}
-    @media(max-width:760px){#p-holding .hc-pbrow{grid-template-columns:1fr}}
-    #p-holding .hc-pbbox{background:#0A0E3F;border:1px solid rgba(120,130,210,.2);border-left:3px solid rgba(120,130,210,.45);border-radius:12px;padding:14px 16px}
-    #p-holding .hc-pbbox .pbt{font-family:'Sora';font-size:12px;font-weight:800;letter-spacing:.3px;text-transform:uppercase;margin-bottom:7px}
-    #p-holding .hc-pbbox .pbc{color:#c8cdf0;font-size:12.5px;line-height:1.55}
-    @media(max-width:1024px){#p-holding .hc-kpis{grid-template-columns:repeat(2,1fr)}}
-    @media(max-width:560px){#p-holding .hc-kpis{grid-template-columns:1fr 1fr}}
-    #p-holding .hc-kpi{background:#111845;border:1px solid rgba(120,130,210,.2);border-radius:12px;padding:12px 13px}
-    #p-holding .hc-kpi .k{font-size:9.5px;color:#9AA2D0;text-transform:uppercase;letter-spacing:.4px;font-weight:700;line-height:1.3}
-    #p-holding .hc-kpi .v{font-family:'Sora';font-weight:800;font-size:16.5px;margin-top:5px;color:#fff}
-    #p-holding .hc-kpi.o .v{color:#F26522}#p-holding .hc-kpi.g .v{color:#34D399}#p-holding .hc-kpi.y .v{color:#F5B942}#p-holding .hc-kpi.b .v{color:#5B8DEF}
-    #p-holding .hc-row2{display:grid;grid-template-columns:1.55fr 1fr;gap:16px;margin-bottom:16px}
-    @media(max-width:900px){#p-holding .hc-row2{grid-template-columns:1fr}}
-    #p-holding .hc-chartwrap{background:#111845;border:1px solid rgba(120,130,210,.2);border-radius:14px;padding:16px}
-    #p-holding .hc-chartwrap .ct{position:relative;height:330px}
-    #p-holding .hc-side{display:flex;flex-direction:column;gap:12px}
-    #p-holding .hc-score{background:#111845;border:1px solid rgba(120,130,210,.2);border-radius:12px;padding:13px 15px}
-    #p-holding .hc-score .st{font-family:'Sora';font-weight:700;font-size:13.5px;color:#fff;display:flex;justify-content:space-between;align-items:baseline}
-    #p-holding .hc-score .st .pts{font-weight:800;font-size:18px}
-    #p-holding .hc-bar{height:9px;background:#0A0E3F;border-radius:20px;margin:9px 0 6px;overflow:hidden}
-    #p-holding .hc-bar i{display:block;height:100%;border-radius:20px;transition:width .3s}
-    #p-holding .hc-score .lv{font-size:11px;font-weight:600}
-    #p-holding .hc-rec{background:rgba(242,101,34,.08);border:1px solid rgba(242,101,34,.2);border-left:3px solid #F26522;border-radius:0 12px 12px 0;padding:13px 15px;font-size:12.5px;line-height:1.55;color:#DDE0F5}
-    #p-holding .hc-rec b{color:#fff}
-    #p-holding table.hc-t{width:100%;border-collapse:collapse;font-size:12px}
-    #p-holding table.hc-t th{background:#0A0E3F;color:#9AA2D0;font-size:10px;text-transform:uppercase;letter-spacing:.3px;padding:8px;text-align:right;border-bottom:1px solid rgba(120,130,210,.2)}
-    #p-holding table.hc-t th:first-child,#p-holding table.hc-t td:first-child{text-align:left}
-    #p-holding table.hc-t td{padding:7px 8px;text-align:right;border-bottom:1px solid rgba(120,130,210,.1);color:#DFE3EF;font-variant-numeric:tabular-nums}
-    #p-holding .hc-tblwrap{background:#111845;border:1px solid rgba(120,130,210,.2);border-radius:14px;padding:6px 14px 12px;overflow-x:auto;margin-bottom:14px}
-    #p-holding .hc-tblwrap .tt{font-family:'Sora';font-size:11px;font-weight:800;letter-spacing:.4px;text-transform:uppercase;color:#F26522;padding:10px 2px 4px}
-    #p-holding .hc-disc2{color:#7A83AD;font-size:11px;line-height:1.5;border-top:1px solid rgba(120,130,210,.14);padding-top:12px}
-    @media print{ body *{visibility:hidden} #p-holding .hc-sec, #p-holding .hc-sec *{visibility:visible} #p-holding .hc-sec{position:absolute;left:0;top:0;width:100%} #p-holding .hc-actions{display:none} }
-  </style>
+<div class="hp-wrap">
+<div class="hc-sec">
 
   <div class="hc-head">
     <div>
-      <div class="hc-h">Sucessão &middot; <b>Holding × Whole Life</b></div>
-      <div class="hc-hs">Simule custo acumulado, payback e recomendação. Ajuste os campos — tudo recalcula em tempo real.</div>
+      <div class="hc-h">Sucessão &middot; <b>Whole Life &amp; ITCMD</b></div>
+      <div class="hc-hs">Quanto do patrimônio já está assegurado, e quanto custaria transmiti-lo hoje. Ajuste os campos — tudo recalcula em tempo real.</div>
     </div>
     <div class="hc-actions">
-      <button class="hc-btn" id="hcPngBtn">Gerar PNG</button>
+      <button class="hc-btn" id="wlPngBtn">Gerar PNG</button>
       <button class="hc-btn sec" onclick="window.print()">Exportar PDF</button>
     </div>
   </div>
 
   <div class="hc-inputs">
-    <div class="hc-f"><label>Patrimônio total <b id="hcPatrO">R$ 2.000.000</b></label><input type="range" id="hcPatr" min="500000" max="20000000" step="100000" value="2000000"></div>
-    <div class="hc-f"><label>% em imóveis <b id="hcImovO">70%</b></label><input type="range" id="hcImov" min="0" max="100" step="5" value="70"></div>
-    <div class="hc-f"><label>Aluguel mensal <b id="hcAlugO">R$ 10.000</b></label><input type="range" id="hcAlug" min="0" max="100000" step="1000" value="10000"></div>
-    <div class="hc-f"><label>Idade do titular <b id="hcIdadeO">45 anos</b></label><input type="range" id="hcIdade" min="25" max="75" step="1" value="45"></div>
-    <div class="hc-f"><label>Nº de herdeiros</label><select class="hc-sel" id="hcHerd"><option>0</option><option>1</option><option selected>2</option><option>3</option><option>4</option><option value="5">5+</option></select></div>
-    <div class="hc-f"><label>Estado do imóvel <span class="tip" title="ITBI varia por estado/município">?</span></label><select class="hc-sel" id="hcUF"></select></div>
-    <div class="hc-f"><label>Horizonte</label><select class="hc-sel" id="hcHor"><option value="5">5 anos</option><option value="10">10 anos</option><option value="15">15 anos</option><option value="20" selected>20 anos</option><option value="30">30 anos</option></select></div>
-    <div class="hc-f"><label>Objetivo principal</label><select class="hc-sel" id="hcObj"><option>Sucessão familiar</option><option>Proteção patrimonial</option><option>Eficiência tributária</option><option selected>Todos</option></select></div>
-    <div class="hc-f"><label>Parcela anual Whole Life <span id="hcParcAuto" class="hc-auto" title="voltar ao cálculo automático">auto</span></label><input type="number" id="hcParc" min="0" step="500" placeholder="auto"></div>
+    <div class="hc-f"><label>Patrimônio total <b id="wlPatrO">R$ 2.000.000</b></label><input type="range" id="wlPatr" min="200000" max="30000000" step="100000" value="2000000"></div>
+    <div class="hc-f"><label>Crescimento do patrimônio <b id="wlCresO">6,0% a.a.</b></label><input type="range" id="wlCres" min="0" max="15" step="0.5" value="6"></div>
+    <div class="hc-f"><label>Estado do titular <span class="tip" title="define a aliquota de ITCMD">?</span></label><select class="hc-sel" id="wlUF"></select></div>
+    <div class="hc-f"><label>Idade do titular <b id="wlIdadeO">45 anos</b></label><input type="range" id="wlIdade" min="25" max="75" step="1" value="45"></div>
+    <div class="hc-f"><label>Capital segurado Whole Life <b id="wlCobO">R$ 400.000</b></label><input type="range" id="wlCob" min="0" max="10000000" step="50000" value="400000"></div>
+    <div class="hc-f"><label>Prêmio anual <span id="wlParcAuto" class="hc-auto" title="voltar ao calculo automatico">auto</span></label><input type="number" id="wlParc" min="0" step="500" placeholder="auto"></div>
+    <div class="hc-f"><label>Forma do inventário</label><select class="hc-sel" id="wlInv"><option value="extra" selected>Extrajudicial (cartório)</option><option value="jud">Judicial consensual</option><option value="lit">Judicial litigioso</option></select></div>
+    <div class="hc-f"><label>Horizonte</label><select class="hc-sel" id="wlHor"><option value="10">10 anos</option><option value="15">15 anos</option><option value="20" selected>20 anos</option><option value="30">30 anos</option></select></div>
   </div>
 
-  <div class="hc-kpis">
-    <div class="hc-kpi o"><div class="k">Custo inicial Holding</div><div class="v" id="hcK1">—</div></div>
-    <div class="hc-kpi o"><div class="k">Custo total Holding <span id="hcK7h" style="opacity:.65"></span></div><div class="v" id="hcK7">—</div></div>
-    <div class="hc-kpi o"><div class="k">Custo Holding s/ receita <span id="hcK10h" style="opacity:.65"></span></div><div class="v" id="hcK10">—</div></div>
-    <div class="hc-kpi y"><div class="k">Payback da Holding</div><div class="v" id="hcK3">—</div></div>
-    <div class="hc-kpi g"><div class="k">Economia tributária/ano</div><div class="v" id="hcK4">—</div></div>
-    <div class="hc-kpi b"><div class="k">Prêmio anual Whole Life</div><div class="v" id="hcK2">—</div></div>
-    <div class="hc-kpi b"><div class="k">Cobertura Whole Life</div><div class="v" id="hcK5">—</div></div>
-    <div class="hc-kpi b"><div class="k">Resgate WL em 10 anos <span style="opacity:.65">(IPCA+3)</span></div><div class="v" id="hcK8">—</div></div>
-    <div class="hc-kpi y"><div class="k">Payback Whole Life <span style="opacity:.65">(resgate 10a)</span></div><div class="v" id="hcK9">—</div></div>
+  <div class="wl-toprow">
+    <label class="wl-switch"><input type="checkbox" id="wlTgITCMD" checked><span>Mostrar custo de inventário (ITCMD + custas + honorários)</span></label>
+    <label class="wl-switch"><input type="checkbox" id="wlTgResg" checked><span>Mostrar valor de resgate do Whole Life</span></label>
   </div>
 
-  <div class="hc-row2">
-    <div class="hc-chartwrap"><div class="ct"><canvas id="hcChart"></canvas></div></div>
-    <div class="hc-side">
-      <div class="hc-score"><div class="st">Holding Patrimonial <span class="pts" id="hcSHp">—</span></div><div class="hc-bar"><i id="hcSHb" style="background:#F26522;width:0"></i></div><div class="lv" id="hcSHl"></div></div>
-      <div class="hc-score"><div class="st">Whole Life <span class="pts" id="hcSWp">—</span></div><div class="hc-bar"><i id="hcSWb" style="background:#5B8DEF;width:0"></i></div><div class="lv" id="hcSWl"></div></div>
-      <div class="hc-rec" id="hcRec">—</div>
+  <div class="wl-hero">
+    <div class="wl-big">
+      <div class="k">Patrimônio assegurado</div>
+      <div class="v" id="wlPctSeg">—</div>
+      <div class="wl-meter"><i id="wlPctBar" style="width:0"></i></div>
+      <div class="s" id="wlPctSub">—</div>
+    </div>
+    <div class="hc-kpi o">
+      <div class="k">Custo de transmissão hoje</div><div class="v" id="wlKCusto">—</div>
+      <div class="wl-uf" id="wlKCustoSub">—</div>
+    </div>
+    <div class="hc-kpi b">
+      <div class="k">ITCMD do estado</div><div class="v" id="wlKItcmd">—</div>
+      <div class="wl-uf" id="wlKItcmdSub">—</div>
     </div>
   </div>
 
+  <div class="hc-kpis">
+    <div class="hc-kpi b"><div class="k">Capital segurado</div><div class="v" id="wlK1">—</div></div>
+    <div class="hc-kpi b"><div class="k">Prêmio anual <span style="opacity:.65">(10 anos)</span></div><div class="v" id="wlK2">—</div></div>
+    <div class="hc-kpi g"><div class="k">Cobertura do custo sucessório</div><div class="v" id="wlK3">—</div></div>
+    <div class="hc-kpi y"><div class="k">Resgate no horizonte <span style="opacity:.65">(IPCA+3)</span></div><div class="v" id="wlK4">—</div></div>
+    <div class="hc-kpi o"><div class="k">ITCMD estimado</div><div class="v" id="wlK5">—</div></div>
+    <div class="hc-kpi o"><div class="k">Honorários + custas</div><div class="v" id="wlK6">—</div></div>
+    <div class="hc-kpi b"><div class="k">Prêmios pagos <span style="opacity:.65">(total)</span></div><div class="v" id="wlK7">—</div></div>
+    <div class="hc-kpi y"><div class="k">Patrimônio no horizonte</div><div class="v" id="wlK8">—</div></div>
+  </div>
+
+  <div class="hc-row2">
+    <div class="hc-chartwrap"><div class="ct" style="height:340px"><canvas id="wlChart"></canvas></div></div>
+    <div class="hc-side">
+      <div class="hc-score"><div class="st">Patrimônio assegurado <span class="pts" id="wlSegP">—</span></div><div class="hc-bar"><i id="wlSegB" style="background:#F26522;width:0"></i></div><div class="lv" id="wlSegL"></div></div>
+      <div class="hc-score"><div class="st">Custo sucessório coberto <span class="pts" id="wlCovP">—</span></div><div class="hc-bar"><i id="wlCovB" style="background:#34D399;width:0"></i></div><div class="lv" id="wlCovL"></div></div>
+      <div class="hc-rec" id="wlRec">—</div>
+    </div>
+  </div>
+
+  <div class="wl-legal">
+    <b>Por que o Whole Life não entra na conta do inventário:</b> o capital segurado pago por morte não é considerado herança
+    (<b>Código Civil, art. 794</b>, reforçado pelo <b>art. 116 da Lei 15.040/2024</b>, o Marco Legal dos Seguros). Vai direto ao
+    beneficiário indicado, sem inventário, sem ITCMD e sem esperar a partilha. No mesmo sentido, o <b>STF fixou no Tema 1214</b>
+    (RE 1.363.013, dez/2024) que é inconstitucional cobrar ITCMD sobre o repasse de VGBL e PGBL por morte do titular.
+  </div>
+
   <div class="hc-tblwrap">
-    <div class="tt">Custo acumulado ano a ano</div>
-    <table class="hc-t"><thead><tr><th>Ano</th><th>Holding bruto</th><th>Holding líquido</th><th>Prêmios pagos</th><th>Resgate (IPCA+3)</th><th>Saldo (resgate − pago)</th></tr></thead><tbody id="hcTbody"></tbody></table>
+    <div class="tt">Ano a ano</div>
+    <table class="hc-t"><thead><tr><th>Ano</th><th>Patrimônio</th><th>Capital segurado</th><th>% assegurado</th><th>Custo de inventário</th><th>Resgate WL</th><th>Prêmios pagos</th></tr></thead><tbody id="wlTbody"></tbody></table>
   </div>
 
   <div class="hc-pbrow">
-    <div class="hc-pbbox"><div class="pbt" style="color:#F26522">Como ler o Payback da Holding</div><div class="pbc" id="hcPbH">—</div></div>
-    <div class="hc-pbbox"><div class="pbt" style="color:#F5B942">Como ler o Payback do Whole Life</div><div class="pbc" id="hcPbW">—</div></div>
+    <div class="hc-pbbox"><div class="pbt" style="color:#F26522">Como ler o patrimônio assegurado</div><div class="pbc" id="wlPb1">—</div></div>
+    <div class="hc-pbbox"><div class="pbt" style="color:#F5B942">Como ler o custo de inventário</div><div class="pbc" id="wlPb2">—</div></div>
   </div>
 
-  <div class="hc-disc2">Ferramenta educacional; não substitui a orientação de um assessor habilitado. ITBI, ITCMD e a tributação variam por estado/município; prêmios de seguro dependem de subscrição e idade. O resgate do Whole Life é corrigido por IPCA+3% a.a.; a parcela é paga por 10 anos e, a partir do 10º ano, o resgate já devolve ~o valor aportado. Valores ilustrativos.</div>
+  <div class="hc-disc2">Ferramenta educacional de apoio comercial; não substitui a orientação de um assessor habilitado nem de um advogado.
+  As alíquotas de ITCMD são estimativas por faixa (cálculo marginal) e mudam por lei estadual — confirme na SEFAZ do estado antes de
+  usar com o cliente. A EC 132/2023 e a LC 227/2026 tornaram a progressividade obrigatória, mas leis estaduais publicadas em 2026 só
+  produzem efeito em 2027, então vários estados ainda cobram alíquota fixa. Honorários advocatícios seguem tabelas referenciais da OAB
+  (negociáveis) e custas variam por estado. Prêmios de seguro dependem de subscrição, idade e condições de saúde. O resgate do Whole Life
+  é ilustrado a IPCA+3% a.a. com prêmio pago por 10 anos. Valores ilustrativos.</div>
+
+</div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <script>
 (function(){
-  function el(id){ return document.getElementById(id); }
-  function brl(v){ return 'R$ '+Math.round(Number(v)||0).toLocaleString('pt-BR'); }
-  var UFS=['AC','AL','AP','AM','BA','CE','DF','ES','GO','MA','MT','MS','MG','PA','PB','PR','PE','PI','RJ','RN','RS','RO','RR','SC','SP','SE','TO'];
-  var ITBI={SP:3,RJ:3,MG:3,ES:3,PR:2,SC:2,RS:2,BA:2.5,CE:2.5,PE:2.5,MA:2.5,PB:2.5,RN:2.5,AL:2.5,SE:2.5,PI:2.5,AM:3,PA:3,RO:3,RR:3,AP:3,AC:3,TO:3,MT:3,MS:3,GO:3,DF:3};
+  "use strict";
+  /* ================= ITCMD por UF =================================================
+     Faixas MARGINAIS (a aliquota incide so sobre a parcela dentro da faixa), que e
+     como a maioria das leis estaduais progressivas funciona e como a LC 227/2026
+     padronizou. Estados com formula de deducao (GO, PE) sao equivalentes a isso.
+     conf: 'ok'      -> amarrado a texto legal ou portal oficial
+           'media'   -> fonte secundaria confiavel, faixas a reconferir
+           'conf'    -> NAO confirmado; usa aliquota de referencia e avisa na tela
+     Leis estaduais publicadas em 2026 so valem em 2027 (anterioridade). ============ */
+  var INF=Infinity;
+  var ITCMD={
+    AC:{f:[[50000,0],[1500000,4],[2500000,5],[3500000,6],[INF,7]],c:'ok',n:'LC 373/2020. Colaterais: 8%.'},
+    AL:{f:[[INF,4]],c:'ok',n:'Aliquota fixa (Lei 5.077/1989). Progressividade prevista para 2027.'},
+    AP:{f:[[INF,4]],c:'conf',n:'Nao confirmado. Base historica 4% fixa; ha noticia de progressividade 2-6% (Lei 3.149/2024) sem fonte primaria.'},
+    AM:{f:[[400000,0],[2000000,2],[6000000,3],[INF,4]],c:'ok',n:'LC 269/2024. Heranca isenta ate R$ 400 mil.'},
+    BA:{f:[[100000,0],[200000,4],[300000,6],[INF,8]],c:'ok',n:'Lei 14.802/2024.'},
+    CE:{f:[[29000,2],[87000,4],[174000,6],[INF,8]],c:'media',t:1,n:'Faixas em UFIRCE (2026 = R$ 6,29872). Atencao: no CE a aliquota incide sobre o TOTAL, nao por faixa.'},
+    DF:{f:[[1000000,4],[2000000,5],[INF,6]],c:'ok',n:'Lei 3.804/2006 c/ Lei 5.549/2015.'},
+    ES:{f:[[INF,4]],c:'ok',n:'Aliquota fixa (Lei 10.011/2013).'},
+    GO:{f:[[25000,2],[200000,4],[600000,6],[INF,8]],c:'ok',n:'Lei 11.651/1991.'},
+    MA:{f:[[300000,3],[600000,4],[900000,5],[1200000,6],[INF,7]],c:'media',n:'Lei 7.799/2002. Faixas aproximadas — reconferir na SEFAZ.'},
+    MT:{f:[[395670,0],[1055120,2],[2110240,4],[4220480,6],[INF,8]],c:'ok',n:'Faixas em UPF/MT (ago-2026 = R$ 263,78). Isento ate 1.500 UPF.'},
+    MS:{f:[[100000,0],[INF,6]],c:'ok',n:'Aliquota fixa 6% (Lei 1.810/1997). Isento ate R$ 100 mil.'},
+    MG:{f:[[INF,5]],c:'ok',n:'Aliquota fixa 5% (Lei 14.941/2003). PL 2.881/2024 (3/5/8%) em tramitacao.'},
+    PA:{f:[[INF,4]],c:'conf',n:'Progressiva 2-6% em UPF-PA (Lei 5.529/1989), mas o valor da UPF-PA 2026 nao foi confirmado. Usando 4% como referencia.'},
+    PB:{f:[[125000,2],[400000,4],[1000000,6],[INF,8]],c:'ok',n:'Lei 5.123/1989, red. Lei 12.585/2023.'},
+    PR:{f:[[INF,4]],c:'ok',n:'Aliquota fixa (Lei 18.573/2015).'},
+    PE:{f:[[80000,0],[350000,2],[550000,4],[750000,6],[INF,8]],c:'ok',n:'LC 563/2025, vigente desde 01/01/2026.'},
+    PI:{f:[[INF,4]],c:'conf',n:'Progressiva 2-6% (Lei 4.261/1989), faixas nao confirmadas. Usando 4% como referencia.'},
+    RJ:{f:[[347228,4],[496040,4.5],[992080,5],[1488120,6],[1984160,7],[INF,8]],c:'ok',n:'Faixas em UFIR-RJ (2026 = R$ 4,9604). Lei 7.174/2015.'},
+    RN:{f:[[INF,3]],c:'conf',n:'Base confirmada: 3% unica (Lei 5.887/1989). Alteracao para 3-6% nao confirmada.'},
+    RS:{f:[[56653,0],[283264,3],[849792,4],[1416320,5],[INF,6]],c:'ok',n:'Faixas em UPF-RS (2026 = R$ 28,3264). Isento ate 2.000 UPF.'},
+    RO:{f:[[155575,2],[767918,3],[INF,4]],c:'media',n:'Faixas em UPF/RO (2026 = R$ 124,46). Lei 959/2000.'},
+    RR:{f:[[INF,4]],c:'media',n:'Aliquota fixa 4% (Lei 59/1993).'},
+    SC:{f:[[20000,1],[50000,3],[150000,5],[INF,7]],c:'ok',n:'Lei 19.053/2024 revogou a faixa de 8%.'},
+    SP:{f:[[INF,4]],c:'ok',n:'Aliquota fixa 4% (Lei 10.705/2000). PLs de progressividade so valeriam a partir de 2027.'},
+    SE:{f:[[41240,0],[199354,3],[996853,6],[INF,8]],c:'ok',n:'Faixas em UFP/SE (mai-2026 = R$ 82,48, reajuste mensal).'},
+    TO:{f:[[25000,2],[100000,4],[500000,6],[INF,8]],c:'media',n:'Lei 1.287/2001. Faixas aproximadas — fontes divergentes.'}
+  };
+  var UFS=Object.keys(ITCMD).sort();
+
+  function itcmd(base, uf){
+    var t=ITCMD[uf]; if(!t||base<=0) return {v:0,ef:0};
+    if(t.t){ /* aliquota unica sobre o total (CE) */
+      var a=t.f[t.f.length-1][1];
+      for(var q=0;q<t.f.length;q++){ if(base<=t.f[q][0]){ a=t.f[q][1]; break; } }
+      return {v:base*a/100, ef:a};
+    }
+    var v=0, ant=0;
+    for(var i=0;i<t.f.length;i++){
+      var lim=t.f[i][0], al=t.f[i][1];
+      if(base>ant){ v+=(Math.min(base,lim)-ant)*al/100; }
+      ant=lim; if(base<=lim) break;
+    }
+    return {v:v, ef: base>0 ? v/base*100 : 0};
+  }
+  function faixaTxt(uf){
+    var t=ITCMD[uf]; if(!t) return '';
+    if(t.f.length===1) return t.f[0][1].toString().replace('.',',')+'% fixo';
+    /* a faixa isenta nao conta como "aliquota minima": MS, BA, PE e RS tem banda de
+       isencao no inicio, e mostrar "0% a 6%" daria a impressao errada de progressividade. */
+    var r=t.f.map(function(x){return x[1];}).filter(function(a){return a>0;});
+    var mn=Math.min.apply(null,r), mx=Math.max.apply(null,r);
+    var isento = t.f[0][1]===0 ? ' &middot; isento ate '+brlK(t.f[0][0]) : '';
+    if(mn===mx) return String(mn).replace('.',',')+'% fixo'+isento;
+    return String(mn).replace('.',',')+'% a '+String(mx).replace('.',',')+'% (progressivo)'+isento;
+  }
+
+  /* custos de inventario alem do ITCMD (tabelas OAB sao referenciais/negociaveis) */
+  var INV={ extra:{h:5,c:0.8,r:'Extrajudicial (cartorio)',p:'30 a 90 dias'},
+            jud:  {h:8,c:2.0,r:'Judicial consensual',     p:'6 meses a 2 anos'},
+            lit:  {h:10,c:2.5,r:'Judicial litigioso',      p:'2 anos ou mais'} };
+
   var IDADE=[[36,1.0],[40,1.15],[45,1.4],[50,1.7],[55,2.1],[60,2.6],[65,3.2],[70,4.0],[75,4.8]];
   function fatorIdade(a){ for(var i=0;i<IDADE.length;i++){ if(a<=IDADE[i][0]) return IDADE[i][1]; } return 5.5; }
-  var CHART=null;
-  var IPCA=0.045, RES_R=IPCA+0.03; /* correcao do resgate WL: IPCA (~4,5%) + 3% a.a. = 7,5% */
-  var ST={patr:2000000,imov:70,alug:10000,herd:2,uf:'SP',hor:20,obj:'Todos',idade:45,parcelaWL:null};
+  var IPCA=0.045, RES_R=IPCA+0.03;
 
-  function calc(){
-    var valImov=ST.patr*ST.imov/100, itbiP=ITBI[ST.uf]||3;
-    var hon; if(ST.patr<=1000000)hon=8000; else if(ST.patr<=3000000)hon=20000; else if(ST.patr<=7000000)hon=40000; else hon=70000;
-    var custoInicial=valImov*itbiP/100+valImov*0.0075+hon+3000+1200;
-    var manutAno=ST.alug>0?24000:12000, econAno=ST.alug*12*(0.275-0.1453), custoLiqAno=manutAno-econAno;
-    var netBenefAno=econAno-manutAno;                 /* beneficio liquido anual: economia tributaria menos o custo recorrente de manutencao da PJ */
-    var payback=netBenefAno>0?custoInicial/netBenefAno:null; /* so ha payback se a economia superar a manutencao */
-    var cobertura=ST.patr*0.20;                         /* capital segurado = 20% do patrimonio (liquidez sucessoria) */
-    var premioAuto=cobertura*0.037*fatorIdade(ST.idade); /* premio nivelado — ancora real XP Toda Vida (3,70%/ano aos 36) */
-    var premioAno=(ST.parcelaWL!=null&&ST.parcelaWL>0)?ST.parcelaWL:premioAuto; /* parcela anual EDITAVEL pelo usuario */
-    /* resgate: curva real XP nos 10 primeiros anos; apos a quitacao a reserva e CORRIGIDA por IPCA+3 (RES_R) */
-    /* resgate = aportes corrigidos por IPCA+3 (acumulacao): sempre >= o valor aportado, pela estrategia */
-    function wlRes(n){ var bal=0; for(var y=1;y<=n;y++){ if(y<=10) bal+=premioAno; bal*=(1+RES_R); } return bal; }
-    var anos=[],hBruto=[],hLiq=[],wlBruto=[],wlResg=[],wlLiq=[];
-    for(var n=0;n<=ST.hor;n++){ anos.push(n);
-      hBruto.push(custoInicial+manutAno*n); hLiq.push(custoInicial+custoLiqAno*n);
-      var pagos=premioAno*Math.min(n,10), resg=wlRes(n);   /* premios cessam apos 10 anos (10-pay) */
-      wlBruto.push(pagos); wlResg.push(resg); wlLiq.push(Math.max(0,pagos-resg)); }
-    /* custo TOTAL da holding no horizonte = abertura + aportes mensais de manutencao acumulados */
-    var custoTotalHolding=custoInicial+manutAno*ST.hor;
-    /* custo da holding SEM receita recorrente: sem aluguel nao ha lucro na PJ nem economia tributaria — holding vira custo puro (manutencao minima) */
-    var manutSemReceita=12000, custoSemReceita=custoInicial+manutSemReceita*ST.hor;
-    /* payback WL: o resgate e feito a partir de 10 anos (quitacao), devolvendo ao investidor ~o valor aportado */
-    var wlPb=10; /* resgate disponivel a partir de 10 anos (quitacao): valor devolvido ao investidor */
-    var resg10=wlRes(10), premios10=premioAno*10;
-    return {custoInicial:custoInicial,econAno:econAno,custoLiqAno:custoLiqAno,payback:payback,premioAno:premioAno,premioAuto:premioAuto,cobertura:cobertura,
-            custoTotalHolding:custoTotalHolding,custoSemReceita:custoSemReceita,manutSemReceita:manutSemReceita,manutAno:manutAno,netBenefAno:netBenefAno,wlPb:wlPb,resg10:resg10,premios10:premios10,
-            anos:anos,hBruto:hBruto,hLiq:hLiq,wlBruto:wlBruto,wlResg:wlResg,wlLiq:wlLiq};
-  }
-  function scores(){
-    var h=0; if(ST.patr>2000000)h+=20; if(ST.imov>50)h+=20; if(ST.alug>5000)h+=20; if(ST.herd>=2)h+=20; if(ST.hor>=10)h+=10;
-    if(ST.obj==='Sucessão familiar'||ST.obj==='Eficiência tributária'||ST.obj==='Todos')h+=10;
-    var w=0; if(ST.patr<2000000)w+=25; if(ST.alug===0)w+=20; if(ST.herd<=1)w+=20; if(ST.idade<45)w+=20; if(ST.obj==='Proteção patrimonial')w+=15;
-    return {h:Math.min(100,h),w:Math.min(100,w)};
-  }
-  function nivel(s){ return s<=40?['Pouco indicado','#F26522']:(s<=70?['Moderadamente indicado','#F5B942']:['Altamente recomendado','#34D399']); }
-
-  function render(){
-    var d=calc(), sc=scores();
-    el('hcK1').textContent=brl(d.custoInicial); el('hcK2').textContent=brl(d.premioAno);
-    el('hcK3').innerHTML=d.payback?(d.payback.toFixed(1)+' anos'):'<span style="font-size:12px">n/a &middot; manut. &gt; economia</span>'; el('hcK4').textContent=brl(d.econAno);
-    el('hcK5').textContent=brl(d.cobertura);
-    el('hcK7').textContent=brl(d.custoTotalHolding); el('hcK7h').textContent='('+ST.hor+'a)';
-    el('hcK10').textContent=brl(d.custoSemReceita); el('hcK10h').textContent='('+ST.hor+'a)';
-    el('hcK8').textContent=brl(d.resg10); el('hcK9').textContent=d.wlPb?('~'+d.wlPb+' anos'):'—';
-    var pc=el('hcParc'); if(pc && ST.parcelaWL==null && document.activeElement!==pc) pc.value=Math.round(d.premioAuto);
-    el('hcPbH').innerHTML='O payback da Holding é o tempo para o <b>benefício líquido</b> — economia tributária <b>menos</b> o custo recorrente de manutenção da PJ — cobrir o custo de abertura. Aqui: economia de '+brl(d.econAno)+'/ano &minus; manutenção de '+brl(d.manutAno)+'/ano = <b>'+brl(d.netBenefAno)+'/ano</b>; custo inicial '+brl(d.custoInicial)+' ÷ esse líquido = <b>'+(d.payback?d.payback.toFixed(1)+' anos':'não se paga pela via tributária')+'</b>. A manutenção é permanente enquanto a PJ existir, então entra na conta e no custo total (<b>'+brl(d.custoTotalHolding)+'</b> em '+ST.hor+' anos). Sem receita de aluguel não há economia e a holding vira custo puro ('+brl(d.custoSemReceita)+') — justificada só pela organização sucessória.';
-    el('hcPbW').innerHTML='O prêmio é pago por <b>10 anos</b> e cessa. O <b>resgate é corrigido por IPCA+3</b> e acompanha os aportes, por isso fica <b>sempre igual ou acima do valor aportado</b>. No <b>10º ano</b>, quando a parcela é quitada, o resgate já vale <b>'+brl(d.resg10)+'</b> contra '+brl(d.premios10)+' aportados (payback ~'+d.wlPb+' anos) e segue crescendo. E o principal: além do resgate, o cliente carrega a <b>cobertura de '+brl(d.cobertura)+'</b>, isenta e fora do inventário, desde o 1º ano.';
-    el('hcSHp').textContent=sc.h; el('hcSHb').style.width=sc.h+'%'; var nh=nivel(sc.h); el('hcSHl').textContent=nh[0]; el('hcSHl').style.color=nh[1]; el('hcSHb').style.background=nh[1];
-    el('hcSWp').textContent=sc.w; el('hcSWb').style.width=sc.w+'%'; var nw=nivel(sc.w); el('hcSWl').textContent=nw[0]; el('hcSWl').style.color=nw[1]; el('hcSWb').style.background=nw[1];
-    var rec;
-    var combo='<b>Recomendado para o seu perfil: Holding Patrimonial + Whole Life.</b> Com patrimônio de '+brl(ST.patr)+' ('+ST.imov+'% em imóveis'+(ST.alug>0?(' e aluguel de '+brl(ST.alug)+'/mês'):'')+'), a <b>Holding</b> organiza a eficiência tributária e a sucessão dos imóveis — pagando-se em ~'+(d.payback?d.payback.toFixed(1)+' anos':'—')+' pela economia — enquanto o <b>Whole Life</b> garante liquidez imediata (cobertura '+brl(d.cobertura)+', isenta e fora do inventário) para os '+ST.herd+' herdeiro(s) quitarem os custos sucessórios sem precisar vender bens. As duas estruturas se complementam: uma reduz o custo de manter e transmitir o patrimônio, a outra entrega o caixa no momento da sucessão.';
-    if(sc.w>sc.h+15) rec='<b>Perfil mais aderente ao Whole Life.</b> Com '+(ST.patr<2000000?'patrimônio menor':'poucos imóveis/aluguel')+' e foco em proteção/liquidez, o seguro entrega cobertura de '+brl(d.cobertura)+' com prêmio de '+brl(d.premioAno)+'/ano (pago em 10 anos) — sem o custo de abrir e manter uma holding. Uma holding só passa a compensar se surgir renda de aluguel ou mais imóveis a transmitir.';
-    else rec=combo;
-    el('hcRec').innerHTML=rec;
-    var alvos=[1,2,3,5,10,15,20,25,30].filter(function(a){return a<=ST.hor;});
-    el('hcTbody').innerHTML=alvos.map(function(a){ return '<tr><td>'+a+'</td><td>'+brl(d.hBruto[a])+'</td><td>'+brl(d.hLiq[a])+'</td><td>'+brl(d.wlBruto[a])+'</td><td>'+brl(d.wlResg[a])+'</td><td>'+brl(d.wlResg[a]-d.wlBruto[a])+'</td></tr>'; }).join('');
-    desenharGrafico(d);
-  }
-  var paybackPlugin={ id:'pb', afterDraw:function(ch){ var ms=ch.$marks; if(!ms) return; var sx=ch.scales.x, ctx=ch.ctx, ca=ch.chartArea;
-    ms.forEach(function(m){ if(m.x==null||m.x<=0||m.x>sx.max) return; var x=sx.getPixelForValue(m.x);
-      ctx.save(); ctx.strokeStyle=m.color; ctx.setLineDash([6,4]); ctx.lineWidth=2;
-      ctx.beginPath(); ctx.moveTo(x,ca.top); ctx.lineTo(x,ca.bottom); ctx.stroke(); ctx.setLineDash([]);
-      ctx.fillStyle=m.color; ctx.font='700 10.5px Sora,sans-serif'; ctx.fillText(m.label, Math.min(x+4,ca.right-104), ca.top+m.y); ctx.restore(); }); } };
-  function desenharGrafico(d){
-    var cv=el('hcChart'); if(!cv||typeof Chart==='undefined') return;
-    if(CHART){ CHART.destroy(); CHART=null; }
-    CHART=new Chart(cv.getContext('2d'),{ type:'line',
-      data:{ labels:d.anos, datasets:[
-        {label:'Holding — custo total (c/ manutenção)', data:d.hBruto, borderColor:'#F26522', backgroundColor:'transparent', tension:.25, pointRadius:0, borderWidth:2.5},
-        {label:'Holding — líquido (c/ economia tributária)', data:d.hLiq, borderColor:'#34D399', backgroundColor:'transparent', borderDash:[6,4], tension:.25, pointRadius:0, borderWidth:2},
-        {label:'Whole Life — prêmios pagos', data:d.wlBruto, borderColor:'#5B8DEF', backgroundColor:'transparent', borderDash:[6,4], tension:.25, pointRadius:0, borderWidth:2},
-        {label:'Whole Life — resgate (IPCA+3)', data:d.wlResg, borderColor:'#F5B942', backgroundColor:'transparent', tension:.25, pointRadius:0, borderWidth:2.5} ]},
-      options:{ responsive:true, maintainAspectRatio:false, interaction:{mode:'index',intersect:false},
-        plugins:{ legend:{labels:{color:'#c8cdf0',font:{family:'Manrope',size:11},boxWidth:14}}, tooltip:{callbacks:{label:function(c){return c.dataset.label+': '+brl(c.parsed.y);}}} },
-        scales:{ x:{title:{display:true,text:'Anos',color:'#9AA2D0'},ticks:{color:'#9AA2D0'},grid:{color:'rgba(120,130,210,.12)'}},
-          y:{ticks:{color:'#9AA2D0',callback:function(v){return 'R$ '+(v/1000)+'k';}},grid:{color:'rgba(120,130,210,.12)'}} } },
-      plugins:[paybackPlugin] });
-    CHART.$marks=[ {x:d.payback,color:'#F26522',label:'Payback Holding '+(d.payback?d.payback.toFixed(1)+'a':''),y:13},
-                   {x:d.wlPb,color:'#F5B942',label:'Payback WL '+(d.wlPb?d.wlPb+'a':''),y:28} ];
-    CHART.update();
-  }
-  function loadH2C(cb){ if(window.html2canvas){cb(window.html2canvas);return;} var sc=document.createElement('script'); sc.src='https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js'; sc.onload=function(){cb(window.html2canvas);}; sc.onerror=function(){cb(null);}; document.head.appendChild(sc); }
-  function gerarPNGhc(){
-    var target=document.querySelector('#p-holding .hc-sec'), acts=target?target.querySelector('.hc-actions'):null;
-    var btn=el('hcPngBtn'); if(btn){ btn.disabled=true; btn.textContent='Gerando…'; }
-    loadH2C(function(h2c){
-      if(!h2c){ if(btn){btn.disabled=false;btn.textContent='Gerar PNG';} alert('Não consegui carregar o gerador de imagem.'); return; }
-      if(acts) acts.style.visibility='hidden';
-      setTimeout(function(){
-        h2c(target,{backgroundColor:'#0b1038',scale:2}).then(function(canvas){
-          if(acts) acts.style.visibility='';
-          if(btn){ btn.disabled=false; btn.textContent='Gerar PNG'; }
-          var url=canvas.toDataURL('image/png');
-          if(window.mostrarPngModal) window.mostrarPngModal(url,'Comparativo Sucessão.png',{accent:'#F26522',hint:'Baixe ou copie para enviar ao cliente.'});
-          else { var a=document.createElement('a'); a.href=url; a.download='Comparativo Sucessão.png'; a.click(); }
-        }).catch(function(){ if(acts) acts.style.visibility=''; if(btn){btn.disabled=false;btn.textContent='Gerar PNG';} });
-      },80);
-    });
-  }
-  function bind(){
-    if(!el('hcPatr')) return;
-    var ufsel=el('hcUF'); if(ufsel && !ufsel.options.length){ UFS.forEach(function(u){ var o=document.createElement('option'); o.value=u; o.textContent=u; if(u==='SP')o.selected=true; ufsel.appendChild(o); }); }
-    el('hcPatr').oninput=function(){ ST.patr=+this.value; el('hcPatrO').textContent=brl(ST.patr); render(); };
-    el('hcImov').oninput=function(){ ST.imov=+this.value; el('hcImovO').textContent=ST.imov+'%'; render(); };
-    el('hcAlug').oninput=function(){ ST.alug=+this.value; el('hcAlugO').textContent=brl(ST.alug); render(); };
-    el('hcIdade').oninput=function(){ ST.idade=+this.value; el('hcIdadeO').textContent=ST.idade+' anos'; render(); };
-    el('hcHerd').onchange=function(){ ST.herd=+this.value; render(); };
-    el('hcUF').onchange=function(){ ST.uf=this.value; render(); };
-    el('hcHor').onchange=function(){ ST.hor=+this.value; render(); };
-    el('hcObj').onchange=function(){ ST.obj=this.value; render(); };
-    var pc=el('hcParc'); if(pc) pc.oninput=function(){ ST.parcelaWL = (this.value===''?null:+this.value); render(); };
-    var pa=el('hcParcAuto'); if(pa) pa.onclick=function(){ ST.parcelaWL=null; render(); };
-    var pb=el('hcPngBtn'); if(pb) pb.onclick=gerarPNGhc;
-    render();
-  }
-  window.gerarPNGhc=gerarPNGhc;
-  window.__hcBind=bind;
-  if(document.readyState==='loading'){ document.addEventListener('DOMContentLoaded', bind); } else { setTimeout(bind,60); }
-})();
-</script>
-
-    <div class="hp-head">
-      <div>
-        <div class="hp-logo">rico &middot; Suces&atilde;o Patrimonial</div>
-        <div class="hp-sub">Estimativa de custos para constituir uma holding de imóveis. Ajuste o patrimônio e as alíquotas — tudo recalcula na hora. Valores são estimativas de mercado e variam por município e estado.</div>
-      </div>
-      <button class="hp-png" id="hpPng">Gerar PNG</button>
-    </div>
-
-    <div class="hp-grid">
-      <div class="hp-card">
-        <h3>Parâmetros</h3>
-        <div class="hp-field">
-          <label>Patrimônio em imóveis <b id="hpPatrOut">R$ 2.000.000</b></label>
-          <input class="hp-inp" id="hpPatr" inputmode="numeric" value="R$ 2.000.000">
-          <input type="range" id="hpPatrR" min="200000" max="20000000" step="100000" value="2000000">
-        </div>
-        <div class="hp-field">
-          <label>Alíquota do ITBI <b id="hpItbiOut">3,0%</b></label>
-          <input type="range" id="hpItbi" min="2" max="4" step="0.1" value="3">
-        </div>
-        <div class="hp-field">
-          <label>Alíquota do ITCMD (sucessão) <b id="hpItcmdOut">4,0%</b></label>
-          <input type="range" id="hpItcmd" min="2" max="8" step="0.1" value="4">
-        </div>
-        <div class="hp-field">
-          <label>Receita de aluguel (mensal) <b id="hpAlugOut">R$ 10.000</b></label>
-          <input class="hp-inp" id="hpAlug" inputmode="numeric" value="R$ 10.000">
-          <input type="range" id="hpAlugR" min="0" max="100000" step="1000" value="10000">
-        </div>
-        <div class="hp-field">
-          <label>Cobertura do seguro (% do patrimônio) <b id="hpCobOut">20%</b></label>
-          <input type="range" id="hpCob" min="0" max="100" step="5" value="20">
-        </div>
-        <div class="hp-field">
-          <label>Cenário de abertura</label>
-          <div class="hp-seg" id="hpCen">
-            <button data-c="simples" class="on">Simples</button>
-            <button data-c="estrut">Estruturada / sucessória</button>
-          </div>
-        </div>
-      </div>
-
-      <div>
-        <div class="hp-card" style="margin-bottom:16px">
-          <div class="hp-kpis">
-            <div class="hp-kpi"><div class="lbl">Custo inicial (abertura + transferência)</div><div class="val acc" id="hpKInic">—</div></div>
-            <div class="hp-kpi"><div class="lbl">Manutenção anual</div><div class="val" id="hpKManut">—</div></div>
-          </div>
-
-          <div class="hp-block">
-            <div class="hp-blocktitle"><span class="n">1</span> Custos de abertura</div>
-            <table class="hp-t"><tbody id="hpAbert"></tbody></table>
-          </div>
-
-          <div class="hp-block">
-            <div class="hp-blocktitle"><span class="n">2</span> Transferência dos imóveis</div>
-            <table class="hp-t"><tbody id="hpTransf"></tbody></table>
-            <div class="hp-note">O <b>ITBI</b> costuma ser o maior custo e surpreende quem não planeja. Há discussão sobre imunidade na integralização ao capital, mas holdings com atividade preponderantemente imobiliária (locação/compra e venda) normalmente <b>não têm imunidade</b> e o município cobra.</div>
-          </div>
-
-          <div class="hp-block">
-            <div class="hp-blocktitle"><span class="n">3</span> Manutenção recorrente</div>
-            <table class="hp-t"><tbody id="hpManut"></tbody></table>
-          </div>
-
-          <div class="hp-block">
-            <div class="hp-blocktitle"><span class="n">4</span> Aluguel &middot; Pessoa Física × Holding (PJ)</div>
-            <table class="hp-t"><tbody id="hpTrib"></tbody></table>
-          </div>
-        </div>
-
-        <div class="hp-card" style="margin-bottom:16px">
-          <div class="hp-blocktitle"><span class="n">S</span> Custo dos seguros (personalizável)</div>
-          <div class="hp-kpis" style="grid-template-columns:1fr">
-            <div class="hp-kpi"><div class="lbl">Capital segurado (cobertura)</div><div class="val" id="hpCapital">—</div></div>
-          </div>
-          <div class="hp-field">
-            <label>Whole Life — custo total em 10 anos (% do capital) <b id="hpTwlOut">37%</b></label>
-            <input type="range" id="hpTwl" min="10" max="120" step="5" value="37">
-          </div>
-          <div class="hp-field" style="margin-bottom:0">
-            <label>Seguro tradicional — prêmio ao ano hoje (% do capital) <b id="hpTtrOut">1,0%</b></label>
-            <input type="range" id="hpTtr" min="0.2" max="5" step="0.1" value="1">
-          </div>
-          <div class="hp-note" style="margin-bottom:0">O capital segurado acompanha o patrimônio (padrão 20%). Padrão calibrado por uma cotação real XP Toda Vida (10 anos): prêmio ~3,7%/ano aos 36 (≈37% do capital em 10 anos), subindo com a idade. Ajuste conforme a cotação da seguradora.</div>
-        </div>
-
-        <div class="hp-card">
-          <div class="hp-blocktitle"><span class="n">5</span> Sucessão &middot; comparativo de caminhos</div>
-          <div class="hp-succ" id="hpSucc"></div>
-          <div class="hp-note">A <b>Previdência (VGBL)</b> transmite direto aos beneficiários, fora do inventário; o ITCMD sobre VGBL é tema em discussão e varia por estado. No resgate, o IR incide só sobre o rendimento (regressivo, mínimo 10%). O <b>seguro de vida (Whole Life)</b> paga o capital aos beneficiários fora do inventário e isento (art. 794 do Código Civil), servindo de liquidez sucessória. O <b>ITCMD</b> da doação de quotas varia de 2% a 8% conforme o estado.</div>
-        </div>
-
-
-
-
-        <div class="hp-disc">
-          Material de apoio ao assessor — estimativas de mercado, não constituem consultoria jurídica, contábil ou tributária. ITBI (2%–4%) varia por município; ITCMD (2%–8%) e a incidência sobre previdência variam por estado. A tributação do aluguel na PF usa a alíquota marginal de 27,5% (cenário com outras rendas); pela tabela progressiva isolada pode ser menor. Custas de cartório e honorários dependem do caso concreto. Recomende ao cliente validar com advogado e contador antes de decidir.
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-<script>
-(function(){
+  var ST={patr:2000000,cres:6,uf:'SP',idade:45,cob:400000,parc:null,inv:'extra',hor:20,tgITCMD:true,tgResg:true};
+  var CH=null;
   function el(id){ return document.getElementById(id); }
-  function n2(v){ if(v==null) return 0; var s=String(v).replace(/[^\d,.-]/g,'').replace(/\./g,'').replace(',','.'); var x=parseFloat(s); return isFinite(x)?x:0; }
-  function brl(v){ v=Math.round(Number(v)||0); return 'R$ '+v.toLocaleString('pt-BR'); }
-  function brl2(v){ return 'R$ '+(Number(v)||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}); }
-  function rng(a,b){ a=Math.round(a); b=Math.round(b); return 'R$ '+a.toLocaleString('pt-BR')+' – '+b.toLocaleString('pt-BR'); }
-  function pctf(p){ return p.toFixed(1).replace('.',',')+'%'; }
-
-  var ST={ patr:2000000, itbi:3, itcmd:4, alug:10000, cobertura:20, taxaWL:37, taxaTrad:1.0, cen:'simples' };
-
-  /* IRPF mensal (carnê-leão) — tabela progressiva */
-  function irpfMes(base){
-    if(base<=2259.20) return 0;
-    if(base<=2826.65) return base*0.075-169.44;
-    if(base<=3751.05) return base*0.15-381.44;
-    if(base<=4664.68) return base*0.225-662.77;
-    return base*0.275-896.00;
-  }
+  function brl(n){ return 'R$ '+Math.round(n||0).toLocaleString('pt-BR'); }
+  function brlK(n){ n=n||0; if(Math.abs(n)>=1e6) return 'R$ '+(n/1e6).toFixed(1).replace('.',',')+' mi';
+                    if(Math.abs(n)>=1000) return 'R$ '+Math.round(n/1000)+'k'; return 'R$ '+Math.round(n); }
+  function pct(n){ return (Math.round((n||0)*10)/10).toString().replace('.',',')+'%'; }
 
   function calc(){
-    var p=ST.patr, alug=ST.alug;
-    var abert = ST.cen==='simples' ? [5000,16000] : [10000,40000];
-    var itbi = p*ST.itbi/100;
-    var cart = [p*0.005, p*0.01];
-    var laudo = [2000,10000];
-    var transf = [itbi+cart[0]+laudo[0], itbi+cart[1]+laudo[1]];
-    var inicial = [abert[0]+transf[0], abert[1]+transf[1]];
-    var temAlug = alug>0;
-    var manutMes = temAlug ? [800,2800] : [500,1700];
-    var manutAno = [manutMes[0]*12, manutMes[1]*12];
-    var pf = alug*0.275;   /* alíquota máxima marginal — cenário com outras rendas (padrão do material) */
-    var pj = [alug*0.1133, alug*0.1453];
-    var econ = [pf-pj[1], pf-pj[0]];
-    var capital = p*ST.cobertura/100;                 /* capital segurado = % do patrimônio */
-    var wl10 = capital*ST.taxaWL/100;                 /* Whole Life: custo total pago em ~10 anos */
-    var wlMes = wl10/120;
-    var tradAno = capital*ST.taxaTrad/100;            /* tradicional: prêmio ao ano hoje (sobe c/ idade) */
-    var tradMes = tradAno/12;
-    var holdingITCMD = p*ST.itcmd/100;
-    var invExtra = [p*0.06, p*0.10];
-    var inventario = [holdingITCMD+invExtra[0], holdingITCMD+invExtra[1]];
-    return {abert:abert,itbi:itbi,cart:cart,laudo:laudo,transf:transf,inicial:inicial,
-            manutMes:manutMes,manutAno:manutAno,temAlug:temAlug,pf:pf,pj:pj,econ:econ,
-            capital:capital,wl10:wl10,wlMes:wlMes,tradAno:tradAno,tradMes:tradMes,holdingITCMD:holdingITCMD,inventario:inventario};
+    var g=ST.cres/100, inv=INV[ST.inv];
+    var premioAuto=ST.cob*0.037*fatorIdade(ST.idade);
+    var premio=(ST.parc!=null&&ST.parc>0)?ST.parc:premioAuto;
+    function resg(n){ var b=0; for(var y=1;y<=n;y++){ if(y<=10) b+=premio; b*=(1+RES_R); } return b; }
+
+    var anos=[],patr=[],cob=[],custo=[],res=[],pagos=[],tbl=[];
+    for(var n=0;n<=ST.hor;n++){
+      var p=ST.patr*Math.pow(1+g,n);
+      var c=ST.cob*Math.pow(1+IPCA,n);            /* capital segurado corrigido por IPCA */
+      var it=itcmd(p,ST.uf).v;
+      var ct=it + p*(inv.h+inv.c)/100;            /* ITCMD + honorarios + custas */
+      var r=resg(n), pg=premio*Math.min(n,10);
+      anos.push(n); patr.push(p); cob.push(c); custo.push(ct); res.push(r); pagos.push(pg);
+      tbl.push({n:n,p:p,c:c,seg:p>0?c/p*100:0,ct:ct,r:r,pg:pg});
+    }
+    var it0=itcmd(ST.patr,ST.uf);
+    var hon=ST.patr*inv.h/100, cus=ST.patr*inv.c/100, custo0=it0.v+hon+cus;
+    return {anos:anos,patr:patr,cob:cob,custo:custo,res:res,pagos:pagos,tbl:tbl,
+            premio:premio, it0:it0, hon:hon, cus:cus, custo0:custo0, inv:inv,
+            pctSeg: ST.patr>0?ST.cob/ST.patr*100:0,
+            cobCusto: custo0>0?Math.min(999,ST.cob/custo0*100):0,
+            pagosTot: premio*10, patrFim: patr[patr.length-1], resFim: res[res.length-1]};
   }
 
-  function row(label,val,cls){ return '<tr'+(cls?' class="'+cls+'"':'')+'><td>'+label+'</td><td class="v">'+val+'</td></tr>'; }
+  function grafico(d){
+    var cv=el('wlChart'); if(!cv||typeof Chart==='undefined') return;
+    if(CH){ CH.destroy(); CH=null; }
+    var ds=[
+      {label:'Patrimônio total do cliente', data:d.patr, borderColor:'#94ACEC', backgroundColor:'rgba(148,172,236,.10)', fill:true, tension:.25, pointRadius:0, borderWidth:2},
+      {label:'Whole Life — capital segurado', data:d.cob, borderColor:'#F26522', backgroundColor:'rgba(242,101,34,.12)', fill:true, tension:.25, pointRadius:0, borderWidth:3}
+    ];
+    if(ST.tgResg) ds.push({label:'Whole Life — valor de resgate', data:d.res, borderColor:'#F5B942', backgroundColor:'transparent', borderDash:[6,4], tension:.25, pointRadius:0, borderWidth:2});
+    if(ST.tgITCMD) ds.push({label:'Custo de inventário (ITCMD + custas + honorários)', data:d.custo, borderColor:'#FF6B6B', backgroundColor:'transparent', borderDash:[3,3], tension:.25, pointRadius:0, borderWidth:2});
+    CH=new Chart(cv.getContext('2d'),{ type:'line',
+      data:{ labels:d.anos, datasets:ds },
+      options:{ responsive:true, maintainAspectRatio:false, interaction:{mode:'index',intersect:false},
+        plugins:{ legend:{labels:{color:'#c8cdf0',font:{family:'Manrope',size:11},boxWidth:14,usePointStyle:false}},
+          tooltip:{callbacks:{label:function(c){return c.dataset.label+': '+brl(c.parsed.y);}}} },
+        scales:{ x:{title:{display:true,text:'Anos',color:'#94ACEC'},ticks:{color:'#94ACEC'},grid:{color:'rgba(120,130,210,.12)'}},
+          y:{ticks:{color:'#94ACEC',callback:function(v){return brlK(v);}},grid:{color:'rgba(120,130,210,.12)'}} } } });
+  }
 
   function render(){
-    var d=calc();
-    el('hpKInic').textContent = rng(d.inicial[0],d.inicial[1]);
-    el('hpKManut').textContent = rng(d.manutAno[0],d.manutAno[1]);
-    if(el('hpCapital')) el('hpCapital').textContent = brl(d.capital)+'  ('+ST.cobertura+'% do patrimônio)';
+    var d=calc(), t=ITCMD[ST.uf], badge = (t.c==='conf') ? '<span class="wl-flag">CONFIRMAR</span>' : (t.c==='media'?'<span class="wl-flag">REVISAR</span>':'');
+    el('wlPatrO').textContent=brl(ST.patr);
+    el('wlCresO').textContent=pct(ST.cres)+' a.a.';
+    el('wlIdadeO').textContent=ST.idade+' anos';
+    el('wlCobO').textContent=brl(ST.cob);
+    if(ST.parc==null) el('wlParc').placeholder=Math.round(d.premio).toLocaleString('pt-BR');
 
-    el('hpAbert').innerHTML =
-      row(ST.cen==='simples'?'Abertura simples (sem transferência imediata)':'Abertura estruturada + planejamento sucessório', rng(d.abert[0],d.abert[1])) +
-      row('<span style="color:#9AA2D0">Inclui contrato social, contábil, Junta, e-CNPJ e taxas</span>','',null).replace('<td class="v"></td>','<td class="v" style="color:#7A83AD">estimativa</td>');
+    el('wlPctSeg').textContent=pct(d.pctSeg);
+    el('wlPctBar').style.width=Math.min(100,d.pctSeg)+'%';
+    el('wlPctSub').innerHTML=brl(ST.cob)+' de capital segurado sobre '+brl(ST.patr)+' de patrimônio.';
 
-    el('hpTransf').innerHTML =
-      row('ITBI ('+pctf(ST.itbi)+' sobre '+brl(ST.patr)+')', brl(d.itbi)) +
-      row('Cartório e registro de imóveis (0,5%–1%)', rng(d.cart[0],d.cart[1])) +
-      row('Avaliações e laudos técnicos', rng(d.laudo[0],d.laudo[1])) +
-      row('Total da transferência', rng(d.transf[0],d.transf[1]), 'tot');
+    el('wlKCusto').textContent=brl(d.custo0);
+    el('wlKCustoSub').innerHTML=pct(d.custo0/ST.patr*100)+' do patrimônio &middot; '+d.inv.r+' &middot; '+d.inv.p;
+    el('wlKItcmd').textContent=faixaTxt(ST.uf);
+    el('wlKItcmdSub').innerHTML=ST.uf+': '+t.n+' '+badge;
 
-    el('hpManut').innerHTML =
-      row(d.temAlug?'Com imóveis alugados — por mês':'Sem receita operacional — por mês', rng(d.manutMes[0],d.manutMes[1])) +
-      row('Por ano', rng(d.manutAno[0],d.manutAno[1]), 'tot');
+    el('wlK1').textContent=brl(ST.cob);
+    el('wlK2').textContent=brl(d.premio);
+    el('wlK3').textContent=pct(d.cobCusto);
+    el('wlK4').textContent=brl(d.resFim);
+    el('wlK5').textContent=brl(d.it0.v)+' ('+pct(d.it0.ef)+')';
+    el('wlK6').textContent=brl(d.hon+d.cus);
+    el('wlK7').textContent=brl(d.pagosTot);
+    el('wlK8').textContent=brl(d.patrFim);
 
-    if(d.temAlug){
-      el('hpTrib').innerHTML =
-        row('Receita de aluguel (mês)', brl(ST.alug)) +
-        row('Pessoa Física — IRPF (27,5% máx.)', brl2(d.pf)) +
-        row('Holding PJ — Lucro Presumido (11,33%–14,53%)', rng(d.pj[0],d.pj[1])) +
-        row('Economia mensal estimada (PF − PJ)', rng(Math.max(0,d.econ[0]),Math.max(0,d.econ[1])), 'tot');
-    } else {
-      el('hpTrib').innerHTML = row('<span style="color:#9AA2D0">Informe uma receita de aluguel para ver o comparativo PF × PJ.</span>','',null).replace('<td class="v"></td>','<td class="v"></td>');
-    }
+    el('wlSegP').textContent=pct(d.pctSeg);
+    el('wlSegB').style.width=Math.min(100,d.pctSeg)+'%';
+    el('wlSegL').textContent = d.pctSeg>=30?'Cobertura confortável':(d.pctSeg>=15?'Cobertura razoável':'Cobertura baixa para liquidez sucessória');
+    el('wlCovP').textContent=pct(d.cobCusto);
+    el('wlCovB').style.width=Math.min(100,d.cobCusto)+'%';
+    el('wlCovL').textContent = d.cobCusto>=100?'O seguro cobre todo o custo de transmissão':'Faltam '+brl(Math.max(0,d.custo0-ST.cob))+' para cobrir o custo';
 
-    var succ=[
-      {t:'Previdência (VGBL)', v:'~ R$ 0', sub:'na transmissão', d:'Vai direto aos beneficiários, fora do inventário. IR só sobre o rendimento no resgate.', warn:'NÃO abriga imóveis. Cobre apenas o que for aportado em dinheiro — para um patrimônio majoritariamente imobiliário, não resolve a sucessão dos imóveis.', badge:'g', best:false, badgeTxt:'Só ativos financeiros'},
-      {t:'Seguro de Vida (Whole Life)', v:brl(d.wl10), sub:brl(d.wlMes)+'/mês por ~10 anos · capital '+brl(d.capital), d:'Paga o prêmio por cerca de 10 anos e depois a cobertura fica vitalícia sem novos pagamentos. O capital vai direto aos beneficiários, fora do inventário e isento (art. 794 CC).', warn:'Prêmio mais alto que o tradicional, mas com prazo de pagamento definido (~10 anos). Exige subscrição (avaliação de saúde).', badge:'g', best:true, badgeTxt:'Pagamento por 10 anos'},
-      {t:'Seguro tradicional', v:brl(d.tradMes)+'/mês', sub:brl(d.tradAno)+'/ano hoje · vitalício e crescente · capital '+brl(d.capital), d:'Seguro de vida convencional: também transmite o capital fora do inventário e isento. Prêmio mais baixo no início, mas sobe com a idade.', warn:'Pagamento ETERNO e CRESCENTE — o prêmio sobe conforme a idade (o risco aumenta), então o custo total ao longo da vida tende a superar bastante o Whole Life. Se parar de pagar, perde a cobertura.', badge:'o', best:false, badgeTxt:'Pagamento vitalício'},
-      {t:'Holding (doação de quotas)', v:brl(d.holdingITCMD), sub:'ITCMD '+pctf(ST.itcmd)+' sobre o patrimônio', d:'Doação de quotas em vida com reserva de usufruto; evita o inventário dos imóveis.', warn:'Exige PATRIMÔNIO GRANDE. Só se justifica com patrimônio elevado (e/ou aluguel relevante) — abaixo disso, o custo de abertura, o ITBI e a manutenção não se pagam.', badge:'o', best:false, badgeTxt:'Para patrimônio grande'},
-      {t:'Inventário direto', v:rng(d.inventario[0],d.inventario[1]), sub:'ITCMD + honorários e custas', d:'Sem planejamento: transmissão pela via judicial/extrajudicial.', warn:'Mais caro e demorado; os bens ficam bloqueados durante todo o processo.', badge:'r', best:false, badgeTxt:'Sem planejamento'}
-    ];
-    el('hpSucc').innerHTML = succ.map(function(s){
-      var col = s.badge==='g'?'#2BD9A6':(s.badge==='o'?'#F5B942':'#F87171');
-      return '<div class="hp-scard'+(s.best?' best':'')+'">'
-        +'<span class="hp-badge '+s.badge+'">'+s.badgeTxt+'</span>'
-        +'<div class="st">'+s.t+'</div>'
-        +'<div class="sv" style="color:'+col+'">'+s.v+'</div>'
-        +'<div class="hp-ssub">'+s.sub+'</div>'
-        +'<div class="sd">'+s.d+'</div>'
-        +(s.warn?'<div class="hp-warn"><b>Atenção:</b> '+s.warn+'</div>':'')+'</div>';
-    }).join('');
+    var falta=Math.max(0,d.custo0-ST.cob);
+    el('wlRec').innerHTML = falta>0
+      ? '<b>Sem liquidez suficiente.</b> Os herdeiros precisariam de '+brl(d.custo0)+' para abrir o inventário em '+ST.uf+
+        '. Com '+brl(ST.cob)+' de capital segurado, faltam '+brl(falta)+' — o que costuma virar venda de bem a preço de urgência.'
+      : '<b>Liquidez coberta.</b> O capital segurado de '+brl(ST.cob)+' cobre os '+brl(d.custo0)+
+        ' de custo de transmissão, e chega aos beneficiários sem inventário e sem ITCMD.';
+
+    el('wlPb1').innerHTML='É a razão entre o capital segurado e o patrimônio total. Ele não substitui o patrimônio: é a parcela que os '+
+      'beneficiários recebem <b>em dias</b>, fora do inventário, enquanto o resto fica retido na partilha ('+d.inv.p+' no cenário '+d.inv.r.toLowerCase()+').';
+    el('wlPb2').innerHTML='Soma ITCMD ('+pct(d.it0.ef)+' efetivos em '+ST.uf+'), honorários advocatícios ('+pct(d.inv.h)+
+      ', tabela referencial da OAB) e custas/emolumentos ('+pct(d.inv.c)+'). Total de '+pct(d.custo0/ST.patr*100)+' do patrimônio, '+
+      'devido <b>antes</b> de os herdeiros terem acesso aos bens.';
+
+    var tb=el('wlTbody'), h='';
+    d.tbl.forEach(function(r){ if(r.n===0||r.n%(ST.hor>20?5:(ST.hor>10?2:1))===0){
+      h+='<tr><td>'+r.n+'</td><td>'+brl(r.p)+'</td><td>'+brl(r.c)+'</td><td>'+pct(r.seg)+'</td><td>'+
+         (ST.tgITCMD?brl(r.ct):'—')+'</td><td>'+(ST.tgResg?brl(r.r):'—')+'</td><td>'+brl(r.pg)+'</td></tr>'; } });
+    tb.innerHTML=h;
+    grafico(d);
   }
-
-  /* binds */
-  function syncPatr(fromR){
-    if(fromR){ ST.patr=n2(el('hpPatrR').value); el('hpPatr').value=brl(ST.patr); }
-    else { ST.patr=n2(el('hpPatr').value); var r=el('hpPatrR'); r.value=Math.max(r.min,Math.min(r.max,ST.patr)); }
-    el('hpPatrOut').textContent=brl(ST.patr); render();
-  }
-  function syncAlug(fromR){
-    if(fromR){ ST.alug=n2(el('hpAlugR').value); el('hpAlug').value=brl(ST.alug); }
-    else { ST.alug=n2(el('hpAlug').value); var r=el('hpAlugR'); r.value=Math.max(r.min,Math.min(r.max,ST.alug)); }
-    el('hpAlugOut').textContent=brl(ST.alug); render();
-  }
-  function pctBr(p){ return (p%1===0?p.toFixed(0):p.toFixed(1).replace('.',','))+'%'; }
 
   function bind(){
-    if(!el('hpPatr')) return;
-    el('hpPatr').addEventListener('input',function(){ syncPatr(false); });
-    el('hpPatr').addEventListener('blur',function(){ el('hpPatr').value=brl(ST.patr); });
-    el('hpPatrR').addEventListener('input',function(){ syncPatr(true); });
-    el('hpAlug').addEventListener('input',function(){ syncAlug(false); });
-    el('hpAlug').addEventListener('blur',function(){ el('hpAlug').value=brl(ST.alug); });
-    el('hpAlugR').addEventListener('input',function(){ syncAlug(true); });
-    el('hpCob').addEventListener('input',function(){ ST.cobertura=parseFloat(el('hpCob').value); el('hpCobOut').textContent=ST.cobertura+'%'; render(); });
-    el('hpTwl').addEventListener('input',function(){ ST.taxaWL=parseFloat(el('hpTwl').value); el('hpTwlOut').textContent=ST.taxaWL+'%'; render(); });
-    el('hpTtr').addEventListener('input',function(){ ST.taxaTrad=parseFloat(el('hpTtr').value); el('hpTtrOut').textContent=pctBr(ST.taxaTrad); render(); });
-    el('hpItbi').addEventListener('input',function(){ ST.itbi=parseFloat(el('hpItbi').value); el('hpItbiOut').textContent=pctf(ST.itbi); render(); });
-    el('hpItcmd').addEventListener('input',function(){ ST.itcmd=parseFloat(el('hpItcmd').value); el('hpItcmdOut').textContent=pctf(ST.itcmd); render(); });
-    Array.prototype.forEach.call(el('hpCen').querySelectorAll('button'),function(b){
-      b.addEventListener('click',function(){ ST.cen=b.getAttribute('data-c'); Array.prototype.forEach.call(el('hpCen').querySelectorAll('button'),function(x){x.classList.toggle('on',x===b);}); render(); });
+    var sel=el('wlUF'); if(!sel) return;
+    if(!sel.options.length){ UFS.forEach(function(u){ var o=document.createElement('option'); o.value=u; o.textContent=u; if(u==='SP')o.selected=true; sel.appendChild(o); }); }
+    if(sel.__wired) { render(); return; } sel.__wired=true;
+    function on(id,ev,fn){ var e=el(id); if(e) e.addEventListener(ev,fn); }
+    on('wlPatr','input',function(){ ST.patr=+this.value; render(); });
+    on('wlCres','input',function(){ ST.cres=+this.value; render(); });
+    on('wlIdade','input',function(){ ST.idade=+this.value; render(); });
+    on('wlCob','input',function(){ ST.cob=+this.value; render(); });
+    on('wlUF','change',function(){ ST.uf=this.value; render(); });
+    on('wlInv','change',function(){ ST.inv=this.value; render(); });
+    on('wlHor','change',function(){ ST.hor=+this.value; render(); });
+    on('wlParc','input',function(){ var v=parseFloat(this.value); ST.parc=(isNaN(v)||v<=0)?null:v; render(); });
+    on('wlParcAuto','click',function(){ ST.parc=null; el('wlParc').value=''; render(); });
+    on('wlTgITCMD','change',function(){ ST.tgITCMD=this.checked; render(); });
+    on('wlTgResg','change',function(){ ST.tgResg=this.checked; render(); });
+    on('wlPngBtn','click',function(){
+      var alvo=document.querySelector('#p-holding .hc-sec'); if(!alvo) return;
+      var btn=this, txt=btn.textContent; btn.textContent='Gerando...';
+      function go(h2c){ h2c(alvo,{backgroundColor:'#0A0E3F',scale:2,useCORS:true}).then(function(cv){
+          var a=document.createElement('a'); a.download='sucessao-wholelife.png'; a.href=cv.toDataURL('image/png'); a.click(); btn.textContent=txt;
+        }).catch(function(){ btn.textContent=txt; }); }
+      if(window.html2canvas) return go(window.html2canvas);
+      var sc=document.createElement('script'); sc.src='https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+      sc.onload=function(){ go(window.html2canvas); }; sc.onerror=function(){ btn.textContent=txt; }; document.head.appendChild(sc);
     });
-    el('hpPng').addEventListener('click',gerarPNG);
     render();
   }
-
-  /* ===== PNG (canvas nativo, tema rico) ===== */
-  function gerarPNG(){
-    var d=calc();
-    var W=1080, pad=64;
-    var c=document.createElement('canvas'); var DPR=2; c.width=W*DPR; var ctx=c.getContext('2d'); ctx.scale(DPR,DPR);
-    /* medir altura: layout fixo, calculamos H aproximado */
-    var H=1760; c.height=H*DPR; ctx.scale(1,1);
-    // fundo
-    var g=ctx.createLinearGradient(0,0,0,H); g.addColorStop(0,'#0A0F38'); g.addColorStop(1,'#070B2E'); ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
-    ctx.fillStyle='#F26522'; ctx.fillRect(0,0,10,H);
-    var y=pad;
-    ctx.textBaseline='top';
-    ctx.fillStyle='#F26522'; ctx.font='800 30px Sora,sans-serif'; ctx.fillText('rico · Sucessão Patrimonial', pad, y); y+=42;
-    ctx.fillStyle='#9AA2D0'; ctx.font='600 16px Manrope,sans-serif';
-    ctx.fillText('Patrimônio: '+brl(ST.patr)+'   ·   ITBI '+pctf(ST.itbi)+'   ·   ITCMD '+pctf(ST.itcmd)+'   ·   Abertura '+(ST.cen==='simples'?'simples':'estruturada'), pad, y); y+=22;
-    ctx.fillText(new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'long',year:'numeric'}), pad, y); y+=40;
-
-    function sectionTitle(num,txt){ ctx.fillStyle='#F26522'; ctx.font='800 15px Sora,sans-serif'; ctx.fillText(num+'.  '+txt.toUpperCase(), pad, y); y+=30; }
-    function line(label,val,strong){
-      ctx.fillStyle= strong?'#fff':'#DDE0F5'; ctx.font=(strong?'800 ':'600 ')+'16px Manrope,sans-serif';
-      ctx.fillText(label, pad, y);
-      ctx.textAlign='right'; ctx.fillStyle= strong?'#F5B942':'#fff'; ctx.font='700 16px Manrope,sans-serif';
-      ctx.fillText(val, W-pad, y); ctx.textAlign='left';
-      y+=27; ctx.strokeStyle='rgba(120,130,210,.15)'; ctx.beginPath(); ctx.moveTo(pad,y-6); ctx.lineTo(W-pad,y-6); ctx.stroke();
-    }
-    // KPIs
-    function kpi(x,w,lbl,val){ ctx.fillStyle='#0A0E3F'; roundRect(ctx,x,y,w,72,12); ctx.fill();
-      ctx.fillStyle='#9AA2D0'; ctx.font='700 12px Sora,sans-serif'; ctx.fillText(lbl.toUpperCase(), x+16, y+15);
-      ctx.fillStyle='#F5B942'; ctx.font='800 22px Sora,sans-serif'; ctx.fillText(val, x+16, y+36); }
-    kpi(pad, (W-2*pad-16)/2, 'Custo inicial', rng(d.inicial[0],d.inicial[1]));
-    kpi(pad+(W-2*pad-16)/2+16, (W-2*pad-16)/2, 'Manutenção/ano', rng(d.manutAno[0],d.manutAno[1]));
-    y+=92;
-
-    sectionTitle(1,'Abertura ('+(ST.cen==='simples'?'simples':'estruturada')+')');
-    line('Constituição, contábil, taxas e e-CNPJ', rng(d.abert[0],d.abert[1])); y+=8;
-    sectionTitle(2,'Transferência dos imóveis');
-    line('ITBI ('+pctf(ST.itbi)+')', brl(d.itbi));
-    line('Cartório e registro (0,5%–1%)', rng(d.cart[0],d.cart[1]));
-    line('Avaliações e laudos', rng(d.laudo[0],d.laudo[1]));
-    line('Total da transferência', rng(d.transf[0],d.transf[1]), true); y+=8;
-    sectionTitle(3,'Manutenção recorrente');
-    line(d.temAlug?'Com aluguel (mês)':'Sem receita (mês)', rng(d.manutMes[0],d.manutMes[1]));
-    line('Por ano', rng(d.manutAno[0],d.manutAno[1]), true); y+=8;
-    if(d.temAlug){
-      sectionTitle(4,'Aluguel · PF × Holding (PJ)');
-      line('Pessoa Física — IRPF (27,5% máx.)', brl2(d.pf));
-      line('Holding PJ — Lucro Presumido', rng(d.pj[0],d.pj[1]));
-      line('Economia mensal (PF − PJ)', rng(Math.max(0,d.econ[0]),Math.max(0,d.econ[1])), true); y+=8;
-    }
-    sectionTitle(5,'Sucessão · comparativo de caminhos');
-    line('Previdência (VGBL) — só ativos financeiros', '~ R$ 0');
-    line('Capital segurado ('+ST.cobertura+'% do patrimônio)', brl(d.capital));
-    line('Whole Life — '+brl(d.wlMes)+'/mês por ~10 anos', brl(d.wl10));
-    line('Seguro tradicional — '+brl(d.tradMes)+'/mês (sobe c/ idade)', brl(d.tradAno)+'/ano');
-    line('Holding — doação de quotas (ITCMD '+pctf(ST.itcmd)+')', brl(d.holdingITCMD));
-    line('Inventário direto (ITCMD + custas)', rng(d.inventario[0],d.inventario[1]), true);
-    y+=18;
-    ctx.fillStyle='#F5B942'; ctx.font='800 14px Sora,sans-serif'; ctx.fillText('PONTOS DE ATENÇÃO', pad, y); y+=24;
-    ctx.fillStyle='#C9B67A'; ctx.font='400 13px Manrope,sans-serif';
-    ['Previdência (VGBL): NÃO abriga imóveis — só ativos financeiros aportados em dinheiro.',
-     'Whole Life: paga o prêmio por ~10 anos e depois fica vitalício; exige subscrição (saúde).',
-     'Seguro tradicional: pagamento eterno e crescente (sobe com a idade); parou, perdeu a cobertura.',
-     'Holding: exige patrimônio GRANDE; custo alto de abertura, ITBI e manutenção.',
-     'Inventário: mais caro e demorado; bens ficam bloqueados durante o processo.'
-    ].forEach(function(t){ y=wrap(ctx,'•  '+t, pad, y, W-2*pad, 18)+2; });
-    y+=14;
-    ctx.fillStyle='#7A83AD'; ctx.font='400 12px Manrope,sans-serif';
-    y=wrap(ctx,'Estimativas de mercado, não constituem consultoria jurídica/contábil. ITBI varia por município; ITCMD e a incidência sobre previdência variam por estado. Validar com advogado e contador.', pad, y, W-2*pad, 17);
-
-    // recorta varrendo os pixels do canvas p/ achar o fim real do conteúdo
-    var Wd=W*DPR, Hd=H*DPR, used;
-    try{
-      var full=ctx.getImageData(0,0,Wd,Hd).data;
-      var cb=Math.round((y+20)*DPR);
-      // o fundo navy é sempre escuro (canais < 60); qualquer pixel claro é texto/conteúdo.
-      // começamos em x>40 p/ pular a faixa laranja da lateral.
-      for(var yy=Hd-1; yy>=0; yy--){
-        var hit=false;
-        for(var xx=Math.floor(40*DPR); xx<Wd-4; xx+=6){ var i=(yy*Wd+xx)*4;
-          if(full[i]>90 || full[i+1]>90 || full[i+2]>96){ hit=true; break; } }
-        if(hit){ cb=yy; break; }
-      }
-      used=Math.min(H, cb/DPR + 22);
-    }catch(e){ used=Math.min(H, y+30); }
-    // c2 com fundo navy OPACO (evita transparência/preto na exportação)
-    var c2=document.createElement('canvas'); c2.width=Wd; c2.height=Math.round(used*DPR); var x2=c2.getContext('2d');
-    var g2=x2.createLinearGradient(0,0,0,c2.height); g2.addColorStop(0,'#0A0F38'); g2.addColorStop(1,'#070B2E'); x2.fillStyle=g2; x2.fillRect(0,0,c2.width,c2.height);
-    x2.drawImage(c,0,0);
-    var url=c2.toDataURL('image/png');
-    if(typeof window.mostrarPngModal==='function') window.mostrarPngModal(url,'Sucessão Patrimonial.png',{accent:'#F26522',hint:'Baixe ou copie a imagem para enviar ao cliente.'});
-    else { var a=document.createElement('a'); a.href=url; a.download='Sucessão Patrimonial.png'; a.click(); }
-  }
-  function roundRect(ctx,x,y,w,h,r){ ctx.beginPath(); ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r); ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath(); }
-  function wrap(ctx,text,x,y,maxW,lh){ var words=text.split(' '),line=''; for(var i=0;i<words.length;i++){ var t=line+words[i]+' '; if(ctx.measureText(t).width>maxW && i>0){ ctx.fillText(line,x,y); line=words[i]+' '; y+=lh; } else line=t; } ctx.fillText(line,x,y); return y+lh; }
 
   if(document.readyState==='loading'){ document.addEventListener('DOMContentLoaded', bind); } else { bind(); }
-  window._toolInit=window._toolInit||{}; window._toolInit['holding']=function(){ try{bind();}catch(e){} try{ if(window.__hcBind) window.__hcBind(); }catch(e){} };
+  window._toolInit=window._toolInit||{}; window._toolInit['holding']=function(){ try{bind();}catch(e){} };
 })();
 </script>
+</div>
 
-  <div class="g-panel" id="p-aderencia" data-tool="aderencia">
+<div class="g-panel" id="p-aderencia" data-tool="aderencia">
     <div class="adw">
       <div class="ad-header">
         <div>
