@@ -5303,7 +5303,8 @@ html.theme-light .pm-alloc{ background:#fff; }
        isencao no inicio, e mostrar "0% a 6%" daria a impressao errada de progressividade. */
     var r=t.f.map(function(x){return x[1];}).filter(function(a){return a>0;});
     var mn=Math.min.apply(null,r), mx=Math.max.apply(null,r);
-    var isento = t.f[0][1]===0 ? ' &middot; isento ate '+brlK(t.f[0][0]) : '';
+    /* usa o caractere, nao a entidade: este texto vai para textContent */
+    var isento = t.f[0][1]===0 ? ' \u00b7 isento at\u00e9 '+brlK(t.f[0][0]) : '';
     if(mn===mx) return String(mn).replace('.',',')+'% fixo'+isento;
     return String(mn).replace('.',',')+'% a '+String(mx).replace('.',',')+'% (progressivo)'+isento;
   }
