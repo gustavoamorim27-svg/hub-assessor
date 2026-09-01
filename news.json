@@ -1,85 +1,85 @@
 {
-  "updated": "30/08/2026 18:38",
+  "updated": "01/09/2026 19:15",
   "items": [
     {
       "region": "nacional",
-      "title": "Ibovespa fecha aos 175.664 pontos na oitava alta seguida; dólar sobe a R$ 5,19",
-      "resumo": "Índice subiu 0,30% na sexta-feira e acumulou 2,7% na semana com impulso de Petrobras, enquanto o dólar à vista avançou 0,67%.",
-      "source": "Money Times",
-      "date": "28 ago 2026",
-      "url": "https://www.moneytimes.com.br/ibovespa-28-8-26-lils/"
+      "title": "PIB do Brasil cresce 0,5% no 2o trimestre",
+      "resumo": "IBGE aponta alta de 0,5% na margem e 2,0% em 12 meses, com agropecuaria (+2,8%) liderando e servicos quase de lado (+0,2%).",
+      "source": "IBGE / Portal N10",
+      "date": "01 set 2026",
+      "url": "https://portaln10.com.br/economia/impostos-tributos/pib-brasil-segundo-trimestre-2026-consumo-familias-352053/"
     },
     {
       "region": "nacional",
-      "title": "IPCA-15 cai 0,40% em agosto, queda maior que a esperada pelo mercado",
-      "resumo": "Prévia da inflação desacelerou para 4,24% em 12 meses, puxada por habitação, transportes e alimentação, reforçando espaço para novos cortes de juros.",
+      "title": "Ibovespa opera perto dos 178 mil pontos",
+      "resumo": "Bolsa reage ao PIB, as projecoes do Orcamento de 2027 e a retomada das negociacoes tarifarias entre Brasil e Estados Unidos.",
       "source": "InfoMoney",
-      "date": "26 ago 2026",
-      "url": "https://www.infomoney.com.br/economia/ipca-15-previa-inflacao-ibge-agosto-2026/"
+      "date": "01 set 2026",
+      "url": "https://www.infomoney.com.br/mercados/ibovespa-hoje-bolsa-de-valores-ao-vivo-01092026/"
     },
     {
       "region": "nacional",
-      "title": "Copom corta a Selic para 14,00% ao ano e mantém a porta aberta",
-      "resumo": "Decisão unânime marcou o quarto corte consecutivo de 2026, com o comitê citando ambiente externo ainda incerto.",
-      "source": "CNN Brasil",
-      "date": "05 ago 2026",
-      "url": "https://www.cnnbrasil.com.br/economia/macroeconomia/bc-copom-agosto-2026/"
-    },
-    {
-      "region": "nacional",
-      "title": "Analistas avaliam até onde vai a sequência de altas da Bolsa brasileira",
-      "resumo": "Com o Ibovespa em máximas históricas, casas de análise discutem níveis técnicos e o risco de realização de lucros no curto prazo.",
+      "title": "Copom corta a Selic para 14,00% ao ano",
+      "resumo": "Ata reconhece moderacao gradual da atividade e reforca a expectativa de novos cortes na taxa basica nas proximas reunioes.",
       "source": "InfoMoney",
-      "date": "28 ago 2026",
-      "url": "https://www.infomoney.com.br/mercados/mercados-day-trade-hoje-analistas-28082026/"
+      "date": "01 set 2026",
+      "url": "https://www.infomoney.com.br/mercados/ibovespa-hoje-bolsa-de-valores-ao-vivo-01092026/"
     },
     {
       "region": "nacional",
-      "title": "Prévia do PIB, leilão do Banco Central e falas de Galípolo movimentam a agenda",
-      "resumo": "Indicadores de atividade e sinalizações do BC concentram a atenção do mercado local antes da divulgação oficial do PIB do segundo trimestre.",
+      "title": "IPCA acumula 4,44% em 12 meses",
+      "resumo": "Inflacao acumulada no ano chega a 3,44%, ainda acima do centro da meta, mas em trajetoria de desaceleracao.",
+      "source": "Investidor10",
+      "date": "01 set 2026",
+      "url": "https://investidor10.com.br/indices/ipca/"
+    },
+    {
+      "region": "nacional",
+      "title": "Dolar cede ante o real mesmo com Selic menor",
+      "resumo": "Cambio recua apoiado no fluxo externo e no alivio das tensoes comerciais, apesar da perspectiva de juros domesticos mais baixos.",
       "source": "InfoMoney",
-      "date": "17 ago 2026",
-      "url": "https://www.infomoney.com.br/mercados/previa-pib-brasil-leilao-bc-galipolo-17082026/"
+      "date": "01 set 2026",
+      "url": "https://www.infomoney.com.br/mercados/ibovespa-hoje-bolsa-de-valores-ao-vivo-01092026/"
     },
     {
       "region": "internacional",
-      "title": "S&P 500 cai após Warsh reforçar preocupação com a inflação em Jackson Hole",
-      "resumo": "Índice recuou 0,25% aos 7.711 pontos e o Nasdaq cedeu 0,52%, mas ambos fecharam a semana no positivo.",
+      "title": "Wall Street cai com juros e petroleo em alta",
+      "resumo": "Dow recua 0,8%, S&P 500 perde cerca de 0,7% e Nasdaq cede mais de 1% no inicio de setembro, historicamente o mes mais fraco.",
+      "source": "Yahoo Finance",
+      "date": "01 set 2026",
+      "url": "https://finance.yahoo.com/markets/live/stock-market-today-tuesday-september-1-dow-sp-500-nasdaq-080617884.html"
+    },
+    {
+      "region": "internacional",
+      "title": "Treasury de 10 anos vai a 4,79%, maxima de 20 meses",
+      "resumo": "Juros longos sobem globalmente com a reprecificacao do risco inflacionario; o titulo de 30 anos se aproxima de 5,27%.",
+      "source": "Yahoo Finance",
+      "date": "01 set 2026",
+      "url": "https://finance.yahoo.com/markets/live/stock-market-today-tuesday-september-1-dow-sp-500-nasdaq-080617884.html"
+    },
+    {
+      "region": "internacional",
+      "title": "Mercado ve cerca de 60% de chance de alta de juros do Fed",
+      "resumo": "Discurso duro de Kevin Warsh em Jackson Hole elevou as apostas em um aperto de 0,25 ponto na proxima reuniao do Fed.",
+      "source": "DailyForex",
+      "date": "01 set 2026",
+      "url": "https://www.dailyforex.com/forex-news/2026/09/forex-today-1-september-2026/249207"
+    },
+    {
+      "region": "internacional",
+      "title": "Petroleo sobe com ataques e risco no Estreito de Ormuz",
+      "resumo": "Brent avanca apos novos ataques dos EUA a alvos iranianos e navios atingidos na saida de Ormuz; WTI sobe 3,7%.",
+      "source": "Bloomberg",
+      "date": "01 set 2026",
+      "url": "https://www.bloomberg.com/news/articles/2026-08-31/latest-oil-market-news-and-analysis-for-sept-1"
+    },
+    {
+      "region": "internacional",
+      "title": "Tensao EUA-Ira volta ao radar dos investidores",
+      "resumo": "Retomada dos confrontos e ameacas ao terminal de Kharg Island elevam o premio de risco geopolitico nos ativos globais.",
       "source": "CNBC",
-      "date": "28 ago 2026",
-      "url": "https://www.cnbc.com/2026/08/27/stock-market-today-live-updates.html"
-    },
-    {
-      "region": "internacional",
-      "title": "Investidores elevam a aposta em alta de juros do Fed em setembro",
-      "resumo": "Após o discurso duro do presidente do Fed em Jackson Hole, a probabilidade precificada de aperto em setembro saltou para perto de 60%.",
-      "source": "TheStreet",
-      "date": "28 ago 2026",
-      "url": "https://www.thestreet.com/fed/kevin-warsh-jackson-hole-fed-september-rate-hike-odds"
-    },
-    {
-      "region": "internacional",
-      "title": "Petróleo recua com os EUA anunciando pacote global de sanções contra o Irã",
-      "resumo": "O Tesouro americano incluiu cerca de 60 entidades ligadas à receita do petróleo iraniano e à frota sombra do país.",
-      "source": "CNBC",
-      "date": "24 ago 2026",
-      "url": "https://www.cnbc.com/2026/08/24/oil-price-today-wti-brent-us-sanctions-iran.html"
-    },
-    {
-      "region": "internacional",
-      "title": "Bolsas americanas iniciam a semana em queda com venda em ações de chips",
-      "resumo": "O setor de semicondutores liderou as perdas e puxou o S&P 500 para baixo no pregão de segunda-feira.",
-      "source": "CNBC",
-      "date": "23 ago 2026",
-      "url": "https://www.cnbc.com/2026/08/23/stock-market-today-live-updates.html"
-    },
-    {
-      "region": "internacional",
-      "title": "Juros globais elevados e petróleo caro pressionam o S&P 500 pelo terceiro dia",
-      "resumo": "Preocupações com déficit fiscal e inflação acima da meta do Fed mantiveram a volatilidade nos mercados acionários.",
-      "source": "CNBC",
-      "date": "17 ago 2026",
-      "url": "https://www.cnbc.com/2026/08/17/stock-market-today-live-updates.html"
+      "date": "01 set 2026",
+      "url": "https://www.cnbc.com/amp/2026/08/31/stock-market-today-live-updates.html"
     }
   ]
 }
