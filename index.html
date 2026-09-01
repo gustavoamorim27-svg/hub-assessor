@@ -5140,7 +5140,9 @@ html.theme-light .pm-alloc{ background:#fff; }
   #p-holding .wl-legal{font-size:11.5px;color:#94ACEC;line-height:1.6;background:rgba(255,255,255,.05);
     border:1px solid rgba(255,255,255,.13);border-left:3px solid #F26522;border-radius:11px;padding:13px 15px;margin-bottom:16px}
   #p-holding .wl-legal b{color:#fff}
-  #p-holding .hc-kpis{grid-template-columns:repeat(4,1fr)}
+  #p-holding .hc-inputs{grid-template-columns:repeat(3,1fr)}
+  #p-holding .hc-kpis{grid-template-columns:repeat(3,1fr)}
+  #p-holding .wl-hint{font-size:10.5px;color:#94ACEC;margin-top:5px;letter-spacing:.2px}
   @media (max-width:1000px){ #p-holding .wl-hero{grid-template-columns:1fr} #p-holding .hc-kpis{grid-template-columns:repeat(2,1fr)} }
 </style>
 
@@ -5160,8 +5162,9 @@ html.theme-light .pm-alloc{ background:#fff; }
 
   <div class="hc-inputs">
     <div class="hc-f"><label>Patrimônio total <b id="wlPatrO">R$ 2.000.000</b></label><input type="range" id="wlPatr" min="200000" max="30000000" step="100000" value="2000000"></div>
-    <div class="hc-f"><label>Crescimento do patrimônio <b id="wlCresO">6,0% a.a.</b></label><input type="range" id="wlCres" min="0" max="15" step="0.5" value="6"></div>
-    <div class="hc-f"><label>Estado do titular <span class="tip" title="define a aliquota de ITCMD">?</span></label><select class="hc-sel" id="wlUF"></select></div>
+    <div class="hc-f"><label>IPCA (premissa) <b id="wlIpcaO">4,5% a.a.</b></label><input type="range" id="wlIpca" min="0" max="12" step="0.1" value="4.5"></div>
+    <div class="hc-f"><label>Crescimento do patrimônio <b id="wlCresO">IPCA + 3,00%</b></label><input type="range" id="wlCres" min="0" max="10" step="0.25" value="3"><div class="wl-hint" id="wlCresHint">—</div></div>
+    <div class="hc-f"><label>Estado do titular <span class="tip" title="define a alíquota de ITCMD aplicada na transmissão causa mortis">?</span></label><select class="hc-sel" id="wlUF"></select></div>
     <div class="hc-f"><label>Idade do titular <b id="wlIdadeO">45 anos</b></label><input type="range" id="wlIdade" min="25" max="75" step="1" value="45"></div>
     <div class="hc-f"><label>Capital segurado Whole Life <b id="wlCobO">R$ 400.000</b></label><input type="range" id="wlCob" min="0" max="10000000" step="50000" value="400000"></div>
     <div class="hc-f"><label>Prêmio anual <span id="wlParcAuto" class="hc-auto" title="voltar ao calculo automatico">auto</span></label><input type="number" id="wlParc" min="0" step="500" placeholder="auto"></div>
@@ -5196,7 +5199,8 @@ html.theme-light .pm-alloc{ background:#fff; }
     <div class="hc-kpi b"><div class="k">Prêmio anual <span style="opacity:.65">(10 anos)</span></div><div class="v" id="wlK2">—</div></div>
     <div class="hc-kpi g"><div class="k">Cobertura do custo sucessório</div><div class="v" id="wlK3">—</div></div>
     <div class="hc-kpi y"><div class="k">Resgate no horizonte <span style="opacity:.65">(IPCA+3)</span></div><div class="v" id="wlK4">—</div></div>
-    <div class="hc-kpi o"><div class="k">ITCMD estimado</div><div class="v" id="wlK5">—</div></div>
+    <div class="hc-kpi o"><div class="k">ITCMD hoje</div><div class="v" id="wlK5">—</div></div>
+    <div class="hc-kpi o"><div class="k">ITCMD no horizonte</div><div class="v" id="wlK9">—</div><div class="wl-uf" id="wlK9s">—</div></div>
     <div class="hc-kpi o"><div class="k">Honorários + custas</div><div class="v" id="wlK6">—</div></div>
     <div class="hc-kpi b"><div class="k">Prêmios pagos <span style="opacity:.65">(total)</span></div><div class="v" id="wlK7">—</div></div>
     <div class="hc-kpi y"><div class="k">Patrimônio no horizonte</div><div class="v" id="wlK8">—</div></div>
@@ -5252,30 +5256,30 @@ html.theme-light .pm-alloc{ background:#fff; }
   var INF=Infinity;
   var ITCMD={
     AC:{f:[[50000,0],[1500000,4],[2500000,5],[3500000,6],[INF,7]],c:'ok',n:'LC 373/2020. Colaterais: 8%.'},
-    AL:{f:[[INF,4]],c:'ok',n:'Aliquota fixa (Lei 5.077/1989). Progressividade prevista para 2027.'},
-    AP:{f:[[INF,4]],c:'conf',n:'Nao confirmado. Base historica 4% fixa; ha noticia de progressividade 2-6% (Lei 3.149/2024) sem fonte primaria.'},
-    AM:{f:[[400000,0],[2000000,2],[6000000,3],[INF,4]],c:'ok',n:'LC 269/2024. Heranca isenta ate R$ 400 mil.'},
+    AL:{f:[[INF,4]],c:'ok',n:'Alíquota fixa (Lei 5.077/1989). Progressividade prevista para 2027.'},
+    AP:{f:[[INF,4]],c:'conf',n:'Não confirmado. Base histórica 4% fixa; há notícia de progressividade 2–6% (Lei 3.149/2024) sem fonte primária.'},
+    AM:{f:[[400000,0],[2000000,2],[6000000,3],[INF,4]],c:'ok',n:'LC 269/2024. Herança isenta até R$ 400 mil.'},
     BA:{f:[[100000,0],[200000,4],[300000,6],[INF,8]],c:'ok',n:'Lei 14.802/2024.'},
-    CE:{f:[[29000,2],[87000,4],[174000,6],[INF,8]],c:'media',t:1,n:'Faixas em UFIRCE (2026 = R$ 6,29872). Atencao: no CE a aliquota incide sobre o TOTAL, nao por faixa.'},
+    CE:{f:[[29000,2],[87000,4],[174000,6],[INF,8]],c:'media',t:1,n:'Faixas em UFIRCE (2026 = R$ 6,29872). Atenção: no CE a alíquota incide sobre o TOTAL, não por faixa.'},
     DF:{f:[[1000000,4],[2000000,5],[INF,6]],c:'ok',n:'Lei 3.804/2006 c/ Lei 5.549/2015.'},
-    ES:{f:[[INF,4]],c:'ok',n:'Aliquota fixa (Lei 10.011/2013).'},
+    ES:{f:[[INF,4]],c:'ok',n:'Alíquota fixa (Lei 10.011/2013).'},
     GO:{f:[[25000,2],[200000,4],[600000,6],[INF,8]],c:'ok',n:'Lei 11.651/1991.'},
     MA:{f:[[300000,3],[600000,4],[900000,5],[1200000,6],[INF,7]],c:'media',n:'Lei 7.799/2002. Faixas aproximadas — reconferir na SEFAZ.'},
-    MT:{f:[[395670,0],[1055120,2],[2110240,4],[4220480,6],[INF,8]],c:'ok',n:'Faixas em UPF/MT (ago-2026 = R$ 263,78). Isento ate 1.500 UPF.'},
-    MS:{f:[[100000,0],[INF,6]],c:'ok',n:'Aliquota fixa 6% (Lei 1.810/1997). Isento ate R$ 100 mil.'},
-    MG:{f:[[INF,5]],c:'ok',n:'Aliquota fixa 5% (Lei 14.941/2003). PL 2.881/2024 (3/5/8%) em tramitacao.'},
-    PA:{f:[[INF,4]],c:'conf',n:'Progressiva 2-6% em UPF-PA (Lei 5.529/1989), mas o valor da UPF-PA 2026 nao foi confirmado. Usando 4% como referencia.'},
+    MT:{f:[[395670,0],[1055120,2],[2110240,4],[4220480,6],[INF,8]],c:'ok',n:'Faixas em UPF/MT (ago-2026 = R$ 263,78). Isento até 1.500 UPF.'},
+    MS:{f:[[100000,0],[INF,6]],c:'ok',n:'Alíquota fixa 6% (Lei 1.810/1997). Isento até R$ 100 mil.'},
+    MG:{f:[[INF,5]],c:'ok',n:'Alíquota fixa 5% (Lei 14.941/2003). PL 2.881/2024 (3/5/8%) em tramitação.'},
+    PA:{f:[[INF,4]],c:'conf',n:'Progressiva 2–6% em UPF-PA (Lei 5.529/1989), mas o valor da UPF-PA 2026 não foi confirmado. Usando 4% como referência.'},
     PB:{f:[[125000,2],[400000,4],[1000000,6],[INF,8]],c:'ok',n:'Lei 5.123/1989, red. Lei 12.585/2023.'},
-    PR:{f:[[INF,4]],c:'ok',n:'Aliquota fixa (Lei 18.573/2015).'},
+    PR:{f:[[INF,4]],c:'ok',n:'Alíquota fixa (Lei 18.573/2015).'},
     PE:{f:[[80000,0],[350000,2],[550000,4],[750000,6],[INF,8]],c:'ok',n:'LC 563/2025, vigente desde 01/01/2026.'},
-    PI:{f:[[INF,4]],c:'conf',n:'Progressiva 2-6% (Lei 4.261/1989), faixas nao confirmadas. Usando 4% como referencia.'},
+    PI:{f:[[INF,4]],c:'conf',n:'Progressiva 2–6% (Lei 4.261/1989), faixas não confirmadas. Usando 4% como referência.'},
     RJ:{f:[[347228,4],[496040,4.5],[992080,5],[1488120,6],[1984160,7],[INF,8]],c:'ok',n:'Faixas em UFIR-RJ (2026 = R$ 4,9604). Lei 7.174/2015.'},
-    RN:{f:[[INF,3]],c:'conf',n:'Base confirmada: 3% unica (Lei 5.887/1989). Alteracao para 3-6% nao confirmada.'},
-    RS:{f:[[56653,0],[283264,3],[849792,4],[1416320,5],[INF,6]],c:'ok',n:'Faixas em UPF-RS (2026 = R$ 28,3264). Isento ate 2.000 UPF.'},
+    RN:{f:[[INF,3]],c:'conf',n:'Base confirmada: 3% única (Lei 5.887/1989). Alteração para 3–6% não confirmada.'},
+    RS:{f:[[56653,0],[283264,3],[849792,4],[1416320,5],[INF,6]],c:'ok',n:'Faixas em UPF-RS (2026 = R$ 28,3264). Isento até 2.000 UPF.'},
     RO:{f:[[155575,2],[767918,3],[INF,4]],c:'media',n:'Faixas em UPF/RO (2026 = R$ 124,46). Lei 959/2000.'},
-    RR:{f:[[INF,4]],c:'media',n:'Aliquota fixa 4% (Lei 59/1993).'},
+    RR:{f:[[INF,4]],c:'media',n:'Alíquota fixa 4% (Lei 59/1993).'},
     SC:{f:[[20000,1],[50000,3],[150000,5],[INF,7]],c:'ok',n:'Lei 19.053/2024 revogou a faixa de 8%.'},
-    SP:{f:[[INF,4]],c:'ok',n:'Aliquota fixa 4% (Lei 10.705/2000). PLs de progressividade so valeriam a partir de 2027.'},
+    SP:{f:[[INF,4]],c:'ok',n:'Alíquota fixa 4% (Lei 10.705/2000). PLs de progressividade só valeriam a partir de 2027.'},
     SE:{f:[[41240,0],[199354,3],[996853,6],[INF,8]],c:'ok',n:'Faixas em UFP/SE (mai-2026 = R$ 82,48, reajuste mensal).'},
     TO:{f:[[25000,2],[100000,4],[500000,6],[INF,8]],c:'media',n:'Lei 1.287/2001. Faixas aproximadas — fontes divergentes.'}
   };
@@ -5310,15 +5314,16 @@ html.theme-light .pm-alloc{ background:#fff; }
   }
 
   /* custos de inventario alem do ITCMD (tabelas OAB sao referenciais/negociaveis) */
-  var INV={ extra:{h:5,c:0.8,r:'Extrajudicial (cartorio)',p:'30 a 90 dias'},
+  var INV={ extra:{h:5,c:0.8,r:'Extrajudicial (cartório)',p:'30 a 90 dias'},
             jud:  {h:8,c:2.0,r:'Judicial consensual',     p:'6 meses a 2 anos'},
             lit:  {h:10,c:2.5,r:'Judicial litigioso',      p:'2 anos ou mais'} };
 
   var IDADE=[[36,1.0],[40,1.15],[45,1.4],[50,1.7],[55,2.1],[60,2.6],[65,3.2],[70,4.0],[75,4.8]];
   function fatorIdade(a){ for(var i=0;i<IDADE.length;i++){ if(a<=IDADE[i][0]) return IDADE[i][1]; } return 5.5; }
-  var IPCA=0.045, RES_R=IPCA+0.03;
-
-  var ST={patr:2000000,cres:6,uf:'SP',idade:45,cob:400000,parc:null,inv:'extra',hor:20,tgITCMD:true,tgResg:true};
+  /* IPCA e premissa editavel: alimenta o crescimento do patrimonio (IPCA+x),
+     a correcao do capital segurado e o resgate do Whole Life (IPCA+3).
+     Convencao multiplicativa, como em qualquer papel indexado: (1+IPCA)*(1+x)-1. */
+  var ST={patr:2000000,ipca:4.5,real:3,uf:'SP',idade:45,cob:400000,parc:null,inv:'extra',hor:20,tgITCMD:true,tgResg:true};
   var CH=null;
   function el(id){ return document.getElementById(id); }
   function brl(n){ return 'R$ '+Math.round(n||0).toLocaleString('pt-BR'); }
@@ -5327,7 +5332,10 @@ html.theme-light .pm-alloc{ background:#fff; }
   function pct(n){ return (Math.round((n||0)*10)/10).toString().replace('.',',')+'%'; }
 
   function calc(){
-    var g=ST.cres/100, inv=INV[ST.inv];
+    var ipca=ST.ipca/100;
+    var g=(1+ipca)*(1+ST.real/100)-1;      /* crescimento nominal do patrimonio */
+    var RES_R=(1+ipca)*1.03-1;             /* resgate do Whole Life: IPCA+3 */
+    var inv=INV[ST.inv];
     var premioAuto=ST.cob*0.037*fatorIdade(ST.idade);
     var premio=(ST.parc!=null&&ST.parc>0)?ST.parc:premioAuto;
     function resg(n){ var b=0; for(var y=1;y<=n;y++){ if(y<=10) b+=premio; b*=(1+RES_R); } return b; }
@@ -5335,17 +5343,18 @@ html.theme-light .pm-alloc{ background:#fff; }
     var anos=[],patr=[],cob=[],custo=[],res=[],pagos=[],tbl=[];
     for(var n=0;n<=ST.hor;n++){
       var p=ST.patr*Math.pow(1+g,n);
-      var c=ST.cob*Math.pow(1+IPCA,n);            /* capital segurado corrigido por IPCA */
+      var c=ST.cob*Math.pow(1+ipca,n);            /* capital segurado corrigido por IPCA */
       var it=itcmd(p,ST.uf).v;
       var ct=it + p*(inv.h+inv.c)/100;            /* ITCMD + honorarios + custas */
       var r=resg(n), pg=premio*Math.min(n,10);
       anos.push(n); patr.push(p); cob.push(c); custo.push(ct); res.push(r); pagos.push(pg);
       tbl.push({n:n,p:p,c:c,seg:p>0?c/p*100:0,ct:ct,r:r,pg:pg});
     }
-    var it0=itcmd(ST.patr,ST.uf);
+    var it0=itcmd(ST.patr,ST.uf), itF=itcmd(patr[patr.length-1],ST.uf);
     var hon=ST.patr*inv.h/100, cus=ST.patr*inv.c/100, custo0=it0.v+hon+cus;
     return {anos:anos,patr:patr,cob:cob,custo:custo,res:res,pagos:pagos,tbl:tbl,
-            premio:premio, it0:it0, hon:hon, cus:cus, custo0:custo0, inv:inv,
+            premio:premio, it0:it0, itF:itF, hon:hon, cus:cus, custo0:custo0, inv:inv,
+            gNom:g*100, custoFim:custo[custo.length-1],
             pctSeg: ST.patr>0?ST.cob/ST.patr*100:0,
             cobCusto: custo0>0?Math.min(999,ST.cob/custo0*100):0,
             pagosTot: premio*10, patrFim: patr[patr.length-1], resFim: res[res.length-1]};
@@ -5372,7 +5381,9 @@ html.theme-light .pm-alloc{ background:#fff; }
   function render(){
     var d=calc(), t=ITCMD[ST.uf], badge = (t.c==='conf') ? '<span class="wl-flag">CONFIRMAR</span>' : (t.c==='media'?'<span class="wl-flag">REVISAR</span>':'');
     el('wlPatrO').textContent=brl(ST.patr);
-    el('wlCresO').textContent=pct(ST.cres)+' a.a.';
+    el('wlIpcaO').textContent=pct(ST.ipca)+' a.a.';
+    el('wlCresO').textContent='IPCA + '+pct(ST.real);
+    el('wlCresHint').textContent='= '+pct(d.gNom)+' a.a. nominal';
     el('wlIdadeO').textContent=ST.idade+' anos';
     el('wlCobO').textContent=brl(ST.cob);
     if(ST.parc==null) el('wlParc').placeholder=Math.round(d.premio).toLocaleString('pt-BR');
@@ -5382,7 +5393,8 @@ html.theme-light .pm-alloc{ background:#fff; }
     el('wlPctSub').innerHTML=brl(ST.cob)+' de capital segurado sobre '+brl(ST.patr)+' de patrimônio.';
 
     el('wlKCusto').textContent=brl(d.custo0);
-    el('wlKCustoSub').innerHTML=pct(d.custo0/ST.patr*100)+' do patrimônio &middot; '+d.inv.r+' &middot; '+d.inv.p;
+    el('wlKCustoSub').innerHTML=pct(d.custo0/ST.patr*100)+' do patrimônio &middot; '+d.inv.r+' &middot; '+d.inv.p+
+      '<br>Em '+ST.hor+' anos: <b style="color:#FF8B52">'+brl(d.custoFim)+'</b>';
     el('wlKItcmd').textContent=faixaTxt(ST.uf);
     el('wlKItcmdSub').innerHTML=ST.uf+': '+t.n+' '+badge;
 
@@ -5393,6 +5405,9 @@ html.theme-light .pm-alloc{ background:#fff; }
     el('wlK5').textContent=brl(d.it0.v)+' ('+pct(d.it0.ef)+')';
     el('wlK6').textContent=brl(d.hon+d.cus);
     el('wlK7').textContent=brl(d.pagosTot);
+    el('wlK9').textContent=brl(d.itF.v)+' ('+pct(d.itF.ef)+')';
+    el('wlK9s').innerHTML=d.it0.v>0 ? 'multiplica por '+(d.itF.v/d.it0.v).toFixed(1).replace('.',',')+'x em '+ST.hor+' anos'
+                                     : 'isento hoje &middot; passa a incidir com o patrimônio maior';
     el('wlK8').textContent=brl(d.patrFim);
 
     el('wlSegP').textContent=pct(d.pctSeg);
@@ -5413,7 +5428,9 @@ html.theme-light .pm-alloc{ background:#fff; }
       'beneficiários recebem <b>em dias</b>, fora do inventário, enquanto o resto fica retido na partilha ('+d.inv.p+' no cenário '+d.inv.r.toLowerCase()+').';
     el('wlPb2').innerHTML='Soma ITCMD ('+pct(d.it0.ef)+' efetivos em '+ST.uf+'), honorários advocatícios ('+pct(d.inv.h)+
       ', tabela referencial da OAB) e custas/emolumentos ('+pct(d.inv.c)+'). Total de '+pct(d.custo0/ST.patr*100)+' do patrimônio, '+
-      'devido <b>antes</b> de os herdeiros terem acesso aos bens.';
+      'devido <b>antes</b> de os herdeiros terem acesso aos bens. Como a base é o patrimônio, a conta cresce junto: '+
+      'a '+pct(d.gNom)+' a.a. o ITCMD sai de '+brl(d.it0.v)+' para <b>'+brl(d.itF.v)+'</b> em '+ST.hor+' anos'+
+      (d.itF.ef>d.it0.ef+0.05 ? ' — e a alíquota efetiva sobe de '+pct(d.it0.ef)+' para '+pct(d.itF.ef)+', porque o patrimônio migra para faixas mais altas.' : '.');
 
     var tb=el('wlTbody'), h='';
     d.tbl.forEach(function(r){ if(r.n===0||r.n%(ST.hor>20?5:(ST.hor>10?2:1))===0){
@@ -5429,7 +5446,8 @@ html.theme-light .pm-alloc{ background:#fff; }
     if(sel.__wired) { render(); return; } sel.__wired=true;
     function on(id,ev,fn){ var e=el(id); if(e) e.addEventListener(ev,fn); }
     on('wlPatr','input',function(){ ST.patr=+this.value; render(); });
-    on('wlCres','input',function(){ ST.cres=+this.value; render(); });
+    on('wlIpca','input',function(){ ST.ipca=+this.value; render(); });
+    on('wlCres','input',function(){ ST.real=+this.value; render(); });
     on('wlIdade','input',function(){ ST.idade=+this.value; render(); });
     on('wlCob','input',function(){ ST.cob=+this.value; render(); });
     on('wlUF','change',function(){ ST.uf=this.value; render(); });
@@ -5839,18 +5857,20 @@ function ativoRetSummary(it){
 
 const TEMPLATES = {
   Conservadora: ()=>[
-    mk("Renda Fixa","LCD",72.5,"93% a 94% CDI · 1–5 anos","No vencimento"),
+    mk("Renda Fixa","Caixa",20,"Tesouro Selic e CDB de liquidez diária · reserva tática","D+0"),
+    mk("Renda Fixa","LCD",51.5,"93% a 94% CDI · 1–5 anos","No vencimento"),
     mk("Renda Fixa","NTN-B",12.5,"IPCA + 7,8% a.a. · Tesouro Direto","D+1"),
-    mk("Renda Fixa","LTN",5,"14% a.a. · Tesouro Direto","No vencimento"),
+    mk("Renda Fixa","LTN",6,"14% a.a. · Tesouro Direto","No vencimento"),
     mk("Multimercados","ACE Multicenários",2.5,"Rentabilizou ~230% do CDI nos últimos anos","D+17"),
     mk("Fundos Listados","JHSF Capital Malls",2.5,"Shoppings premium da JHSF (Cidade Jardim, Catarina Outlet) · trophy assets de alta renda · opção p/ clientes sem FIIs"),
     mk("Internacional","Renda Fixa Global",2.5,"Crédito global em dólar · Certificate of Deposit","No vencimento"),
     mk("Internacional","XP Global Ações",2.5,"Ações globais — EUA, Europa e Reino Unido","~D+5")
   ],
   Moderada: ()=>[
-    mk("Renda Fixa","LCD",35.5,"93/94% CDI · 1–5 anos","No vencimento"),
+    mk("Renda Fixa","Caixa",15,"Tesouro Selic e CDB de liquidez diária · reserva tática","D+0"),
+    mk("Renda Fixa","LCD",19.5,"93/94% CDI · 1–5 anos","No vencimento"),
     mk("Renda Fixa","NTN-B",22.5,"IPCA + 7,8% a.a. · Tesouro Direto","D+1"),
-    mk("Renda Fixa","LTN",10,"14% a.a. · Tesouro Direto","No vencimento"),
+    mk("Renda Fixa","LTN",11,"14% a.a. · Tesouro Direto","No vencimento"),
     mk("Multimercados","XP Forças Armadas",7,"Exposição a empresas americanas ligadas à defesa e forças armadas, como a Palantir · 5 anos","No vencimento",null,true),
     mk("Multimercados","ACE Multicenários",6,"Rentabilizou ~230% do CDI nos últimos anos","D+17"),
     Object.assign(mk("Renda Variável","BOVA11 Protegida",5,"Proteção total de capital · participa da alta até 28% (15% acima) · Collar UI de 2 anos","No vencimento"),{catalogOp:window.__BOVA_OP,_howOpen:false}),
@@ -5860,9 +5880,10 @@ const TEMPLATES = {
     mk("Internacional","CD de 1 ano",2.5,"Certificate of Deposit · 1 ano pré-fixado em dólar","No vencimento")
   ],
   Sofisticada: ()=>[
-    mk("Renda Fixa","LCD",16,"Mesmo produto das demais carteiras","No vencimento"),
+    mk("Renda Fixa","Caixa",10,"Tesouro Selic e CDB de liquidez diária · reserva tática","D+0"),
+    mk("Renda Fixa","LCD",4,"Mesmo produto das demais carteiras","No vencimento"),
     mk("Renda Fixa","NTN-B",27.5,"IPCA + 7,8% a.a. · Tesouro Direto","D+1"),
-    mk("Renda Fixa","LTN",7.5,"14% a.a. · Tesouro Direto","No vencimento"),
+    mk("Renda Fixa","LTN",9.5,"14% a.a. · Tesouro Direto","No vencimento"),
     mk("Multimercados","ACE Multicenários",5,"Rentabilizou ~230% do CDI nos últimos anos","D+17"),
     mk("Multimercados","XP Terras Raras",3,"Exposição ao tema de terras raras e minerais críticos (eletrificação, defesa e disputa geopolítica EUA–China)","No vencimento"),
     mk("Renda Variável","BOVA11",3,"ETF do Ibovespa — exposição ampla às maiores empresas da bolsa brasileira · Collar UI de 2 anos, proteção total com alta limitada","No vencimento"),
@@ -5888,7 +5909,8 @@ try{ window.RICO_TEMPLATES = TEMPLATES; }catch(e){}
    Classes: Renda Fixa (pos / inflacao / pre), Multimercados, Acoes,
    Fundos Imobiliarios, Alternativos e Internacional.
    ===================================================================== */
-const GEN_RF_POS = "93,5% do CDI · isento (LCA/LCD, CDB e Tesouro Selic)";
+const GEN_RF_CX  = "Tesouro Selic e CDB de liquidez diária · reserva tática";
+const GEN_RF_POS = "93,5% do CDI · isento (LCA/LCD e CDB)";
 const GEN_RF_INF = "IPCA + 7,8% a.a. · títulos indexados à inflação";
 const GEN_RF_PRE = "14% a.a. · pré-fixado (Tesouro e crédito privado)";
 const GEN_MM_DET = "Estratégias macro, long&short e teses temáticas";
@@ -5900,18 +5922,20 @@ const GEN_RFG_DET = "Renda fixa global em dólar (treasuries e crédito)";
 const GEN_RVG_DET = "Ações globais em dólar (EUA, Europa e Reino Unido)";
 const GENERIC_TEMPLATES = {
   Conservadora: ()=>[
-    mk("Renda Fixa","Pós-fixado",72.5,GEN_RF_POS,"D+0 a vencimento"),
+    mk("Renda Fixa","Caixa",20,GEN_RF_CX,"D+0"),
+    mk("Renda Fixa","Crédito",51.5,GEN_RF_POS,"D+0 a vencimento"),
     mk("Renda Fixa","Inflação",12.5,GEN_RF_INF,"D+1"),
-    mk("Renda Fixa","Pré-fixado",5,GEN_RF_PRE,"No vencimento"),
+    mk("Renda Fixa","Pré-fixado",6,GEN_RF_PRE,"No vencimento"),
     mk("Multimercados","Multimercados",2.5,GEN_MM_DET,"D+17"),
     mk("Fundos Listados","Fundos Imobiliários",2.5,GEN_FI_DET,"D+2"),
     mk("Internacional","Renda Fixa Global",2.5,GEN_RFG_DET,"~D+5"),
     mk("Internacional","Renda Variável Global",2.5,GEN_RVG_DET,"~D+5")
   ],
   Moderada: ()=>[
-    mk("Renda Fixa","Pós-fixado",35.5,GEN_RF_POS,"D+0 a vencimento"),
+    mk("Renda Fixa","Caixa",15,GEN_RF_CX,"D+0"),
+    mk("Renda Fixa","Crédito",19.5,GEN_RF_POS,"D+0 a vencimento"),
     mk("Renda Fixa","Inflação",22.5,GEN_RF_INF,"D+1"),
-    mk("Renda Fixa","Pré-fixado",10,GEN_RF_PRE,"No vencimento"),
+    mk("Renda Fixa","Pré-fixado",11,GEN_RF_PRE,"No vencimento"),
     mk("Multimercados","Multimercados",13,GEN_MM_DET,"D+17"),
     mk("Renda Variável","Ações",5,GEN_AC_DET,"D+2"),
     mk("Fundos Listados","Fundos Imobiliários",4,GEN_FI_DET,"D+2"),
@@ -5920,9 +5944,10 @@ const GENERIC_TEMPLATES = {
     mk("Internacional","Renda Variável Global",4.5,GEN_RVG_DET,"~D+5")
   ],
   Sofisticada: ()=>[
-    mk("Renda Fixa","Pós-fixado",16,GEN_RF_POS,"D+0 a vencimento"),
+    mk("Renda Fixa","Caixa",10,GEN_RF_CX,"D+0"),
+    mk("Renda Fixa","Crédito",4,GEN_RF_POS,"D+0 a vencimento"),
     mk("Renda Fixa","Inflação",27.5,GEN_RF_INF,"D+1"),
-    mk("Renda Fixa","Pré-fixado",7.5,GEN_RF_PRE,"No vencimento"),
+    mk("Renda Fixa","Pré-fixado",9.5,GEN_RF_PRE,"No vencimento"),
     mk("Multimercados","Multimercados",8,GEN_MM_DET,"D+17"),
     mk("Renda Variável","Ações",15,GEN_AC_DET,"D+2"),
     mk("Fundos Listados","Fundos Imobiliários",9.5,GEN_FI_DET,"D+2"),
@@ -5931,8 +5956,30 @@ const GENERIC_TEMPLATES = {
     mk("Internacional","Renda Variável Global",7,GEN_RVG_DET,"~D+5")
   ]
 };
+/* =====================================================================
+   CARTEIRA GLOBAL (os 15% em US$) — peso unico da XP, nao varia por
+   perfil: a alocacao global e a mesma para Conservadora, Moderada e
+   Sofisticada; o que muda entre os perfis e quanto do total vai para
+   global, nao a composicao dela. Por isso uma lista so.
+   Caixa 4 + Renda Fixa 54 + Renda Variavel 42 + Alternativos 0 = 100.
+   ===================================================================== */
+const GLOBAL_TEMPLATE = ()=>[
+  mk("Renda Fixa","Caixa",4,"Caixa em dólar · T-bills e money market","D+0"),
+  mk("Renda Fixa","Soberana Desenvolvidos",11,"Títulos soberanos de países desenvolvidos · treasuries e equivalentes","~D+5"),
+  mk("Renda Fixa","Crédito High Grade",17,"Crédito corporativo grau de investimento em dólar","~D+5"),
+  mk("Renda Fixa","Crédito High Yield",13.5,"Crédito corporativo de maior risco e maior carrego","~D+5"),
+  mk("Renda Fixa","Dívida Emergentes",12.5,"Dívida soberana e corporativa de mercados emergentes","~D+5"),
+  mk("Renda Variável","EUA",29,"Bolsa americana · S&P 500 e large caps","~D+5"),
+  mk("Renda Variável","Desenvolvidos (ex-EUA)",11,"Europa, Reino Unido, Japão e demais desenvolvidos","~D+5"),
+  mk("Renda Variável","Emergentes",2,"Bolsas de mercados emergentes","~D+5")
+];
+try{ window.RICO_GLOBAL_TEMPLATE = GLOBAL_TEMPLATE; }catch(e){}
+
 let CTOR_VIEW = "produtos";
 try{ var _cv=localStorage.getItem("hubCtorView"); if(_cv==="classes"||_cv==="produtos") CTOR_VIEW=_cv; }catch(e){}
+/* brasil = os 85% em R$ | global = os 15% em US$ */
+let CTOR_CART = "brasil";
+try{ var _cc=localStorage.getItem("hubCtorCart"); if(_cc==="global"||_cc==="brasil") CTOR_CART=_cc; }catch(e){}
 try{ window.RICO_GENERIC_TEMPLATES = GENERIC_TEMPLATES; }catch(e){}
 
 /* =====================================================================
@@ -6312,7 +6359,16 @@ function renderTabs(){
     +'<button type="button" data-cview="produtos" style="'+_cvB+(CTOR_VIEW==="produtos"?"background:#F26522;color:#fff;":"background:transparent;color:#A9B0D6;")+'">Produtos</button>'
     +'<button type="button" data-cview="classes" style="'+_cvB+(CTOR_VIEW==="classes"?"background:#F26522;color:#fff;":"background:transparent;color:#A9B0D6;")+'">Classes</button>'
     +'</div>';
-  if(ehBase && CTOR_VIEW==="classes"){
+  // ===== carteira: os 85% em R$ x os 15% em US$ =====
+  h+='<div title="Brasil: os 85% da carteira em reais. Global: os 15% em dólar, com o peso único da XP (não muda por perfil)." style="display:inline-flex;gap:4px;background:rgba(0,0,0,.28);border:1px solid rgba(120,130,210,.22);border-radius:10px;padding:3px;align-items:center">'
+    +'<span style="font-size:10px;font-weight:800;letter-spacing:.6px;color:#8089BE;padding:0 4px 0 8px;text-transform:uppercase">Carteira</span>'
+    +'<button type="button" data-ccart="brasil" style="'+_cvB+(CTOR_CART==="brasil"?"background:#F26522;color:#fff;":"background:transparent;color:#A9B0D6;")+'">Brasil 85%</button>'
+    +'<button type="button" data-ccart="global" style="'+_cvB+(CTOR_CART==="global"?"background:#F26522;color:#fff;":"background:transparent;color:#A9B0D6;")+'">Global 15%</button>'
+    +'</div>';
+  if(CTOR_CART==="global"){
+    h+='<span style="font-size:10.5px;font-weight:700;color:#94ACEC;background:rgba(148,172,236,.12);border:1px solid rgba(148,172,236,.3);border-radius:8px;padding:6px 10px">Peso único · igual nos três perfis</span>';
+  }
+  if(ehBase && (CTOR_VIEW==="classes" || CTOR_CART==="global")){
     /* mantem o botao no lugar (so desabilitado) para a barra nao mudar de tamanho */
     h+=`<button class="tab" disabled style="opacity:.42;cursor:not-allowed" title="A edicao de modelo so esta disponivel na visao Produtos">
           <svg class="icon" viewBox="0 0 24 24" style="margin-right:6px; vertical-align:-3px; width:14px; height:14px;"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>Editar modelo</button>`;
@@ -6336,6 +6392,13 @@ function renderTabs(){
     var v=b.getAttribute("data-cview");
     if(v===CTOR_VIEW) return;
     CTOR_VIEW=v; try{ localStorage.setItem("hubCtorView",v); }catch(_){}
+    S.editandoTemplate=null;
+    if(TEMPLATES[S.template]) loadTemplate(S.template); else render();
+  });
+  el.querySelectorAll("[data-ccart]").forEach(b=>b.onclick=()=>{
+    var v=b.getAttribute("data-ccart");
+    if(v===CTOR_CART) return;
+    CTOR_CART=v; try{ localStorage.setItem("hubCtorCart",v); }catch(_){}
     S.editandoTemplate=null;
     if(TEMPLATES[S.template]) loadTemplate(S.template); else render();
   });
@@ -6376,7 +6439,8 @@ function renderTabs(){
 
 function loadTemplate(t){
   S.template=t; S.recomendadaTemplate=t;
-  S.items = (CTOR_VIEW==="classes" && GENERIC_TEMPLATES[t]) ? GENERIC_TEMPLATES[t]() : TEMPLATES[t]();
+  S.items = (CTOR_CART==="global") ? GLOBAL_TEMPLATE()
+          : ((CTOR_VIEW==="classes" && GENERIC_TEMPLATES[t]) ? GENERIC_TEMPLATES[t]() : TEMPLATES[t]());
   ctorFixIds(); S.cdiMult=CDI_MULT[t]; render();
 }
 function loadNova(){
