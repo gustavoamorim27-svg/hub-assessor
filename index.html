@@ -2246,7 +2246,7 @@ html.modo-simples #btnModoSimples{background:rgba(242,101,34,.16);border-color:r
         <div class="hcard" onclick="showPanel('holding')">
           <div class="hcard-ic"><svg viewBox="0 0 24 24"><path d="M3 21h18M5 21V8l7-4 7 4v13M10 21v-6h4v6"/></svg></div>
           <div class="hcard-title">Sucessão</div>
-          <div class="hcard-desc">Quanto do patrimônio já está assegurado e quanto custaria transmiti-lo: Whole Life, ITCMD por estado e custo de inventário.</div>
+          <div class="hcard-desc">Whole Life: quanto o capital cresce, quando dá para resgatar com deságio e quando o resgate fica integral e isento.</div>
         </div>
         <div class="hcard" onclick="showPanel('apresentacao')">
           <div class="hcard-ic"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></div>
@@ -5256,6 +5256,13 @@ html.theme-light .pm-alloc{ background:#fff; }
   #p-holding .hc-inputs{grid-template-columns:repeat(3,1fr)}
   #p-holding .hc-kpis{grid-template-columns:repeat(3,1fr)}
   #p-holding .wl-hint{font-size:10.5px;color:#94ACEC;margin-top:5px;letter-spacing:.2px}
+#p-holding .wl-prem{display:none;gap:10px;flex-wrap:wrap;margin:0 0 16px}
+#p-holding .wl-prem i{font-style:normal;display:inline-flex;align-items:baseline;gap:7px;
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.14);border-radius:100px;
+  padding:8px 15px;font-size:12px;color:#C2CBF0;letter-spacing:.2px}
+#p-holding .wl-prem i b{color:#fff;font-weight:800;font-size:12.5px}
+#p-holding.wl-print .hc-actions,#p-holding.wl-print .hc-inputs,#p-holding.wl-print .wl-toprow,#p-holding.wl-print .wl-onlyapp{display:none !important}
+#p-holding.wl-print .wl-prem{display:flex}
   @media (max-width:1000px){ #p-holding .wl-hero{grid-template-columns:1fr} #p-holding .hc-kpis{grid-template-columns:repeat(2,1fr)} }
 </style>
 
@@ -5264,8 +5271,8 @@ html.theme-light .pm-alloc{ background:#fff; }
 
   <div class="hc-head">
     <div>
-      <div class="hc-h">Sucessão &middot; <b>Whole Life &amp; ITCMD</b></div>
-      <div class="hc-hs">Quanto do patrimônio já está assegurado, e quanto custaria transmiti-lo hoje. Ajuste os campos — tudo recalcula em tempo real.</div>
+      <div class="hc-h">Sucessão &middot; <b>Whole Life</b></div>
+      <div class="hc-hs">Quanto o capital cresce, quando dá para resgatar e quando o resgate fica integral.<span class="wl-onlyapp"> Ajuste os campos — tudo recalcula em tempo real.</span></div>
     </div>
     <div class="hc-actions">
       <button class="hc-btn" id="wlPngBtn">Gerar PNG</button>
@@ -5274,83 +5281,81 @@ html.theme-light .pm-alloc{ background:#fff; }
   </div>
 
   <div class="hc-inputs">
-    <div class="hc-f"><label>Patrimônio total <b id="wlPatrO">R$ 2.000.000</b></label><input type="range" id="wlPatr" min="200000" max="30000000" step="100000" value="2000000"></div>
-    <div class="hc-f"><label>IPCA (premissa) <b id="wlIpcaO">4,5% a.a.</b></label><input type="range" id="wlIpca" min="0" max="12" step="0.1" value="4.5"></div>
-    <div class="hc-f"><label>Crescimento do patrimônio <b id="wlCresO">IPCA + 3,00%</b></label><input type="range" id="wlCres" min="0" max="10" step="0.25" value="3"><div class="wl-hint" id="wlCresHint">—</div></div>
-    <div class="hc-f"><label>Estado do titular <span class="tip" title="define a alíquota de ITCMD aplicada na transmissão causa mortis">?</span></label><select class="hc-sel" id="wlUF"></select></div>
+    <div class="hc-f"><label>Capital segurado <b id="wlCobO">R$ 1.000.000</b></label><input type="range" id="wlCob" min="100000" max="20000000" step="50000" value="1000000"></div>
     <div class="hc-f"><label>Idade do titular <b id="wlIdadeO">45 anos</b></label><input type="range" id="wlIdade" min="25" max="75" step="1" value="45"></div>
-    <div class="hc-f"><label>Capital segurado Whole Life <b id="wlCobO">R$ 400.000</b></label><input type="range" id="wlCob" min="0" max="10000000" step="50000" value="400000"></div>
-    <div class="hc-f"><label>Prêmio anual <span id="wlParcAuto" class="hc-auto" title="voltar ao calculo automatico">auto</span></label><input type="number" id="wlParc" min="0" step="500" placeholder="auto"></div>
-    <div class="hc-f"><label>Forma do inventário</label><select class="hc-sel" id="wlInv"><option value="extra" selected>Extrajudicial (cartório)</option><option value="jud">Judicial consensual</option><option value="lit">Judicial litigioso</option></select></div>
+    <div class="hc-f"><label>Prêmio anual <span id="wlParcAuto" class="hc-auto" title="voltar ao cálculo automático">auto</span></label><input type="number" id="wlParc" min="0" step="500" placeholder="auto"></div>
+    <div class="hc-f"><label>IPCA (premissa) <b id="wlIpcaO">4,5% a.a.</b></label><input type="range" id="wlIpca" min="0" max="12" step="0.1" value="4.5"></div>
+    <div class="hc-f"><label>Deságio no 3º ano <b id="wlDesO">40%</b></label><input type="range" id="wlDes" min="0" max="80" step="5" value="40"><div class="wl-hint">interpolado até zerar no 10º ano</div></div>
     <div class="hc-f"><label>Horizonte</label><select class="hc-sel" id="wlHor"><option value="10">10 anos</option><option value="15">15 anos</option><option value="20" selected>20 anos</option><option value="30">30 anos</option></select></div>
   </div>
 
   <div class="wl-toprow">
-    <label class="wl-switch"><input type="checkbox" id="wlTgITCMD" checked><span>Mostrar custo de inventário (ITCMD + custas + honorários)</span></label>
-    <label class="wl-switch"><input type="checkbox" id="wlTgResg" checked><span>Mostrar valor de resgate do Whole Life</span></label>
+    <label class="wl-switch"><input type="checkbox" id="wlTgPagos" checked><span>Mostrar prêmios pagos</span></label>
+    <label class="wl-switch"><input type="checkbox" id="wlTgMarcos" checked><span>Marcar o 3º e o 10º ano</span></label>
   </div>
+  <div class="wl-prem" id="wlPrem"></div>
 
   <div class="wl-hero">
     <div class="wl-big">
-      <div class="k">Patrimônio assegurado</div>
-      <div class="v" id="wlPctSeg">—</div>
-      <div class="wl-meter"><i id="wlPctBar" style="width:0"></i></div>
-      <div class="s" id="wlPctSub">—</div>
-    </div>
-    <div class="hc-kpi o">
-      <div class="k">Custo de transmissão hoje</div><div class="v" id="wlKCusto">—</div>
-      <div class="wl-uf" id="wlKCustoSub">—</div>
+      <div class="k">Resgate no 10º ano</div>
+      <div class="v" id="wlHeroV">—</div>
+      <div class="wl-meter"><i id="wlHeroBar" style="width:0"></i></div>
+      <div class="s" id="wlHeroS">—</div>
     </div>
     <div class="hc-kpi b">
-      <div class="k">ITCMD do estado</div><div class="v" id="wlKItcmd">—</div>
-      <div class="wl-uf" id="wlKItcmdSub">—</div>
+      <div class="k">Capital segurado</div><div class="v" id="wlKCap">—</div>
+      <div class="wl-uf" id="wlKCapSub">—</div>
+    </div>
+    <div class="hc-kpi o">
+      <div class="k">Fora do inventário</div><div class="v" id="wlKInv">sem ITCMD</div>
+      <div class="wl-uf">Vai direto ao beneficiário, sem partilha e sem imposto de transmissão.</div>
     </div>
   </div>
 
   <div class="hc-kpis">
-    <div class="hc-kpi b"><div class="k">Capital segurado</div><div class="v" id="wlK1">—</div></div>
-    <div class="hc-kpi b"><div class="k">Prêmio anual <span style="opacity:.65">(10 anos)</span></div><div class="v" id="wlK2">—</div></div>
-    <div class="hc-kpi g"><div class="k">Cobertura do custo sucessório</div><div class="v" id="wlK3">—</div></div>
-    <div class="hc-kpi y"><div class="k">Resgate no horizonte <span style="opacity:.65">(IPCA+3)</span></div><div class="v" id="wlK4">—</div></div>
-    <div class="hc-kpi o"><div class="k">ITCMD hoje</div><div class="v" id="wlK5">—</div></div>
-    <div class="hc-kpi o"><div class="k">ITCMD no horizonte</div><div class="v" id="wlK9">—</div><div class="wl-uf" id="wlK9s">—</div></div>
-    <div class="hc-kpi o"><div class="k">Honorários + custas</div><div class="v" id="wlK6">—</div></div>
-    <div class="hc-kpi b"><div class="k">Prêmios pagos <span style="opacity:.65">(total)</span></div><div class="v" id="wlK7">—</div></div>
-    <div class="hc-kpi y"><div class="k">Patrimônio no horizonte</div><div class="v" id="wlK8">—</div></div>
+    <div class="hc-kpi b"><div class="k">Prêmio anual <span style="opacity:.65">(10 anos)</span></div><div class="v" id="wlK1">—</div></div>
+    <div class="hc-kpi b"><div class="k">Total de prêmios</div><div class="v" id="wlK2">—</div></div>
+    <div class="hc-kpi y"><div class="k">Resgate no 3º ano</div><div class="v" id="wlK3">—</div><div class="wl-uf" id="wlK3s">—</div></div>
+    <div class="hc-kpi g"><div class="k">Resgate no 10º ano</div><div class="v" id="wlK4">—</div><div class="wl-uf" id="wlK4s">—</div></div>
+    <div class="hc-kpi g"><div class="k">Resgate no horizonte</div><div class="v" id="wlK5">—</div><div class="wl-uf" id="wlK5s">—</div></div>
+    <div class="hc-kpi y"><div class="k">Vira o jogo em</div><div class="v" id="wlK6">—</div><div class="wl-uf" id="wlK6s">—</div></div>
   </div>
 
   <div class="hc-row2">
     <div class="hc-chartwrap"><div class="ct" style="height:340px"><canvas id="wlChart"></canvas></div></div>
     <div class="hc-side">
-      <div class="hc-score"><div class="st">Patrimônio assegurado <span class="pts" id="wlSegP">—</span></div><div class="hc-bar"><i id="wlSegB" style="background:#F26522;width:0"></i></div><div class="lv" id="wlSegL"></div></div>
-      <div class="hc-score"><div class="st">Custo sucessório coberto <span class="pts" id="wlCovP">—</span></div><div class="hc-bar"><i id="wlCovB" style="background:#34D399;width:0"></i></div><div class="lv" id="wlCovL"></div></div>
+      <div class="hc-score"><div class="st">Resgate ÷ prêmios no 10º ano <span class="pts" id="wlSegP">—</span></div><div class="hc-bar"><i id="wlSegB" style="background:#2BD9A6;width:0"></i></div><div class="lv" id="wlSegL"></div></div>
+      <div class="hc-score"><div class="st">Capital segurado ÷ prêmios <span class="pts" id="wlCovP">—</span></div><div class="hc-bar"><i id="wlCovB" style="background:#F26522;width:0"></i></div><div class="lv" id="wlCovL"></div></div>
       <div class="hc-rec" id="wlRec">—</div>
     </div>
   </div>
 
   <div class="wl-legal">
-    <b>Por que o Whole Life não entra na conta do inventário:</b> o capital segurado pago por morte não é considerado herança
-    (<b>Código Civil, art. 794</b>, reforçado pelo <b>art. 116 da Lei 15.040/2024</b>, o Marco Legal dos Seguros). Vai direto ao
-    beneficiário indicado, sem inventário, sem ITCMD e sem esperar a partilha. No mesmo sentido, o <b>STF fixou no Tema 1214</b>
-    (RE 1.363.013, dez/2024) que é inconstitucional cobrar ITCMD sobre o repasse de VGBL e PGBL por morte do titular.
+    <b>A régua do resgate.</b> Nos primeiros anos o resgate sofre <b>deságio</b> — devolve menos que a reserva acumulada.
+    A partir do <b>3º ano</b> já é possível resgatar, ainda com deságio; a partir do <b>10º ano</b>, com os prêmios quitados,
+    o resgate é <b>integral, sem deságio nenhum</b>, e o valor recebido é <b>isento de imposto de renda</b>.
+    <b>E por que não entra no inventário:</b> o capital pago por morte não é considerado herança
+    (<b>Código Civil, art. 794</b>, reforçado pelo <b>art. 116 da Lei 15.040/2024</b>) — vai direto ao beneficiário indicado,
+    sem inventário e sem ITCMD. No mesmo sentido, o <b>STF fixou no Tema 1214</b> (RE 1.363.013, dez/2024) que é inconstitucional
+    cobrar ITCMD sobre o repasse de VGBL e PGBL por morte do titular.
   </div>
 
   <div class="hc-tblwrap">
     <div class="tt">Ano a ano</div>
-    <table class="hc-t"><thead><tr><th>Ano</th><th>Patrimônio</th><th>Capital segurado</th><th>% assegurado</th><th>Custo de inventário</th><th>Resgate WL</th><th>Prêmios pagos</th></tr></thead><tbody id="wlTbody"></tbody></table>
+    <table class="hc-t"><thead><tr><th>Ano</th><th>Capital segurado</th><th>Prêmios pagos</th><th>Reserva</th><th>Deságio</th><th>Resgate</th><th>Resgate ÷ pago</th></tr></thead><tbody id="wlTbody"></tbody></table>
   </div>
 
   <div class="hc-pbrow">
-    <div class="hc-pbbox"><div class="pbt" style="color:#F26522">Como ler o patrimônio assegurado</div><div class="pbc" id="wlPb1">—</div></div>
-    <div class="hc-pbbox"><div class="pbt" style="color:#F5B942">Como ler o custo de inventário</div><div class="pbc" id="wlPb2">—</div></div>
+    <div class="hc-pbbox"><div class="pbt" style="color:#F5B942">Como ler o deságio</div><div class="pbc" id="wlPb1">—</div></div>
+    <div class="hc-pbbox"><div class="pbt" style="color:#2BD9A6">Como ler o 10º ano</div><div class="pbc" id="wlPb2">—</div></div>
   </div>
 
-  <div class="hc-disc2">Ferramenta educacional de apoio comercial; não substitui a orientação de um assessor habilitado nem de um advogado.
-  As alíquotas de ITCMD são estimativas por faixa (cálculo marginal) e mudam por lei estadual — confirme na SEFAZ do estado antes de
-  usar com o cliente. A EC 132/2023 e a LC 227/2026 tornaram a progressividade obrigatória, mas leis estaduais publicadas em 2026 só
-  produzem efeito em 2027, então vários estados ainda cobram alíquota fixa. Honorários advocatícios seguem tabelas referenciais da OAB
-  (negociáveis) e custas variam por estado. Prêmios de seguro dependem de subscrição, idade e condições de saúde. O resgate do Whole Life
-  é ilustrado a IPCA+3% a.a. com prêmio pago por 10 anos. Valores ilustrativos.</div>
+  <div class="hc-disc2">Ferramenta educacional de apoio comercial; não substitui a orientação de um assessor habilitado.
+  A curva de deságio varia por produto, idade e prazo — o campo "Deságio no 3º ano" é uma premissa que você preenche pela tabela
+  oficial do produto, e daí até o 10º ano ela é interpolada linearmente até zero. Antes do 3º ano o resgate é tratado como
+  indisponível. Prêmios dependem de subscrição, idade e condições de saúde. A reserva é ilustrada a IPCA+3% a.a. com prêmio pago
+  por 10 anos. A isenção de IR segue o tratamento de seguro de vida — confirme o enquadramento do produto contratado.
+  Valores ilustrativos.</div>
 
 </div>
 </div>
@@ -5358,85 +5363,18 @@ html.theme-light .pm-alloc{ background:#fff; }
 <script>
 (function(){
   "use strict";
-  /* ================= ITCMD por UF =================================================
-     Faixas MARGINAIS (a aliquota incide so sobre a parcela dentro da faixa), que e
-     como a maioria das leis estaduais progressivas funciona e como a LC 227/2026
-     padronizou. Estados com formula de deducao (GO, PE) sao equivalentes a isso.
-     conf: 'ok'      -> amarrado a texto legal ou portal oficial
-           'media'   -> fonte secundaria confiavel, faixas a reconferir
-           'conf'    -> NAO confirmado; usa aliquota de referencia e avisa na tela
-     Leis estaduais publicadas em 2026 so valem em 2027 (anterioridade). ============ */
-  var INF=Infinity;
-  var ITCMD={
-    AC:{f:[[50000,0],[1500000,4],[2500000,5],[3500000,6],[INF,7]],c:'ok',n:'LC 373/2020. Colaterais: 8%.'},
-    AL:{f:[[INF,4]],c:'ok',n:'Alíquota fixa (Lei 5.077/1989). Progressividade prevista para 2027.'},
-    AP:{f:[[INF,4]],c:'conf',n:'Não confirmado. Base histórica 4% fixa; há notícia de progressividade 2–6% (Lei 3.149/2024) sem fonte primária.'},
-    AM:{f:[[400000,0],[2000000,2],[6000000,3],[INF,4]],c:'ok',n:'LC 269/2024. Herança isenta até R$ 400 mil.'},
-    BA:{f:[[100000,0],[200000,4],[300000,6],[INF,8]],c:'ok',n:'Lei 14.802/2024.'},
-    CE:{f:[[29000,2],[87000,4],[174000,6],[INF,8]],c:'media',t:1,n:'Faixas em UFIRCE (2026 = R$ 6,29872). Atenção: no CE a alíquota incide sobre o TOTAL, não por faixa.'},
-    DF:{f:[[1000000,4],[2000000,5],[INF,6]],c:'ok',n:'Lei 3.804/2006 c/ Lei 5.549/2015.'},
-    ES:{f:[[INF,4]],c:'ok',n:'Alíquota fixa (Lei 10.011/2013).'},
-    GO:{f:[[25000,2],[200000,4],[600000,6],[INF,8]],c:'ok',n:'Lei 11.651/1991.'},
-    MA:{f:[[300000,3],[600000,4],[900000,5],[1200000,6],[INF,7]],c:'media',n:'Lei 7.799/2002. Faixas aproximadas — reconferir na SEFAZ.'},
-    MT:{f:[[395670,0],[1055120,2],[2110240,4],[4220480,6],[INF,8]],c:'ok',n:'Faixas em UPF/MT (ago-2026 = R$ 263,78). Isento até 1.500 UPF.'},
-    MS:{f:[[100000,0],[INF,6]],c:'ok',n:'Alíquota fixa 6% (Lei 1.810/1997). Isento até R$ 100 mil.'},
-    MG:{f:[[INF,5]],c:'ok',n:'Alíquota fixa 5% (Lei 14.941/2003). PL 2.881/2024 (3/5/8%) em tramitação.'},
-    PA:{f:[[INF,4]],c:'conf',n:'Progressiva 2–6% em UPF-PA (Lei 5.529/1989), mas o valor da UPF-PA 2026 não foi confirmado. Usando 4% como referência.'},
-    PB:{f:[[125000,2],[400000,4],[1000000,6],[INF,8]],c:'ok',n:'Lei 5.123/1989, red. Lei 12.585/2023.'},
-    PR:{f:[[INF,4]],c:'ok',n:'Alíquota fixa (Lei 18.573/2015).'},
-    PE:{f:[[80000,0],[350000,2],[550000,4],[750000,6],[INF,8]],c:'ok',n:'LC 563/2025, vigente desde 01/01/2026.'},
-    PI:{f:[[INF,4]],c:'conf',n:'Progressiva 2–6% (Lei 4.261/1989), faixas não confirmadas. Usando 4% como referência.'},
-    RJ:{f:[[347228,4],[496040,4.5],[992080,5],[1488120,6],[1984160,7],[INF,8]],c:'ok',n:'Faixas em UFIR-RJ (2026 = R$ 4,9604). Lei 7.174/2015.'},
-    RN:{f:[[INF,3]],c:'conf',n:'Base confirmada: 3% única (Lei 5.887/1989). Alteração para 3–6% não confirmada.'},
-    RS:{f:[[56653,0],[283264,3],[849792,4],[1416320,5],[INF,6]],c:'ok',n:'Faixas em UPF-RS (2026 = R$ 28,3264). Isento até 2.000 UPF.'},
-    RO:{f:[[155575,2],[767918,3],[INF,4]],c:'media',n:'Faixas em UPF/RO (2026 = R$ 124,46). Lei 959/2000.'},
-    RR:{f:[[INF,4]],c:'media',n:'Alíquota fixa 4% (Lei 59/1993).'},
-    SC:{f:[[20000,1],[50000,3],[150000,5],[INF,7]],c:'ok',n:'Lei 19.053/2024 revogou a faixa de 8%.'},
-    SP:{f:[[INF,4]],c:'ok',n:'Alíquota fixa 4% (Lei 10.705/2000). PLs de progressividade só valeriam a partir de 2027.'},
-    SE:{f:[[41240,0],[199354,3],[996853,6],[INF,8]],c:'ok',n:'Faixas em UFP/SE (mai-2026 = R$ 82,48, reajuste mensal).'},
-    TO:{f:[[25000,2],[100000,4],[500000,6],[INF,8]],c:'media',n:'Lei 1.287/2001. Faixas aproximadas — fontes divergentes.'}
-  };
-  var UFS=Object.keys(ITCMD).sort();
-
-  function itcmd(base, uf){
-    var t=ITCMD[uf]; if(!t||base<=0) return {v:0,ef:0};
-    if(t.t){ /* aliquota unica sobre o total (CE) */
-      var a=t.f[t.f.length-1][1];
-      for(var q=0;q<t.f.length;q++){ if(base<=t.f[q][0]){ a=t.f[q][1]; break; } }
-      return {v:base*a/100, ef:a};
-    }
-    var v=0, ant=0;
-    for(var i=0;i<t.f.length;i++){
-      var lim=t.f[i][0], al=t.f[i][1];
-      if(base>ant){ v+=(Math.min(base,lim)-ant)*al/100; }
-      ant=lim; if(base<=lim) break;
-    }
-    return {v:v, ef: base>0 ? v/base*100 : 0};
-  }
-  function faixaTxt(uf){
-    var t=ITCMD[uf]; if(!t) return '';
-    if(t.f.length===1) return t.f[0][1].toString().replace('.',',')+'% fixo';
-    /* a faixa isenta nao conta como "aliquota minima": MS, BA, PE e RS tem banda de
-       isencao no inicio, e mostrar "0% a 6%" daria a impressao errada de progressividade. */
-    var r=t.f.map(function(x){return x[1];}).filter(function(a){return a>0;});
-    var mn=Math.min.apply(null,r), mx=Math.max.apply(null,r);
-    /* usa o caractere, nao a entidade: este texto vai para textContent */
-    var isento = t.f[0][1]===0 ? ' \u00b7 isento at\u00e9 '+brlK(t.f[0][0]) : '';
-    if(mn===mx) return String(mn).replace('.',',')+'% fixo'+isento;
-    return String(mn).replace('.',',')+'% a '+String(mx).replace('.',',')+'% (progressivo)'+isento;
-  }
-
-  /* custos de inventario alem do ITCMD (tabelas OAB sao referenciais/negociaveis) */
-  var INV={ extra:{h:5,c:0.8,r:'Extrajudicial (cartório)',p:'30 a 90 dias'},
-            jud:  {h:8,c:2.0,r:'Judicial consensual',     p:'6 meses a 2 anos'},
-            lit:  {h:10,c:2.5,r:'Judicial litigioso',      p:'2 anos ou mais'} };
-
+  /* ===== Whole Life: crescimento e regua de resgate ======================
+     Premio nivelado 10-pay, ancorado no XP Toda Vida (3,70% do capital aos
+     36 anos, com fator por idade). A reserva acumula os premios a IPCA+3.
+     O resgate e a reserva menos o desagio: indisponivel ate o 3o ano, com
+     desagio decrescente do 3o ao 10o, e integral do 10o em diante. A curva
+     de desagio muda por produto -- por isso o valor do 3o ano e um campo,
+     nao um numero cravado no codigo. ===================================== */
   var IDADE=[[36,1.0],[40,1.15],[45,1.4],[50,1.7],[55,2.1],[60,2.6],[65,3.2],[70,4.0],[75,4.8]];
   function fatorIdade(a){ for(var i=0;i<IDADE.length;i++){ if(a<=IDADE[i][0]) return IDADE[i][1]; } return 5.5; }
-  /* IPCA e premissa editavel: alimenta o crescimento do patrimonio (IPCA+x),
-     a correcao do capital segurado e o resgate do Whole Life (IPCA+3).
-     Convencao multiplicativa, como em qualquer papel indexado: (1+IPCA)*(1+x)-1. */
-  var ST={patr:2000000,ipca:4.5,real:3,uf:'SP',idade:45,cob:400000,parc:null,inv:'extra',hor:20,tgITCMD:true,tgResg:true};
+  var ANO_MIN=3, ANO_PLENO=10;
+
+  var ST={cob:1000000,idade:45,parc:null,ipca:4.5,des3:40,hor:20,tgPagos:true,tgMarcos:true};
   var CH=null;
   function el(id){ return document.getElementById(id); }
   function brl(n){ return 'R$ '+Math.round(n||0).toLocaleString('pt-BR'); }
@@ -5444,138 +5382,177 @@ html.theme-light .pm-alloc{ background:#fff; }
                     if(Math.abs(n)>=1000) return 'R$ '+Math.round(n/1000)+'k'; return 'R$ '+Math.round(n); }
   function pct(n){ return (Math.round((n||0)*10)/10).toString().replace('.',',')+'%'; }
 
+  /* desagio do ano n, em % da reserva */
+  function desagio(n){
+    if(n<ANO_MIN) return null;                 /* sem resgate disponivel */
+    if(n>=ANO_PLENO) return 0;
+    return ST.des3*(ANO_PLENO-n)/(ANO_PLENO-ANO_MIN);
+  }
+
   function calc(){
-    var ipca=ST.ipca/100;
-    var g=(1+ipca)*(1+ST.real/100)-1;      /* crescimento nominal do patrimonio */
-    var RES_R=(1+ipca)*1.03-1;             /* resgate do Whole Life: IPCA+3 */
-    var inv=INV[ST.inv];
+    var ipca=ST.ipca/100, RES_R=(1+ipca)*1.03-1;
     var premioAuto=ST.cob*0.037*fatorIdade(ST.idade);
     var premio=(ST.parc!=null&&ST.parc>0)?ST.parc:premioAuto;
-    function resg(n){ var b=0; for(var y=1;y<=n;y++){ if(y<=10) b+=premio; b*=(1+RES_R); } return b; }
-
-    var anos=[],patr=[],cob=[],custo=[],res=[],pagos=[],tbl=[];
+    var anos=[],cap=[],res=[],pagos=[],resg=[],tbl=[];
+    var bal=0, equilibrio=null;
     for(var n=0;n<=ST.hor;n++){
-      var p=ST.patr*Math.pow(1+g,n);
-      var c=ST.cob*Math.pow(1+ipca,n);            /* capital segurado corrigido por IPCA */
-      var it=itcmd(p,ST.uf).v;
-      var ct=it + p*(inv.h+inv.c)/100;            /* ITCMD + honorarios + custas */
-      var r=resg(n), pg=premio*Math.min(n,10);
-      anos.push(n); patr.push(p); cob.push(c); custo.push(ct); res.push(r); pagos.push(pg);
-      tbl.push({n:n,p:p,c:c,seg:p>0?c/p*100:0,ct:ct,r:r,pg:pg});
+      if(n>0){ if(n<=10) bal+=premio; bal*=(1+RES_R); }
+      var c=ST.cob*Math.pow(1+ipca,n);
+      var pg=premio*Math.min(n,10);
+      var d=desagio(n);
+      var r=(d==null)?0:bal*(1-d/100);
+      anos.push(n); cap.push(c); res.push(bal); pagos.push(pg); resg.push(r);
+      if(equilibrio==null && d!=null && pg>0 && r>=pg) equilibrio=n;
+      tbl.push({n:n,c:c,pg:pg,rv:bal,d:d,r:r,ratio:pg>0?r/pg*100:0});
     }
-    var it0=itcmd(ST.patr,ST.uf), itF=itcmd(patr[patr.length-1],ST.uf);
-    var hon=ST.patr*inv.h/100, cus=ST.patr*inv.c/100, custo0=it0.v+hon+cus;
-    return {anos:anos,patr:patr,cob:cob,custo:custo,res:res,pagos:pagos,tbl:tbl,
-            premio:premio, it0:it0, itF:itF, hon:hon, cus:cus, custo0:custo0, inv:inv,
-            gNom:g*100, custoFim:custo[custo.length-1],
-            pctSeg: ST.patr>0?ST.cob/ST.patr*100:0,
-            cobCusto: custo0>0?Math.min(999,ST.cob/custo0*100):0,
-            pagosTot: premio*10, patrFim: patr[patr.length-1], resFim: res[res.length-1]};
+    var i10=Math.min(10,ST.hor), i3=Math.min(3,ST.hor);
+    return {anos:anos,cap:cap,res:res,pagos:pagos,resg:resg,tbl:tbl,premio:premio,
+            pagosTot:premio*10, r3:resg[i3], r10:resg[i10], rFim:resg[resg.length-1],
+            pg3:pagos[i3], pg10:pagos[i10], capFim:cap[cap.length-1],
+            equilibrio:equilibrio, desFim:desagio(ST.hor)};
   }
+
+  /* marcadores verticais nos anos 3 e 10 */
+  var marcosPlugin={ id:'wlMarcos', afterDatasetsDraw:function(ch){
+    var ms=ch.$marcos; if(!ms||!ms.length) return;
+    var sx=ch.scales.x, ctx=ch.ctx, ca=ch.chartArea;
+    ms.forEach(function(m){
+      if(m.x==null||m.x>sx.max) return;
+      var x=sx.getPixelForValue(m.x);
+      ctx.save();
+      ctx.strokeStyle=m.cor; ctx.setLineDash([6,4]); ctx.lineWidth=2;
+      ctx.beginPath(); ctx.moveTo(x,ca.top); ctx.lineTo(x,ca.bottom); ctx.stroke(); ctx.setLineDash([]);
+      ctx.fillStyle=m.cor; ctx.font='700 10.5px Manrope,sans-serif';
+      ctx.fillText(m.txt, Math.min(x+5,ca.right-124), ca.top+m.y);
+      ctx.restore();
+    });
+  }};
 
   function grafico(d){
     var cv=el('wlChart'); if(!cv||typeof Chart==='undefined') return;
     if(CH){ CH.destroy(); CH=null; }
     var ds=[
-      {label:'Patrimônio total do cliente', data:d.patr, borderColor:'#94ACEC', backgroundColor:'rgba(148,172,236,.10)', fill:true, tension:.25, pointRadius:0, borderWidth:2},
-      {label:'Whole Life — capital segurado', data:d.cob, borderColor:'#F26522', backgroundColor:'rgba(242,101,34,.12)', fill:true, tension:.25, pointRadius:0, borderWidth:3}
+      {label:'Capital segurado (o que o beneficiário recebe)', data:d.cap, borderColor:'#F26522', backgroundColor:'rgba(242,101,34,.14)', fill:true, tension:.25, pointRadius:0, borderWidth:3},
+      {label:'Valor de resgate (o que você tira em vida)', data:d.resg, borderColor:'#2BD9A6', backgroundColor:'rgba(43,217,166,.12)', fill:true, tension:.25, pointRadius:0, borderWidth:2.5}
     ];
-    if(ST.tgResg) ds.push({label:'Whole Life — valor de resgate', data:d.res, borderColor:'#F5B942', backgroundColor:'transparent', borderDash:[6,4], tension:.25, pointRadius:0, borderWidth:2});
-    if(ST.tgITCMD) ds.push({label:'Custo de inventário (ITCMD + custas + honorários)', data:d.custo, borderColor:'#FF6B6B', backgroundColor:'transparent', borderDash:[3,3], tension:.25, pointRadius:0, borderWidth:2});
+    if(ST.tgPagos) ds.push({label:'Prêmios pagos', data:d.pagos, borderColor:'#F5B942', backgroundColor:'transparent', borderDash:[6,4], tension:.2, pointRadius:0, borderWidth:2});
     CH=new Chart(cv.getContext('2d'),{ type:'line',
       data:{ labels:d.anos, datasets:ds },
       options:{ responsive:true, maintainAspectRatio:false, interaction:{mode:'index',intersect:false},
-        plugins:{ legend:{labels:{color:'#c8cdf0',font:{family:'Manrope',size:11},boxWidth:14,usePointStyle:false}},
+        plugins:{ legend:{labels:{color:'#C2CBF0',font:{family:'Manrope',size:11},boxWidth:14}},
           tooltip:{callbacks:{label:function(c){return c.dataset.label+': '+brl(c.parsed.y);}}} },
-        scales:{ x:{title:{display:true,text:'Anos',color:'#94ACEC'},ticks:{color:'#94ACEC'},grid:{color:'rgba(120,130,210,.12)'}},
-          y:{ticks:{color:'#94ACEC',callback:function(v){return brlK(v);}},grid:{color:'rgba(120,130,210,.12)'}} } } });
+        scales:{ x:{title:{display:true,text:'Anos',color:'#AFC1F7'},ticks:{color:'#AFC1F7'},grid:{color:'rgba(120,130,210,.14)'}},
+          y:{ticks:{color:'#AFC1F7',callback:function(v){return brlK(v);}},grid:{color:'rgba(120,130,210,.14)'}} } },
+      plugins:[marcosPlugin] });
+    CH.$marcos = ST.tgMarcos ? [
+      {x:ANO_MIN, cor:'#F5B942', txt:'3º ano · com deságio', y:14},
+      {x:ANO_PLENO, cor:'#2BD9A6', txt:'10º ano · integral', y:30}
+    ] : [];
+    CH.update();
   }
 
   function render(){
-    var d=calc(), t=ITCMD[ST.uf], badge = (t.c==='conf') ? '<span class="wl-flag">CONFIRMAR</span>' : (t.c==='media'?'<span class="wl-flag">REVISAR</span>':'');
-    el('wlPatrO').textContent=brl(ST.patr);
-    el('wlIpcaO').textContent=pct(ST.ipca)+' a.a.';
-    el('wlCresO').textContent='IPCA + '+pct(ST.real);
-    el('wlCresHint').textContent='= '+pct(d.gNom)+' a.a. nominal';
-    el('wlIdadeO').textContent=ST.idade+' anos';
+    var d=calc();
     el('wlCobO').textContent=brl(ST.cob);
+    el('wlIdadeO').textContent=ST.idade+' anos';
+    el('wlIpcaO').textContent=pct(ST.ipca)+' a.a.';
+    el('wlDesO').textContent=pct(ST.des3);
     if(ST.parc==null) el('wlParc').placeholder=Math.round(d.premio).toLocaleString('pt-BR');
 
-    el('wlPctSeg').textContent=pct(d.pctSeg);
-    el('wlPctBar').style.width=Math.min(100,d.pctSeg)+'%';
-    el('wlPctSub').innerHTML=brl(ST.cob)+' de capital segurado sobre '+brl(ST.patr)+' de patrimônio.';
+    var ratio10=d.pg10>0? d.r10/d.pg10*100 : 0;
+    el('wlHeroV').textContent=brl(d.r10);
+    el('wlHeroBar').style.width=Math.min(100,ratio10)+'%';
+    el('wlHeroS').innerHTML='Sem deságio e isento de IR, sobre '+brl(d.pg10)+' de prêmios pagos — '+
+      (ratio10>=100? '<b style="color:#2BD9A6">'+pct(ratio10)+' do que entrou</b>.' : pct(ratio10)+' do que entrou.');
 
-    el('wlKCusto').textContent=brl(d.custo0);
-    el('wlKCustoSub').innerHTML=pct(d.custo0/ST.patr*100)+' do patrimônio &middot; '+d.inv.r+' &middot; '+d.inv.p+
-      '<br>Em '+ST.hor+' anos: <b style="color:#FF8B52">'+brl(d.custoFim)+'</b>';
-    el('wlKItcmd').textContent=faixaTxt(ST.uf);
-    el('wlKItcmdSub').innerHTML=ST.uf+': '+t.n+' '+badge;
+    el('wlKCap').textContent=brl(ST.cob);
+    el('wlKCapSub').innerHTML='Corrigido por IPCA · '+brl(d.capFim)+' no '+ST.hor+'º ano';
 
-    el('wlK1').textContent=brl(ST.cob);
-    el('wlK2').textContent=brl(d.premio);
-    el('wlK3').textContent=pct(d.cobCusto);
-    el('wlK4').textContent=brl(d.resFim);
-    el('wlK5').textContent=brl(d.it0.v)+' ('+pct(d.it0.ef)+')';
-    el('wlK6').textContent=brl(d.hon+d.cus);
-    el('wlK7').textContent=brl(d.pagosTot);
-    el('wlK9').textContent=brl(d.itF.v)+' ('+pct(d.itF.ef)+')';
-    el('wlK9s').innerHTML=d.it0.v>0 ? 'multiplica por '+(d.itF.v/d.it0.v).toFixed(1).replace('.',',')+'x em '+ST.hor+' anos'
-                                     : 'isento hoje &middot; passa a incidir com o patrimônio maior';
-    el('wlK8').textContent=brl(d.patrFim);
+    el('wlK1').textContent=brl(d.premio);
+    el('wlK2').textContent=brl(d.pagosTot);
+    el('wlK3').textContent=brl(d.r3);
+    el('wlK3s').innerHTML='deságio de '+pct(ST.des3)+' · '+pct(d.pg3>0?d.r3/d.pg3*100:0)+' do pago';
+    el('wlK4').textContent=brl(d.r10);
+    el('wlK4s').innerHTML='sem deságio · isento de IR';
+    el('wlK5').textContent=brl(d.rFim);
+    el('wlK5s').innerHTML=ST.hor+'º ano · '+pct(d.pagosTot>0?d.rFim/d.pagosTot*100:0)+' do pago';
+    el('wlK6').textContent = d.equilibrio!=null ? d.equilibrio+'º ano' : '—';
+    el('wlK6s').innerHTML = d.equilibrio!=null ? 'a partir daí o resgate supera os prêmios'
+                                               : 'no horizonte escolhido o resgate não alcança os prêmios';
 
-    el('wlSegP').textContent=pct(d.pctSeg);
-    el('wlSegB').style.width=Math.min(100,d.pctSeg)+'%';
-    el('wlSegL').textContent = d.pctSeg>=30?'Cobertura confortável':(d.pctSeg>=15?'Cobertura razoável':'Cobertura baixa para liquidez sucessória');
-    el('wlCovP').textContent=pct(d.cobCusto);
-    el('wlCovB').style.width=Math.min(100,d.cobCusto)+'%';
-    el('wlCovL').textContent = d.cobCusto>=100?'O seguro cobre todo o custo de transmissão':'Faltam '+brl(Math.max(0,d.custo0-ST.cob))+' para cobrir o custo';
+    el('wlSegP').textContent=pct(ratio10);
+    el('wlSegB').style.width=Math.min(100,ratio10)+'%';
+    el('wlSegL').textContent = ratio10>=100 ? 'No 10º ano o resgate já devolve mais do que entrou'
+                                            : 'No 10º ano ainda falta '+brl(Math.max(0,d.pg10-d.r10))+' para empatar';
+    var cobRatio=d.pagosTot>0? ST.cob/d.pagosTot*100 : 0;
+    el('wlCovP').textContent=pct(cobRatio);
+    el('wlCovB').style.width=Math.min(100,cobRatio/5)+'%';
+    el('wlCovL').textContent='Cada R$ 1 de prêmio compra R$ '+(d.pagosTot>0?(ST.cob/d.pagosTot).toFixed(1).replace('.',','):'—')+' de capital segurado';
 
-    var falta=Math.max(0,d.custo0-ST.cob);
-    el('wlRec').innerHTML = falta>0
-      ? '<b>Sem liquidez suficiente.</b> Os herdeiros precisariam de '+brl(d.custo0)+' para abrir o inventário em '+ST.uf+
-        '. Com '+brl(ST.cob)+' de capital segurado, faltam '+brl(falta)+' — o que costuma virar venda de bem a preço de urgência.'
-      : '<b>Liquidez coberta.</b> O capital segurado de '+brl(ST.cob)+' cobre os '+brl(d.custo0)+
-        ' de custo de transmissão, e chega aos beneficiários sem inventário e sem ITCMD.';
+    el('wlRec').innerHTML='<b>O ponto da conversa.</b> São '+brl(d.premio)+' por ano durante 10 anos. '+
+      'Em troca, o cliente tem <b>'+brl(ST.cob)+'</b> de proteção desde o primeiro dia, '+
+      'liquidez a partir do 3º ano e, do 10º em diante, <b>'+brl(d.r10)+'</b> disponíveis sem deságio e sem IR — '+
+      (ratio10>=100? 'mais do que os '+brl(d.pg10)+' que ele colocou.' : 'contra '+brl(d.pg10)+' aportados.');
 
-    el('wlPb1').innerHTML='É a razão entre o capital segurado e o patrimônio total. Ele não substitui o patrimônio: é a parcela que os '+
-      'beneficiários recebem <b>em dias</b>, fora do inventário, enquanto o resto fica retido na partilha ('+d.inv.p+' no cenário '+d.inv.r.toLowerCase()+').';
-    el('wlPb2').innerHTML='Soma ITCMD ('+pct(d.it0.ef)+' efetivos em '+ST.uf+'), honorários advocatícios ('+pct(d.inv.h)+
-      ', tabela referencial da OAB) e custas/emolumentos ('+pct(d.inv.c)+'). Total de '+pct(d.custo0/ST.patr*100)+' do patrimônio, '+
-      'devido <b>antes</b> de os herdeiros terem acesso aos bens. Como a base é o patrimônio, a conta cresce junto: '+
-      'a '+pct(d.gNom)+' a.a. o ITCMD sai de '+brl(d.it0.v)+' para <b>'+brl(d.itF.v)+'</b> em '+ST.hor+' anos'+
-      (d.itF.ef>d.it0.ef+0.05 ? ' — e a alíquota efetiva sobe de '+pct(d.it0.ef)+' para '+pct(d.itF.ef)+', porque o patrimônio migra para faixas mais altas.' : '.');
+    el('wlPb1').innerHTML='Resgate antecipado devolve menos que a reserva. Antes do <b>3º ano</b> não há resgate. '+
+      'Do 3º ao 10º o deságio cai de forma linear — aqui você começou em '+pct(ST.des3)+' e ele zera no 10º. '+
+      'Confirme a curva na tabela oficial do produto antes de usar com o cliente.';
+    el('wlPb2').innerHTML='No <b>10º ano</b> os prêmios estão quitados e o resgate passa a ser <b>integral</b>: '+
+      brl(d.r10)+' sobre '+brl(d.pg10)+' pagos. Sem deságio e <b>isento de IR</b> — e o capital segurado de '+
+      brl(ST.cob)+' continua de pé para o beneficiário.';
 
-    var tb=el('wlTbody'), h='';
-    d.tbl.forEach(function(r){ if(r.n===0||r.n%(ST.hor>20?5:(ST.hor>10?2:1))===0){
-      h+='<tr><td>'+r.n+'</td><td>'+brl(r.p)+'</td><td>'+brl(r.c)+'</td><td>'+pct(r.seg)+'</td><td>'+
-         (ST.tgITCMD?brl(r.ct):'—')+'</td><td>'+(ST.tgResg?brl(r.r):'—')+'</td><td>'+brl(r.pg)+'</td></tr>'; } });
+    var tb=el('wlTbody'), h='', passo=(ST.hor>20?5:(ST.hor>10?2:1));
+    d.tbl.forEach(function(r){
+      if(r.n===0 || r.n===3 || r.n===10 || r.n%passo===0 || r.n===ST.hor){
+        var marco = (r.n===3||r.n===10) ? ' style="background:rgba(255,255,255,.05)"' : '';
+        h+='<tr'+marco+'><td>'+r.n+'</td><td>'+brl(r.c)+'</td><td>'+brl(r.pg)+'</td><td>'+brl(r.rv)+'</td><td>'+
+           (r.d==null?'<span style="opacity:.55">sem resgate</span>':pct(r.d))+'</td><td>'+
+           (r.d==null?'—':brl(r.r))+'</td><td>'+(r.d==null||r.pg<=0?'—':pct(r.ratio))+'</td></tr>';
+      }
+    });
     tb.innerHTML=h;
+
+    var pr=el('wlPrem');
+    if(pr) pr.innerHTML='<i>Capital segurado <b>'+brl(ST.cob)+'</b></i>'+
+      '<i>Idade <b>'+ST.idade+' anos</b></i>'+
+      '<i>Pr&ecirc;mio anual <b>'+brl(d.premio)+'</b> (10 anos)</i>'+
+      '<i>IPCA <b>'+pct(ST.ipca)+' a.a.</b></i>'+
+      '<i>Des&aacute;gio no 3&ordm; ano <b>'+pct(ST.des3)+'</b></i>'+
+      '<i>Horizonte <b>'+ST.hor+' anos</b></i>';
+
     grafico(d);
   }
 
   function bind(){
-    var sel=el('wlUF'); if(!sel) return;
-    if(!sel.options.length){ UFS.forEach(function(u){ var o=document.createElement('option'); o.value=u; o.textContent=u; if(u==='SP')o.selected=true; sel.appendChild(o); }); }
-    if(sel.__wired) { render(); return; } sel.__wired=true;
+    var raiz=el('wlCob'); if(!raiz) return;
+    if(raiz.__wired){ render(); return; } raiz.__wired=true;
     function on(id,ev,fn){ var e=el(id); if(e) e.addEventListener(ev,fn); }
-    on('wlPatr','input',function(){ ST.patr=+this.value; render(); });
-    on('wlIpca','input',function(){ ST.ipca=+this.value; render(); });
-    on('wlCres','input',function(){ ST.real=+this.value; render(); });
-    on('wlIdade','input',function(){ ST.idade=+this.value; render(); });
     on('wlCob','input',function(){ ST.cob=+this.value; render(); });
-    on('wlUF','change',function(){ ST.uf=this.value; render(); });
-    on('wlInv','change',function(){ ST.inv=this.value; render(); });
+    on('wlIdade','input',function(){ ST.idade=+this.value; render(); });
+    on('wlIpca','input',function(){ ST.ipca=+this.value; render(); });
+    on('wlDes','input',function(){ ST.des3=+this.value; render(); });
     on('wlHor','change',function(){ ST.hor=+this.value; render(); });
     on('wlParc','input',function(){ var v=parseFloat(this.value); ST.parc=(isNaN(v)||v<=0)?null:v; render(); });
     on('wlParcAuto','click',function(){ ST.parc=null; el('wlParc').value=''; render(); });
-    on('wlTgITCMD','change',function(){ ST.tgITCMD=this.checked; render(); });
-    on('wlTgResg','change',function(){ ST.tgResg=this.checked; render(); });
+    on('wlTgPagos','change',function(){ ST.tgPagos=this.checked; render(); });
+    on('wlTgMarcos','change',function(){ ST.tgMarcos=this.checked; render(); });
     on('wlPngBtn','click',function(){
       var alvo=document.querySelector('#p-holding .hc-sec'); if(!alvo) return;
+      var painel=document.getElementById('p-holding');
       var btn=this, txt=btn.textContent; btn.textContent='Gerando...';
-      function go(h2c){ h2c(alvo,{backgroundColor:'#0A0E3F',scale:2,useCORS:true}).then(function(cv){
-          var a=document.createElement('a'); a.download='sucessao-wholelife.png'; a.href=cv.toDataURL('image/png'); a.click(); btn.textContent=txt;
-        }).catch(function(){ btn.textContent=txt; }); }
+      function limpa(){ painel.classList.remove('wl-print'); btn.textContent=txt; }
+      function go(h2c){
+        /* modo impressao: some com sliders, toggles e botoes e mostra a
+           faixa de premissas -- a imagem que vai pro cliente fica limpa */
+        painel.classList.add('wl-print');
+        h2c(alvo,{backgroundColor:'#0A0E3F',scale:2,useCORS:true}).then(function(cv){
+          limpa();
+          /* mesmo modal das outras abas: a imagem aparece na tela, com
+             copiar e baixar -- em vez de disparar download direto */
+          if(window.mostrarPngModal) window.mostrarPngModal(cv.toDataURL('image/png'),'sucessao-wholelife.png',{accent:'#F26522',wide:true});
+          else { var a=document.createElement('a'); a.download='sucessao-wholelife.png'; a.href=cv.toDataURL('image/png'); a.click(); }
+        }).catch(function(){ limpa(); });
+      }
       if(window.html2canvas) return go(window.html2canvas);
       var sc=document.createElement('script'); sc.src='https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
       sc.onload=function(){ go(window.html2canvas); }; sc.onerror=function(){ btn.textContent=txt; }; document.head.appendChild(sc);
@@ -5583,7 +5560,7 @@ html.theme-light .pm-alloc{ background:#fff; }
     render();
   }
 
-  if(document.readyState==='loading'){ document.addEventListener('DOMContentLoaded', bind); } else { bind(); }
+  if(document.readyState==="loading"){ document.addEventListener("DOMContentLoaded", bind); } else { bind(); }
   window._toolInit=window._toolInit||{}; window._toolInit['holding']=function(){ try{bind();}catch(e){} };
 })();
 </script>
