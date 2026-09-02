@@ -1721,6 +1721,35 @@ html:not(.modo-simples):not(.theme-light) .home-sub{
 /* Com o fundo mais colorido, o texto de apoio precisa subir junto: os tons
    antigos caiam para 4,3:1 (cinza) e 3,9:1 (cinza escuro) sobre a bolha
    laranja. Estes passam folgados em AA nos quatro pontos do fundo. */
+/* SUCESSAO: o painel foi escrito antes do tema VIVA e ficou com as
+   superficies chapadas da paleta antiga -- .hc-sec era um degrade navy
+   100% opaco cobrindo a aba inteira, e o cabecalho da tabela e a barra
+   de progresso usavam #0A0E3F solido. Por isso a aba destoava do resto. */
+html:not(.modo-simples):not(.theme-light) #p-holding .hc-sec{
+  background:rgba(10,14,63,.40) !important;
+  backdrop-filter:blur(18px) saturate(1.25); -webkit-backdrop-filter:blur(18px) saturate(1.25);
+  border-color:rgba(242,101,34,.32) !important;
+}
+html:not(.modo-simples):not(.theme-light) #p-holding .hc-bar{
+  background:rgba(255,255,255,.14) !important;
+}
+html:not(.modo-simples):not(.theme-light) #p-holding .hc-t th{
+  background:rgba(255,255,255,.10) !important; color:#C2CBF0 !important;
+}
+html:not(.modo-simples):not(.theme-light) #p-holding .hc-disc2{ color:#AFC1F7 !important; }
+/* os cartoes internos ja estao na lista do vidro-theme, mas dentro do
+   .hc-sec eles viram vidro sobre vidro -- tinta leve, sem filtro proprio */
+html:not(.modo-simples):not(.theme-light) #p-holding .hc-kpi,
+html:not(.modo-simples):not(.theme-light) #p-holding .hc-inputs,
+html:not(.modo-simples):not(.theme-light) #p-holding .hc-chartwrap,
+html:not(.modo-simples):not(.theme-light) #p-holding .hc-score,
+html:not(.modo-simples):not(.theme-light) #p-holding .hc-tblwrap,
+html:not(.modo-simples):not(.theme-light) #p-holding .hc-pbbox{
+  background:rgba(10,14,63,.20) !important;
+  border-color:rgba(255,255,255,.16) !important;
+  backdrop-filter:none !important; -webkit-backdrop-filter:none !important;
+}
+
 /* Vidro DENTRO de vidro: o cartao da gaveta ja esta sobre um painel que
    aplicou saturacao e tinta. Se ele aplicar tudo de novo, a tinta soma
    (.40 + .40 = .64) e a gaveta afunda num bloco escuro -- foi o que
@@ -2207,6 +2236,16 @@ html.modo-simples #btnModoSimples{background:rgba(242,101,34,.16);border-color:r
           <div class="hcard-ic"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="8" y1="9" x2="16" y2="9"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="12" y2="17"/></svg></div>
           <div class="hcard-title">IR / DARF Renda Variável</div>
           <div class="hcard-desc">Apure o IR de ações e FIIs a partir da Posição (preço médio), com isenção, compensação de prejuízo e DARF para o cliente.</div>
+        </div>
+        <div class="hcard" onclick="showPanel('holding')">
+          <div class="hcard-ic"><svg viewBox="0 0 24 24"><path d="M3 21h18M5 21V8l7-4 7 4v13M10 21v-6h4v6"/></svg></div>
+          <div class="hcard-title">Sucessão</div>
+          <div class="hcard-desc">Quanto do patrimônio já está assegurado e quanto custaria transmiti-lo: Whole Life, ITCMD por estado e custo de inventário.</div>
+        </div>
+        <div class="hcard" onclick="showPanel('apresentacao')">
+          <div class="hcard-ic"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></div>
+          <div class="hcard-title">Apresentação institucional</div>
+          <div class="hcard-desc">Deck "Viva Infinitamente" para abrir a conversa: diversificação, ciclos de mercado e o papel da assessoria.</div>
         </div>
       </div>
       <style>
