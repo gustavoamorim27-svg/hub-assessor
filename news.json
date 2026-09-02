@@ -1,85 +1,85 @@
 {
-  "updated": "01/09/2026 19:15",
+  "updated": "02/09/2026 09:07",
   "items": [
     {
       "region": "nacional",
-      "title": "PIB do Brasil cresce 0,5% no 2o trimestre",
-      "resumo": "IBGE aponta alta de 0,5% na margem e 2,0% em 12 meses, com agropecuaria (+2,8%) liderando e servicos quase de lado (+0,2%).",
-      "source": "IBGE / Portal N10",
+      "title": "Ibovespa sobe 1,30% e fecha perto dos 180 mil pontos",
+      "resumo": "Indice avancou impulsionado por Petrobras e pelo PIB, acumulando alta de 11,54% no ano.",
+      "source": "B3 Bora Investir",
       "date": "01 set 2026",
-      "url": "https://portaln10.com.br/economia/impostos-tributos/pib-brasil-segundo-trimestre-2026-consumo-familias-352053/"
+      "url": "https://borainvestir.b3.com.br/noticias/mercado/ibovespa-b3-sobe-130-e-fecha-perto-dos-180-mil-pontos-dolar-cai-a-r-515/"
     },
     {
       "region": "nacional",
-      "title": "Ibovespa opera perto dos 178 mil pontos",
-      "resumo": "Bolsa reage ao PIB, as projecoes do Orcamento de 2027 e a retomada das negociacoes tarifarias entre Brasil e Estados Unidos.",
-      "source": "InfoMoney",
+      "title": "Dolar recua a R$ 5,15 na segunda queda seguida",
+      "resumo": "Moeda americana caiu 0,47% frente ao real, com fluxo domestico e expectativa de juros mais baixos.",
+      "source": "CNN Brasil",
       "date": "01 set 2026",
+      "url": "https://www.cnnbrasil.com.br/economia/money/mercado/mercado-financeiro-ibovespa-dolar-1-setembro-2026/"
+    },
+    {
+      "region": "nacional",
+      "title": "PIB cresce 0,5% no 2o trimestre e confirma perda de folego",
+      "resumo": "IBGE aponta alta acima do consenso de 0,4%, mas menos da metade do avanco de 1,1% do 1o trimestre.",
+      "source": "Forbes Brasil",
+      "date": "01 set 2026",
+      "url": "https://forbes.com.br/forbes-money/2026/09/pib-2026-economistas/"
+    },
+    {
+      "region": "nacional",
+      "title": "Copom de setembro deve manter a Selic em 14,00%",
+      "resumo": "Apos corte de 0,25 p.p. em agosto, mercado ve manutencao na reuniao de 15 e 16 de setembro.",
+      "source": "InfoMoney",
+      "date": "02 set 2026",
       "url": "https://www.infomoney.com.br/mercados/ibovespa-hoje-bolsa-de-valores-ao-vivo-01092026/"
     },
     {
       "region": "nacional",
-      "title": "Copom corta a Selic para 14,00% ao ano",
-      "resumo": "Ata reconhece moderacao gradual da atividade e reforca a expectativa de novos cortes na taxa basica nas proximas reunioes.",
-      "source": "InfoMoney",
-      "date": "01 set 2026",
-      "url": "https://www.infomoney.com.br/mercados/ibovespa-hoje-bolsa-de-valores-ao-vivo-01092026/"
-    },
-    {
-      "region": "nacional",
-      "title": "IPCA acumula 4,44% em 12 meses",
-      "resumo": "Inflacao acumulada no ano chega a 3,44%, ainda acima do centro da meta, mas em trajetoria de desaceleracao.",
-      "source": "Investidor10",
-      "date": "01 set 2026",
-      "url": "https://investidor10.com.br/indices/ipca/"
-    },
-    {
-      "region": "nacional",
-      "title": "Dolar cede ante o real mesmo com Selic menor",
-      "resumo": "Cambio recua apoiado no fluxo externo e no alivio das tensoes comerciais, apesar da perspectiva de juros domesticos mais baixos.",
-      "source": "InfoMoney",
-      "date": "01 set 2026",
-      "url": "https://www.infomoney.com.br/mercados/ibovespa-hoje-bolsa-de-valores-ao-vivo-01092026/"
+      "title": "Boletim Focus reduz projecoes de inflacao e de PIB para 2026",
+      "resumo": "IPCA em 12 meses esta em 4,44% e voltou ao intervalo da meta; mercado ajusta cenario de crescimento.",
+      "source": "Agencia Brasil",
+      "date": "31 ago 2026",
+      "url": "https://agenciabrasil.ebc.com.br/economia/noticia/2026-08/boletim-focus-mercado-preve-reducao-da-inflacao-e-do-pib-de-2026"
     },
     {
       "region": "internacional",
-      "title": "Wall Street cai com juros e petroleo em alta",
-      "resumo": "Dow recua 0,8%, S&P 500 perde cerca de 0,7% e Nasdaq cede mais de 1% no inicio de setembro, historicamente o mes mais fraco.",
+      "title": "Futuros do S&P 500 caem com petroleo e Treasuries em alta",
+      "resumo": "Wall Street opera pressionada pela inflacao de energia e pelo aperto das condicoes financeiras globais.",
+      "source": "TheStreet",
+      "date": "02 set 2026",
+      "url": "https://www.thestreet.com/stock-market-today/stock-market-today-dow-jones-sp-500-nasdaq-updates-sept-02-2026"
+    },
+    {
+      "region": "internacional",
+      "title": "Brent supera US$ 95 apos novos ataques dos EUA ao Ira",
+      "resumo": "Tensao no Estreito de Ormuz acelera o petroleo e amplia o risco inflacionario global.",
       "source": "Yahoo Finance",
       "date": "01 set 2026",
       "url": "https://finance.yahoo.com/markets/live/stock-market-today-tuesday-september-1-dow-sp-500-nasdaq-080617884.html"
     },
     {
       "region": "internacional",
-      "title": "Treasury de 10 anos vai a 4,79%, maxima de 20 meses",
-      "resumo": "Juros longos sobem globalmente com a reprecificacao do risco inflacionario; o titulo de 30 anos se aproxima de 5,27%.",
-      "source": "Yahoo Finance",
+      "title": "Treasury de 10 anos vai a 4,79%, maior nivel desde janeiro de 2025",
+      "resumo": "Titulo de 30 anos chega a 5,27%, perto de maximas de decadas, em meio a venda global de bonds.",
+      "source": "The Motley Fool",
       "date": "01 set 2026",
-      "url": "https://finance.yahoo.com/markets/live/stock-market-today-tuesday-september-1-dow-sp-500-nasdaq-080617884.html"
+      "url": "https://www.fool.com/coverage/stock-market-today/2026/09/01/stock-market-midday-sept-1-stocks-slide-on-global-bond-sell-off/"
     },
     {
       "region": "internacional",
-      "title": "Mercado ve cerca de 60% de chance de alta de juros do Fed",
-      "resumo": "Discurso duro de Kevin Warsh em Jackson Hole elevou as apostas em um aperto de 0,25 ponto na proxima reuniao do Fed.",
-      "source": "DailyForex",
+      "title": "Mercado passa a precificar chance de alta de juros pelo Fed",
+      "resumo": "Expectativa de aperto monetario adicional penaliza sobretudo a Nasdaq e as acoes de tecnologia.",
+      "source": "Barchart",
       "date": "01 set 2026",
-      "url": "https://www.dailyforex.com/forex-news/2026/09/forex-today-1-september-2026/249207"
+      "url": "https://www.barchart.com/story/news/822574/stocks-pressured-by-inflation-concerns-and-iran-war-jitters"
     },
     {
       "region": "internacional",
-      "title": "Petroleo sobe com ataques e risco no Estreito de Ormuz",
-      "resumo": "Brent avanca apos novos ataques dos EUA a alvos iranianos e navios atingidos na saida de Ormuz; WTI sobe 3,7%.",
-      "source": "Bloomberg",
-      "date": "01 set 2026",
-      "url": "https://www.bloomberg.com/news/articles/2026-08-31/latest-oil-market-news-and-analysis-for-sept-1"
-    },
-    {
-      "region": "internacional",
-      "title": "Tensao EUA-Ira volta ao radar dos investidores",
-      "resumo": "Retomada dos confrontos e ameacas ao terminal de Kharg Island elevam o premio de risco geopolitico nos ativos globais.",
+      "title": "Dow recua mais de 400 pontos com escalada do conflito no Ira",
+      "resumo": "Aversao a risco domina os mercados globais apos novos ataques militares americanos.",
       "source": "CNBC",
-      "date": "01 set 2026",
-      "url": "https://www.cnbc.com/amp/2026/08/31/stock-market-today-live-updates.html"
+      "date": "31 ago 2026",
+      "url": "https://www.cnbc.com/2026/08/31/stock-market-today-live-updates.html"
     }
   ]
 }
