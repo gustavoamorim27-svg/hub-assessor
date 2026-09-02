@@ -1780,6 +1780,10 @@ window.__hubPngTema = (function(){ try{ var v=localStorage.getItem('hubPngTema')
 window.__aplicarPaletaClara = function(ctx){
   var MAPA = {
     '#0a0f38':'#FDF7F0', '#070b2e':'#FCEFE4', '#05081f':'#FAE3D3',
+    /* fundos proprios do PNG da Mesa de RV — sem estes o fundo ficava
+       quase preto e o texto virava cinza escuro por cima: ilegivel */
+    '#070809':'#FDF7F0', '#0c0e14':'#FCEFE4', '#13161d':'#F3E7DA',
+    '#8a93d8':'#4A55A8', '#ff5566':'#C0392B', '#ff8b52':'#C0450A',
     '#fff':'#12233F', '#ffffff':'#12233F',
     '#a9b0d6':'#6E7787', '#8089be':'#8A93A6', '#6f77a8':'#9AA2B2', '#cfd4ef':'#33405C', '#8a92c0':'#8A93A6',
     'rgba(28,36,112,.35)':'#FFFFFF', 'rgba(28,36,112,.45)':'#FFFFFF',
@@ -1825,6 +1829,8 @@ window.__aplicarPaletaViva = function(ctx){
   var MAPA = {
     /* fundo: os tres tons viram as ancoras do degrade VIVA */
     '#0a0f38':'#41151a', '#070b2e':'#340f34', '#05081f':'#141151',
+    /* idem para os fundos proprios do PNG da Mesa de RV */
+    '#070809':'#41151a', '#0c0e14':'#340f34', '#13161d':'#141151',
     /* caixas chapadas -> vidro, para o degrade passar por tras */
     '#111845':'rgba(255,255,255,.10)', '#141c57':'rgba(255,255,255,.13)',
     '#10164a':'rgba(255,255,255,.12)', '#0a0e3f':'rgba(255,255,255,.08)',
@@ -11639,38 +11645,60 @@ function holdingRet(i){
 
 /* ===== Templates ===== */
 var TEMPLATES = {
+  /* Carteiras XP Research — Raio-XP de 1 de setembro de 2026.
+     Pesos, ratings e precos-alvo transcritos das laminas oficiais.
+     Top Acoes: entram CURY3 e AXIA3, sobe RDOR3, saem LREN3 e ORVR3,
+     caem ITUB4 e ROXO34. Top Dividendos: sobem PETR4 e ALOS3, cai ITUB4.
+     Top Small Caps: entra DIRR3, sobe SLCE3, caem CEAB3 e CURY3. */
   "Top Ações": function(){
     return [
-      mkAcao("PETR4","Petrobras","Energia",5.0,63.00,"Compra"),
+      mkAcao("PETR4","Petrobras","Energia",10.0,63.00,"Compra"),
       mkAcao("PRIO3","PRIO","Energia",5.0,78.00,"Compra"),
-      mkAcao("GGBR4","Gerdau","Materiais",5.0,25.00,"Compra"),
+      mkAcao("GGBR4","Gerdau","Materiais",10.0,30.00,"Compra"),
       mkAcao("VALE3","Vale","Materiais",5.0,85.00,"Neutro"),
-      mkAcao("LREN3","Lojas Renner","Cons. Disc.",5.0,22.00,"Compra"),
-      mkAcao("RENT3","Localiza","Industriais",10.0,65.00,"Compra"),
-      mkAcao("EMBJ3","Embraer","Industriais",5.0,87.00,"Compra"),
+      mkAcao("EMBJ3","Embraer","Industriais",10.0,87.00,"Compra"),
       mkAcao("TOTS3","TOTVS","Tec. Info.",5.0,50.50,"Compra"),
-      mkAcao("IGTI11","Iguatemi","Imobiliário",10.0,32.00,"Compra"),
-      mkAcao("RDOR3","Rede D'Or","Saúde",7.5,45.00,"Compra"),
-      mkAcao("SBSP3","Sabesp","Utilidade Pública",5.0,38.25,"Compra"),
-      mkAcao("ORVR3","Orizon","Utilidade Pública",5.0,97.48,"Compra"),
-      mkAcao("B3SA3","B3","Financeiro",7.5,16.00,"Neutro"),
-      mkAcao("ITUB4","Itaú Unibanco","Financeiro",10.0,51.00,"Compra"),
+      mkAcao("IGTI11","Iguatemi","Imobiliário",7.5,35.00,"Compra"),
+      mkAcao("CURY3","Cury","Imobiliário",5.0,45.00,"Compra"),
+      mkAcao("RDOR3","Rede D'Or","Saúde",10.0,45.00,"Compra"),
+      mkAcao("AXIA3","Axia Energia","Utilidade Pública",7.5,63.32,"Compra"),
+      mkAcao("SBSP3","Sabesp","Utilidade Pública",7.5,38.25,"Compra"),
+      mkAcao("ITUB4","Itaú Unibanco","Financeiro",7.5,50.00,"Compra"),
       mkAcao("BPAC11","BTG Pactual","Financeiro",5.0,63.00,"Compra"),
       mkAcao("ROXO34","Nubank","Financeiro",5.0,18.60,"Compra")
     ];
   },
   "Top Dividendos": function(){
     return [
-      mkAcao("PETR4","Petrobras","Energia",10.0,63.00,"Compra"),
+      mkAcao("PETR4","Petrobras","Energia",12.5,63.00,"Compra"),
       mkAcao("PRIO3","PRIO","Energia",5.0,78.00,"Compra"),
       mkAcao("VALE3","Vale","Materiais",12.5,85.00,"Neutro"),
       mkAcao("VIVT3","Telefônica Brasil (Vivo)","Comunicações",5.0,43.00,"Compra"),
-      mkAcao("ALOS3","Allos","Imobiliário",7.5,32.00,"Compra"),
+      mkAcao("ALOS3","Allos","Imobiliário",10.0,38.00,"Compra"),
+      mkAcao("CSMG3","Copasa","Utilidade Pública",7.5,88.32,"Compra"),
       mkAcao("AXIA3","Axia Energia","Utilidade Pública",12.5,63.32,"Compra"),
-      mkAcao("CPLE3","Copel","Utilidade Pública",15.0,19.87,"Compra"),
-      mkAcao("ITUB4","Itaú Unibanco","Financeiro",15.0,51.00,"Compra"),
+      mkAcao("CPLE3","Copel","Utilidade Pública",10.0,19.87,"Compra"),
+      mkAcao("ITUB4","Itaú Unibanco","Financeiro",10.0,50.00,"Compra"),
       mkAcao("B3SA3","B3","Financeiro",10.0,16.00,"Neutro"),
-      mkAcao("CXSE3","Caixa Seguridade","Financeiro",7.5,20.00,"Compra")
+      mkAcao("CXSE3","Caixa Seguridade","Financeiro",5.0,20.00,"Compra")
+    ];
+  },
+  "Top Small Caps": function(){
+    return [
+      mkAcao("BMOB3","Bemobi","Comunicações",10.0,31.00,"Compra"),
+      mkAcao("VIVA3","Vivara","Cons. Disc.",5.0,35.00,"Compra"),
+      mkAcao("CEAB3","C&A Modas","Cons. Disc.",5.0,17.00,"Compra"),
+      mkAcao("TUPY3","Tupy","Industriais",5.0,20.00,"Compra"),
+      mkAcao("PRNR3","Priner","Industriais",5.0,31.00,"Compra"),
+      mkAcao("ECOR3","Ecorodovias","Industriais",5.0,13.90,"Compra"),
+      mkAcao("LWSA3","LWSA","Tec. Info.",5.0,5.00,"Compra"),
+      mkAcao("CURY3","Cury","Imobiliário",10.0,45.00,"Compra"),
+      mkAcao("DIRR3","Direcional","Imobiliário",5.0,20.00,"Compra"),
+      mkAcao("TTEN3","3tentos","Cons. Básico",5.0,21.60,"Compra"),
+      mkAcao("SLCE3","SLC Agrícola","Cons. Básico",7.5,17.00,"Neutro"),
+      mkAcao("ORVR3","Orizon","Utilidade Pública",15.0,97.48,"Compra"),
+      mkAcao("ALUP11","Alupar","Utilidade Pública",12.5,43.49,"Compra"),
+      mkAcao("BRBI11","BR Partners","Financeiro",5.0,26.00,"Compra")
     ];
   },
   "Montar do zero": function(){ return []; }
