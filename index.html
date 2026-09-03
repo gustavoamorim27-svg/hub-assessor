@@ -5263,6 +5263,46 @@ html.theme-light .pm-alloc{ background:#fff; }
 #p-holding .wl-prem i b{color:#fff;font-weight:800;font-size:12.5px}
 #p-holding.wl-print .hc-actions,#p-holding.wl-print .hc-inputs,#p-holding.wl-print .wl-toprow,#p-holding.wl-print .wl-onlyapp{display:none !important}
 #p-holding.wl-print .wl-prem{display:flex}
+#p-holding .wl-switch.hl{background:rgba(91,141,239,.14);border-color:rgba(91,141,239,.45)}
+#p-holding .wl-switch.hl input:checked+span{color:#fff}
+#p-holding .wl-cmp{margin:4px 0 18px;padding-top:6px;border-top:1px dashed rgba(255,255,255,.16)}
+#p-holding .wl-cmp[hidden]{display:none}
+#p-holding .wl-cmp-h{display:flex;align-items:baseline;justify-content:space-between;gap:14px;flex-wrap:wrap;margin:10px 0 12px}
+#p-holding .wl-cmp-h .t{font-family:'Sora',sans-serif;font-weight:800;font-size:17px;color:#fff}
+#p-holding .wl-cmp-h .t b{color:#5B8DEF;font-weight:800}
+#p-holding .wl-cmp-h .s{font-size:12px;color:#94ACEC}
+#p-holding .wl-cmp .hc-inputs{grid-template-columns:repeat(3,1fr)}
+#p-holding .wl-vs{display:grid;grid-template-columns:1fr auto 1fr;gap:12px;align-items:stretch;margin-bottom:14px}
+#p-holding .wl-route{border-radius:14px;padding:16px 18px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.05)}
+#p-holding .wl-route.hold{border-color:rgba(91,141,239,.45);background:linear-gradient(150deg,rgba(91,141,239,.16),rgba(91,141,239,.04))}
+#p-holding .wl-route.wl{border-color:rgba(242,101,34,.5);background:linear-gradient(150deg,rgba(242,101,34,.20),rgba(242,101,34,.05))}
+#p-holding .wl-route .k{font-size:10px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;color:#AFC1F7;margin-bottom:4px}
+#p-holding .wl-route.wl .k{color:#FFB089}
+#p-holding .wl-route .v{font-family:'Sora',sans-serif;font-size:30px;font-weight:800;color:#fff;line-height:1.05}
+#p-holding .wl-route .s{font-size:11.5px;color:#C2CBF0;margin-top:5px;line-height:1.45}
+#p-holding .wl-route ul{list-style:none;margin:12px 0 0;padding:10px 0 0;border-top:1px solid rgba(255,255,255,.12)}
+#p-holding .wl-route li{display:flex;justify-content:space-between;gap:10px;font-size:12px;color:#C2CBF0;padding:3px 0}
+#p-holding .wl-route li b{color:#fff;font-weight:700;white-space:nowrap}
+#p-holding .wl-route li.neg b{color:#2BD9A6}
+#p-holding .wl-route li.tot{border-top:1px solid rgba(255,255,255,.14);margin-top:6px;padding-top:8px;font-weight:800;color:#fff}
+#p-holding .wl-mid{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;min-width:120px;text-align:center}
+#p-holding .wl-mid .vs{font-family:'Sora',sans-serif;font-weight:800;font-size:13px;letter-spacing:2px;color:#AFC1F7}
+#p-holding .wl-mid .dif{font-family:'Sora',sans-serif;font-weight:800;font-size:22px;color:#2BD9A6;line-height:1}
+#p-holding .wl-mid .dif.neg{color:#FF8B52}
+#p-holding .wl-mid .dl{font-size:11px;color:#C2CBF0;line-height:1.4;max-width:150px}
+#p-holding .wl-cmp .hc-row2{grid-template-columns:1fr 1fr}
+#p-holding .wl-honest{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
+#p-holding .wl-honest .hc-pbbox ul{margin:0;padding-left:16px;color:#c8cdf0;font-size:12px;line-height:1.55}
+#p-holding .wl-honest .hc-pbbox li{margin:3px 0}
+#p-holding .wl-honest .hc-pbbox li b{color:#fff}
+@media (max-width:1000px){
+  #p-holding .wl-vs{grid-template-columns:1fr}
+  #p-holding .wl-mid{flex-direction:row;justify-content:space-around}
+  #p-holding .wl-cmp .hc-inputs{grid-template-columns:repeat(2,1fr)}
+  #p-holding .wl-cmp .hc-row2{grid-template-columns:1fr}
+  #p-holding .wl-honest{grid-template-columns:1fr}
+}
+
   @media (max-width:1000px){ #p-holding .wl-hero{grid-template-columns:1fr} #p-holding .hc-kpis{grid-template-columns:repeat(2,1fr)} }
 </style>
 
@@ -5292,6 +5332,7 @@ html.theme-light .pm-alloc{ background:#fff; }
   <div class="wl-toprow">
     <label class="wl-switch"><input type="checkbox" id="wlTgPagos" checked><span>Mostrar prêmios pagos</span></label>
     <label class="wl-switch"><input type="checkbox" id="wlTgMarcos" checked><span>Marcar o 3º e o 10º ano</span></label>
+    <label class="wl-switch hl"><input type="checkbox" id="wlTgCmp"><span>Comparar com Holding</span></label>
   </div>
   <div class="wl-prem" id="wlPrem"></div>
 
@@ -5327,6 +5368,88 @@ html.theme-light .pm-alloc{ background:#fff; }
       <div class="hc-score"><div class="st">Resgate ÷ prêmios no 10º ano <span class="pts" id="wlSegP">—</span></div><div class="hc-bar"><i id="wlSegB" style="background:#2BD9A6;width:0"></i></div><div class="lv" id="wlSegL"></div></div>
       <div class="hc-score"><div class="st">Capital segurado ÷ prêmios <span class="pts" id="wlCovP">—</span></div><div class="hc-bar"><i id="wlCovB" style="background:#F26522;width:0"></i></div><div class="lv" id="wlCovL"></div></div>
       <div class="hc-rec" id="wlRec">—</div>
+    </div>
+  </div>
+
+  <div class="wl-cmp" id="wlCmp" hidden>
+    <div class="wl-cmp-h">
+      <div class="t">Whole Life <span style="color:#AFC1F7;font-weight:600">×</span> <b>Holding</b></div>
+      <div class="s">Mesmo objetivo — passar o patrimônio para os herdeiros — comparado pelo que a família desembolsa em cada caminho.</div>
+    </div>
+    <div class="hc-inputs">
+      <div class="hc-f"><label>Patrimônio a transmitir <b id="cmpPatrO">R$ 3.000.000</b></label><input type="range" id="cmpPatr" min="500000" max="50000000" step="100000" value="3000000"></div>
+      <div class="hc-f"><label>Parcela em imóveis <b id="cmpImovO">60%</b></label><input type="range" id="cmpImov" min="0" max="100" step="5" value="60"><div class="wl-hint">base do ITBI na integralização</div></div>
+      <div class="hc-f"><label>Estado (ITCMD) <b id="cmpUfO">—</b></label><select class="hc-sel" id="cmpUf"></select><div class="wl-hint" id="cmpUfNota"></div></div>
+      <div class="hc-f"><label>Inventário (sem holding)</label><select class="hc-sel" id="cmpMod"><option value="extra">Extrajudicial · honorários 6% + custas 0,8%</option><option value="jud">Judicial consensual · 8% + 1,5%</option><option value="lit">Judicial litigioso · 10% + 2,5%</option></select><div class="wl-hint">piso da tabela OAB-SP: 6% do monte-mor</div></div>
+      <div class="hc-f"><label>Constituição da holding</label><input type="number" id="cmpConst" min="0" step="1000" value="20000"><div class="wl-hint">advogado, Junta, certidões e escritura — faixa de mercado R$ 8k a 20k só de honorários</div></div>
+      <div class="hc-f"><label>Imóveis a integralizar <b id="cmpNImovO">3</b></label><input type="range" id="cmpNImov" min="0" max="15" step="1" value="3"><div class="wl-hint">≈ R$ 4.500 de cartório por matrícula</div></div>
+      <div class="hc-f"><label>ITBI na integralização <b id="cmpItbiO">3%</b></label><input type="range" id="cmpItbi" min="0" max="4" step="0.5" value="3"><div class="wl-hint">0% se o município reconhecer a imunidade</div></div>
+      <div class="hc-f"><label>Contabilidade da holding <span style="opacity:.7">(R$/mês)</span></label><input type="number" id="cmpCont" min="0" step="100" value="1000"><div class="wl-hint">mercado: R$ 500 a 1.500/mês, corrigido pelo IPCA</div></div>
+      <div class="hc-f"><label>Aluguéis recebidos <span style="opacity:.7">(R$/mês, opcional)</span></label><input type="number" id="cmpAlug" min="0" step="500" value="0"><div class="wl-hint">crédito para a holding: 11,33% na PJ contra 27,5% na PF</div></div>
+    </div>
+
+    <div class="wl-vs">
+      <div class="wl-route hold">
+        <div class="k">Rota Holding · desembolso em <span id="cmpHorH">20</span> anos</div>
+        <div class="v" id="cmpHoldTot">—</div>
+        <div class="s">Custo concentrado no dia 1: constituição, ITBI e ITCMD da doação das cotas saem do bolso agora. Depois, contabilidade todo ano enquanto a holding existir.</div>
+        <ul id="cmpHoldList"></ul>
+      </div>
+      <div class="wl-mid">
+        <div class="vs">VS</div>
+        <div class="dif" id="cmpDif">—</div>
+        <div class="dl" id="cmpDifL">—</div>
+      </div>
+      <div class="wl-route wl">
+        <div class="k">Rota Whole Life · desembolso em <span id="cmpHorW">20</span> anos</div>
+        <div class="v" id="cmpWlTot">—</div>
+        <div class="s">Prêmio diluído em 10 anos. Na sucessão, o capital segurado cai na conta dos herdeiros em dias e paga ITCMD, honorários e custas do inventário — o patrimônio passa inteiro.</div>
+        <ul id="cmpWlList"></ul>
+      </div>
+    </div>
+
+    <div class="hc-row2">
+      <div class="hc-chartwrap"><div class="ct" style="height:300px"><canvas id="cmpChartBar"></canvas></div></div>
+      <div class="hc-chartwrap"><div class="ct" style="height:300px"><canvas id="cmpChartAcc"></canvas></div></div>
+    </div>
+
+    <div class="hc-kpis">
+      <div class="hc-kpi y"><div class="k">Custos do inventário no horizonte</div><div class="v" id="cmpInv">—</div><div class="wl-uf" id="cmpInvS">—</div></div>
+      <div class="hc-kpi o"><div class="k">Cobertura pelo capital segurado</div><div class="v" id="cmpCob">—</div><div class="wl-uf" id="cmpCobS">—</div></div>
+      <div class="hc-kpi g"><div class="k">Se ninguém faltar no horizonte</div><div class="v" id="cmpVivo">—</div><div class="wl-uf" id="cmpVivoS">—</div></div>
+      <div class="hc-kpi b"><div class="k">Fica para a família · Holding</div><div class="v" id="cmpFamH">—</div><div class="wl-uf" id="cmpFamHS">—</div></div>
+      <div class="hc-kpi o"><div class="k">Fica para a família · Whole Life</div><div class="v" id="cmpFamW">—</div><div class="wl-uf" id="cmpFamWS">—</div></div>
+      <div class="hc-kpi y"><div class="k">Prazo para o dinheiro chegar</div><div class="v" style="font-size:14px">Seguro: dias · Holding: já doado</div><div class="wl-uf">Inventário extrajudicial leva 30 a 90 dias; judicial, de 6 meses a anos.</div></div>
+    </div>
+
+    <div class="wl-honest">
+      <div class="hc-pbbox" style="border-left-color:#5B8DEF">
+        <div class="pbt" style="color:#5B8DEF">O que a holding faz que o seguro não faz</div>
+        <ul>
+          <li><b>Transfere os bens em si</b> (imóveis, participações) com regras de governança, cláusulas de inalienabilidade e proteção contra dilapidação.</li>
+          <li><b>Congela a base do ITCMD hoje</b>: a doação das cotas paga sobre o valor atual, não sobre o valor que os bens terão daqui a 20 anos.</li>
+          <li><b>Aluguéis tributados a ~11%</b> no lucro presumido, contra até 27,5% na pessoa física — relevante quando há renda de locação.</li>
+          <li><b>Elimina o inventário</b> dos bens integralizados — não só o custo, mas o prazo e o litígio.</li>
+        </ul>
+      </div>
+      <div class="hc-pbbox" style="border-left-color:#F26522">
+        <div class="pbt" style="color:#F26522">O que o seguro faz que a holding não faz</div>
+        <ul>
+          <li><b>Liquidez imediata e fora do inventário</b>: capital pago em dias, sem ITCMD e sem IR (CC art. 794; Lei 15.040/2024 art. 116).</li>
+          <li><b>Não gasta o dinheiro</b>: a partir do 3º ano há resgate; do 10º em diante, integral e isento. Na holding, ITBI, ITCMD e contabilidade não voltam.</li>
+          <li><b>Custo diluído</b> em 10 anos, em vez de um cheque grande no dia 1 — e alavancado: cada R$ 1 de prêmio compra mais de R$ 1 de capital.</li>
+          <li><b>Não exige mexer no patrimônio</b>: nada de escritura, Junta Comercial, balanço anual ou discussão de ITBI com o município.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="wl-legal" style="border-left-color:#5B8DEF">
+      <b>Leitura honesta.</b> Holding e Whole Life não são substitutos perfeitos: a holding reorganiza os bens; o seguro entrega dinheiro.
+      Muitas famílias usam os dois — a holding para governança e o seguro para pagar o ITCMD da doação sem vender ativo.
+      <b>Base do ITCMD nas cotas:</b> a <b>LC 227/2026</b> (art. 154, II) manda avaliar as cotas a <b>valor de mercado</b>, com piso no patrimônio líquido ajustado —
+      acaba a vantagem histórica de doar cotas pelo valor contábil; vale conforme cada estado incorporar a regra (a partir de 2027, pela anterioridade).
+      <b>ITBI:</b> a Constituição imuniza a integralização, mas exclui empresas de atividade imobiliária preponderante; o STF (Tema 796) limitou a imunidade ao valor do capital subscrito
+      e a jurisprudência sobre holdings de locação segue dividida — por isso o percentual é um campo. <b>IOF</b> do seguro de vida (0,38%) já está embutido no prêmio; o aumento de 2025 não alcançou o Whole Life.
+      Em alguns estados parte do ITCMD da doação com reserva de usufruto fica para a extinção do usufruto — aqui está somado no dia 1. Sem considerar IBS/CBS sobre locação a partir de 2027.
     </div>
   </div>
 
@@ -5374,7 +5497,7 @@ html.theme-light .pm-alloc{ background:#fff; }
   function fatorIdade(a){ for(var i=0;i<IDADE.length;i++){ if(a<=IDADE[i][0]) return IDADE[i][1]; } return 5.5; }
   var ANO_MIN=3, ANO_PLENO=10;
 
-  var ST={cob:1000000,idade:45,parc:null,ipca:4.5,des3:40,hor:20,tgPagos:true,tgMarcos:true};
+  var ST={cob:1000000,idade:45,parc:null,ipca:4.5,des3:40,hor:20,tgPagos:true,tgMarcos:true,tgCmp:false};
   var CH=null;
   function el(id){ return document.getElementById(id); }
   function brl(n){ return 'R$ '+Math.round(n||0).toLocaleString('pt-BR'); }
@@ -5451,6 +5574,186 @@ html.theme-light .pm-alloc{ background:#fff; }
     CH.update();
   }
 
+
+  /* ===== Comparativo: Whole Life x Holding ================================
+     Mesmo objetivo (passar o patrimonio adiante), comparado pelo desembolso
+     da familia. Holding: constituicao + cartorio + ITBI + ITCMD da doacao das
+     cotas (hoje) + contabilidade ano a ano (IPCA). Whole Life: premios 10-pay;
+     na sucessao o capital segurado paga ITCMD + honorarios + custas do
+     inventario no horizonte -- se faltar, o que faltar entra como custo.
+     Alugueis (opcional) creditam a holding pela diferenca PJ (11,33%) x PF
+     (27,5%). Tabela de ITCMD por UF conferida em ago/2026; 'c' e o grau de
+     confianca da fonte. ==================================================== */
+  var INF=Infinity;
+  var ITCMD={
+    AC:{f:[[50000,0],[1500000,4],[2500000,5],[3500000,6],[INF,7]],c:'ok',n:'LC 373/2020. Colaterais: 8%.'},
+    AL:{f:[[INF,4]],c:'ok',n:'Alíquota fixa (Lei 5.077/1989). Progressividade prevista para 2027.'},
+    AP:{f:[[INF,4]],c:'conf',n:'Não confirmado. Base histórica 4% fixa; há notícia de progressividade 2–6% (Lei 3.149/2024) sem fonte primária.'},
+    AM:{f:[[400000,0],[2000000,2],[6000000,3],[INF,4]],c:'ok',n:'LC 269/2024. Herança isenta até R$ 400 mil.'},
+    BA:{f:[[100000,0],[200000,4],[300000,6],[INF,8]],c:'ok',n:'Lei 14.802/2024.'},
+    CE:{f:[[29000,2],[87000,4],[174000,6],[INF,8]],c:'media',t:1,n:'Faixas em UFIRCE (2026 = R$ 6,29872). No CE a alíquota incide sobre o TOTAL, não por faixa.'},
+    DF:{f:[[1000000,4],[2000000,5],[INF,6]],c:'ok',n:'Lei 3.804/2006 c/ Lei 5.549/2015.'},
+    ES:{f:[[INF,4]],c:'ok',n:'Alíquota fixa (Lei 10.011/2013).'},
+    GO:{f:[[25000,2],[200000,4],[600000,6],[INF,8]],c:'ok',n:'Lei 11.651/1991.'},
+    MA:{f:[[300000,3],[600000,4],[900000,5],[1200000,6],[INF,7]],c:'media',n:'Lei 7.799/2002. Faixas aproximadas — reconferir na SEFAZ.'},
+    MT:{f:[[395670,0],[1055120,2],[2110240,4],[4220480,6],[INF,8]],c:'ok',n:'Faixas em UPF/MT (ago-2026 = R$ 263,78). Isento até 1.500 UPF.'},
+    MS:{f:[[100000,0],[INF,6]],c:'ok',n:'Alíquota fixa 6% (Lei 1.810/1997). Isento até R$ 100 mil.'},
+    MG:{f:[[INF,5]],c:'ok',n:'Alíquota fixa 5% (Lei 14.941/2003). PL 2.881/2024 (3/5/8%) em tramitação.'},
+    PA:{f:[[INF,4]],c:'conf',n:'Progressiva 2–6% em UPF-PA (Lei 5.529/1989), valor da UPF-PA 2026 não confirmado. Usando 4% como referência.'},
+    PB:{f:[[125000,2],[400000,4],[1000000,6],[INF,8]],c:'ok',n:'Lei 5.123/1989, red. Lei 12.585/2023.'},
+    PR:{f:[[INF,4]],c:'ok',n:'Alíquota fixa (Lei 18.573/2015).'},
+    PE:{f:[[80000,0],[350000,2],[550000,4],[750000,6],[INF,8]],c:'ok',n:'LC 563/2025, vigente desde 01/01/2026.'},
+    PI:{f:[[INF,4]],c:'conf',n:'Progressiva 2–6% (Lei 4.261/1989), faixas não confirmadas. Usando 4% como referência.'},
+    RJ:{f:[[347228,4],[496040,4.5],[992080,5],[1488120,6],[1984160,7],[INF,8]],c:'ok',n:'Faixas em UFIR-RJ (2026 = R$ 4,9604). Lei 7.174/2015.'},
+    RN:{f:[[INF,3]],c:'conf',n:'Base confirmada: 3% única (Lei 5.887/1989). Alteração para 3–6% não confirmada.'},
+    RS:{f:[[56653,0],[283264,3],[849792,4],[1416320,5],[INF,6]],c:'ok',n:'Faixas em UPF-RS (2026 = R$ 28,3264). Isento até 2.000 UPF.'},
+    RO:{f:[[155575,2],[767918,3],[INF,4]],c:'media',n:'Faixas em UPF/RO (2026 = R$ 124,46). Lei 959/2000.'},
+    RR:{f:[[INF,4]],c:'media',n:'Alíquota fixa 4% (Lei 59/1993).'},
+    SC:{f:[[20000,1],[50000,3],[150000,5],[INF,7]],c:'ok',n:'Lei 19.053/2024 revogou a faixa de 8%.'},
+    SP:{f:[[INF,4]],c:'ok',n:'Alíquota fixa 4% (Lei 10.705/2000). PLs de progressividade só valeriam a partir de 2027.'},
+    SE:{f:[[41240,0],[199354,3],[996853,6],[INF,8]],c:'ok',n:'Faixas em UFP/SE (mai-2026 = R$ 82,48, reajuste mensal).'},
+    TO:{f:[[25000,2],[100000,4],[500000,6],[INF,8]],c:'media',n:'Lei 1.287/2001. Faixas aproximadas — fontes divergentes.'}
+  };
+  var UFS=Object.keys(ITCMD).sort();
+  function itcmd(base, uf){
+    var t=ITCMD[uf]; if(!t||base<=0) return {v:0,ef:0};
+    if(t.t){ var a=t.f[t.f.length-1][1];
+      for(var q=0;q<t.f.length;q++){ if(base<=t.f[q][0]){ a=t.f[q][1]; break; } }
+      return {v:base*a/100, ef:a}; }
+    var v=0, ant=0;
+    for(var i=0;i<t.f.length;i++){ var lim=t.f[i][0], al=t.f[i][1];
+      if(base>ant){ v+=(Math.min(base,lim)-ant)*al/100; } ant=lim; if(base<=lim) break; }
+    return {v:v, ef: base>0 ? v/base*100 : 0};
+  }
+  function faixaTxt(uf){
+    var t=ITCMD[uf]; if(!t) return '';
+    if(t.f.length===1) return String(t.f[0][1]).replace('.',',')+'% fixo';
+    var r=t.f.map(function(x){return x[1];}).filter(function(a){return a>0;});
+    var mn=Math.min.apply(null,r), mx=Math.max.apply(null,r);
+    var isento = t.f[0][1]===0 ? ' · isento até '+brlK(t.f[0][0]) : '';
+    if(mn===mx) return String(mn).replace('.',',')+'% fixo'+isento;
+    return String(mn).replace('.',',')+'% a '+String(mx).replace('.',',')+'% (progressivo)'+isento;
+  }
+  /* honorarios (h) e custas/cartorio (c) em % do monte-mor; OAB-SP: piso de 6% */
+  var INV={ extra:{h:6,c:0.8,r:'extrajudicial'}, jud:{h:8,c:1.5,r:'judicial consensual'}, lit:{h:10,c:2.5,r:'judicial litigioso'} };
+  var CART_IMOVEL=4500, PJ_ALUG=11.33, PF_ALUG=27.5;
+
+  var C={patr:3000000,pctImov:60,uf:'SP',mod:'extra',constit:20000,nImov:3,itbi:3,contMes:1000,alug:0};
+  var CHB=null, CHA=null;
+
+  function calcCmp(d){
+    var ipca=ST.ipca/100, N=ST.hor;
+    var P=C.patr, imov=P*C.pctImov/100;
+    var itHoje=itcmd(P,C.uf);
+    var constit=C.constit + C.nImov*CART_IMOVEL;
+    var itbi=imov*C.itbi/100;
+    var dia1=constit+itbi+itHoje.v;
+    var contTot=0, econTot=0, holdAcc=[dia1], wlAcc=[0];
+    for(var n=1;n<=N;n++){
+      var f=Math.pow(1+ipca,n);
+      var cont=C.contMes*12*f, econ=C.alug>0 ? C.alug*12*f*(PF_ALUG-PJ_ALUG)/100 : 0;
+      contTot+=cont; econTot+=econ;
+      holdAcc.push(dia1+contTot-econTot);
+      wlAcc.push(d.premio*Math.min(n,10));
+    }
+    var holdTot=dia1+contTot-econTot;
+    var PN=P*Math.pow(1+ipca,N), inv=INV[C.mod], itN=itcmd(PN,C.uf);
+    var hon=PN*inv.h/100, cus=PN*inv.c/100, custosInv=itN.v+hon+cus;
+    var capN=d.capFim;
+    var falta=Math.max(0,custosInv-capN), sobra=Math.max(0,capN-custosInv);
+    var wlTot=d.pagosTot+falta;
+    if(falta>0) wlAcc[N]+=falta;
+    return {P:P,PN:PN,N:N,itHoje:itHoje,constit:constit,itbi:itbi,contTot:contTot,econTot:econTot,dia1:dia1,holdTot:holdTot,
+            itN:itN,hon:hon,cus:cus,custosInv:custosInv,capN:capN,falta:falta,sobra:sobra,wlTot:wlTot,inv:inv,
+            holdAcc:holdAcc,wlAcc:wlAcc,
+            famH:PN-holdTot, famW:PN-d.pagosTot-custosInv+capN};
+  }
+
+  function renderCmp(d){
+    var box=el('wlCmp'); if(!box) return;
+    box.hidden=!ST.tgCmp; if(!ST.tgCmp){ return; }
+    var c=calcCmp(d);
+    el('cmpPatrO').textContent=brl(C.patr); el('cmpImovO').textContent=C.pctImov+'%';
+    el('cmpNImovO').textContent=String(C.nImov); el('cmpItbiO').textContent=pct(C.itbi);
+    el('cmpUfO').textContent=C.uf; el('cmpUfNota').textContent=faixaTxt(C.uf)+(ITCMD[C.uf].c==='conf'?' · não confirmado':'');
+    el('cmpHorH').textContent=String(c.N); el('cmpHorW').textContent=String(c.N);
+
+    el('cmpHoldTot').textContent=brl(c.holdTot);
+    var lh='<li>Constituição + cartório ('+C.nImov+' matrícula'+(C.nImov===1?'':'s')+')<b>'+brl(c.constit)+'</b></li>'+
+           '<li>ITBI sobre '+brlK(c.P*C.pctImov/100)+' em imóveis ('+pct(C.itbi)+')<b>'+brl(c.itbi)+'</b></li>'+
+           '<li>ITCMD na doação das cotas · '+C.uf+' ('+pct(c.itHoje.ef)+' efetivo)<b>'+brl(c.itHoje.v)+'</b></li>'+
+           '<li>Contabilidade por '+c.N+' anos (IPCA)<b>'+brl(c.contTot)+'</b></li>';
+    if(c.econTot>0) lh+='<li class="neg">Economia de IR sobre aluguéis (PJ x PF)<b>− '+brl(c.econTot)+'</b></li>';
+    lh+='<li class="tot">Desembolso total<b>'+brl(c.holdTot)+'</b></li>';
+    el('cmpHoldList').innerHTML=lh;
+
+    el('cmpWlTot').textContent=brl(c.wlTot);
+    var lw='<li>Prêmios · '+brl(d.premio)+' por 10 anos<b>'+brl(d.pagosTot)+'</b></li>'+
+           '<li style="opacity:.75">Inventário no '+c.N+'º ano: ITCMD '+brlK(c.itN.v)+' + honorários '+brlK(c.hon)+' + custas '+brlK(c.cus)+'<b>'+brl(c.custosInv)+'</b></li>'+
+           '<li class="neg">Pago pelo capital segurado ('+brlK(c.capN)+')<b>− '+brl(Math.min(c.capN,c.custosInv))+'</b></li>';
+    if(c.falta>0) lw+='<li>Complemento dos herdeiros<b>'+brl(c.falta)+'</b></li>';
+    lw+='<li class="tot">Desembolso total<b>'+brl(c.wlTot)+'</b></li>';
+    el('cmpWlList').innerHTML=lw;
+
+    var dif=c.holdTot-c.wlTot, difE=el('cmpDif');
+    difE.textContent=(dif>=0?'− ':'+ ')+brlK(Math.abs(dif));
+    difE.className='dif'+(dif>=0?'':' neg');
+    el('cmpDifL').innerHTML= dif>=0
+      ? 'o Whole Life custa <b>'+pct(c.holdTot>0?dif/c.holdTot*100:0)+' menos</b> que a holding neste cenário'
+      : 'a holding custa <b>'+pct(c.wlTot>0?-dif/c.wlTot*100:0)+' menos</b> que o seguro neste cenário';
+
+    el('cmpInv').textContent=brl(c.custosInv);
+    el('cmpInvS').textContent='sobre '+brlK(c.PN)+' no '+c.N+'º ano · ITCMD '+pct(c.itN.ef)+' + '+pct(c.inv.h+c.inv.c)+' de honorários e custas ('+c.inv.r+')';
+    var cob=c.custosInv>0?c.capN/c.custosInv*100:0;
+    el('cmpCob').textContent=pct(cob);
+    el('cmpCobS').textContent= c.falta>0
+      ? 'capital de '+brlK(c.capN)+' não cobre tudo — faltam '+brlK(c.falta)+'; ajuste o capital segurado acima'
+      : 'capital de '+brlK(c.capN)+' paga tudo e ainda sobram '+brlK(c.sobra)+' para os herdeiros';
+    el('cmpVivo').textContent=brl(d.rFim);
+    el('cmpVivoS').textContent='resgate disponível no '+c.N+'º ano, isento de IR · na holding, o que foi gasto não volta';
+    el('cmpFamH').textContent=brl(c.famH);
+    el('cmpFamHS').textContent='patrimônio de '+brlK(c.PN)+' menos '+brlK(c.holdTot)+' gastos no caminho';
+    el('cmpFamW').textContent=brl(c.famW);
+    el('cmpFamWS').textContent='patrimônio inteiro'+(c.sobra>0?' + '+brlK(c.sobra)+' que sobra do capital':'')+' menos '+brlK(d.pagosTot)+' de prêmios';
+
+    graficoCmp(c,d);
+  }
+
+  function graficoCmp(c,d){
+    if(typeof Chart==='undefined') return;
+    var cb=el('cmpChartBar'), ca=el('cmpChartAcc'); if(!cb||!ca) return;
+    if(CHB){ CHB.destroy(); CHB=null; } if(CHA){ CHA.destroy(); CHA=null; }
+    var leg={labels:{color:'#C2CBF0',font:{family:'Manrope',size:10.5},boxWidth:12}};
+    var grid={color:'rgba(120,130,210,.14)'};
+    var ds=[
+      {label:'Constituição + cartório', data:[c.constit,0], backgroundColor:'#5B8DEF'},
+      {label:'ITBI', data:[c.itbi,0], backgroundColor:'#8a93d8'},
+      {label:'ITCMD na doação', data:[c.itHoje.v,0], backgroundColor:'#F5B942'},
+      {label:'Contabilidade '+c.N+' anos', data:[c.contTot,0], backgroundColor:'#AFC1F7'},
+      {label:'Prêmios (10 anos)', data:[0,d.pagosTot], backgroundColor:'#F26522'}
+    ];
+    if(c.falta>0) ds.push({label:'Complemento dos herdeiros', data:[0,c.falta], backgroundColor:'#ff5566'});
+    if(c.econTot>0) ds.push({label:'Economia IR aluguéis', data:[-c.econTot,0], backgroundColor:'#2BD9A6'});
+    CHB=new Chart(cb.getContext('2d'),{ type:'bar',
+      data:{ labels:['Holding','Whole Life'], datasets:ds },
+      options:{ indexAxis:'y', responsive:true, maintainAspectRatio:false,
+        plugins:{ legend:leg, title:{display:true,text:'De onde vem o custo de cada rota',color:'#fff',font:{family:'Sora',size:12,weight:'800'},padding:{bottom:8}},
+          tooltip:{callbacks:{label:function(x){return x.dataset.label+': '+brl(Math.abs(x.parsed.x));}}} },
+        scales:{ x:{stacked:true,ticks:{color:'#AFC1F7',callback:function(v){return brlK(v);}},grid:grid},
+                 y:{stacked:true,ticks:{color:'#fff',font:{family:'Sora',weight:'800',size:12}},grid:{display:false}} } } });
+    var anos=[]; for(var n=0;n<=c.N;n++) anos.push(n);
+    CHA=new Chart(ca.getContext('2d'),{ type:'line',
+      data:{ labels:anos, datasets:[
+        {label:'Holding · desembolso acumulado', data:c.holdAcc, borderColor:'#5B8DEF', backgroundColor:'rgba(91,141,239,.14)', fill:true, stepped:false, tension:.15, pointRadius:0, borderWidth:2.5},
+        {label:'Whole Life · desembolso acumulado', data:c.wlAcc, borderColor:'#F26522', backgroundColor:'rgba(242,101,34,.14)', fill:true, tension:.15, pointRadius:0, borderWidth:3}
+      ]},
+      options:{ responsive:true, maintainAspectRatio:false, interaction:{mode:'index',intersect:false},
+        plugins:{ legend:leg, title:{display:true,text:'Quando o dinheiro sai do bolso',color:'#fff',font:{family:'Sora',size:12,weight:'800'},padding:{bottom:8}},
+          tooltip:{callbacks:{label:function(x){return x.dataset.label+': '+brl(x.parsed.y);}}} },
+        scales:{ x:{title:{display:true,text:'Anos',color:'#AFC1F7'},ticks:{color:'#AFC1F7'},grid:grid},
+                 y:{ticks:{color:'#AFC1F7',callback:function(v){return brlK(v);}},grid:grid} } } });
+  }
+
   function render(){
     var d=calc();
     el('wlCobO').textContent=brl(ST.cob);
@@ -5518,9 +5821,15 @@ html.theme-light .pm-alloc{ background:#fff; }
       '<i>Pr&ecirc;mio anual <b>'+brl(d.premio)+'</b> (10 anos)</i>'+
       '<i>IPCA <b>'+pct(ST.ipca)+' a.a.</b></i>'+
       '<i>Des&aacute;gio no 3&ordm; ano <b>'+pct(ST.des3)+'</b></i>'+
-      '<i>Horizonte <b>'+ST.hor+' anos</b></i>';
+      '<i>Horizonte <b>'+ST.hor+' anos</b></i>'+
+      (ST.tgCmp ? '<i>Patrim&ocirc;nio <b>'+brl(C.patr)+'</b> · '+C.pctImov+'% im&oacute;veis</i>'+
+                  '<i>ITCMD <b>'+C.uf+'</b></i>'+
+                  '<i>Holding: constitui&ccedil;&atilde;o <b>'+brl(C.constit+C.nImov*CART_IMOVEL)+'</b> · ITBI <b>'+pct(C.itbi)+'</b> · contabilidade <b>'+brl(C.contMes)+'/m&ecirc;s</b></i>'+
+                  '<i>Invent&aacute;rio <b>'+INV[C.mod].r+'</b></i>'+
+                  (C.alug>0 ? '<i>Alugu&eacute;is <b>'+brl(C.alug)+'/m&ecirc;s</b></i>' : '') : '');
 
     grafico(d);
+    renderCmp(d);
   }
 
   function bind(){
@@ -5536,6 +5845,19 @@ html.theme-light .pm-alloc{ background:#fff; }
     on('wlParcAuto','click',function(){ ST.parc=null; el('wlParc').value=''; render(); });
     on('wlTgPagos','change',function(){ ST.tgPagos=this.checked; render(); });
     on('wlTgMarcos','change',function(){ ST.tgMarcos=this.checked; render(); });
+    on('wlTgCmp','change',function(){ ST.tgCmp=this.checked; render(); if(this.checked){ var b=el('wlCmp'); if(b&&b.scrollIntoView) setTimeout(function(){ b.scrollIntoView({behavior:'smooth',block:'start'}); },60); } });
+    /* comparativo com holding */
+    var selUf=el('cmpUf');
+    if(selUf && !selUf.options.length){ UFS.forEach(function(u){ var o=document.createElement('option'); o.value=u; o.textContent=u+' — '+faixaTxt(u); if(u===C.uf) o.selected=true; selUf.appendChild(o); }); }
+    on('cmpPatr','input',function(){ C.patr=+this.value; render(); });
+    on('cmpImov','input',function(){ C.pctImov=+this.value; render(); });
+    on('cmpUf','change',function(){ C.uf=this.value; render(); });
+    on('cmpMod','change',function(){ C.mod=this.value; render(); });
+    on('cmpConst','input',function(){ C.constit=Math.max(0,+this.value||0); render(); });
+    on('cmpNImov','input',function(){ C.nImov=+this.value; render(); });
+    on('cmpItbi','input',function(){ C.itbi=+this.value; render(); });
+    on('cmpCont','input',function(){ C.contMes=Math.max(0,+this.value||0); render(); });
+    on('cmpAlug','input',function(){ C.alug=Math.max(0,+this.value||0); render(); });
     on('wlPngBtn','click',function(){
       var alvo=document.querySelector('#p-holding .hc-sec'); if(!alvo) return;
       var painel=document.getElementById('p-holding');
