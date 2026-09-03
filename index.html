@@ -1725,18 +1725,22 @@ html:not(.modo-simples):not(.theme-light) .home-sub{
    superficies chapadas da paleta antiga -- .hc-sec era um degrade navy
    100% opaco cobrindo a aba inteira, e o cabecalho da tabela e a barra
    de progresso usavam #0A0E3F solido. Por isso a aba destoava do resto. */
-html:not(.modo-simples):not(.theme-light) #p-holding .hc-sec{
+html:not(.modo-simples):not(.theme-light) #p-holding .hc-sec,
+html:not(.modo-simples):not(.theme-light) #p-holdingcalc .hc-sec{
   background:rgba(10,14,63,.40) !important;
   backdrop-filter:blur(18px) saturate(1.25); -webkit-backdrop-filter:blur(18px) saturate(1.25);
   border-color:rgba(242,101,34,.32) !important;
 }
-html:not(.modo-simples):not(.theme-light) #p-holding .hc-bar{
+html:not(.modo-simples):not(.theme-light) #p-holding .hc-bar,
+html:not(.modo-simples):not(.theme-light) #p-holdingcalc .hc-bar{
   background:rgba(255,255,255,.14) !important;
 }
-html:not(.modo-simples):not(.theme-light) #p-holding .hc-t th{
+html:not(.modo-simples):not(.theme-light) #p-holding .hc-t th,
+html:not(.modo-simples):not(.theme-light) #p-holdingcalc .hc-t th{
   background:rgba(255,255,255,.10) !important; color:#C2CBF0 !important;
 }
-html:not(.modo-simples):not(.theme-light) #p-holding .hc-disc2{ color:#AFC1F7 !important; }
+html:not(.modo-simples):not(.theme-light) #p-holding .hc-disc2,
+html:not(.modo-simples):not(.theme-light) #p-holdingcalc .hc-disc2{ color:#AFC1F7 !important; }
 /* os cartoes internos ja estao na lista do vidro-theme, mas dentro do
    .hc-sec eles viram vidro sobre vidro -- tinta leve, sem filtro proprio */
 html:not(.modo-simples):not(.theme-light) #p-holding .hc-kpi,
@@ -1744,7 +1748,14 @@ html:not(.modo-simples):not(.theme-light) #p-holding .hc-inputs,
 html:not(.modo-simples):not(.theme-light) #p-holding .hc-chartwrap,
 html:not(.modo-simples):not(.theme-light) #p-holding .hc-score,
 html:not(.modo-simples):not(.theme-light) #p-holding .hc-tblwrap,
-html:not(.modo-simples):not(.theme-light) #p-holding .hc-pbbox{
+html:not(.modo-simples):not(.theme-light) #p-holding .hc-pbbox,
+html:not(.modo-simples):not(.theme-light) #p-holdingcalc .hc-kpi,
+html:not(.modo-simples):not(.theme-light) #p-holdingcalc .hc-inputs,
+html:not(.modo-simples):not(.theme-light) #p-holdingcalc .hk-g,
+html:not(.modo-simples):not(.theme-light) #p-holdingcalc .hc-chartwrap,
+html:not(.modo-simples):not(.theme-light) #p-holdingcalc .hc-score,
+html:not(.modo-simples):not(.theme-light) #p-holdingcalc .hc-tblwrap,
+html:not(.modo-simples):not(.theme-light) #p-holdingcalc .hc-pbbox{
   background:rgba(10,14,63,.20) !important;
   border-color:rgba(255,255,255,.16) !important;
   backdrop-filter:none !important; -webkit-backdrop-filter:none !important;
@@ -2020,6 +2031,10 @@ html.modo-simples #btnModoSimples{background:rgba(242,101,34,.16);border-color:r
       <svg viewBox="0 0 24 24"><path d="M3 21h18M5 21V8l7-4 7 4v13M10 21v-6h4v6"/></svg>
       Sucessão
     </button>
+      <button class="g-tab" data-panel="holdingcalc" onclick="showPanel('holdingcalc')">
+        <svg viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="14" rx="2"/><path d="M8 7V4h8v3M3 12h18M12 12v9"/></svg>
+        Holding
+      </button>
     <button class="g-tab" data-panel="apresentacao" onclick="showPanel('apresentacao')">
       <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
       Apresentação
@@ -2035,6 +2050,11 @@ html.modo-simples #btnModoSimples{background:rgba(242,101,34,.16);border-color:r
 .g-tk-chg.up{ color:#3DD68C; }
 .g-tk-chg.down{ color:#FF6B6B; }
 .g-tk-chg.flat{ color:var(--mu); }
+/* a nav tem 9 abas; o ticker cede espaco antes de esconder alguma aba:
+   ate 1780px some ouro/brent/bitcoin, ate 1600px fica so dolar e ibovespa */
+@media (max-width:1780px){ #tk-ouro,#tk-brent,#tk-btc{ display:none; } .g-ticker{ gap:12px; padding-left:12px; } }
+@media (max-width:1600px){ #tk-sp500{ display:none; } .g-tab{ padding:0 12px; font-size:12.5px; } }
+@media (max-width:1400px){ .g-ticker{ display:none; } }
 @media (max-width:1200px){ .g-ticker{ display:none; } }
 </style>
   
@@ -2248,6 +2268,11 @@ html.modo-simples #btnModoSimples{background:rgba(242,101,34,.16);border-color:r
           <div class="hcard-title">Sucessão</div>
           <div class="hcard-desc">Whole Life: quanto o capital cresce, quando dá para resgatar com deságio e quando o resgate fica integral e isento.</div>
         </div>
+      <div class="hcard" onclick="showPanel('holdingcalc')">
+        <div class="hcard-ic"><svg viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="14" rx="2"/><path d="M8 7V4h8v3M3 12h18M12 12v9"/></svg></div>
+        <div class="hcard-title">Holding Patrimonial</div>
+        <div class="hcard-desc">Custo de abertura, ITBI, ITCMD e contabilidade com as alíquotas de onde o cliente mora — holding simples, para sucessão ou inventário, e o efeito do aluguel.</div>
+      </div>
         <div class="hcard" onclick="showPanel('apresentacao')">
           <div class="hcard-ic"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></div>
           <div class="hcard-title">Apresentação institucional</div>
@@ -5636,6 +5661,7 @@ html.theme-light .pm-alloc{ background:#fff; }
   }
   /* honorarios (h) e custas/cartorio (c) em % do monte-mor; OAB-SP: piso de 6% */
   var INV={ extra:{h:6,c:0.8,r:'extrajudicial'}, jud:{h:8,c:1.5,r:'judicial consensual'}, lit:{h:10,c:2.5,r:'judicial litigioso'} };
+  window.__ITCMD_UF={tab:ITCMD,calc:itcmd,faixa:faixaTxt,ufs:UFS};
   var CART_IMOVEL=4500, PJ_ALUG=11.33, PF_ALUG=27.5;
 
   var C={patr:3000000,pctImov:60,uf:'SP',mod:'extra',constit:20000,nImov:3,itbi:3,contMes:1000,alug:0};
@@ -5886,6 +5912,504 @@ html.theme-light .pm-alloc{ background:#fff; }
   window._toolInit=window._toolInit||{}; window._toolInit['holding']=function(){ try{bind();}catch(e){} };
 })();
 </script>
+</div>
+
+<div class="g-panel" id="p-holdingcalc" data-tool="holdingcalc">
+<style>
+#p-holdingcalc .hp-wrap{max-width:1400px;margin:0 auto;padding:6px 4px 40px;font-family:'Manrope',-apple-system,sans-serif;color:#EAECFB}
+#p-holdingcalc input[type=range]{width:100%;accent-color:#F26522;margin-top:8px}
+#p-holdingcalc .hc-sec{background:linear-gradient(160deg,#0d1240,#090d2e);border:1px solid rgba(242,101,34,.25);border-radius:18px;margin:2px 0 24px;padding:22px 24px;font-family:'Manrope',-apple-system,sans-serif;color:#EAECFB}
+#p-holdingcalc .hc-sec *{box-sizing:border-box}
+#p-holdingcalc .hc-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:16px}
+#p-holdingcalc .hc-h{font-family:'Sora',sans-serif;font-weight:800;font-size:21px;color:#fff;margin:0 0 3px}
+#p-holdingcalc .hc-h b{color:#F26522}
+#p-holdingcalc .hc-hs{color:#9AA2D0;font-size:13px;margin:0;line-height:1.5;max-width:640px}
+#p-holdingcalc .hc-actions{display:flex;gap:10px;flex-wrap:wrap}
+#p-holdingcalc .hc-btn{background:#F26522;color:#fff;border:none;font-family:'Sora';font-weight:700;font-size:13px;padding:10px 18px;border-radius:100px;cursor:pointer;white-space:nowrap}
+#p-holdingcalc .hc-btn:hover{filter:brightness(1.08)}
+#p-holdingcalc .hc-btn.sec{background:rgba(255,255,255,.08);color:#cdd3e3;border:1px solid rgba(120,130,210,.28)}
+#p-holdingcalc .hc-inputs{display:grid;grid-template-columns:repeat(4,1fr);gap:14px 18px;background:#0A0E3F;border:1px solid rgba(120,130,210,.18);border-radius:14px;padding:16px 18px;margin-bottom:16px}
+@media(max-width:1024px){#p-holdingcalc .hc-inputs{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){#p-holdingcalc .hc-inputs{grid-template-columns:1fr}}
+#p-holdingcalc .hc-f label{display:flex;justify-content:space-between;align-items:baseline;font-size:12px;color:#9AA2D0;font-weight:600;margin-bottom:6px}
+#p-holdingcalc .hc-f label b{color:#F5B942;font-weight:700;font-size:13px}
+#p-holdingcalc .hc-f label .tip{color:#6b7392;cursor:help;font-size:10px;border:1px solid #3a4256;border-radius:50%;width:14px;height:14px;display:inline-flex;align-items:center;justify-content:center;margin-left:4px}
+#p-holdingcalc .hc-sel{width:100%;background:#0f1330;border:1px solid rgba(120,130,210,.3);border-radius:9px;color:#fff;font-family:'Manrope';font-size:13px;padding:8px 10px;outline:none}
+#p-holdingcalc .hc-sel:focus{border-color:#F26522}
+#p-holdingcalc .hc-sec input[type=range]{width:100%;accent-color:#F26522;margin-top:3px}
+#p-holdingcalc .hc-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
+#p-holdingcalc .hc-f input[type=number]{width:100%;background:#0b1136;border:1px solid rgba(120,130,210,.3);color:#eaf0ff;border-radius:8px;padding:7px 9px;font-family:Manrope;font-size:13px}
+#p-holdingcalc .hc-auto{cursor:pointer;font-size:10px;color:#5B8DEF;border:1px solid rgba(91,141,239,.45);border-radius:5px;padding:1px 6px;margin-left:6px;vertical-align:middle}
+#p-holdingcalc .hc-pbrow{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:2px 0 16px}
+@media(max-width:760px){#p-holdingcalc .hc-pbrow{grid-template-columns:1fr}}
+#p-holdingcalc .hc-pbbox{background:#0A0E3F;border:1px solid rgba(120,130,210,.2);border-left:3px solid rgba(120,130,210,.45);border-radius:12px;padding:14px 16px}
+#p-holdingcalc .hc-pbbox .pbt{font-family:'Sora';font-size:12px;font-weight:800;letter-spacing:.3px;text-transform:uppercase;margin-bottom:7px}
+#p-holdingcalc .hc-pbbox .pbc{color:#c8cdf0;font-size:12.5px;line-height:1.55}
+@media(max-width:1024px){#p-holdingcalc .hc-kpis{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){#p-holdingcalc .hc-kpis{grid-template-columns:1fr 1fr}}
+#p-holdingcalc .hc-kpi{background:#111845;border:1px solid rgba(120,130,210,.2);border-radius:12px;padding:12px 13px}
+#p-holdingcalc .hc-kpi .k{font-size:9.5px;color:#9AA2D0;text-transform:uppercase;letter-spacing:.4px;font-weight:700;line-height:1.3}
+#p-holdingcalc .hc-kpi .v{font-family:'Sora';font-weight:800;font-size:16.5px;margin-top:5px;color:#fff}
+#p-holdingcalc .hc-kpi.o .v{color:#F26522}
+#p-holdingcalc .hc-kpi.g .v{color:#34D399}
+#p-holdingcalc .hc-kpi.y .v{color:#F5B942}
+#p-holdingcalc .hc-kpi.b .v{color:#5B8DEF}
+#p-holdingcalc .hc-row2{display:grid;grid-template-columns:1.55fr 1fr;gap:16px;margin-bottom:16px}
+@media(max-width:900px){#p-holdingcalc .hc-row2{grid-template-columns:1fr}}
+#p-holdingcalc .hc-chartwrap{background:#111845;border:1px solid rgba(120,130,210,.2);border-radius:14px;padding:16px}
+#p-holdingcalc .hc-chartwrap .ct{position:relative;height:330px}
+#p-holdingcalc .hc-side{display:flex;flex-direction:column;gap:12px}
+#p-holdingcalc .hc-score{background:#111845;border:1px solid rgba(120,130,210,.2);border-radius:12px;padding:13px 15px}
+#p-holdingcalc .hc-score .st{font-family:'Sora';font-weight:700;font-size:13.5px;color:#fff;display:flex;justify-content:space-between;align-items:baseline}
+#p-holdingcalc .hc-score .st .pts{font-weight:800;font-size:18px}
+#p-holdingcalc .hc-bar{height:9px;background:#0A0E3F;border-radius:20px;margin:9px 0 6px;overflow:hidden}
+#p-holdingcalc .hc-bar i{display:block;height:100%;border-radius:20px;transition:width .3s}
+#p-holdingcalc .hc-score .lv{font-size:11px;font-weight:600}
+#p-holdingcalc .hc-rec{background:rgba(242,101,34,.08);border:1px solid rgba(242,101,34,.2);border-left:3px solid #F26522;border-radius:0 12px 12px 0;padding:13px 15px;font-size:12.5px;line-height:1.55;color:#DDE0F5}
+#p-holdingcalc .hc-rec b{color:#fff}
+#p-holdingcalc table.hc-t{width:100%;border-collapse:collapse;font-size:12px}
+#p-holdingcalc table.hc-t th{background:#0A0E3F;color:#9AA2D0;font-size:10px;text-transform:uppercase;letter-spacing:.3px;padding:8px;text-align:right;border-bottom:1px solid rgba(120,130,210,.2)}
+#p-holdingcalc table.hc-t th:first-child,#p-holdingcalc table.hc-t td:first-child{text-align:left}
+#p-holdingcalc table.hc-t td{padding:7px 8px;text-align:right;border-bottom:1px solid rgba(120,130,210,.1);color:#DFE3EF;font-variant-numeric:tabular-nums}
+#p-holdingcalc .hc-tblwrap{background:#111845;border:1px solid rgba(120,130,210,.2);border-radius:14px;padding:6px 14px 12px;overflow-x:auto;margin-bottom:14px}
+#p-holdingcalc .hc-tblwrap .tt{font-family:'Sora';font-size:11px;font-weight:800;letter-spacing:.4px;text-transform:uppercase;color:#F26522;padding:10px 2px 4px}
+#p-holdingcalc .hc-disc2{color:#7A83AD;font-size:11px;line-height:1.5;border-top:1px solid rgba(120,130,210,.14);padding-top:12px}
+@media print{#p-holdingcalc .hc-sec, #p-holdingcalc .hc-sec *{visibility:visible} #p-holdingcalc .hc-sec{position:absolute;left:0;top:0;width:100%} #p-holdingcalc .hc-actions{display:none}}
+#p-holdingcalc .wl-toprow{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin:0 0 14px}
+#p-holdingcalc .wl-switch{display:inline-flex;align-items:center;gap:9px;cursor:pointer;user-select:none;
+    background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.16);border-radius:100px;padding:8px 15px;
+    font-size:12.5px;font-weight:700;color:#cfd4ef;transition:all .15s}
+#p-holdingcalc .wl-switch:hover{background:rgba(255,255,255,.11);color:#fff}
+#p-holdingcalc .wl-switch input{appearance:none;width:34px;height:19px;border-radius:100px;background:rgba(255,255,255,.18);
+    position:relative;cursor:pointer;transition:background .18s;flex-shrink:0;margin:0}
+#p-holdingcalc .wl-switch input::after{content:'';position:absolute;top:2.5px;left:2.5px;width:14px;height:14px;border-radius:50%;
+    background:#fff;transition:transform .18s}
+#p-holdingcalc .wl-switch input:checked{background:#F26522}
+#p-holdingcalc .wl-switch input:checked::after{transform:translateX(15px)}
+#p-holdingcalc .wl-hero{display:grid;grid-template-columns:1.1fr 1fr 1fr;gap:12px;margin-bottom:16px}
+#p-holdingcalc .wl-big{background:linear-gradient(150deg,rgba(242,101,34,.20),rgba(242,101,34,.06));
+    border:1px solid rgba(242,101,34,.42);border-radius:14px;padding:16px 18px}
+#p-holdingcalc .wl-big .k{font-size:10px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;color:#FFB089;margin-bottom:6px}
+#p-holdingcalc .wl-big .v{font-family:'Sora',sans-serif;font-size:38px;font-weight:800;color:#fff;line-height:1}
+#p-holdingcalc .wl-big .s{font-size:11.5px;color:#94ACEC;margin-top:6px;line-height:1.45}
+#p-holdingcalc .wl-meter{height:9px;border-radius:100px;background:rgba(255,255,255,.13);overflow:hidden;margin-top:11px}
+#p-holdingcalc .wl-meter i{display:block;height:100%;border-radius:100px;background:linear-gradient(90deg,#F26522,#FF8B52);transition:width .35s}
+#p-holdingcalc .wl-uf{font-size:11px;color:#94ACEC;margin-top:7px;line-height:1.45}
+#p-holdingcalc .wl-flag{display:inline-block;background:rgba(245,185,66,.16);border:1px solid rgba(245,185,66,.4);
+    color:#F5B942;border-radius:6px;padding:1px 6px;font-size:9.5px;font-weight:800;margin-left:5px;vertical-align:middle}
+#p-holdingcalc .wl-legal{font-size:11.5px;color:#94ACEC;line-height:1.6;background:rgba(255,255,255,.05);
+    border:1px solid rgba(255,255,255,.13);border-left:3px solid #F26522;border-radius:11px;padding:13px 15px;margin-bottom:16px}
+#p-holdingcalc .wl-legal b{color:#fff}
+#p-holdingcalc .hc-inputs{grid-template-columns:repeat(3,1fr)}
+#p-holdingcalc .hc-kpis{grid-template-columns:repeat(3,1fr)}
+#p-holdingcalc .wl-hint{font-size:10.5px;color:#94ACEC;margin-top:5px;letter-spacing:.2px}
+#p-holdingcalc .wl-prem{display:none;gap:10px;flex-wrap:wrap;margin:0 0 16px}
+#p-holdingcalc .wl-prem i{font-style:normal;display:inline-flex;align-items:baseline;gap:7px;
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.14);border-radius:100px;
+  padding:8px 15px;font-size:12px;color:#C2CBF0;letter-spacing:.2px}
+#p-holdingcalc .wl-prem i b{color:#fff;font-weight:800;font-size:12.5px}
+#p-holdingcalc.wl-print .hc-actions,#p-holdingcalc.wl-print .hc-inputs,#p-holdingcalc.wl-print .wl-toprow,#p-holdingcalc.wl-print .wl-onlyapp{display:none !important}
+#p-holdingcalc.wl-print .wl-prem{display:flex}
+#p-holdingcalc .wl-switch.hl{background:rgba(91,141,239,.14);border-color:rgba(91,141,239,.45)}
+#p-holdingcalc .wl-switch.hl input:checked+span{color:#fff}
+#p-holdingcalc .wl-cmp{margin:4px 0 18px;padding-top:6px;border-top:1px dashed rgba(255,255,255,.16)}
+#p-holdingcalc .wl-cmp[hidden]{display:none}
+#p-holdingcalc .wl-cmp-h{display:flex;align-items:baseline;justify-content:space-between;gap:14px;flex-wrap:wrap;margin:10px 0 12px}
+#p-holdingcalc .wl-cmp-h .t{font-family:'Sora',sans-serif;font-weight:800;font-size:17px;color:#fff}
+#p-holdingcalc .wl-cmp-h .t b{color:#5B8DEF;font-weight:800}
+#p-holdingcalc .wl-cmp-h .s{font-size:12px;color:#94ACEC}
+#p-holdingcalc .wl-cmp .hc-inputs{grid-template-columns:repeat(3,1fr)}
+#p-holdingcalc .wl-vs{display:grid;grid-template-columns:1fr auto 1fr;gap:12px;align-items:stretch;margin-bottom:14px}
+#p-holdingcalc .wl-route{border-radius:14px;padding:16px 18px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.05)}
+#p-holdingcalc .wl-route.hold{border-color:rgba(91,141,239,.45);background:linear-gradient(150deg,rgba(91,141,239,.16),rgba(91,141,239,.04))}
+#p-holdingcalc .wl-route.wl{border-color:rgba(242,101,34,.5);background:linear-gradient(150deg,rgba(242,101,34,.20),rgba(242,101,34,.05))}
+#p-holdingcalc .wl-route .k{font-size:10px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;color:#AFC1F7;margin-bottom:4px}
+#p-holdingcalc .wl-route.wl .k{color:#FFB089}
+#p-holdingcalc .wl-route .v{font-family:'Sora',sans-serif;font-size:30px;font-weight:800;color:#fff;line-height:1.05}
+#p-holdingcalc .wl-route .s{font-size:11.5px;color:#C2CBF0;margin-top:5px;line-height:1.45}
+#p-holdingcalc .wl-route ul{list-style:none;margin:12px 0 0;padding:10px 0 0;border-top:1px solid rgba(255,255,255,.12)}
+#p-holdingcalc .wl-route li{display:flex;justify-content:space-between;gap:10px;font-size:12px;color:#C2CBF0;padding:3px 0}
+#p-holdingcalc .wl-route li b{color:#fff;font-weight:700;white-space:nowrap}
+#p-holdingcalc .wl-route li.neg b{color:#2BD9A6}
+#p-holdingcalc .wl-route li.tot{border-top:1px solid rgba(255,255,255,.14);margin-top:6px;padding-top:8px;font-weight:800;color:#fff}
+#p-holdingcalc .wl-mid{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;min-width:120px;text-align:center}
+#p-holdingcalc .wl-mid .vs{font-family:'Sora',sans-serif;font-weight:800;font-size:13px;letter-spacing:2px;color:#AFC1F7}
+#p-holdingcalc .wl-mid .dif{font-family:'Sora',sans-serif;font-weight:800;font-size:22px;color:#2BD9A6;line-height:1}
+#p-holdingcalc .wl-mid .dif.neg{color:#FF8B52}
+#p-holdingcalc .wl-mid .dl{font-size:11px;color:#C2CBF0;line-height:1.4;max-width:150px}
+#p-holdingcalc .wl-cmp .hc-row2{grid-template-columns:1fr 1fr}
+#p-holdingcalc .wl-honest{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
+#p-holdingcalc .wl-honest .hc-pbbox ul{margin:0;padding-left:16px;color:#c8cdf0;font-size:12px;line-height:1.55}
+#p-holdingcalc .wl-honest .hc-pbbox li{margin:3px 0}
+#p-holdingcalc .wl-honest .hc-pbbox li b{color:#fff}
+@media (max-width:1000px){#p-holdingcalc .wl-vs{grid-template-columns:1fr} #p-holdingcalc .wl-mid{flex-direction:row;justify-content:space-around} #p-holdingcalc .wl-cmp .hc-inputs{grid-template-columns:repeat(2,1fr)} #p-holdingcalc .wl-cmp .hc-row2{grid-template-columns:1fr} #p-holdingcalc .wl-honest{grid-template-columns:1fr}}
+@media (max-width:1000px){#p-holdingcalc .wl-hero{grid-template-columns:1fr} #p-holdingcalc .hc-kpis{grid-template-columns:repeat(2,1fr)}}
+/* ===== Holding Patrimonial: layout proprio ===== */
+#p-holdingcalc .hk-groups{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px}
+#p-holdingcalc .hk-g{background:#0A0E3F;border:1px solid rgba(120,130,210,.18);border-radius:14px;padding:14px 16px 6px}
+#p-holdingcalc .hk-gt{display:flex;align-items:center;gap:8px;font-family:'Sora',sans-serif;font-size:11px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;color:#F26522;margin:0 0 12px}
+#p-holdingcalc .hk-gt .n{width:20px;height:20px;border-radius:50%;background:rgba(242,101,34,.18);color:#F26522;display:inline-flex;align-items:center;justify-content:center;font-size:11px}
+#p-holdingcalc .hk-g .hc-f{margin-bottom:12px}
+#p-holdingcalc .hk-g .hc-f label{margin-bottom:5px}
+#p-holdingcalc .hk-g input[type=range]{margin-top:4px}
+#p-holdingcalc .hk-sw{display:flex;align-items:center;justify-content:space-between;gap:10px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.14);border-radius:10px;padding:8px 11px;margin-bottom:12px;cursor:pointer;user-select:none}
+#p-holdingcalc .hk-sw span{font-size:12px;font-weight:700;color:#DDE0F5}
+#p-holdingcalc .hk-sw input{accent-color:#F26522;width:16px;height:16px;margin:0}
+#p-holdingcalc .hk-sw.on{border-color:rgba(242,101,34,.5);background:rgba(242,101,34,.12)}
+#p-holdingcalc .hk-off{opacity:.45;pointer-events:none}
+#p-holdingcalc .hk-routes{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:14px}
+#p-holdingcalc .wl-route{position:relative}
+#p-holdingcalc .wl-route.inv{border-color:rgba(245,185,66,.45);background:linear-gradient(150deg,rgba(245,185,66,.16),rgba(245,185,66,.04))}
+#p-holdingcalc .wl-route.inv .k{color:#F5B942}
+#p-holdingcalc .wl-route.suc{border-color:rgba(242,101,34,.5);background:linear-gradient(150deg,rgba(242,101,34,.20),rgba(242,101,34,.05))}
+#p-holdingcalc .wl-route.suc .k{color:#FFB089}
+#p-holdingcalc .wl-route .v{font-size:27px}
+#p-holdingcalc .wl-route .k{padding-right:96px}
+#p-holdingcalc .wl-route li.sub{opacity:.8;padding-left:12px;font-size:11.5px}
+#p-holdingcalc .hk-best{position:absolute;top:12px;right:14px;background:#2BD9A6;color:#06251b;font-family:'Sora',sans-serif;font-weight:800;font-size:10px;letter-spacing:.6px;text-transform:uppercase;border-radius:100px;padding:4px 10px}
+#p-holdingcalc .hc-kpis{grid-template-columns:repeat(4,1fr)}
+#p-holdingcalc .hc-kpi .v{font-size:15.5px}
+#p-holdingcalc .hc-t th.r,#p-holdingcalc .hc-t td.r{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+#p-holdingcalc .hc-t td.neg{color:#2BD9A6}
+#p-holdingcalc .hc-t tr.tot td{border-top:1px solid rgba(255,255,255,.18);font-weight:800;color:#fff}
+#p-holdingcalc .hc-t td .mini{display:block;font-size:10.5px;color:#94ACEC;font-weight:500}
+#p-holdingcalc.wl-print .hc-actions,#p-holdingcalc.wl-print .hk-groups,#p-holdingcalc.wl-print .wl-onlyapp{display:none !important}
+#p-holdingcalc.wl-print .wl-prem{display:flex}
+@media (max-width:1200px){ #p-holdingcalc .hk-groups{grid-template-columns:repeat(2,1fr)} #p-holdingcalc .hc-kpis{grid-template-columns:repeat(2,1fr)} }
+@media (max-width:900px){ #p-holdingcalc .hk-routes{grid-template-columns:1fr} #p-holdingcalc .hc-row2{grid-template-columns:1fr} }
+@media (max-width:640px){ #p-holdingcalc .hk-groups{grid-template-columns:1fr} }
+
+</style>
+<div class="hp-wrap">
+<div class="hc-sec">
+  <div class="hc-head">
+    <div>
+      <div class="hc-h">Holding &middot; <b>Patrimonial</b></div>
+      <div class="hc-hs">Quanto custa abrir, quanto custa transmitir e o que muda se o cliente recebe aluguel — com as alíquotas de onde ele mora.<span class="wl-onlyapp"> Preencha os campos; tudo recalcula na hora.</span></div>
+    </div>
+    <div class="hc-actions">
+      <button class="hc-btn" id="hkPngBtn">Gerar PNG</button>
+      <button class="hc-btn sec" onclick="window.print()">Exportar PDF</button>
+    </div>
+  </div>
+
+  <div class="hk-groups">
+    <div class="hk-g">
+      <div class="hk-gt"><span class="n">1</span> Patrimônio do cliente</div>
+      <div class="hc-f"><label>Patrimônio imobilizado <span style="opacity:.7">(imóveis, R$)</span></label><input type="number" id="hkImov" min="0" step="50000" value="3000000"></div>
+      <div class="hc-f"><label>Quantidade de imóveis</label><input type="number" id="hkNImov" min="0" max="50" step="1" value="3"><div class="wl-hint">cada matrícula tem custo de cartório na integralização</div></div>
+      <div class="hc-f"><label>Patrimônio investido <span style="opacity:.7">(financeiro, R$)</span></label><input type="number" id="hkInv" min="0" step="50000" value="2000000"></div>
+      <label class="hk-sw" id="hkIncFSw"><span>Investimentos entram na holding?</span><input type="checkbox" id="hkIncF"></label>
+      <div class="hc-f"><label>Horizonte</label><select class="hc-sel" id="hkHor"><option value="10">10 anos</option><option value="15">15 anos</option><option value="20" selected>20 anos</option><option value="30">30 anos</option></select></div>
+      <div class="hc-f"><label>Correção do patrimônio (IPCA) <b id="hkIpcaO">4,5% a.a.</b></label><input type="range" id="hkIpca" min="0" max="12" step="0.1" value="4.5"></div>
+    </div>
+
+    <div class="hk-g">
+      <div class="hk-gt"><span class="n">2</span> Impostos onde ele mora</div>
+      <div class="hc-f"><label>Estado <span style="opacity:.7">(preenche o ITCMD)</span></label><select class="hc-sel" id="hkUf"></select><div class="wl-hint" id="hkUfNota"></div></div>
+      <div class="hc-f"><label>ITCMD <b id="hkItcmdO">4%</b></label><input type="range" id="hkItcmd" min="0" max="8" step="0.25" value="4"><div class="wl-hint">faixa de controle: ajuste fino pela alíquota efetiva do estado (teto de 8%)</div></div>
+      <div class="hc-f"><label>ITBI do município <b id="hkItbiO">3%</b></label><input type="range" id="hkItbi" min="0" max="5" step="0.25" value="3"><div class="wl-hint">capitais costumam cobrar 2% a 3%; use 0% se a prefeitura reconhecer a imunidade</div></div>
+      <div class="hc-f"><label>Inventário (do que ficar fora)</label><select class="hc-sel" id="hkMod"><option value="extra">Extrajudicial · honorários 6% + custas 0,8%</option><option value="jud">Judicial consensual · 8% + 1,5%</option><option value="lit">Judicial litigioso · 10% + 2,5%</option></select><div class="wl-hint">piso OAB-SP: 6% do monte-mor</div></div>
+    </div>
+
+    <div class="hk-g">
+      <div class="hk-gt"><span class="n">3</span> Custos da holding</div>
+      <div class="hc-f"><label>Abertura <span style="opacity:.7">(advogado + contador + Junta, R$)</span></label><input type="number" id="hkAbert" min="0" step="1000" value="15000"><div class="wl-hint">mercado: R$ 8k a 20k de honorários + R$ 800 a 1.500 de Junta</div></div>
+      <div class="hc-f"><label>Cartório por imóvel <span style="opacity:.7">(R$)</span></label><input type="number" id="hkCart" min="0" step="500" value="4500"><div class="wl-hint">registro da integralização: R$ 3k a 6k por matrícula</div></div>
+      <div class="hc-f"><label>Doação das cotas <span style="opacity:.7">(escritura + cláusulas, R$)</span></label><input type="number" id="hkDoa" min="0" step="500" value="5000"><div class="wl-hint">só na holding para sucessão: usufruto, inalienabilidade, incomunicabilidade</div></div>
+      <div class="hc-f"><label>Contabilidade <span style="opacity:.7">(R$/mês)</span></label><input type="number" id="hkCont" min="0" step="100" value="1000"><div class="wl-hint">R$ 500 a 1.500/mês, corrigido pelo IPCA no horizonte</div></div>
+    </div>
+
+    <div class="hk-g">
+      <div class="hk-gt"><span class="n">4</span> Aluguéis</div>
+      <label class="hk-sw" id="hkAlugSw"><span>O cliente recebe aluguel dos imóveis?</span><input type="checkbox" id="hkAlug"></label>
+      <div id="hkAlugBox" class="hk-off">
+        <div class="hc-f"><label>Aluguel bruto <span style="opacity:.7">(R$/mês)</span></label><input type="number" id="hkAlugV" min="0" step="500" value="15000"></div>
+        <div class="hc-f"><label>IR na pessoa física <b id="hkPfO">27,5%</b></label><input type="range" id="hkPf" min="0" max="27.5" step="0.5" value="27.5"><div class="wl-hint">carnê-leão: 27,5% acima de R$ 4.664/mês de base</div></div>
+        <div class="hc-f"><label>Na holding (lucro presumido) <b id="hkPjO">11,33%</b></label><div class="wl-hint" style="margin-top:0">IRPJ 4,8% + CSLL 2,88% + PIS/COFINS 3,65% sobre a receita; o adicional de IRPJ entra sozinho acima de R$ 62,5 mil/mês</div></div>
+        <div class="hc-kpi g" style="margin-top:4px"><div class="k">Economia de IR por ano</div><div class="v" id="hkEconAno">—</div><div class="wl-uf" id="hkEconAnoS">—</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="wl-prem" id="hkPrem"></div>
+
+  <div class="hk-routes">
+    <div class="wl-route inv" id="hkRInv">
+      <div class="k">Sem holding</div>
+      <div class="v" id="hkTotInv">—</div>
+      <div class="s">Nada hoje. Na sucessão, tudo passa pelo inventário: ITCMD sobre o patrimônio corrigido, honorários e custas.</div>
+      <ul id="hkListInv"></ul>
+    </div>
+    <div class="wl-route hold" id="hkRSim">
+      <div class="k">Holding simples</div>
+      <div class="v" id="hkTotSim">—</div>
+      <div class="s">Abre a empresa e integraliza os bens, sem doar as cotas. Organiza e economiza IR de aluguel — mas as cotas ainda vão a inventário.</div>
+      <ul id="hkListSim"></ul>
+    </div>
+    <div class="wl-route suc" id="hkRSuc">
+      <div class="k">Holding para sucessão</div>
+      <div class="v" id="hkTotSuc">—</div>
+      <div class="s">Abre, integraliza e doa as cotas com usufruto e cláusulas. Paga o ITCMD hoje, sobre o valor de hoje, e o que entrou na holding não passa por inventário.</div>
+      <ul id="hkListSuc"></ul>
+    </div>
+  </div>
+
+  <div class="hc-kpis">
+    <div class="hc-kpi b"><div class="k">Custo de abertura</div><div class="v" id="hkKAb">—</div><div class="wl-uf" id="hkKAbS">—</div></div>
+    <div class="hc-kpi b"><div class="k">ITBI na integralização</div><div class="v" id="hkKItbi">—</div><div class="wl-uf" id="hkKItbiS">—</div></div>
+    <div class="hc-kpi o"><div class="k">Transmissão · holding p/ sucessão</div><div class="v" id="hkKTrSuc">—</div><div class="wl-uf" id="hkKTrSucS">—</div></div>
+    <div class="hc-kpi y"><div class="k">Transmissão · sem holding</div><div class="v" id="hkKTrInv">—</div><div class="wl-uf" id="hkKTrInvS">—</div></div>
+    <div class="hc-kpi g"><div class="k">Economia de IR sobre aluguéis</div><div class="v" id="hkKEcon">—</div><div class="wl-uf" id="hkKEconS">—</div></div>
+    <div class="hc-kpi y"><div class="k">Fica para a família · sem holding</div><div class="v" id="hkKFamInv">—</div><div class="wl-uf" id="hkKFamInvS">—</div></div>
+    <div class="hc-kpi b"><div class="k">Fica para a família · holding simples</div><div class="v" id="hkKFamSim">—</div><div class="wl-uf" id="hkKFamSimS">—</div></div>
+    <div class="hc-kpi o"><div class="k">Fica para a família · holding sucessão</div><div class="v" id="hkKFamSuc">—</div><div class="wl-uf" id="hkKFamSucS">—</div></div>
+  </div>
+
+  <div class="hc-row2" style="grid-template-columns:1fr 1fr">
+    <div class="hc-chartwrap"><div class="ct" style="height:320px"><canvas id="hkChartBar"></canvas></div></div>
+    <div class="hc-chartwrap"><div class="ct" style="height:320px"><canvas id="hkChartAcc"></canvas></div></div>
+  </div>
+
+  <div class="hc-tblwrap">
+    <div class="tt">Custo por item e por rota</div>
+    <table class="hc-t"><thead><tr><th>Item</th><th class="r">Sem holding</th><th class="r">Holding simples</th><th class="r">Holding p/ sucessão</th></tr></thead><tbody id="hkTbody"></tbody></table>
+  </div>
+
+  <div class="wl-honest">
+    <div class="hc-pbbox" style="border-left-color:#5B8DEF">
+      <div class="pbt" style="color:#5B8DEF">Simples ou para sucessão?</div>
+      <ul>
+        <li><b>Holding simples</b> resolve organização e aluguel. Não resolve sucessão: as cotas entram no inventário como qualquer bem — com ITCMD sobre o valor de mercado (LC 227/2026) e honorários sobre o monte-mor.</li>
+        <li><b>Holding para sucessão</b> antecipa o ITCMD para hoje (sobre o valor de hoje) e tira as cotas do inventário. Usufruto vitalício mantém o controle e a renda com o titular.</li>
+        <li>A diferença entre as duas é, na prática, <b>o ITCMD pago agora</b> contra <b>ITCMD + honorários + custas pagos depois</b>, sobre um patrimônio maior.</li>
+      </ul>
+    </div>
+    <div class="hc-pbbox" style="border-left-color:#F26522">
+      <div class="pbt" style="color:#F26522">Onde a conta muda de lado</div>
+      <ul>
+        <li><b>Aluguel</b>: com renda de locação relevante, a economia de IR paga a holding em poucos anos — teste ligando o campo 4.</li>
+        <li><b>Investimentos</b>: dentro da holding perdem isenções da pessoa física (LCI/LCA/CRI/CRA, debêntures incentivadas, R$ 20 mil/mês em ações) e pagam IRPJ/CSLL sobre o rendimento. Em geral ficam fora — e vão a inventário, ou para previdência/seguro.</li>
+        <li><b>ITBI</b>: 2% a 3% sobre os imóveis muda o resultado; se o município reconhecer a imunidade, zere o campo.</li>
+        <li><b>Horizonte</b>: quanto mais longo, mais pesa a contabilidade — e mais cresce o patrimônio que o inventário vai tributar.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="wl-legal" style="border-left-color:#5B8DEF">
+    <b>Base legal e premissas.</b> <b>ITCMD:</b> alíquotas progressivas obrigatórias (EC 132/2023), teto de 8% (Res. Senado 9/1992); a <b>LC 227/2026</b> (art. 154, II) manda avaliar cotas a valor de mercado, com piso no patrimônio líquido ajustado — cada estado incorpora por lei própria, a partir de 2027 pela anterioridade.
+    <b>ITBI:</b> a Constituição (art. 156, §2º, I) imuniza a integralização, salvo atividade imobiliária preponderante; o STF (Tema 796) limitou a imunidade ao valor do capital subscrito e a jurisprudência para holding de locação é dividida.
+    <b>Aluguel na PJ:</b> lucro presumido com base de 32% — IRPJ 15% (+10% acima de R$ 20 mil/mês de base), CSLL 9%, PIS 0,65% e COFINS 3%; sem considerar IBS/CBS sobre locação a partir de 2027.
+    Em alguns estados parte do ITCMD da doação com usufruto fica para a extinção do usufruto — aqui está somado no dia 1. Valores ilustrativos: confirme com o advogado e o contador que farão a estrutura.
+  </div>
+  <div class="hc-disc2">Ferramenta educacional de apoio comercial; não substitui a orientação de advogado, contador ou assessor habilitado. Custos de abertura, cartório e contabilidade são faixas de mercado editáveis. O ITCMD e o ITBI são preenchidos por você conforme o estado e o município do cliente. Patrimônio corrigido apenas pelo IPCA informado.</div>
+</div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  /* ===== Holding Patrimonial: abertura, ITBI, ITCMD e aluguel ==============
+     Tres rotas, medidas pelo desembolso da familia no horizonte:
+       1. sem holding: tudo vai a inventario no fim (ITCMD + honorarios +
+          custas sobre o patrimonio corrigido);
+       2. holding simples: abertura + cartorio + ITBI hoje, contabilidade
+          todo ano; as cotas ainda vao a inventario no fim;
+       3. holding para sucessao: idem + doacao das cotas hoje (ITCMD sobre o
+          valor de hoje); o que entrou na holding nao passa por inventario.
+     Investimentos so entram na holding se o toggle estiver ligado; fora
+     dela, vao a inventario em todas as rotas. Aluguel credita as duas
+     holdings pela diferenca PF x PJ (lucro presumido). ITCMD e ITBI sao
+     faixas que o assessor ajusta pelo estado e municipio do cliente. ==== */
+  var ST={imov:3000000,nImov:3,inv:2000000,incF:false,hor:20,ipca:4.5,uf:'SP',itcmd:4,itbi:3,mod:'extra',
+          abert:15000,cart:4500,doa:5000,cont:1000,alug:false,alugV:15000,pf:27.5};
+  var INV={extra:{h:6,c:0.8,r:'extrajudicial'},jud:{h:8,c:1.5,r:'judicial consensual'},lit:{h:10,c:2.5,r:'judicial litigioso'}};
+  var PJ_BASE=11.33; /* IRPJ 4,8 + CSLL 2,88 + PIS 0,65 + COFINS 3 sobre a receita (presuncao 32%) */
+  var CHB=null, CHA=null;
+  function el(id){ return document.getElementById(id); }
+  function brl(n){ return 'R$ '+Math.round(n||0).toLocaleString('pt-BR'); }
+  function brlK(n){ n=n||0; if(Math.abs(n)>=1e6) return 'R$ '+(n/1e6).toFixed(1).replace('.',',')+' mi';
+                    if(Math.abs(n)>=1000) return 'R$ '+Math.round(n/1000)+'k'; return 'R$ '+Math.round(n); }
+  function pct(n){ return (Math.round((n||0)*100)/100).toString().replace('.',',')+'%'; }
+  /* adicional de IRPJ (10%) sobre a base presumida acima de R$ 20 mil/mes => aluguel acima de R$ 62,5 mil/mes */
+  function pjRate(alugMes){ var r=PJ_BASE; if(alugMes>62500) r+=(0.032*alugMes-2000)/alugMes*100; return r; }
+  function UFAPI(){ return window.__ITCMD_UF||null; }
+
+  function calc(){
+    var g=ST.ipca/100, N=ST.hor, f=Math.pow(1+g,N);
+    var I=ST.imov, F=ST.inv, H=I+(ST.incF?F:0), R=ST.incF?0:F;
+    var IN=I*f, FN=F*f, TN=IN+FN, RN=R*f;
+    var inv=INV[ST.mod], hcPct=(inv.h+inv.c)/100, t=ST.itcmd/100;
+    var abert=ST.abert+ST.nImov*ST.cart, itbi=I*ST.itbi/100;
+    var pj=pjRate(ST.alugV), econAno=ST.alug? ST.alugV*12*(ST.pf-pj)/100 : 0;
+    var contTot=0, econTot=0, accInv=[0], accSim=[abert+itbi], accSuc=[abert+ST.doa+itbi+H*t];
+    for(var n=1;n<=N;n++){
+      var fn=Math.pow(1+g,n), cont=ST.cont*12*fn, econ=econAno*fn;
+      contTot+=cont; econTot+=econ;
+      accInv.push(0); accSim.push(accSim[0]+contTot-econTot); accSuc.push(accSuc[0]+contTot-econTot);
+    }
+    var r={
+      inv:{ab:0,itbi:0,itNow:0,itEnd:TN*t,hc:TN*hcPct,cont:0,econ:0},
+      sim:{ab:abert,itbi:itbi,itNow:0,itEnd:TN*t,hc:TN*hcPct,cont:contTot,econ:econTot},
+      suc:{ab:abert+ST.doa,itbi:itbi,itNow:H*t,itEnd:RN*t,hc:RN*hcPct,cont:contTot,econ:econTot}
+    };
+    ['inv','sim','suc'].forEach(function(k){ var x=r[k]; x.tr=x.itNow+x.itEnd+x.hc; x.tot=x.ab+x.itbi+x.tr+x.cont-x.econ; x.fam=TN-x.tot; });
+    accInv[N]+=r.inv.tr; accSim[N]+=r.sim.itEnd+r.sim.hc; accSuc[N]+=r.suc.itEnd+r.suc.hc;
+    r.meta={I:I,F:F,H:H,R:R,IN:IN,FN:FN,TN:TN,RN:RN,N:N,t:ST.itcmd,inv:inv,hcPct:hcPct*100,abert:abert,itbi:itbi,pj:pj,econAno:econAno,
+            accInv:accInv,accSim:accSim,accSuc:accSuc};
+    return r;
+  }
+
+  function linhas(x,m,tipo){
+    var h='';
+    h+='<li>Abertura'+(tipo==='suc'?' + doação das cotas':'')+'<b>'+(x.ab>0?brl(x.ab):'—')+'</b></li>';
+    h+='<li>ITBI ('+pct(ST.itbi)+' sobre '+brlK(m.I)+')<b>'+(x.itbi>0?brl(x.itbi):'—')+'</b></li>';
+    if(tipo==='suc') h+='<li>ITCMD hoje · doação ('+pct(ST.itcmd)+' sobre '+brlK(m.H)+')<b>'+brl(x.itNow)+'</b></li>';
+    if(x.itEnd>0||tipo!=='suc') h+='<li>ITCMD no inventário · '+m.N+'º ano ('+pct(ST.itcmd)+' sobre '+brlK(tipo==='suc'?m.RN:m.TN)+')<b>'+(x.itEnd>0?brl(x.itEnd):'—')+'</b></li>';
+    else h+='<li>ITCMD no inventário<b>—</b></li>';
+    h+='<li>Honorários + custas ('+pct(m.hcPct)+', '+m.inv.r+')<b>'+(x.hc>0?brl(x.hc):'—')+'</b></li>';
+    h+='<li>Contabilidade · '+m.N+' anos<b>'+(x.cont>0?brl(x.cont):'—')+'</b></li>';
+    if(x.econ>0) h+='<li class="neg">Economia de IR sobre aluguéis<b>− '+brl(x.econ)+'</b></li>';
+    h+='<li class="tot">Desembolso total<b>'+brl(x.tot)+'</b></li>';
+    return h;
+  }
+
+  function render(){
+    if(!el('hkImov')) return;
+    var r=calc(), m=r.meta;
+    el('hkIpcaO').textContent=pct(ST.ipca)+' a.a.';
+    el('hkItcmdO').textContent=pct(ST.itcmd); el('hkItbiO').textContent=pct(ST.itbi);
+    el('hkPfO').textContent=pct(ST.pf); el('hkPjO').textContent=pct(m.pj);
+    var box=el('hkAlugBox'); if(box) box.classList.toggle('hk-off',!ST.alug);
+    var sw=el('hkAlugSw'); if(sw) sw.classList.toggle('on',ST.alug);
+    var sw2=el('hkIncFSw'); if(sw2) sw2.classList.toggle('on',ST.incF);
+    el('hkEconAno').textContent= ST.alug ? brl(m.econAno) : '—';
+    el('hkEconAnoS').textContent= ST.alug ? pct(ST.pf)+' na PF contra '+pct(m.pj)+' na PJ sobre '+brl(ST.alugV*12)+'/ano' : 'ligue o campo acima para calcular';
+
+    el('hkTotInv').textContent=brl(r.inv.tot); el('hkTotSim').textContent=brl(r.sim.tot); el('hkTotSuc').textContent=brl(r.suc.tot);
+    el('hkListInv').innerHTML=linhas(r.inv,m,'inv'); el('hkListSim').innerHTML=linhas(r.sim,m,'sim'); el('hkListSuc').innerHTML=linhas(r.suc,m,'suc');
+    var best=[['inv',r.inv.tot],['sim',r.sim.tot],['suc',r.suc.tot]].sort(function(a,b){return a[1]-b[1];})[0][0];
+    [['inv','hkRInv'],['sim','hkRSim'],['suc','hkRSuc']].forEach(function(p){
+      var card=el(p[1]); if(!card) return; var old=card.querySelector('.hk-best'); if(old) old.remove();
+      if(p[0]===best){ var b=document.createElement('span'); b.className='hk-best'; b.textContent='menor custo'; card.appendChild(b); }
+    });
+
+    el('hkKAb').textContent=brl(m.abert); el('hkKAbS').textContent=brl(ST.abert)+' de abertura + '+ST.nImov+' × '+brl(ST.cart)+' de cartório'+(ST.doa>0?' · +'+brl(ST.doa)+' na doação':'');
+    el('hkKItbi').textContent=brl(m.itbi); el('hkKItbiS').textContent=pct(ST.itbi)+' sobre '+brlK(m.I)+' em imóveis';
+    el('hkKTrSuc').textContent=brl(r.suc.tr); el('hkKTrSucS').textContent='ITCMD de '+brlK(r.suc.itNow)+' hoje'+(r.suc.itEnd+r.suc.hc>0?' + '+brlK(r.suc.itEnd+r.suc.hc)+' no inventário do que ficou fora':' · nada no inventário');
+    el('hkKTrInv').textContent=brl(r.inv.tr); el('hkKTrInvS').textContent='no '+m.N+'º ano, sobre '+brlK(m.TN)+' corrigidos: ITCMD '+brlK(r.inv.itEnd)+' + honorários e custas '+brlK(r.inv.hc);
+    el('hkKEcon').textContent= ST.alug ? brl(r.sim.econ) : '—'; el('hkKEconS').textContent= ST.alug ? brl(m.econAno)+' por ano, corrigido, em '+m.N+' anos' : 'sem aluguel informado';
+    el('hkKFamInv').textContent=brl(r.inv.fam); el('hkKFamInvS').textContent=brlK(m.TN)+' − '+brlK(r.inv.tot);
+    el('hkKFamSim').textContent=brl(r.sim.fam); el('hkKFamSimS').textContent=brlK(m.TN)+' − '+brlK(r.sim.tot);
+    el('hkKFamSuc').textContent=brl(r.suc.fam); el('hkKFamSucS').textContent=brlK(m.TN)+' − '+brlK(r.suc.tot);
+
+    var rows=[
+      ['Abertura (advogado, contador, Junta, cartório)', r.inv.ab, r.sim.ab-0, r.suc.ab-ST.doa],
+      ['Doação das cotas (escritura e cláusulas)', 0, 0, ST.doa],
+      ['ITBI na integralização ('+pct(ST.itbi)+')', r.inv.itbi, r.sim.itbi, r.suc.itbi],
+      ['ITCMD hoje, na doação ('+pct(ST.itcmd)+')', 0, 0, r.suc.itNow],
+      ['ITCMD no inventário, '+m.N+'º ano ('+pct(ST.itcmd)+')', r.inv.itEnd, r.sim.itEnd, r.suc.itEnd],
+      ['Honorários + custas do inventário ('+pct(m.hcPct)+')', r.inv.hc, r.sim.hc, r.suc.hc],
+      ['Contabilidade · '+m.N+' anos', r.inv.cont, r.sim.cont, r.suc.cont]
+    ];
+    var h='';
+    rows.forEach(function(rw){ h+='<tr><td>'+rw[0]+'</td><td class="r">'+(rw[1]>0?brl(rw[1]):'—')+'</td><td class="r">'+(rw[2]>0?brl(rw[2]):'—')+'</td><td class="r">'+(rw[3]>0?brl(rw[3]):'—')+'</td></tr>'; });
+    if(ST.alug) h+='<tr><td>Economia de IR sobre aluguéis · '+m.N+' anos</td><td class="r">—</td><td class="r neg">− '+brl(r.sim.econ)+'</td><td class="r neg">− '+brl(r.suc.econ)+'</td></tr>';
+    h+='<tr class="tot"><td>Desembolso total</td><td class="r">'+brl(r.inv.tot)+'</td><td class="r">'+brl(r.sim.tot)+'</td><td class="r">'+brl(r.suc.tot)+'</td></tr>';
+    h+='<tr><td>Fica para a família no '+m.N+'º ano <span class="mini">patrimônio corrigido de '+brl(m.TN)+' menos o desembolso</span></td><td class="r">'+brl(r.inv.fam)+'</td><td class="r">'+brl(r.sim.fam)+'</td><td class="r">'+brl(r.suc.fam)+'</td></tr>';
+    el('hkTbody').innerHTML=h;
+
+    var pr=el('hkPrem');
+    if(pr) pr.innerHTML='<i>Im&oacute;veis <b>'+brl(ST.imov)+'</b> ('+ST.nImov+')</i><i>Investido <b>'+brl(ST.inv)+'</b>'+(ST.incF?' · na holding':' · fora da holding')+'</i>'+
+      '<i>ITCMD <b>'+pct(ST.itcmd)+'</b> · '+ST.uf+'</i><i>ITBI <b>'+pct(ST.itbi)+'</b></i><i>Invent&aacute;rio <b>'+m.inv.r+'</b></i>'+
+      '<i>Abertura <b>'+brl(m.abert)+'</b> · doa&ccedil;&atilde;o <b>'+brl(ST.doa)+'</b> · contabilidade <b>'+brl(ST.cont)+'/m&ecirc;s</b></i>'+
+      '<i>Horizonte <b>'+m.N+' anos</b> · IPCA <b>'+pct(ST.ipca)+'</b></i>'+(ST.alug?'<i>Aluguel <b>'+brl(ST.alugV)+'/m&ecirc;s</b></i>':'');
+
+    grafico(r);
+  }
+
+  function grafico(r){
+    if(typeof Chart==='undefined') return;
+    var cb=el('hkChartBar'), ca=el('hkChartAcc'); if(!cb||!ca) return;
+    if(CHB){ CHB.destroy(); CHB=null; } if(CHA){ CHA.destroy(); CHA=null; }
+    var m=r.meta, leg={labels:{color:'#C2CBF0',font:{family:'Manrope',size:10.5},boxWidth:12}}, grid={color:'rgba(120,130,210,.14)'};
+    var ds=[
+      {label:'Abertura + doação', data:[r.inv.ab,r.sim.ab,r.suc.ab], backgroundColor:'#5B8DEF'},
+      {label:'ITBI', data:[r.inv.itbi,r.sim.itbi,r.suc.itbi], backgroundColor:'#8a93d8'},
+      {label:'ITCMD hoje (doação)', data:[0,0,r.suc.itNow], backgroundColor:'#F26522'},
+      {label:'ITCMD no inventário', data:[r.inv.itEnd,r.sim.itEnd,r.suc.itEnd], backgroundColor:'#F5B942'},
+      {label:'Honorários + custas', data:[r.inv.hc,r.sim.hc,r.suc.hc], backgroundColor:'#FF5566'},
+      {label:'Contabilidade', data:[0,r.sim.cont,r.suc.cont], backgroundColor:'#AFC1F7'}
+    ];
+    if(ST.alug) ds.push({label:'Economia IR aluguéis', data:[0,-r.sim.econ,-r.suc.econ], backgroundColor:'#2BD9A6'});
+    CHB=new Chart(cb.getContext('2d'),{ type:'bar',
+      data:{ labels:['Sem holding','Holding simples','Holding p/ sucessão'], datasets:ds },
+      options:{ indexAxis:'y', responsive:true, maintainAspectRatio:false,
+        plugins:{ legend:leg, title:{display:true,text:'De onde vem o custo de cada rota',color:'#fff',font:{family:'Sora',size:12,weight:'800'},padding:{bottom:8}},
+          tooltip:{callbacks:{label:function(x){return x.dataset.label+': '+brl(Math.abs(x.parsed.x));}}} },
+        scales:{ x:{stacked:true,ticks:{color:'#AFC1F7',callback:function(v){return brlK(v);}},grid:grid},
+                 y:{stacked:true,ticks:{color:'#fff',font:{family:'Sora',weight:'800',size:11}},grid:{display:false}} } } });
+    var anos=[]; for(var n=0;n<=m.N;n++) anos.push(n);
+    CHA=new Chart(ca.getContext('2d'),{ type:'line',
+      data:{ labels:anos, datasets:[
+        {label:'Sem holding', data:m.accInv, borderColor:'#F5B942', backgroundColor:'rgba(245,185,66,.10)', fill:true, tension:.1, pointRadius:0, borderWidth:2.5, borderDash:[6,4]},
+        {label:'Holding simples', data:m.accSim, borderColor:'#5B8DEF', backgroundColor:'rgba(91,141,239,.12)', fill:true, tension:.1, pointRadius:0, borderWidth:2.5},
+        {label:'Holding p/ sucessão', data:m.accSuc, borderColor:'#F26522', backgroundColor:'rgba(242,101,34,.12)', fill:true, tension:.1, pointRadius:0, borderWidth:3}
+      ]},
+      options:{ responsive:true, maintainAspectRatio:false, interaction:{mode:'index',intersect:false},
+        plugins:{ legend:leg, title:{display:true,text:'Quando o dinheiro sai do bolso (acumulado)',color:'#fff',font:{family:'Sora',size:12,weight:'800'},padding:{bottom:8}},
+          tooltip:{callbacks:{label:function(x){return x.dataset.label+': '+brl(x.parsed.y);}}} },
+        scales:{ x:{title:{display:true,text:'Anos',color:'#AFC1F7'},ticks:{color:'#AFC1F7'},grid:grid},
+                 y:{ticks:{color:'#AFC1F7',callback:function(v){return brlK(v);}},grid:grid} } } });
+  }
+
+  function aplicaUf(){
+    var api=UFAPI(); var nota=el('hkUfNota'); if(!api){ if(nota) nota.textContent='tabela por estado indisponível — ajuste o ITCMD na faixa'; return; }
+    var base=ST.imov+ST.inv, ef=api.calc(base,ST.uf).ef;
+    ST.itcmd=Math.round(ef*4)/4; var sl=el('hkItcmd'); if(sl) sl.value=ST.itcmd;
+    if(nota) nota.textContent=ST.uf+': '+api.faixa(ST.uf)+' · efetivo '+pct(ef)+' sobre '+brlK(base)+(api.tab[ST.uf].c==='conf'?' · não confirmado':'');
+  }
+
+  function bind(){
+    var raiz=el('hkImov'); if(!raiz) return;
+    if(raiz.__wired){ render(); return; } raiz.__wired=true;
+    function on(id,ev,fn){ var e=el(id); if(e) e.addEventListener(ev,fn); }
+    function num(id,k,fn){ on(id,'input',function(){ ST[k]=Math.max(0,parseFloat(this.value)||0); if(fn) fn(); render(); }); }
+    var sel=el('hkUf'), api=UFAPI();
+    if(sel && !sel.options.length && api){ api.ufs.forEach(function(u){ var o=document.createElement('option'); o.value=u; o.textContent=u+' — '+api.faixa(u); if(u===ST.uf) o.selected=true; sel.appendChild(o); }); }
+    num('hkImov','imov',aplicaUf); num('hkNImov','nImov'); num('hkInv','inv',aplicaUf);
+    on('hkIncF','change',function(){ ST.incF=this.checked; render(); });
+    on('hkHor','change',function(){ ST.hor=+this.value; render(); });
+    on('hkIpca','input',function(){ ST.ipca=+this.value; render(); });
+    on('hkUf','change',function(){ ST.uf=this.value; aplicaUf(); render(); });
+    on('hkItcmd','input',function(){ ST.itcmd=+this.value; var n=el('hkUfNota'); if(n&&api) n.textContent=ST.uf+': '+api.faixa(ST.uf)+' · ajustado na faixa para '+pct(ST.itcmd); render(); });
+    on('hkItbi','input',function(){ ST.itbi=+this.value; render(); });
+    on('hkMod','change',function(){ ST.mod=this.value; render(); });
+    num('hkAbert','abert'); num('hkCart','cart'); num('hkDoa','doa'); num('hkCont','cont');
+    on('hkAlug','change',function(){ ST.alug=this.checked; render(); });
+    num('hkAlugV','alugV'); on('hkPf','input',function(){ ST.pf=+this.value; render(); });
+    on('hkPngBtn','click',function(){
+      var alvo=document.querySelector('#p-holdingcalc .hc-sec'); if(!alvo) return;
+      var painel=el('p-holdingcalc'), btn=this, txt=btn.textContent; btn.textContent='Gerando...';
+      function limpa(){ painel.classList.remove('wl-print'); btn.textContent=txt; }
+      function go(h2c){
+        painel.classList.add('wl-print');
+        h2c(alvo,{backgroundColor:'#0A0E3F',scale:2,useCORS:true}).then(function(cv){
+          limpa();
+          if(window.mostrarPngModal) window.mostrarPngModal(cv.toDataURL('image/png'),'holding-patrimonial.png',{accent:'#F26522',wide:true});
+          else { var a=document.createElement('a'); a.download='holding-patrimonial.png'; a.href=cv.toDataURL('image/png'); a.click(); }
+        }).catch(function(){ limpa(); });
+      }
+      if(window.html2canvas) return go(window.html2canvas);
+      var sc=document.createElement('script'); sc.src='https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+      sc.onload=function(){ go(window.html2canvas); }; sc.onerror=function(){ limpa(); }; document.head.appendChild(sc);
+    });
+    aplicaUf(); render();
+  }
+  if(document.readyState==="loading"){ document.addEventListener("DOMContentLoaded", bind); } else { bind(); }
+  window._toolInit=window._toolInit||{}; window._toolInit['holdingcalc']=function(){ try{bind();}catch(e){} };
+})();
+</script>
+
 </div>
 
 <div class="g-panel" id="p-aderencia" data-tool="aderencia">
