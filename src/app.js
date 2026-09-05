@@ -9,6 +9,7 @@ import {
 } from "./core/storage.js";
 import { toast } from "./ui/feedback.js";
 import { mountAmbient } from "./ui/ambient.js";
+import { mountSidebar } from "./ui/sidebar.js";
 import { registerComparisonTool } from "./services/webmcp.js";
 
 const app = document.getElementById("app");
@@ -215,6 +216,7 @@ window.addEventListener("message", (e) => {
     );
 });
 mountAmbient();
+mountSidebar();
 navigate();
 registerComparisonTool(async () => {
   history.replaceState(null, "", "#/home");

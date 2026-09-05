@@ -1,0 +1,99 @@
+.sidebar-reveal {
+  display: none;
+}
+@media (min-width: 761px) {
+  .studio-sidebar {
+    width: 76px;
+    padding-inline: 12px;
+    transition: width 0.24s ease;
+    overflow-x: hidden;
+  }
+  .studio-wrap {
+    margin-left: 76px;
+    transition: margin-left 0.24s ease;
+  }
+  .sidebar-expanded .studio-sidebar {
+    width: var(--s-sidebar-width);
+  }
+  .sidebar-expanded .studio-wrap {
+    margin-left: var(--s-sidebar-width);
+  }
+  .studio-brand {
+    padding-inline: 3px;
+    gap: 10px;
+    white-space: nowrap;
+  }
+  .studio-brand .brand-symbol {
+    width: 46px;
+    height: 24px;
+    transition: width 0.24s;
+  }
+  .sidebar-expanded .studio-brand .brand-symbol {
+    width: 73px;
+    height: 32px;
+  }
+  .brand-divider,
+  .brand-caption,
+  .studio-nav-link > span {
+    transition: opacity 0.15s;
+  }
+  html:not(.sidebar-expanded)
+    :is(.brand-divider, .brand-caption, .studio-nav-link > span) {
+    width: 0;
+    opacity: 0;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+  .studio-nav-link {
+    white-space: nowrap;
+    padding: 11px 16px;
+    gap: 12px;
+    min-height: 42px;
+  }
+  .studio-nav-link .icon {
+    flex-shrink: 0;
+  }
+  html:not(.sidebar-expanded) .nav-group {
+    font-size: 0;
+    height: 1px;
+    border-top: 1px solid var(--s-border);
+    margin: 16px 10px 10px;
+  }
+  .sidebar-reveal {
+    display: grid;
+    place-items: center;
+    width: 34px;
+    height: 28px;
+    margin: -15px 9px 10px;
+    border: 1px solid var(--s-border);
+    border-radius: 7px;
+    background: transparent;
+    color: var(--s-muted);
+    flex-shrink: 0;
+  }
+  .sidebar-expanded .sidebar-reveal svg {
+    transform: rotate(180deg);
+  }
+  .sidebar-bottom {
+    padding-inline: 3px;
+  }
+  html:not(.sidebar-expanded)
+    .sidebar-bottom
+    :is(.search-trigger, .ambient-toggle) {
+    font-size: 0;
+    width: 46px;
+    min-height: 34px;
+    justify-content: center;
+    gap: 0;
+  }
+  html:not(.sidebar-expanded) .sidebar-version {
+    display: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .studio-sidebar,
+  .studio-wrap,
+  .studio-brand .brand-symbol {
+    transition: none;
+  }
+}
