@@ -1979,6 +1979,7 @@
           "</button>";
         html += "</div>";
 
+        if (window.__xpAssetLink) html += window.__xpAssetLink(i);
         if (i.opcoes) {
           html +=
             '<div class="tagsrow"><span class="estlabel">Cliente escolhe:</span>';
@@ -3630,7 +3631,14 @@
         var i = state.items.filter(function (x) {
           return x.id === id;
         })[0];
-        if (i) i[field] = val;
+        if (i) {
+          i[field] = val;
+          if (['nome','ticker','detalhe'].indexOf(field) >= 0) {
+            document.querySelectorAll('#rv-app .row[data-id]').forEach(function(row) {
+              if(row.getAttribute('data-id') === String(id)) window.__xpUpdateLink?.(row,i);
+            });
+          }
+        }
       }
       function setEscolha(id, idx) {
         var i = state.items.filter(function (x) {

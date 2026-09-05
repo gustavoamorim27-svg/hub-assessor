@@ -1,7 +1,9 @@
 import { money, percent } from "../core/format.js";
+import { common } from "./tool-loader.js";
 
 /** Native Canvas: sharp type, exact figures, no screenshot or image-generation dependency. */
 export async function exportComparison(p, r) {
+  await common();
   await document.fonts.ready;
   const canvas = document.createElement("canvas");
   canvas.width = 2400;
@@ -44,6 +46,13 @@ export async function exportComparison(p, r) {
   const tied = Math.abs(r.difference) < 0.01,
     winner = r.difference > 0 ? "LCA" : "CDB";
   c.fillStyle = navy;
+  if(window.__hubPngTema === 'viva') {
+    const gradient=c.createLinearGradient(0,0,2400,1350);
+    gradient.addColorStop(0,'#0a0f38');
+    gradient.addColorStop(.5,'#070b2e');
+    gradient.addColorStop(1,'#05081f');
+    c.fillStyle=gradient;
+  }
   c.fillRect(0, 0, 2400, 1350);
   const logo = new Image();
   logo.src = new URL("../ui/rico.svg", import.meta.url).href;

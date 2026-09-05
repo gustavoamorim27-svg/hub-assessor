@@ -1,6 +1,7 @@
 import { storage } from "../core/storage.js";
 import { toast, showImage } from "../ui/feedback.js";
 import { lastWeekdayOfNextMonth } from "../core/finance.js";
+import { assetResearchLink, updateResearchLink } from "./xp-research.js";
 
 // This is the only compatibility boundary. New features use ES modules.
 const pending = new Map();
@@ -8,6 +9,8 @@ const mounted = new Set();
 const initialized = new Set();
 const root = () => document.getElementById("tool-workspace");
 window.hubStorage = storage;
+window.__xpAssetLink = assetResearchLink;
+window.__xpUpdateLink = updateResearchLink;
 window._toolInit ??= {};
 window.RICO_BRIDGE ??= {};
 window.hubFinance = { lastWeekdayOfNextMonth };
@@ -98,7 +101,7 @@ function init(id) {
   fn();
   initialized.add(id);
 }
-async function common() {
+export async function common() {
   await stylesheet("./src/compat/tools.css");
   await stylesheet("./src/styles/workbench.css");
   await script("./src/compat/brand.js");

@@ -373,6 +373,7 @@
           '</div><button class="lib-add" data-libadd="' +
           o.i +
           '">+ Add</button></div>' +
+          (window.__xpAssetLink ? window.__xpAssetLink(a) : '') +
           (a.detalhe
             ? '<div class="lib-card-desc">' + esc(a.detalhe) + "</div>"
             : "") +

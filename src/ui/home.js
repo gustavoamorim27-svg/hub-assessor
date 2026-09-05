@@ -12,6 +12,10 @@ export function mountHome(host) {
   <section class="quick-compare" aria-labelledby="quick-title"><div class="quick-header"><h2 id="quick-title">LCA ou CDB?</h2><a href="#/comparador">Comparador completo ${icon("arrow")}</a></div><div class="quick-controls"><label class="studio-field">LCA · % do CDI<input id="quick-lca" type="number" min="0" max="300" step=".5" value="94"></label><label class="studio-field">CDB · % do CDI<input id="quick-cdb" type="number" min="0" max="300" step=".5" value="110"></label><label class="studio-field">Prazo<select id="quick-days"><option value="365">1 ano</option><option value="730">2 anos</option><option value="1095">3 anos</option><option value="1825">5 anos</option></select></label></div><div class="quick-details"><span id="quick-assumptions"></span><button type="button" id="edit-assumptions" aria-expanded="false">Ajustar</button></div><div class="quick-extra" id="quick-extra" hidden><label class="studio-field">Valor aplicado · R$<input id="quick-principal" type="number" min="100" max="100000000" step="1000" value="100000"></label><label class="studio-field">CDI hipotético · % a.a.<input id="quick-cdi" type="number" min="0" max="50" step=".25" value="10"></label></div><div class="quick-result" id="quick-result" aria-live="polite"></div><div class="compare-caption"><span>Simulação líquida para pessoa física.</span><button type="button" id="quick-export">${icon("download")} Gerar PNG</button></div></section></div>
   <section><div class="section-heading"><h2>Ferramentas para cada decisão</h2><div class="section-filters" aria-label="Filtrar ferramentas"><button class="active" data-group="Todas" aria-pressed="true">Todas</button><button data-group="Assessoria" aria-pressed="false">Assessoria</button><button data-group="Patrimônio" aria-pressed="false">Patrimônio</button><button data-group="Materiais" aria-pressed="false">Materiais</button></div></div><div class="tools-grid" id="tools-grid"></div></section>
   <div class="home-bottom-grid"><section><div class="section-heading"><h2>No radar</h2><span id="news-date">Conteúdo do Hub</span></div><div id="news-items" class="news-list"><p class="studio-muted">Carregando notícias…</p></div></section><section><div class="section-heading"><h2>Continue de onde parou</h2><span>Neste navegador</span></div><div id="recent-tools" class="recent-list"></div></section></div>`;
+  const newsSection=host.querySelector('#news-items').closest('section');
+  newsSection.classList.add('news-spotlight');
+  newsSection.querySelector('h2').textContent='Principais notícias';
+  host.querySelector('.studio-lead').after(newsSection);
   const renderCards = (group) => {
     host.querySelector("#tools-grid").innerHTML = tools
       .filter((t) => group === "Todas" || t.group === group)
@@ -133,7 +137,7 @@ export function mountHome(host) {
         .filter((n) => safeExternalUrl(n.url))
         .map(
           (n) =>
-            `<a class="news-item" href="${escapeHTML(safeExternalUrl(n.url))}" target="_blank" rel="noopener noreferrer"><div class="news-meta">${escapeHTML(n.source)} · ${escapeHTML(n.date)}</div><h3>${escapeHTML(n.title)}</h3>${icon("external")}</a>`,
+            `<a class="news-item" href="${escapeHTML(safeExternalUrl(n.url))}" target="_blank" rel="noopener noreferrer"><div class="news-meta">${escapeHTML(n.source)} · ${escapeHTML(n.date)}</div><h3>${escapeHTML(n.title)}</h3><p>${escapeHTML(n.resumo||'')}</p><span class="news-read">Ler notícia ${icon("external")}</span></a>`,
         )
         .join("");
     })

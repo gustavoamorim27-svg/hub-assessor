@@ -11,6 +11,7 @@ import { toast } from "./ui/feedback.js";
 import { mountAmbient } from "./ui/ambient.js";
 import { mountSidebar } from "./ui/sidebar.js";
 import { registerComparisonTool } from "./services/webmcp.js";
+import { mountPngPreferences } from "./ui/png-preferences.js";
 
 const app = document.getElementById("app");
 const link = (t) =>
@@ -166,6 +167,7 @@ document.getElementById("settings-open").onclick = () => {
   dialog.innerHTML = `<div class="modal-heading"><h2>Preferências e dados</h2><button class="studio-icon-btn" aria-label="Fechar preferências">×</button></div><div class="settings-block"><h3>Um espaço separado para seus estudos</h3><p>Os dados desta versão ficam neste navegador. Exporte um backup para guardar seus ajustes e continuar em outro computador.</p><button id="backup-save" class="studio-btn">${icon("download")} Exportar backup</button> <button id="backup-load" class="studio-btn subtle">Importar backup</button><input type="file" id="backup-file" accept=".json" hidden></div><div class="settings-block"><h3>Seus materiais</h3><p>Os botões Gerar PNG e PDF continuam disponíveis em cada ferramenta. O material é criado com as premissas do estudo aberto.</p></div><div class="settings-block"><h3>Versão original</h3><p>O endereço original continua disponível. A biblioteca compartilhada da versão original não é alterada por este espaço de testes.</p><a class="studio-btn subtle" href="https://gustavoamorim27-svg.github.io/hub-assessor/" target="_blank" rel="noopener noreferrer">Abrir versão original ${icon("external")}</a></div>`;
   document.body.append(dialog);
   dialog.showModal();
+  mountPngPreferences(dialog);
   dialog.querySelector(".studio-icon-btn").onclick = () => dialog.close();
   dialog.onclose = () => dialog.remove();
   dialog.querySelector("#backup-save").onclick = () => {

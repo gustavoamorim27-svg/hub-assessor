@@ -9,6 +9,15 @@ window.__hubPngTema = (function () {
 window.__aplicarPaletaClara = function (ctx) {
   var MAPA = {
     "#0a0f38": "#FDF7F0",
+    "#0b1030": "#FDF7F0",
+    "#141d3d": "#FFFFFF",
+    "#111845": "#FFFFFF",
+    "#141c57": "#F5EBDD",
+    "#10164a": "#FFFFFF",
+    "#0a0e3f": "#F5EBDD",
+    "#0c1142": "#FFFFFF",
+    "#141a57": "#F5EBDD",
+    "#b7bdd4": "#4A5570",
     "#070b2e": "#FCEFE4",
     "#05081f": "#FAE3D3",
     /* fundos proprios do PNG da Mesa de RV — sem estes o fundo ficava
@@ -112,6 +121,8 @@ window.__aplicarPaletaViva = function (ctx) {
   var MAPA = {
     /* fundo: os tres tons viram as ancoras do degrade VIVA */
     "#0a0f38": "#41151a",
+    "#0b1030": "#340f34",
+    "#141d3d": "rgba(255,255,255,.10)",
     "#070b2e": "#340f34",
     "#05081f": "#141151",
     /* idem para os fundos proprios do PNG da Mesa de RV */
@@ -220,7 +231,7 @@ window.__aplicarPaletaViva = function (ctx) {
   window.__rotularPngTema = rot;
   function ligar() {
     var b = document.getElementById("btnPngPaleta");
-    if (!b) return setTimeout(ligar, 150);
+    if (!b) return;
     if (b.__wired) return;
     b.__wired = true;
     rot();

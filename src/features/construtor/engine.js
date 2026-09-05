@@ -1996,6 +1996,7 @@
           <select class="sel" data-f="classe" data-id="${i.id}">${selOpts}</select>
           <button class="del-btn" data-del="${i.id}"><svg class="icon" viewBox="0 0 24 24" style="width:15px;height:15px;"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
         </div>
+        ${window.__xpAssetLink ? window.__xpAssetLink(i) : ""}
         ${optsHtml}
         ${tagsHtml}
         <input class="det-input" value="${esc(i.detalhe)}" placeholder="Detalhe (estrutura, prazo, taxa…)" data-f="detalhe" data-id="${i.id}">
@@ -2016,6 +2017,7 @@
             const it = S.items.find((x) => x.id === id);
             if (!it) return;
             it[f] = f === "pct" ? _parseNum(inp.value) : inp.value;
+            window.__xpUpdateLink?.(inp.closest('.item'), it);
             if (f === "pct") {
               updateLight();
             } else if (f === "classe") {
