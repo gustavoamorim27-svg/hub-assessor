@@ -16174,4 +16174,125 @@ window.__rvRender = render;
   });
 })();
 </script>
+<style id="aviso-v2-css">
+/* ===== Aviso da versao nova: faixa fixa na home + pop-up de uma vez so ==== */
+:root{ --v2-or:#F26522; }
+#v2Faixa{
+  display:flex; align-items:center; gap:16px; flex-wrap:wrap; justify-content:center;
+  width:100%; max-width:760px; margin:0 0 18px; padding:14px 18px; text-align:left;
+  border:1px solid rgba(242,101,34,.42); border-radius:14px;
+  background:linear-gradient(150deg,rgba(242,101,34,.16),rgba(242,101,34,.05));
+  backdrop-filter:blur(14px) saturate(1.2); -webkit-backdrop-filter:blur(14px) saturate(1.2);
+}
+#v2Faixa .v2-tag{
+  flex-shrink:0; font-family:'Sora',sans-serif; font-weight:800; font-size:10px; letter-spacing:1.2px;
+  text-transform:uppercase; color:#fff; background:var(--v2-or); border-radius:100px; padding:5px 11px;
+}
+#v2Faixa .v2-txt{ flex:1 1 260px; font-size:13px; line-height:1.5; color:#DDE0F5; }
+#v2Faixa .v2-txt b{ color:#fff; font-weight:700; }
+#v2Faixa .v2-btn{
+  flex-shrink:0; display:inline-flex; align-items:center; gap:7px; text-decoration:none;
+  font-family:'Sora',sans-serif; font-weight:700; font-size:13px; color:#fff;
+  background:var(--v2-or); border-radius:100px; padding:10px 18px; transition:filter .18s;
+}
+#v2Faixa .v2-btn:hover{ filter:brightness(1.1); }
+html.theme-light #v2Faixa{ background:linear-gradient(150deg,rgba(242,101,34,.12),rgba(242,101,34,.04)); border-color:rgba(242,101,34,.35); }
+html.theme-light #v2Faixa .v2-txt{ color:#4A5270; }
+html.theme-light #v2Faixa .v2-txt b{ color:#0B1033; }
+
+#v2Modal{
+  position:fixed; inset:0; z-index:9999; display:flex; align-items:center; justify-content:center;
+  padding:24px; background:rgba(4,7,32,.72); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px);
+  opacity:0; transition:opacity .22s ease;
+}
+#v2Modal.on{ opacity:1; }
+#v2Modal .v2-card{
+  width:100%; max-width:470px; border-radius:18px; padding:28px 28px 24px;
+  border:1px solid rgba(242,101,34,.38); background:linear-gradient(160deg,#111845,#0A0E3F);
+  box-shadow:0 24px 70px rgba(0,0,0,.55); color:#EAECFB; text-align:left;
+  transform:translateY(14px) scale(.985); transition:transform .28s cubic-bezier(.32,.72,0,1);
+}
+#v2Modal.on .v2-card{ transform:none; }
+#v2Modal .v2-tag{
+  display:inline-block; font-family:'Sora',sans-serif; font-weight:800; font-size:10px; letter-spacing:1.2px;
+  text-transform:uppercase; color:#fff; background:var(--v2-or); border-radius:100px; padding:5px 11px; margin-bottom:14px;
+}
+#v2Modal h3{ font-family:'Sora',sans-serif; font-weight:800; font-size:21px; color:#fff; margin:0 0 10px; line-height:1.25; }
+#v2Modal p{ font-size:13.5px; line-height:1.6; color:#C2CBF0; margin:0 0 8px; }
+#v2Modal .v2-url{ font-size:11.5px; color:#94ACEC; word-break:break-all; margin:12px 0 20px; font-family:'JetBrains Mono',monospace; }
+#v2Modal .v2-acoes{ display:flex; gap:10px; flex-wrap:wrap; }
+#v2Modal .v2-btn{
+  flex:1 1 auto; text-align:center; text-decoration:none; font-family:'Sora',sans-serif; font-weight:700;
+  font-size:13.5px; padding:12px 20px; border-radius:100px; border:none; cursor:pointer; transition:filter .18s;
+  background:var(--v2-or); color:#fff;
+}
+#v2Modal .v2-btn:hover{ filter:brightness(1.1); }
+#v2Modal .v2-btn.sec{ background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.2); color:#C2CBF0; flex:0 0 auto; }
+html.theme-light #v2Modal .v2-card{ background:#fff; border-color:rgba(242,101,34,.3); color:#0B1033; }
+html.theme-light #v2Modal h3{ color:#0B1033; }
+html.theme-light #v2Modal p{ color:#4A5270; }
+html.theme-light #v2Modal .v2-url{ color:#6B7391; }
+html.theme-light #v2Modal .v2-btn.sec{ background:#F1F3F9; border-color:rgba(11,16,51,.12); color:#4A5270; }
+@media (max-width:560px){ #v2Faixa{ justify-content:flex-start; } #v2Faixa .v2-btn{ width:100%; justify-content:center; } }
+@media (prefers-reduced-motion: reduce){ #v2Modal, #v2Modal .v2-card{ transition:none; } }
+</style>
+<script id="aviso-v2-js">
+(function(){
+  "use strict";
+  /* Aviso da versao nova. A faixa da home fica sempre; o pop-up aparece uma
+     vez por dispositivo -- a marca vai no localStorage, que e por navegador,
+     entao trocar de navegador ou limpar os dados faz o aviso voltar. Se o
+     localStorage estiver bloqueado, o pop-up nao aparece (melhor nao aparecer
+     do que aparecer em todo carregamento). */
+  var URL_V2='https://gustavoamorim27-svg.github.io/hub-gustavo-amorim/';
+  var CHAVE='hubAvisoV2';
+
+  function jaViu(){ try{ return localStorage.getItem(CHAVE)==='1'; }catch(e){ return true; } }
+  function marcar(){ try{ localStorage.setItem(CHAVE,'1'); }catch(e){} }
+
+  function faixa(){
+    var home=document.querySelector('#p-home .home');
+    var grid=document.querySelector('#p-home .home-grid');
+    if(!home||!grid||document.getElementById('v2Faixa')) return;
+    var d=document.createElement('div');
+    d.id='v2Faixa';
+    d.innerHTML='<span class="v2-tag">Nova versão</span>'+
+      '<span class="v2-txt">O Hub foi reconstruído: <b>navegação lateral, busca por ferramenta e as mesmas contas</b>. Este endereço continua no ar.</span>'+
+      '<a class="v2-btn" href="'+URL_V2+'" target="_blank" rel="noopener noreferrer">Abrir nova versão →</a>';
+    home.insertBefore(d, grid);
+  }
+
+  function popup(){
+    if(jaViu()||document.getElementById('v2Modal')) return;
+    var m=document.createElement('div');
+    m.id='v2Modal'; m.setAttribute('role','dialog'); m.setAttribute('aria-modal','true'); m.setAttribute('aria-label','Nova versão do Hub');
+    m.innerHTML='<div class="v2-card">'+
+      '<span class="v2-tag">Nova versão</span>'+
+      '<h3>O Hub do Assessor tem uma versão nova</h3>'+
+      '<p>Mesma ferramenta, reconstruída: navegação lateral, busca por ferramenta e as contas que você já usa — carteiras, planejamento, sucessão e holding.</p>'+
+      '<p>Este endereço continua funcionando normalmente. Os dados de cada versão ficam separados, cada um no seu próprio navegador.</p>'+
+      '<div class="v2-url">'+URL_V2+'</div>'+
+      '<div class="v2-acoes">'+
+        '<a class="v2-btn" id="v2Ir" href="'+URL_V2+'" target="_blank" rel="noopener noreferrer">Conhecer a nova versão</a>'+
+        '<button class="v2-btn sec" id="v2Fechar" type="button">Agora não</button>'+
+      '</div></div>';
+    document.body.appendChild(m);
+    marcar();                                   /* marca ao exibir: nao volta nem se fechar pelo X do navegador */
+    requestAnimationFrame(function(){ m.classList.add('on'); });
+    function fechar(){ m.classList.remove('on'); setTimeout(function(){ try{ m.remove(); }catch(e){} }, 240); }
+    m.querySelector('#v2Fechar').onclick=fechar;
+    m.querySelector('#v2Ir').onclick=function(){ setTimeout(fechar,120); };
+    m.onclick=function(e){ if(e.target===m) fechar(); };
+    document.addEventListener('keydown', function esc(e){
+      if(e.key==='Escape'){ fechar(); document.removeEventListener('keydown', esc); }
+    });
+    try{ m.querySelector('#v2Fechar').focus(); }catch(e){}
+  }
+
+  function iniciar(){ faixa(); setTimeout(popup, 1400); }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', iniciar);
+  else iniciar();
+})();
+</script>
+
 </body>
