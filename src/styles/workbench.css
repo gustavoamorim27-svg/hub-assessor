@@ -2,8 +2,11 @@
 :root {
   --navy: var(--s-bg);
   --navy2: var(--s-panel);
-  --navy3: var(--s-raised);
-  --input: #0e1527;
+  --navy3: var(--s-panel-raised);
+  --input: rgba(255, 255, 255, 0.07);
+  --tool-glass: rgba(22, 15, 49, 0.4);
+  --tool-inset: rgba(255, 255, 255, 0.055);
+  --tool-edge: rgba(231, 220, 255, 0.22);
   --wh: var(--s-text);
   --white: var(--s-text);
   --branco: var(--s-text);
@@ -24,13 +27,16 @@
   --verde: var(--s-green);
   --amarelo: var(--s-yellow);
   --azul-1: var(--s-panel);
-  --azul-2: var(--s-raised);
+  --azul-2: var(--s-panel-raised);
   --azul-3: var(--s-bg);
   --azul-acc: var(--s-blue);
 }
 #tool-workspace {
   min-width: 0;
   isolation: isolate;
+  --tool-control: rgba(28, 47, 99, 0.78);
+  --tool-control-hover: rgba(40, 64, 127, 0.85);
+  --input: var(--tool-control);
 }
 #tool-workspace .g-panel,
 #tool-workspace [data-tool],
@@ -38,6 +44,112 @@
 #tool-workspace #construtorRv {
   background: transparent !important;
   background-attachment: scroll !important;
+}
+/* Tool section wrappers must never paint a second full-page background. */
+#tool-workspace :is(.hp-wrap, .hc-sec, .ir-wrap, .adw, .cmp-panel, .wrap) {
+  background: transparent !important;
+  background-image: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+#tool-workspace :is(.hc-sec, .hp-wrap) {
+  max-width: none;
+  margin-inline: 0;
+}
+/* Remaining surfaces from planning, tax, proposals, succession and rebalancing. */
+#tool-workspace
+  :is(
+    .hp-card,
+    .hp-kpi,
+    .hp-scard,
+    .hk-g,
+    .pc-drawer,
+    .pc-col,
+    .pc-setup,
+    .ir-fld,
+    .ir-tbl,
+    .pm-fld,
+    .pm-col,
+    .pm-chip,
+    .pm-alloc,
+    .client-row,
+    .info-panel,
+    .cen-table,
+    .esttoggle
+  ) {
+  background: var(--tool-glass) !important;
+  border-color: var(--tool-edge) !important;
+  backdrop-filter: blur(14px) saturate(1.15);
+  -webkit-backdrop-filter: blur(14px) saturate(1.15);
+  box-shadow: 0 8px 28px rgba(9, 4, 28, 0.1) !important;
+}
+#tool-workspace
+  :is(
+    .pc-gavcard,
+    .pc-libcard,
+    .pm-card,
+    .pm-pitem,
+    .pm-total,
+    .ret-inp,
+    .ret-inp-user,
+    .rent-mode,
+    .fvb-seg,
+    .im-valor,
+    .hc-bar
+  ) {
+  background: var(--tool-inset) !important;
+  border-color: var(--tool-edge) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+#tool-workspace :is(.num-input, .im-valor, .ret-inp) input {
+  background: transparent !important;
+  border: none !important;
+}
+#tool-workspace
+  :is(
+    .chip,
+    .pill,
+    .seg,
+    .cmp-tab,
+    .oc-tab,
+    .oc-btn,
+    .btn-ghost,
+    .hp-seg button
+  ):not(.on):not(.active) {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-color: var(--tool-edge) !important;
+}
+#tool-workspace :is(.chip, .pill, .seg, .cmp-tab, .oc-tab).on,
+#tool-workspace :is(.chip, .pill, .seg, .cmp-tab, .oc-tab).active {
+  background: var(--s-orange) !important;
+  border-color: #ff9a63 !important;
+  color: #fff !important;
+}
+#tool-workspace table {
+  background: transparent;
+}
+#tool-workspace table th {
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: #e6deef !important;
+}
+#tool-workspace table td {
+  border-color: rgba(231, 220, 255, 0.14) !important;
+}
+#tool-workspace table tr:nth-child(even) td {
+  background: rgba(255, 255, 255, 0.025);
+}
+#tool-workspace #proporModal {
+  background: rgba(25, 15, 47, 0.95) !important;
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+}
+#tool-workspace :is(.pm-picker, #chartTip) {
+  background: rgba(38, 23, 65, 0.97) !important;
+  border-color: var(--tool-edge) !important;
+}
+#tool-workspace :is(.hc-disc2, .hc-hs, .wl-hint, .ir-disc) {
+  color: var(--s-muted) !important;
 }
 /* Shared glass surfaces: no opaque legacy navy islands over the lava backdrop. */
 #tool-workspace
@@ -194,6 +306,37 @@
   border: 1px solid var(--s-border) !important;
   border-radius: 16px;
   background: var(--s-bg) !important;
+}
+/* Blue control surfaces, including legacy inputs without a type attribute. */
+#tool-workspace
+  input:not([type="range"]):not([type="checkbox"]):not([type="radio"]):not(
+    [type="file"]
+  ):not([type="hidden"]),
+#tool-workspace select,
+#tool-workspace textarea,
+#tool-workspace :is(.num-input, .qc-inp, .im-valor, .ret-inp) {
+  background: var(--tool-control) !important;
+  border-color: rgba(140, 166, 236, 0.34) !important;
+  color: #f5f5ff !important;
+}
+#tool-workspace
+  :is(.cmp-tab, .tab, .pill, .seg, .quick button):not(.on):not(.active) {
+  background: var(--tool-control) !important;
+  border-color: rgba(140, 166, 236, 0.3) !important;
+}
+#tool-workspace
+  :is(.cmp-tab, .tab, .pill, .seg, .quick button):not(.on):not(.active):hover {
+  background: var(--tool-control-hover) !important;
+}
+#tool-workspace input[style*="background:transparent"],
+#tool-workspace input[style*="background: transparent"],
+#tool-workspace
+  :is(.num-input, .qc-inp, .im-valor, .ret-inp)
+  input:not([type="range"]):not([type="checkbox"]):not([type="radio"]):not(
+    [type="file"]
+  ):not([type="hidden"]) {
+  background: transparent !important;
+  border: none !important;
 }
 .presentation-expanded #studio-route {
   position: fixed;
