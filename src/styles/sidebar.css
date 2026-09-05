@@ -129,6 +129,27 @@
   .sidebar-bottom :is(.search-trigger, .ambient-toggle) {
     width: calc(var(--s-sidebar-width) - 30px);
     white-space: nowrap;
+    min-height: 34px;
+    padding-left: 12px !important;
+    justify-content: flex-start;
+    text-align: left;
+  }
+
+  .studio-sidebar .sidebar-bottom-label {
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 120ms ease;
+  }
+
+  .sidebar-expanded .studio-sidebar .sidebar-bottom-label {
+    opacity: 1;
+    visibility: visible;
+    transition-delay: 70ms;
+  }
+
+  html:not(.sidebar-expanded) .studio-sidebar .sidebar-version {
+    visibility: hidden;
+    opacity: 0;
   }
 
   .sidebar-version {

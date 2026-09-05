@@ -22,6 +22,14 @@ export function mountSidebar() {
   sidebar
     .querySelector("#settings-open")
     .setAttribute("aria-label", "Preferências e dados");
+  const settings = sidebar.querySelector("#settings-open");
+  settings.childNodes.forEach((node) => {
+    if (node.nodeType !== 3 || !node.textContent.trim()) return;
+    const label = document.createElement("span");
+    label.className = "sidebar-bottom-label";
+    label.textContent = node.textContent.trim();
+    node.replaceWith(label);
+  });
   function apply(open) {
     clearTimeout(timer);
     clearTimeout(motionTimer);

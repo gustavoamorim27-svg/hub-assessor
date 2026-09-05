@@ -18,10 +18,15 @@ export function mountAmbient() {
   );
   const button = document.createElement("button");
   button.className = "ambient-toggle";
+  const label = document.createElement("span");
+  label.className = "sidebar-bottom-label";
+  button.append(label);
   document.querySelector(".sidebar-bottom").append(button);
   const apply = (paused) => {
     document.documentElement.classList.toggle("motion-paused", paused);
-    button.textContent = paused ? "Retomar animação" : "Pausar animação";
+    label.textContent = paused ? "Retomar animação" : "Pausar animação";
+    button.setAttribute("aria-label", label.textContent);
+    button.title = label.textContent;
     button.setAttribute("aria-pressed", String(paused));
   };
   apply(storage.getItem("motion-paused") === "true");
