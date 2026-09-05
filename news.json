@@ -1,1 +1,85 @@
-{"updated":"04/09/2026 09:07","items":[{"region":"nacional","title":"Ibovespa emenda 11a alta seguida e vai ao maior patamar desde maio","resumo":"Bolsa brasileira estende sequencia recorde de ganhos enquanto o dolar recua pela terceira sessao consecutiva.","source":"InfoMoney","date":"02 set 2026","url":"https://www.infomoney.com.br/mercados/ibovespa-hoje-bolsa-de-valores-ao-vivo-02092026/"},{"region":"nacional","title":"Dolar recua a R$ 5,11 com fluxo estrangeiro e cenario eleitoral","resumo":"Moeda americana cai 0,91% na terceira queda seguida, apoiada pela entrada de recursos externos na B3.","source":"InfoMoney","date":"02 set 2026","url":"https://www.infomoney.com.br/mercados/ibovespa-hoje-bolsa-de-valores-ao-vivo-02092026/"},{"region":"nacional","title":"Focus: mercado reduz projecao de IPCA para 5,15% em 2026","resumo":"Boletim do Banco Central mostra expectativa de inflacao mais benigna, reforcando espaco para novos cortes na Selic.","source":"B3 Bora Investir","date":"01 set 2026","url":"https://borainvestir.b3.com.br/noticias/focus-mercado-reduz-expectativa-de-inflacao-para-515-em-2026/"},{"region":"nacional","title":"IPCA-15 desacelera a 4,24% em 12 meses e fica abaixo do teto da meta","resumo":"Previa da inflacao veio abaixo do esperado e sustenta a aposta em continuidade gradual do ciclo de queda de juros.","source":"BPMoney","date":"26 ago 2026","url":"https://bpmoney.com.br/mercado/ibovespa-abre-em-leve-alta-aos-1746-mil-pontos-apos-ipca-15-abaixo-do-esperado/"},{"region":"nacional","title":"Copom corta Selic em 0,25 ponto, para 14% ao ano","resumo":"Comite manteve tom cauteloso e nao se comprometeu com o passo da proxima reuniao, marcada para setembro.","source":"Mais Retorno","date":"06 ago 2026","url":"https://maisretorno.com/portal/em-dia-de-copom-sem-surpresas-bolsa-sobe-dolar-recua"},{"region":"internacional","title":"Wall Street cai com petroleo acima de US$ 95 e juros dos Treasuries em alta","resumo":"Dow recua 0,8%, S&P 500 perde 0,7% e Nasdaq cede mais de 1% com tensao geopolitica no Oriente Medio.","source":"Yahoo Finance","date":"01 set 2026","url":"https://finance.yahoo.com/markets/live/stock-market-today-tuesday-september-1-dow-sp-500-nasdaq-080617884.html"},{"region":"internacional","title":"Bolsas americanas sobem com pausa na escalada dos juros dos titulos","resumo":"Indices se recuperam apos tregua na alta dos yields, mas investidores seguem cautelosos com o Fed.","source":"Yahoo Finance","date":"02 set 2026","url":"https://finance.yahoo.com/markets/live/stock-market-today-wednesday-september-2-dow-sp-500-nasdaq-082624175.html"},{"region":"internacional","title":"Treasury de 10 anos atinge 4,79%, maior nivel desde janeiro de 2025","resumo":"Expectativa de corte de juros pelo Fed perde forca e pressiona acoes; titulo de 30 anos chega a 5,27%.","source":"Barchart","date":"01 set 2026","url":"https://www.barchart.com/story/news/30415328/stocks-pressured-by-rising-bond-yields-as-fed-rate-cut-hopes-fade"},{"region":"internacional","title":"Venda global de titulos se aprofunda com reprecificacao de juros para 2026","resumo":"Bund alemao de 10 anos avanca rumo a 2,9% enquanto investidores reduzem apostas em cortes de juros.","source":"Trading Economics","date":"31 ago 2026","url":"https://tradingeconomics.com/germany/government-bond-yield/news/508812"},{"region":"internacional","title":"S&P 500 cai pelo terceiro dia com yields globais e petroleo elevados","resumo":"Combinacao de juros longos altos e energia cara mantem pressao sobre os ativos de risco nos EUA.","source":"CNBC","date":"17 ago 2026","url":"https://www.cnbc.com/2026/08/17/stock-market-today-live-updates.html"}]}
+{
+  "updated": "05/09/2026 09:07",
+  "items": [
+    {
+      "region": "nacional",
+      "title": "Ibovespa cai após payroll e perde os 184 mil pontos",
+      "resumo": "Bolsa recuou na sexta com Vale, Petrobras e bancos em queda, após dado forte de emprego nos EUA.",
+      "source": "InfoMoney",
+      "date": "04 set 2026",
+      "url": "https://www.infomoney.com.br/mercados/ibovespa-abertura-fechamento-04092026/"
+    },
+    {
+      "region": "nacional",
+      "title": "Dólar comercial sobe a R$ 5,12 com payroll forte nos EUA",
+      "resumo": "Moeda americana avançou e os juros futuros oscilaram após a criação de 162 mil vagas em agosto nos EUA.",
+      "source": "InfoMoney",
+      "date": "04 set 2026",
+      "url": "https://www.infomoney.com.br/mercados/ibovespa-hoje-bolsa-de-valores-ao-vivo-04092026/"
+    },
+    {
+      "region": "nacional",
+      "title": "Selic segue em 14,00% ao ano após sequência de cortes do Copom",
+      "resumo": "Banco Central manteve o ritmo gradual de afrouxamento, com a taxa básica saindo de 14,50% em abril para 14,00%.",
+      "source": "Meelion",
+      "date": "02 set 2026",
+      "url": "https://www.meelion.com/indicadores-financeiros/selic/"
+    },
+    {
+      "region": "nacional",
+      "title": "Ibovespa emenda 11a alta seguida e vai ao maior patamar desde maio",
+      "resumo": "Índice acumulou onze pregões de ganhos com queda dos juros futuros e recuo do dólar a R$ 5,109.",
+      "source": "InfoMoney",
+      "date": "02 set 2026",
+      "url": "https://www.infomoney.com.br/mercados/ibovespa-hoje-bolsa-de-valores-ao-vivo-02092026/"
+    },
+    {
+      "region": "nacional",
+      "title": "PIB e Orçamento de 2027 guiam a Bolsa; tarifas com EUA voltam à pauta",
+      "resumo": "Investidores repercutiram o PIB brasileiro e a retomada das negociações comerciais entre Brasil e Estados Unidos.",
+      "source": "InfoMoney",
+      "date": "01 set 2026",
+      "url": "https://www.infomoney.com.br/mercados/ibovespa-hoje-bolsa-de-valores-ao-vivo-01092026/"
+    },
+    {
+      "region": "internacional",
+      "title": "Wall Street fecha em queda com payroll forte de agosto",
+      "resumo": "Dow caiu 0,51% a 53.414 pontos, S&P 500 recuou 0,38% e Nasdaq cedeu 0,29% com temor de aperto do Fed.",
+      "source": "CNBC",
+      "date": "04 set 2026",
+      "url": "https://www.cnbc.com/2026/09/03/stock-market-today-live-updates.html"
+    },
+    {
+      "region": "internacional",
+      "title": "Brent supera US$ 95 com escalada no Estreito de Ormuz",
+      "resumo": "Petróleo caminha para ganho semanal de cerca de 7% em meio à interrupção do fluxo de energia na região.",
+      "source": "Investing.com",
+      "date": "04 set 2026",
+      "url": "https://www.investing.com/news/stock-market-news/global-macro-outlook-hormuz-fed-hike-odds-and-the-bond-rout--week-of-september-4-2026-93CH-4889872"
+    },
+    {
+      "region": "internacional",
+      "title": "Waller sinaliza juros estáveis e aposta de alta do Fed cai a 50%",
+      "resumo": "Comentários do diretor do Fed reduziram de 63% para 50% a probabilidade de alta na reunião de setembro.",
+      "source": "CNBC",
+      "date": "03 set 2026",
+      "url": "https://www.cnbc.com/2026/09/02/stock-market-today-live-updates.html"
+    },
+    {
+      "region": "internacional",
+      "title": "Treasury de 10 anos vai a 4,79%, maior nível desde janeiro de 2025",
+      "resumo": "Juro do título de 30 anos chegou a 5,27%, perto de máximas de décadas, pressionando as bolsas.",
+      "source": "Yahoo Finance",
+      "date": "01 set 2026",
+      "url": "https://finance.yahoo.com/markets/live/stock-market-today-tuesday-september-1-dow-sp-500-nasdaq-080617884.html"
+    },
+    {
+      "region": "internacional",
+      "title": "S&P 500 sobe com pausa na escalada dos juros dos Treasuries",
+      "resumo": "Alívio nos yields ajudou o índice a interromper sequência de perdas em Nova York.",
+      "source": "Yahoo Finance",
+      "date": "02 set 2026",
+      "url": "https://finance.yahoo.com/markets/live/stock-market-today-wednesday-september-2-dow-sp-500-nasdaq-082624175.html"
+    }
+  ]
+}
