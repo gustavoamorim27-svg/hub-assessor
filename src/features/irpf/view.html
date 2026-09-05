@@ -1,0 +1,45 @@
+<div class="g-panel" id="p-irpf" data-tool="irpf">
+  <div class="ir-wrap">
+    <div class="ir-head">
+      <div>
+        <div class="ir-logo">rico</div>
+        <div class="ir-sub">
+          IR / DARF de Renda Variavel - apuracao de acoes e FIIs a partir da
+          Posicao Consolidada
+        </div>
+      </div>
+      <button class="ir-png" id="irPng" style="display: none">
+        Gerar PNG / PDF
+      </button>
+    </div>
+    <div class="ir-upload" id="irDrop">
+      <div class="ir-up-title">Envie a Posicao Consolidada (.xlsx)</div>
+      <div class="ir-up-desc">
+        Le acoes e FIIs com <b>preco medio</b> e quantidade. Mesmo arquivo da
+        Aderencia.
+      </div>
+      <button class="ir-up-btn" id="irPick" type="button">
+        Selecionar arquivo
+      </button>
+      <input
+        type="file"
+        id="irFile"
+        accept=".xlsx,.xls"
+        style="display: none"
+      />
+      <div class="ir-status" id="irStatus"></div>
+    </div>
+    <div id="irBody" style="display: none"></div>
+    <div class="ir-disc" id="irDisc" style="display: none">
+      Material de apoio - estimativa de IR sobre <b>venda</b> das posicoes
+      informadas (ganho = preco de venda - preco medio). Acoes (mercado a
+      vista): isencao se as vendas do mes ≤ limite; acima disso, aliquota sobre
+      o ganho liquido. FIIs: aliquota sobre o ganho, sem isencao. Compensacao de
+      prejuizo por balde (acoes / FIIs separados). Vencimento do DARF (cod.
+      6015): ultimo dia util do mes seguinte (aprox., sem feriados). Nao
+      considera day trade, custos de corretagem/emolumentos nem eventos
+      societarios. Confirme os valores antes de gerar a guia. Sujeito a mudancas
+      na legislacao (ha MP propondo aliquota unica de 17,5%).
+    </div>
+  </div>
+</div>

@@ -1,0 +1,228 @@
+/* Single token adapter for the migrated financial engines. */
+:root {
+  --navy: var(--s-bg);
+  --navy2: var(--s-panel);
+  --navy3: var(--s-raised);
+  --input: #0e1527;
+  --wh: var(--s-text);
+  --white: var(--s-text);
+  --branco: var(--s-text);
+  --or: var(--s-orange);
+  --or2: #ff884e;
+  --orange: var(--s-orange);
+  --laranja: var(--s-orange);
+  --laranja-2: #ff884e;
+  --laranja-soft: rgba(255, 98, 29, 0.13);
+  --mu: var(--s-muted);
+  --muted: var(--s-muted);
+  --cinza: var(--s-muted);
+  --cinza-2: var(--s-subtle);
+  --bd: var(--s-border);
+  --border: var(--s-border);
+  --line: var(--s-border);
+  --green: var(--s-green);
+  --verde: var(--s-green);
+  --amarelo: var(--s-yellow);
+  --azul-1: var(--s-panel);
+  --azul-2: var(--s-raised);
+  --azul-3: var(--s-bg);
+  --azul-acc: var(--s-blue);
+}
+#tool-workspace {
+  min-width: 0;
+  isolation: isolate;
+}
+#tool-workspace .g-panel,
+#tool-workspace [data-tool],
+#tool-workspace #construtorFull,
+#tool-workspace #construtorRv {
+  background: transparent !important;
+  background-attachment: scroll !important;
+}
+/* Shared glass surfaces: no opaque legacy navy islands over the lava backdrop. */
+#tool-workspace
+  :is(
+    .card,
+    .panel,
+    .ad-col,
+    .ad-score-card,
+    .ir-card,
+    .wl-card,
+    .hc-card,
+    .kpi,
+    .control,
+    .tpl-btn,
+    .goal-card,
+    .alloc-controls,
+    .alloc-donut-card,
+    .hc-inputs,
+    .hc-kpi,
+    .hc-chartwrap,
+    .hc-score,
+    .hc-tblwrap,
+    .hc-pbbox,
+    .assetcard,
+    .item,
+    .alloc-row,
+    .cmpcard,
+    .opcard,
+    .pc-chip,
+    .suc-cell
+  ) {
+  background: rgba(22, 15, 49, 0.43) !important;
+  border-color: rgba(231, 220, 255, 0.22) !important;
+  backdrop-filter: blur(14px) saturate(1.15);
+  -webkit-backdrop-filter: blur(14px) saturate(1.15);
+  box-shadow: 0 8px 28px rgba(9, 4, 28, 0.1) !important;
+}
+#tool-workspace
+  :is(
+    input[type="text"],
+    input[type="number"],
+    input[type="date"],
+    input[type="month"],
+    select,
+    textarea,
+    .inp,
+    .mini-input,
+    .pct-input,
+    .pctinput,
+    .sel,
+    .num-input,
+    .pc-input,
+    .hp-inp,
+    .lib-search-inp,
+    .oc-search
+  ) {
+  background: rgba(255, 255, 255, 0.07) !important;
+  border-color: rgba(233, 224, 255, 0.23) !important;
+  color: #fff !important;
+}
+#tool-workspace select option {
+  background: #25183f;
+  color: white;
+}
+#tool-workspace input::placeholder,
+#tool-workspace textarea::placeholder {
+  color: #b3a9c8;
+}
+#tool-workspace :is(.tab, .tpl-btn):not(.active):not(.on) {
+  background: rgba(24, 15, 50, 0.35) !important;
+  color: #d0c6e0 !important;
+  border-color: rgba(231, 220, 255, 0.22) !important;
+}
+#tool-workspace :is(.header, .ad-header, .rv-head) {
+  background: transparent !important;
+  border-color: rgba(231, 220, 255, 0.2) !important;
+}
+#tool-workspace :is(#libTab, #catTab, .sim-gav-pill) {
+  background: rgba(255, 255, 255, 0.065) !important;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+#tool-workspace :is(#libDrawer, #opcat) {
+  background: rgba(32, 20, 58, 0.92) !important;
+  border-color: rgba(231, 220, 255, 0.23) !important;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+#tool-workspace
+  :is(.lib-card, .oc-card, .howbox, .rv-catempty, .pc-rvcard, .pc-gavrv-empty) {
+  background: rgba(255, 255, 255, 0.055) !important;
+  border-color: rgba(231, 220, 255, 0.2) !important;
+}
+#tool-workspace
+  :is(label.lbl, .mini-lbl, .rv-sub, .sub, .detinput, .det-input) {
+  color: var(--s-muted);
+}
+#tool-workspace
+  .g-panel
+  > :is(.wrap, .adw, .ir-wrap, .wl-wrap, .hc-wrap, .aj-wrap) {
+  max-width: none;
+  margin: 0;
+  padding: 0 0 28px;
+  background: none;
+}
+#tool-workspace :is(.header, .ad-header) {
+  margin-top: 0;
+  padding-top: 0;
+}
+#tool-workspace .header {
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+#tool-workspace .header > div:first-child .logo {
+  display: none;
+}
+#tool-workspace :is(.header, .ad-header) .sub {
+  font-size: 13px;
+  color: var(--s-muted);
+}
+#tool-workspace
+  :is(.card, .panel, .ad-col, .ad-score-card, .ir-card, .wl-card, .hc-card) {
+  background: var(--s-panel);
+  border-color: var(--s-border);
+  box-shadow: none;
+}
+#tool-workspace :is(input, select, textarea) {
+  color-scheme: dark;
+}
+#tool-workspace :is(.btn-solid, .btn-primary, .ad-up-btn) {
+  background: var(--s-orange);
+  box-shadow: none;
+}
+#tool-workspace :is(.btn-ghost, .btn-solid, .minibtn) {
+  transition:
+    background 0.15s,
+    border-color 0.15s;
+}
+#tool-workspace :is(.btn-ghost, .btn-solid):focus-visible {
+  outline: 2px solid var(--s-orange);
+  outline-offset: 4px;
+}
+#tool-workspace .wrap {
+  min-width: 0;
+}
+#tool-workspace .lib-drawer,
+#tool-workspace #opcat {
+  max-width: min(520px, 95vw);
+}
+#tool-workspace #apresentacaoFrame {
+  height: calc(100vh - 230px) !important;
+  min-height: 540px;
+  border: 1px solid var(--s-border) !important;
+  border-radius: 16px;
+  background: var(--s-bg) !important;
+}
+.presentation-expanded #studio-route {
+  position: fixed;
+  inset: 0;
+  z-index: 3000;
+  background: var(--s-bg);
+}
+.presentation-expanded #route-title,
+.presentation-expanded .studio-footer {
+  display: none;
+}
+.presentation-expanded #tool-workspace #apresentacaoFrame {
+  width: 100vw;
+  height: 100vh !important;
+  border: 0 !important;
+  border-radius: 0;
+}
+@media (max-width: 760px) {
+  #tool-workspace .header > div {
+    flex-wrap: wrap;
+  }
+  #tool-workspace .header button {
+    font-size: 12px;
+    padding: 9px 11px;
+  }
+  #tool-workspace :is(.grid, .two-cols, .ad-compare) {
+    grid-template-columns: 1fr;
+  }
+  #tool-workspace #apresentacaoFrame {
+    min-height: 450px;
+  }
+}

@@ -1,0 +1,120 @@
+<div id="proporModal">
+  <div class="pm-wrap">
+    <div class="pm-head">
+      <div>
+        <div class="pm-logo">rico</div>
+        <div class="pm-sub">
+          Propor carteira · o que sai, o que fica e o que entra na carteira do
+          cliente
+        </div>
+      </div>
+      <div class="pm-actions">
+        <button class="pm-btn" id="pmProj">Projeção da carteira</button>
+        <button class="pm-btn" id="pmPlano">Plano de ajuste (PDF)</button>
+        <button class="pm-btn png" id="pmPng">Gerar PNG / PDF</button>
+        <button class="pm-btn" id="pmClear">Limpar</button>
+        <button class="pm-btn" id="pmClose">Fechar</button>
+      </div>
+    </div>
+    <div class="pm-bar">
+      <span class="pm-lbl">Carteira atual do cliente:</span>
+      <button class="pm-oi" id="pmSrcSim">Carteira do Simulador</button>
+      <button class="pm-oi" id="pmSrcXls">Importar Excel do cliente</button>
+      <input
+        type="file"
+        id="pmFile"
+        accept=".xlsx,.xls"
+        style="display: none"
+      />
+      <span class="pm-status" id="pmStatus"></span>
+    </div>
+    <div class="pm-ids">
+      <div class="pm-fld">
+        <label>Cliente</label
+        ><input id="pmCli" type="text" placeholder="Nome / conta" />
+      </div>
+      <div class="pm-fld">
+        <label>Patrimonio (R$)</label
+        ><input id="pmPat" type="text" inputmode="decimal" value="0" />
+      </div>
+    </div>
+    <div class="pm-prof">
+      <span class="pm-lbl">Distribuir por perfil:</span>
+      <button class="pm-oi" data-prof="Conservadora">Conservadora</button>
+      <button class="pm-oi" data-prof="Moderada">Moderada</button>
+      <button class="pm-oi" data-prof="Sofisticada">Sofisticada</button>
+      <button
+        class="pm-oi"
+        id="pmAddLib"
+        style="border-color: rgba(242, 101, 34, 0.55); color: var(--or)"
+      >
+        + Adicionar da biblioteca
+      </button>
+    </div>
+    <div class="pm-total" id="pmTot"></div>
+    <div class="pm-chips" id="pmChips" style="margin-top: 10px"></div>
+    <div
+      class="pm-adjust"
+      id="pmAdjust"
+      style="
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-top: 10px;
+        margin-bottom: 4px;
+      "
+    >
+      <button
+        class="pm-oi"
+        id="pmFit100"
+        style="border-color: rgba(61, 214, 140, 0.5); color: #3dd68c"
+      >
+        Ajustar para 100%
+      </button>
+      <button class="pm-oi" id="pmEqual">Distribuir igualmente</button>
+    </div>
+    <div class="pm-board">
+      <div class="pm-col sai">
+        <div class="pm-colh">
+          <span class="pm-colt">SAI</span
+          ><span class="pm-coltot" id="pmSaiTot"></span>
+        </div>
+        <div class="pm-colsub">
+          O que sai da carteira. Use "← Manter" para devolver um ativo a
+          qualquer momento.
+        </div>
+        <div id="pmColSai"></div>
+      </div>
+      <div class="pm-col mantem">
+        <div class="pm-colh">
+          <span class="pm-colt">MANTÉM</span
+          ><span class="pm-coltot" id="pmManterTot"></span>
+        </div>
+        <div class="pm-colsub">
+          O que fica na carteira. Todos os ativos atuais entram aqui por padrão.
+        </div>
+        <div id="pmColMantem"></div>
+      </div>
+      <div class="pm-col entra">
+        <div class="pm-colh">
+          <span class="pm-colt">ENTRA</span
+          ><span class="pm-coltot" id="pmEntraTot"></span>
+        </div>
+        <div class="pm-colsub">
+          O que entra de novo. Escolha um perfil acima ou adicione da
+          biblioteca.
+        </div>
+        <div id="pmPicker"></div>
+        <div id="pmColEntra"></div>
+      </div>
+    </div>
+    <div class="pm-alloc" id="pmAllocBox"></div>
+    <div class="pm-disc">
+      Material de apoio comercial · carteira proposta = ativos mantidos + ativos
+      que entram. Giro estimado pelas compras necessárias. Ativos de carrego
+      (CDB, LCI, LCA, CRI, CRA, debêntures e afins) não são sugeridos para
+      resgate. Não constitui recomendação; sujeito a suitability e às condições
+      de cada produto.
+    </div>
+  </div>
+</div>

@@ -1,0 +1,428 @@
+<div class="g-panel" id="p-holdingcalc" data-tool="holdingcalc">
+  <div class="hp-wrap">
+    <div class="hc-sec">
+      <div class="hc-head">
+        <div>
+          <div class="hc-h">Holding · <b>Patrimonial</b></div>
+          <div class="hc-hs">
+            Quanto custa abrir, quanto custa transmitir e o que muda se o
+            cliente recebe aluguel — com as alíquotas de onde ele mora.<span
+              class="wl-onlyapp"
+            >
+              Preencha os campos; tudo recalcula na hora.</span
+            >
+          </div>
+        </div>
+        <div class="hc-actions">
+          <button class="hc-btn" id="hkPngBtn">Gerar PNG</button>
+          <button class="hc-btn sec" onclick="window.print()">
+            Exportar PDF
+          </button>
+        </div>
+      </div>
+
+      <div class="hk-groups">
+        <div class="hk-g">
+          <div class="hk-gt">
+            <span class="n">1</span> Patrimônio do cliente
+          </div>
+          <div class="hc-f">
+            <label
+              >Patrimônio imobilizado
+              <span style="opacity: 0.7">(imóveis, R$)</span></label
+            ><input
+              type="number"
+              id="hkImov"
+              min="0"
+              step="50000"
+              value="3000000"
+            />
+          </div>
+          <div class="hc-f">
+            <label>Quantidade de imóveis</label
+            ><input
+              type="number"
+              id="hkNImov"
+              min="0"
+              max="50"
+              step="1"
+              value="3"
+            />
+            <div class="wl-hint">
+              cada matrícula tem custo de cartório na integralização
+            </div>
+          </div>
+          <div class="hc-f">
+            <label
+              >Patrimônio investido
+              <span style="opacity: 0.7">(financeiro, R$)</span></label
+            ><input
+              type="number"
+              id="hkInv"
+              min="0"
+              step="50000"
+              value="2000000"
+            />
+          </div>
+          <label class="hk-sw" id="hkIncFSw"
+            ><span>Investimentos entram na holding?</span
+            ><input type="checkbox" id="hkIncF"
+          /></label>
+          <div class="hc-f">
+            <label>Horizonte</label
+            ><select class="hc-sel" id="hkHor">
+              <option value="10">10 anos</option>
+              <option value="15">15 anos</option>
+              <option value="20" selected="">20 anos</option>
+              <option value="30">30 anos</option>
+            </select>
+          </div>
+          <div class="hc-f">
+            <label
+              >Correção do patrimônio (IPCA)
+              <b id="hkIpcaO">4,5% a.a.</b></label
+            ><input
+              type="range"
+              id="hkIpca"
+              min="0"
+              max="12"
+              step="0.1"
+              value="4.5"
+            />
+          </div>
+        </div>
+
+        <div class="hk-g">
+          <div class="hk-gt">
+            <span class="n">2</span> Impostos onde ele mora
+          </div>
+          <div class="hc-f">
+            <label
+              >Estado
+              <span style="opacity: 0.7">(preenche o ITCMD)</span></label
+            ><select class="hc-sel" id="hkUf"></select>
+            <div class="wl-hint" id="hkUfNota"></div>
+          </div>
+          <div class="hc-f">
+            <label>ITCMD <b id="hkItcmdO">4%</b></label
+            ><input
+              type="range"
+              id="hkItcmd"
+              min="0"
+              max="8"
+              step="0.25"
+              value="4"
+            />
+            <div class="wl-hint">
+              faixa de controle: ajuste fino pela alíquota efetiva do estado
+              (teto de 8%)
+            </div>
+          </div>
+          <div class="hc-f">
+            <label>ITBI do município <b id="hkItbiO">3%</b></label
+            ><input
+              type="range"
+              id="hkItbi"
+              min="0"
+              max="5"
+              step="0.25"
+              value="3"
+            />
+            <div class="wl-hint">
+              capitais costumam cobrar 2% a 3%; use 0% se a prefeitura
+              reconhecer a imunidade
+            </div>
+          </div>
+          <div class="hc-f">
+            <label>Inventário (do que ficar fora)</label
+            ><select class="hc-sel" id="hkMod">
+              <option value="extra">
+                Extrajudicial · honorários 6% + custas 0,8%
+              </option>
+              <option value="jud">Judicial consensual · 8% + 1,5%</option>
+              <option value="lit">Judicial litigioso · 10% + 2,5%</option>
+            </select>
+            <div class="wl-hint">piso OAB-SP: 6% do monte-mor</div>
+          </div>
+        </div>
+
+        <div class="hk-g">
+          <div class="hk-gt"><span class="n">3</span> Custos da holding</div>
+          <div class="hc-f">
+            <label
+              >Abertura
+              <span style="opacity: 0.7"
+                >(advogado + contador + Junta, R$)</span
+              ></label
+            ><input
+              type="number"
+              id="hkAbert"
+              min="0"
+              step="1000"
+              value="15000"
+            />
+            <div class="wl-hint">
+              mercado: R$ 8k a 20k de honorários + R$ 800 a 1.500 de Junta
+            </div>
+          </div>
+          <div class="hc-f">
+            <label
+              >Cartório por imóvel <span style="opacity: 0.7">(R$)</span></label
+            ><input type="number" id="hkCart" min="0" step="500" value="4500" />
+            <div class="wl-hint">
+              registro da integralização: R$ 3k a 6k por matrícula
+            </div>
+          </div>
+          <div class="hc-f">
+            <label
+              >Doação das cotas
+              <span style="opacity: 0.7"
+                >(escritura + cláusulas, R$)</span
+              ></label
+            ><input type="number" id="hkDoa" min="0" step="500" value="5000" />
+            <div class="wl-hint">
+              só na holding para sucessão: usufruto, inalienabilidade,
+              incomunicabilidade
+            </div>
+          </div>
+          <div class="hc-f">
+            <label
+              >Contabilidade <span style="opacity: 0.7">(R$/mês)</span></label
+            ><input type="number" id="hkCont" min="0" step="100" value="1000" />
+            <div class="wl-hint">
+              R$ 500 a 1.500/mês, corrigido pelo IPCA no horizonte
+            </div>
+          </div>
+        </div>
+
+        <div class="hk-g">
+          <div class="hk-gt"><span class="n">4</span> Aluguéis</div>
+          <label class="hk-sw" id="hkAlugSw"
+            ><span>O cliente recebe aluguel dos imóveis?</span
+            ><input type="checkbox" id="hkAlug"
+          /></label>
+          <div id="hkAlugBox" class="hk-off">
+            <div class="hc-f">
+              <label
+                >Aluguel bruto <span style="opacity: 0.7">(R$/mês)</span></label
+              ><input
+                type="number"
+                id="hkAlugV"
+                min="0"
+                step="500"
+                value="15000"
+              />
+            </div>
+            <div class="hc-f">
+              <label>IR na pessoa física <b id="hkPfO">27,5%</b></label
+              ><input
+                type="range"
+                id="hkPf"
+                min="0"
+                max="27.5"
+                step="0.5"
+                value="27.5"
+              />
+              <div class="wl-hint">
+                carnê-leão: 27,5% acima de R$ 4.664/mês de base
+              </div>
+            </div>
+            <div class="hc-f">
+              <label
+                >Na holding (lucro presumido) <b id="hkPjO">11,33%</b></label
+              >
+              <div class="wl-hint" style="margin-top: 0">
+                IRPJ 4,8% + CSLL 2,88% + PIS/COFINS 3,65% sobre a receita; o
+                adicional de IRPJ entra sozinho acima de R$ 62,5 mil/mês
+              </div>
+            </div>
+            <div class="hc-kpi g" style="margin-top: 4px">
+              <div class="k">Economia de IR por ano</div>
+              <div class="v" id="hkEconAno">—</div>
+              <div class="wl-uf" id="hkEconAnoS">—</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="wl-prem" id="hkPrem"></div>
+
+      <div class="hk-routes">
+        <div class="wl-route inv" id="hkRInv">
+          <div class="k">Sem holding</div>
+          <div class="v" id="hkTotInv">—</div>
+          <div class="s">
+            Nada hoje. Na sucessão, tudo passa pelo inventário: ITCMD sobre o
+            patrimônio corrigido, honorários e custas.
+          </div>
+          <ul id="hkListInv"></ul>
+        </div>
+        <div class="wl-route hold" id="hkRSim">
+          <div class="k">Holding simples</div>
+          <div class="v" id="hkTotSim">—</div>
+          <div class="s">
+            Abre a empresa e integraliza os bens, sem doar as cotas. Organiza e
+            economiza IR de aluguel — mas as cotas ainda vão a inventário.
+          </div>
+          <ul id="hkListSim"></ul>
+        </div>
+        <div class="wl-route suc" id="hkRSuc">
+          <div class="k">Holding para sucessão</div>
+          <div class="v" id="hkTotSuc">—</div>
+          <div class="s">
+            Abre, integraliza e doa as cotas com usufruto e cláusulas. Paga o
+            ITCMD hoje, sobre o valor de hoje, e o que entrou na holding não
+            passa por inventário.
+          </div>
+          <ul id="hkListSuc"></ul>
+        </div>
+      </div>
+
+      <div class="hc-kpis">
+        <div class="hc-kpi b">
+          <div class="k">Custo de abertura</div>
+          <div class="v" id="hkKAb">—</div>
+          <div class="wl-uf" id="hkKAbS">—</div>
+        </div>
+        <div class="hc-kpi b">
+          <div class="k">ITBI na integralização</div>
+          <div class="v" id="hkKItbi">—</div>
+          <div class="wl-uf" id="hkKItbiS">—</div>
+        </div>
+        <div class="hc-kpi o">
+          <div class="k">Transmissão · holding p/ sucessão</div>
+          <div class="v" id="hkKTrSuc">—</div>
+          <div class="wl-uf" id="hkKTrSucS">—</div>
+        </div>
+        <div class="hc-kpi y">
+          <div class="k">Transmissão · sem holding</div>
+          <div class="v" id="hkKTrInv">—</div>
+          <div class="wl-uf" id="hkKTrInvS">—</div>
+        </div>
+        <div class="hc-kpi g">
+          <div class="k">Economia de IR sobre aluguéis</div>
+          <div class="v" id="hkKEcon">—</div>
+          <div class="wl-uf" id="hkKEconS">—</div>
+        </div>
+        <div class="hc-kpi y">
+          <div class="k">Fica para a família · sem holding</div>
+          <div class="v" id="hkKFamInv">—</div>
+          <div class="wl-uf" id="hkKFamInvS">—</div>
+        </div>
+        <div class="hc-kpi b">
+          <div class="k">Fica para a família · holding simples</div>
+          <div class="v" id="hkKFamSim">—</div>
+          <div class="wl-uf" id="hkKFamSimS">—</div>
+        </div>
+        <div class="hc-kpi o">
+          <div class="k">Fica para a família · holding sucessão</div>
+          <div class="v" id="hkKFamSuc">—</div>
+          <div class="wl-uf" id="hkKFamSucS">—</div>
+        </div>
+      </div>
+
+      <div class="hc-row2" style="grid-template-columns: 1fr 1fr">
+        <div class="hc-chartwrap">
+          <div class="ct" style="height: 320px">
+            <canvas id="hkChartBar"></canvas>
+          </div>
+        </div>
+        <div class="hc-chartwrap">
+          <div class="ct" style="height: 320px">
+            <canvas id="hkChartAcc"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <div class="hc-tblwrap">
+        <div class="tt">Custo por item e por rota</div>
+        <table class="hc-t">
+          <thead>
+            <tr>
+              <th>Item</th>
+              <th class="r">Sem holding</th>
+              <th class="r">Holding simples</th>
+              <th class="r">Holding p/ sucessão</th>
+            </tr>
+          </thead>
+          <tbody id="hkTbody"></tbody>
+        </table>
+      </div>
+
+      <div class="wl-honest">
+        <div class="hc-pbbox" style="border-left-color: #5b8def">
+          <div class="pbt" style="color: #5b8def">
+            Simples ou para sucessão?
+          </div>
+          <ul>
+            <li>
+              <b>Holding simples</b> resolve organização e aluguel. Não resolve
+              sucessão: as cotas entram no inventário como qualquer bem — com
+              ITCMD sobre o valor de mercado (LC 227/2026) e honorários sobre o
+              monte-mor.
+            </li>
+            <li>
+              <b>Holding para sucessão</b> antecipa o ITCMD para hoje (sobre o
+              valor de hoje) e tira as cotas do inventário. Usufruto vitalício
+              mantém o controle e a renda com o titular.
+            </li>
+            <li>
+              A diferença entre as duas é, na prática,
+              <b>o ITCMD pago agora</b> contra
+              <b>ITCMD + honorários + custas pagos depois</b>, sobre um
+              patrimônio maior.
+            </li>
+          </ul>
+        </div>
+        <div class="hc-pbbox" style="border-left-color: #f26522">
+          <div class="pbt" style="color: #f26522">
+            Onde a conta muda de lado
+          </div>
+          <ul>
+            <li>
+              <b>Aluguel</b>: com renda de locação relevante, a economia de IR
+              paga a holding em poucos anos — teste ligando o campo 4.
+            </li>
+            <li>
+              <b>Investimentos</b>: dentro da holding perdem isenções da pessoa
+              física (LCI/LCA/CRI/CRA, debêntures incentivadas, R$ 20 mil/mês em
+              ações) e pagam IRPJ/CSLL sobre o rendimento. Em geral ficam fora —
+              e vão a inventário, ou para previdência/seguro.
+            </li>
+            <li>
+              <b>ITBI</b>: 2% a 3% sobre os imóveis muda o resultado; se o
+              município reconhecer a imunidade, zere o campo.
+            </li>
+            <li>
+              <b>Horizonte</b>: quanto mais longo, mais pesa a contabilidade — e
+              mais cresce o patrimônio que o inventário vai tributar.
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="wl-legal" style="border-left-color: #5b8def">
+        <b>Base legal e premissas.</b> <b>ITCMD:</b> alíquotas progressivas
+        obrigatórias (EC 132/2023), teto de 8% (Res. Senado 9/1992); a
+        <b>LC 227/2026</b> (art. 154, II) manda avaliar cotas a valor de
+        mercado, com piso no patrimônio líquido ajustado — cada estado incorpora
+        por lei própria, a partir de 2027 pela anterioridade. <b>ITBI:</b> a
+        Constituição (art. 156, §2º, I) imuniza a integralização, salvo
+        atividade imobiliária preponderante; o STF (Tema 796) limitou a
+        imunidade ao valor do capital subscrito e a jurisprudência para holding
+        de locação é dividida. <b>Aluguel na PJ:</b> lucro presumido com base de
+        32% — IRPJ 15% (+10% acima de R$ 20 mil/mês de base), CSLL 9%, PIS 0,65%
+        e COFINS 3%; sem considerar IBS/CBS sobre locação a partir de 2027. Em
+        alguns estados parte do ITCMD da doação com usufruto fica para a
+        extinção do usufruto — aqui está somado no dia 1. Valores ilustrativos:
+        confirme com o advogado e o contador que farão a estrutura.
+      </div>
+      <div class="hc-disc2">
+        Ferramenta educacional de apoio comercial; não substitui a orientação de
+        advogado, contador ou assessor habilitado. Custos de abertura, cartório
+        e contabilidade são faixas de mercado editáveis. O ITCMD e o ITBI são
+        preenchidos por você conforme o estado e o município do cliente.
+        Patrimônio corrigido apenas pelo IPCA informado.
+      </div>
+    </div>
+  </div>
+</div>

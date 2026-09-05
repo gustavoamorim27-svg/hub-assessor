@@ -1,0 +1,863 @@
+<div class="g-panel" id="p-simulador" data-tool="simulador">
+  <div class="wrap" id="capture-area">
+    <header class="header">
+      <div class="brand">rico</div>
+      <div class="header-right">
+        <div class="eyebrow">Planejamento Financeiro da RICO</div>
+        <div class="sub">Projeção de <span id="hdrPrazo">20</span> anos</div>
+      </div>
+    </header>
+
+    <div class="client-row">
+      <span class="lbl">Cliente</span>
+      <input
+        type="text"
+        id="nomeCliente"
+        placeholder="Digite o nome do cliente (ex: Maria, Carlos...)"
+        maxlength="60"
+      />
+    </div>
+
+    <div class="card objetivos-card">
+      <div class="obj-head">
+        <span class="obj-ic">🎯</span>
+        <div>
+          <h3>Objetivos Futuros</h3>
+          <p>
+            Metas de aquisição do cliente — imóvel, veículo, viagem. Cada
+            objetivo entra no gráfico como uma compra planejada: no ano
+            definido, a curva do patrimônio recua no valor da meta e segue a
+            projeção a partir daí.
+          </p>
+        </div>
+      </div>
+      <div class="imovel-form objetivos-form">
+        <div class="ff">
+          <label>Objetivo</label>
+          <select id="objTipo">
+            <option value="Imóvel">🏠 Imóvel</option>
+            <option value="Carro">🚗 Carro</option>
+            <option value="Viagem">✈️ Viagem</option>
+            <option value="Outro">🎯 Outro</option>
+          </select>
+        </div>
+        <div class="ff">
+          <label>Descrição (opcional)</label>
+          <input
+            type="text"
+            id="objDesc"
+            maxlength="40"
+            placeholder="Ex.: aquisição de imóvel"
+          />
+        </div>
+        <div class="ff">
+          <label>Valor</label>
+          <div class="im-valor">
+            <span class="pre">R$</span
+            ><input
+              type="text"
+              inputmode="numeric"
+              id="objValor"
+              class="money"
+              placeholder="0"
+            />
+          </div>
+        </div>
+        <div class="ff">
+          <label>Prazo (anos)</label>
+          <input
+            type="number"
+            id="objAno"
+            min="1"
+            max="30"
+            step="1"
+            value="5"
+          />
+        </div>
+        <div class="add-wrap">
+          <button class="btn-add" id="objAdd" type="button">+ Adicionar</button>
+        </div>
+      </div>
+      <div class="imoveis-list" id="objetivosList"></div>
+    </div>
+
+    <div class="controls">
+      <div class="card control">
+        <div class="label-row">
+          <label>Valor inicial</label>
+          <div class="num-input">
+            <span class="pre">R$</span>
+            <input
+              type="text"
+              inputmode="numeric"
+              id="valor"
+              class="money"
+              value="100.000"
+            />
+          </div>
+        </div>
+        <input
+          type="range"
+          id="valorRange"
+          min="0"
+          max="2000000"
+          step="5000"
+          value="100000"
+        />
+        <div class="range-row"><span>R$ 0</span><span>R$ 2 milhões</span></div>
+        <div class="quick">
+          <button data-v="50000">50 mil</button>
+          <button data-v="100000">100 mil</button>
+          <button data-v="250000">250 mil</button>
+          <button data-v="500000">500 mil</button>
+          <button data-v="1000000">1 milhão</button>
+          <button data-v="2000000">2 milhões</button>
+        </div>
+      </div>
+
+      <div class="card control">
+        <div class="label-row"><label>Aporte mensal</label></div>
+        <div
+          class="rent-mode amode-bar"
+          id="aporteMode"
+          role="tablist"
+          aria-label="Forma de informar o aporte"
+        >
+          <button
+            type="button"
+            class="rent-mode-opt active"
+            data-amode="direto"
+            role="tab"
+            aria-selected="true"
+          >
+            Valor direto
+          </button>
+          <button
+            type="button"
+            class="rent-mode-opt"
+            data-amode="rendadespesa"
+            role="tab"
+            aria-selected="false"
+          >
+            Renda − Despesa
+          </button>
+        </div>
+        <!-- MODO: valor direto -->
+        <div id="aporteDireto">
+          <div class="num-input">
+            <span class="pre">R$</span>
+            <input
+              type="text"
+              inputmode="numeric"
+              id="aporte"
+              class="money"
+              value="0"
+            />
+          </div>
+          <input
+            type="range"
+            id="aporteRange"
+            min="0"
+            max="20000"
+            step="100"
+            value="0"
+          />
+          <div class="range-row">
+            <span>R$ 0</span><span>R$ 10 mil</span><span>R$ 20 mil</span>
+          </div>
+          <div class="quick">
+            <button data-a="0">Sem aporte</button>
+            <button data-a="500">500</button>
+            <button data-a="1000">1 mil</button>
+            <button data-a="2500">2,5 mil</button>
+            <button data-a="5000">5 mil</button>
+            <button data-a="15000">15 mil</button>
+          </div>
+        </div>
+        <!-- MODO: renda menos despesa -->
+        <div id="aporteRD" style="display: none">
+          <div class="rd-grid">
+            <div class="rd-field">
+              <label>Renda mensal</label>
+              <div class="num-input">
+                <span class="pre">R$</span
+                ><input
+                  type="text"
+                  inputmode="numeric"
+                  id="rendaAtual"
+                  class="money"
+                  value="12.000"
+                />
+              </div>
+            </div>
+            <div class="rd-field">
+              <label>Despesa mensal</label>
+              <div class="num-input">
+                <span class="pre">R$</span
+                ><input
+                  type="text"
+                  inputmode="numeric"
+                  id="despesaMensal"
+                  class="money"
+                  value="8.000"
+                />
+              </div>
+            </div>
+          </div>
+          <div class="rd-result">
+            Capacidade de aporte: <b id="rdAporte">R$ 4.000</b>
+            <span>/mês (renda − despesa)</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card control">
+        <div class="label-row">
+          <label>Rentabilidade</label>
+          <div
+            class="rent-mode"
+            id="rentMode"
+            role="tablist"
+            aria-label="Base de rentabilidade"
+          >
+            <button
+              type="button"
+              class="rent-mode-opt active"
+              data-mode="ipca"
+              role="tab"
+              aria-selected="true"
+            >
+              IPCA +
+            </button>
+            <button
+              type="button"
+              class="rent-mode-opt"
+              data-mode="cdi"
+              role="tab"
+              aria-selected="false"
+            >
+              % do CDI
+            </button>
+          </div>
+        </div>
+
+        <!-- MODO IPCA + X% -->
+        <div id="rentIpca">
+          <div class="num-input">
+            <span class="pre">IPCA +</span>
+            <input
+              type="number"
+              id="ipcaSpread"
+              value="6"
+              min="0"
+              max="20"
+              step="0.25"
+            />
+            <span class="pos">% a.a.</span>
+          </div>
+          <input
+            type="range"
+            id="ipcaSpreadRange"
+            min="0"
+            max="15"
+            step="0.25"
+            value="6"
+          />
+          <div class="range-row">
+            <span>IPCA+0%</span><span>+7,5%</span><span>+15%</span>
+          </div>
+          <div class="quick">
+            <button data-s="3">IPCA + 3%</button>
+            <button data-s="4.5">IPCA + 4,5%</button>
+            <button data-s="6">IPCA + 6%</button>
+            <button data-s="7">IPCA + 7%</button>
+            <button data-s="8">IPCA + 8%</button>
+          </div>
+        </div>
+
+        <!-- MODO % do CDI -->
+        <div id="rentCdi" style="display: none">
+          <div class="num-input">
+            <input
+              type="number"
+              id="pctCdi"
+              value="120"
+              min="0"
+              max="500"
+              step="5"
+            />
+            <span class="pos">% do CDI</span>
+          </div>
+          <input
+            type="range"
+            id="pctCdiRange"
+            min="0"
+            max="500"
+            step="1"
+            value="120"
+          />
+          <div class="range-row">
+            <span>0%</span><span>100%</span><span>250%</span><span>500%</span>
+          </div>
+          <div class="quick">
+            <button data-p="70">Poupança ~70%</button>
+            <button data-p="100">CDB 100%</button>
+            <button data-p="107">Conservadora 107%</button>
+            <button data-p="113">Moderada 113%</button>
+            <button data-p="120">Sofisticada 120%</button>
+            <button data-p="150">150%</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card control">
+        <div class="label-row">
+          <label>Prazo da projeção</label>
+          <div class="num-input">
+            <input
+              type="number"
+              id="prazo"
+              value="20"
+              min="1"
+              max="30"
+              step="1"
+            />
+            <span class="pos">anos</span>
+          </div>
+        </div>
+        <input
+          type="range"
+          id="prazoRange"
+          min="1"
+          max="30"
+          step="1"
+          value="20"
+        />
+        <div class="range-row">
+          <span>1 ano</span><span>15</span><span>30 anos</span>
+        </div>
+        <div class="quick">
+          <button data-t="3">3 anos</button>
+          <button data-t="5">5 anos</button>
+          <button data-t="10">10 anos</button>
+          <button data-t="15">15 anos</button>
+          <button data-t="20">20 anos</button>
+          <button data-t="30">30 anos</button>
+        </div>
+        <div class="prazo-idade">
+          <label>Idade atual</label>
+          <div class="num-input">
+            <input
+              type="number"
+              id="idadeAtual"
+              min="18"
+              max="95"
+              step="1"
+              value="40"
+            /><span class="pos">anos</span>
+          </div>
+        </div>
+        <div class="prazo-hint" id="prazoHint">
+          Aposentadoria estimada aos <b id="hintApos">60</b> anos · projeção de
+          resgate até os <b>100 anos</b>.
+        </div>
+      </div>
+    </div>
+
+    <div class="goal-grid">
+      <div class="card control goal-card">
+        <div class="label-row">
+          <label>🎯 Renda mensal desejada</label>
+          <div class="num-input">
+            <span class="pre">R$</span>
+            <input
+              type="text"
+              inputmode="numeric"
+              id="renda"
+              class="money"
+              value="10.000"
+            />
+          </div>
+        </div>
+        <input
+          type="range"
+          id="rendaRange"
+          min="0"
+          max="100000"
+          step="500"
+          value="10000"
+        />
+        <div class="range-row">
+          <span>R$ 0</span><span>R$ 50 mil</span><span>R$ 100 mil</span>
+        </div>
+        <div class="quick">
+          <button data-r="3000">3 mil</button>
+          <button data-r="5000">5 mil</button>
+          <button data-r="10000">10 mil</button>
+          <button data-r="20000">20 mil</button>
+          <button data-r="50000">50 mil</button>
+        </div>
+        <div class="goal-income" id="goalIncome"></div>
+      </div>
+    </div>
+
+    <div class="kpis">
+      <div class="card kpi branco">
+        <div class="k" id="kpiInvLabel">Valor investido</div>
+        <div class="v">R$ <span id="kpiInv" class="tnum">100.000</span></div>
+        <div class="d" id="kpiInvSub">capital inicial</div>
+      </div>
+      <div class="card kpi azul">
+        <div class="k" id="kpiCdiLabel">Montante CDI (20 anos)</div>
+        <div class="v">R$ <span id="kpiCdi" class="tnum">0</span></div>
+        <div class="d">se aplicado 100% do CDI</div>
+      </div>
+      <div class="card kpi">
+        <div class="k" id="kpiCartLabel">Montante da carteira (20 anos)</div>
+        <div class="v">R$ <span id="kpiCart" class="tnum">0</span></div>
+        <div class="d" id="kpiCartSub">IPCA + 6,0% a.a.</div>
+      </div>
+      <div class="card kpi verde">
+        <div class="k">Ganho sobre o CDI</div>
+        <div class="v">+ R$ <span id="kpiDelta" class="tnum">0</span></div>
+        <div class="d"><span id="kpiDeltaPct">0</span>% a mais ao final</div>
+      </div>
+    </div>
+
+    <div class="goal-banner far" id="goalBanner">
+      <div class="gb-icon" id="gbIcon">🎯</div>
+      <div class="gb-text">
+        <h3 id="gbTitle">Defina um objetivo</h3>
+        <p id="gbDesc">—</p>
+      </div>
+      <div class="gb-pill">
+        <div class="big" id="gbBig">—</div>
+        <div class="small" id="gbSmall">objetivo</div>
+      </div>
+    </div>
+
+    <div class="card chart-card">
+      <div class="chart-header">
+        <h2>Evolução comparativa do patrimônio</h2>
+        <div class="chart-tools">
+          <div class="ipca-field">
+            <span>CDI</span>
+            <input
+              type="number"
+              id="cdiAnual"
+              min="0"
+              max="30"
+              step="0.25"
+              placeholder="auto"
+              title="CDI projetado (% a.a.). Vazio = curva padrão."
+            />
+            <span>% a.a.</span>
+          </div>
+          <div class="ipca-field">
+            <span>IPCA</span>
+            <input
+              type="number"
+              id="ipca"
+              min="0"
+              max="30"
+              step="0.5"
+              value="4.5"
+            />
+            <span>% a.a.</span>
+          </div>
+          <button
+            type="button"
+            class="ipca-toggle"
+            id="ipcaToggle"
+            role="switch"
+            aria-checked="false"
+            title="Mostrar os valores em poder de compra de hoje (deflacionados pelo IPCA)"
+          >
+            <span class="kt-track"><span class="kt-thumb"></span></span>
+            <span class="kt-label">Ajustar pelo IPCA</span>
+          </button>
+        </div>
+        <div class="legend">
+          <span class="l"
+            ><span class="sw" style="background: var(--laranja)"></span>Sua
+            carteira</span
+          >
+          <span class="l"
+            ><span class="sw" style="background: var(--azul-acc)"></span>CDI
+            100%</span
+          >
+          <span class="l"
+            ><span class="sw" style="background: var(--amarelo)"></span
+            >Patrimônio-alvo</span
+          >
+          <span class="l"
+            ><span class="sw" style="background: #8089be; height: 3px"></span
+            >Total aportado</span
+          >
+        </div>
+      </div>
+      <svg id="chart" viewBox="0 0 1100 460" preserveAspectRatio="none"></svg>
+    </div>
+
+    <div class="section-divider has-toggle" id="carteiraHead">
+      <div class="num">2</div>
+      <div>
+        <h2>Composição da carteira <span class="opt-flag">(opcional)</span></h2>
+        <p>
+          Escolha um template de perfil ou distribua os ativos manualmente nos
+          sliders
+        </p>
+      </div>
+      <button
+        type="button"
+        id="carteiraToggle"
+        class="carteira-toggle"
+        aria-expanded="true"
+        aria-controls="carteiraCollapse"
+        title="Recolher ou expandir a carteira"
+      >
+        <span class="ct-label">Recolher</span><span class="ct-chev">▾</span>
+      </button>
+    </div>
+
+    <div id="carteiraCollapse">
+      <div class="fp-view-bar">
+        <span class="fvb-lbl">Visão</span>
+        <div
+          class="fvb-seg"
+          id="fpViewSeg"
+          title="Produtos: carteira completa com os ativos. Classes: mesma proporção, só por classe de ativo."
+        >
+          <button type="button" data-fpview="produtos">Produtos</button>
+          <button type="button" data-fpview="classes">Classes</button>
+        </div>
+      </div>
+      <div class="tpl-bar" id="tplBar">
+        <button class="tpl-btn" data-tpl="conservadora" type="button">
+          <span class="tpl-name"
+            ><span class="tpl-dot" style="background: #5b8def"></span
+            >Conservadora</span
+          >
+          <span class="tpl-desc"
+            >Foco em renda fixa e preservação de capital · ~90% RF</span
+          >
+          <span class="tpl-soma">soma 100%</span>
+        </button>
+        <button class="tpl-btn" data-tpl="moderada" type="button">
+          <span class="tpl-name"
+            ><span class="tpl-dot" style="background: #9b6bff"></span
+            >Moderada</span
+          >
+          <span class="tpl-desc"
+            >Equilíbrio entre RF, multimercado e renda variável protegida</span
+          >
+          <span class="tpl-soma">soma 100%</span>
+        </button>
+        <button class="tpl-btn" data-tpl="sofisticada" type="button">
+          <span class="tpl-name"
+            ><span class="tpl-dot" style="background: #f26522"></span
+            >Sofisticada</span
+          >
+          <span class="tpl-desc"
+            >Estruturadas, alternativos e diversificação global</span
+          >
+          <span class="tpl-soma">soma 100%</span>
+        </button>
+      </div>
+
+      <div class="import-bar" id="importBar" style="display: none">
+        <div class="import-info">
+          <svg
+            viewBox="0 0 24 24"
+            width="18"
+            height="18"
+            fill="none"
+            stroke="#F26522"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            style="flex-shrink: 0"
+          >
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="17 8 12 3 7 8"></polyline>
+            <line x1="12" y1="3" x2="12" y2="15"></line>
+          </svg>
+          <div>
+            <div class="import-title">
+              Carteira disponível no Montar a Carteira
+            </div>
+            <div class="import-sub" id="importSub">
+              Importe a alocação montada na aba Montar a Carteira
+            </div>
+          </div>
+        </div>
+        <button class="btn import-btn" id="btnImportar" type="button">
+          Importar do Montar a Carteira
+        </button>
+      </div>
+
+      <div class="alloc">
+        <div class="card alloc-donut-card">
+          <div class="donut-wrap">
+            <svg viewBox="0 0 200 200" id="donut"></svg>
+            <div class="donut-center">
+              <div class="lbl">Total investido</div>
+              <div class="val">
+                <span class="pre">R$</span><span id="donutTotal">100.000</span>
+              </div>
+              <div class="sub" id="donutSub">100% alocado</div>
+            </div>
+          </div>
+          <div class="total-label">distribuição por classe de ativo</div>
+        </div>
+
+        <div class="card alloc-controls" id="allocControls"></div>
+      </div>
+    </div>
+    <!-- /#carteiraCollapse -->
+
+    <div class="section-divider">
+      <div class="num">3</div>
+      <div>
+        <h2>Ativos imobilizados</h2>
+        <p>
+          Mapeie os imóveis do cliente: localização (estado), tipo, quantidade e
+          valor
+        </p>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="imovel-form">
+        <div class="ff">
+          <label>Estado (UF)</label>
+          <select id="imEstado"></select>
+        </div>
+        <div class="ff">
+          <label>Tipo de imóvel</label>
+          <select id="imTipo">
+            <option value="">Selecione…</option>
+            <option value="Casa">Casa</option>
+            <option value="Apartamento">Apartamento</option>
+            <option value="Veículo">Veículo</option>
+          </select>
+        </div>
+        <div class="ff">
+          <label>Quantidade</label>
+          <input
+            type="number"
+            id="imQtd"
+            min="1"
+            max="999"
+            step="1"
+            value="1"
+          />
+        </div>
+        <div class="ff">
+          <label>Valor total</label>
+          <div class="im-valor">
+            <span class="pre">R$</span>
+            <input
+              type="text"
+              inputmode="numeric"
+              id="imValor"
+              class="money"
+              placeholder="0"
+            />
+          </div>
+        </div>
+        <div class="add-wrap">
+          <button class="btn-add" id="imAdd" type="button">+ Adicionar</button>
+        </div>
+      </div>
+      <div class="imoveis-list" id="imoveisList"></div>
+      <div class="imoveis-summary" id="imoveisSummary"></div>
+    </div>
+
+    <div class="section-divider">
+      <div class="num">4</div>
+      <div>
+        <h2>Investimentos em outras instituições</h2>
+        <p>
+          Mapeie onde o cliente investe além da Rico — Banco do Brasil, Itaú,
+          Nubank, Safra e outros
+        </p>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="imovel-form externo-form">
+        <div class="ff">
+          <label>Instituição</label>
+          <select id="exInst">
+            <option value="">Selecione…</option>
+          </select>
+        </div>
+        <div class="ff">
+          <label>Produto / aplicação</label>
+          <select id="exProduto">
+            <option value="">Selecione…</option>
+            <option value="Renda Fixa">Renda Fixa</option>
+            <option value="Ações">Ações</option>
+            <option value="COE">COE</option>
+            <option value="Fundos Imobiliários">Fundos Imobiliários</option>
+            <option value="Fundos de Investimentos">
+              Fundos de Investimentos
+            </option>
+          </select>
+        </div>
+        <div class="ff">
+          <label>Valor aplicado</label>
+          <div class="im-valor">
+            <span class="pre">R$</span>
+            <input
+              type="text"
+              inputmode="numeric"
+              id="exValor"
+              class="money"
+              placeholder="0"
+            />
+          </div>
+        </div>
+        <div class="add-wrap">
+          <button class="btn-add" id="exAdd" type="button">+ Adicionar</button>
+        </div>
+      </div>
+      <div class="imoveis-list" id="externosList"></div>
+      <div class="imoveis-summary externos-summary" id="externosSummary"></div>
+    </div>
+
+    <div id="patrimonioTotalWrap"></div>
+
+    <div class="section-divider">
+      <div class="num">5</div>
+      <div>
+        <h2>Proteção patrimonial e sucessão</h2>
+        <p>
+          Estruturas de proteção do cliente e estimativa do custo de transmissão
+          do patrimônio aos herdeiros
+        </p>
+      </div>
+    </div>
+
+    <div class="card protect-card">
+      <div class="ph">
+        <span class="icon">
+          <svg fill="none" stroke-width="2" viewBox="0 0 24 24">
+            <path
+              d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6l8-4z"
+            ></path>
+          </svg>
+        </span>
+        <h3>Proteção patrimonial</h3>
+      </div>
+      <div class="ph-sub">
+        O cliente já está assegurado? Marque o que ele possui.
+      </div>
+      <div class="protect-list" id="protectList"></div>
+      <div class="protect-status none" id="protectStatus"></div>
+      <div class="sucessao-box" id="sucessaoBox"></div>
+    </div>
+
+    <div class="actions">
+      <button class="btn secondary" id="btnNovo" type="button">
+        <svg
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+        >
+          <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+          <circle cx="9" cy="7" r="4"></circle>
+          <path d="M19 8v6M22 11h-6"></path>
+        </svg>
+        Novo cliente
+      </button>
+      <button class="btn secondary" id="btnReset" type="button">
+        <svg
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+        >
+          <path d="M3 12a9 9 0 1 0 9-9M3 12V3M3 12h9"></path>
+        </svg>
+        Restaurar padrões
+      </button>
+      <button class="btn" id="btnExport" type="button">
+        <svg
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"
+          ></path>
+        </svg>
+        Gerar plano do cliente
+      </button>
+      <button
+        class="btn secondary"
+        id="btnExportWide"
+        type="button"
+        title="Versão horizontal e expandida do plano, com marcos, objetivos, patrimônio consolidado e premissas"
+      >
+        <svg
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+        >
+          <rect x="2" y="5" width="20" height="14" rx="2"></rect>
+          <path d="M2 11h20M12 5v14"></path>
+        </svg>
+        Plano expandido (PNG)
+      </button>
+      <button
+        class="btn secondary"
+        id="btnPngTema"
+        type="button"
+        title="Alterna a paleta dos PNGs do plano entre escura e clara"
+      ></button>
+      <button
+        class="btn secondary"
+        id="btnExportPdf"
+        type="button"
+        title="Plano detalhado em PDF, com explicação de cada bloco"
+      >
+        <svg
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"
+          ></path>
+          <path d="M14 2v6h6"></path>
+          <path d="M9 13h6M9 17h6"></path>
+        </svg>
+        Plano detalhado (PDF)
+      </button>
+    </div>
+    <div class="autosave-note">
+      <span class="dot"></span
+      ><span id="autosaveText">Salvo automaticamente neste navegador</span>
+    </div>
+
+    <div class="disclaimer">
+      <strong>Premissas:</strong> CDI histórico real dos últimos 2 anos (média
+      anual de ~14% em 2025–26). Projeção considera convergência gradual para a
+      média histórica brasileira de longo prazo (10% a.a.). A rentabilidade da
+      carteira é calculada como percentual aplicado sobre o CDI do período.
+      Objetivo de patrimônio = 100× a renda mensal desejada (regra de 1% a.m.),
+      corrigido pela inflação (IPCA) ao longo do prazo para preservar o poder de
+      compra de hoje. Ative "Ajustar pelo IPCA" para ver todos os valores em
+      poder de compra de hoje. Simulação ilustrativa · valores brutos · não
+      considera IR ou taxas · não constitui oferta.
+    </div>
+  </div>
+
+  <div class="toast" id="toast">Imagem gerada!</div>
+</div>

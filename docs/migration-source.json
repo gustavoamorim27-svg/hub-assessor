@@ -1,0 +1,60 @@
+{
+  "commit": "deadcb436293883ffa0f5324ca33d5b88d4ec927",
+  "sourceBytes": 2043628,
+  "panels": [
+    "apresentacao",
+    "ajustes",
+    "construtor",
+    "comparador",
+    "simulador",
+    "irpf",
+    "holding",
+    "holdingcalc",
+    "aderencia"
+  ],
+  "originalScriptBlocks": 42,
+  "originalStyleBlocks": 34,
+  "extraction": {
+    "construtor": {
+      "profile-import": 16,
+      "asset-library": 17,
+      "drawer": 18,
+      "structures": 19,
+      "mode": 20,
+      "drawer-preference": 21,
+      "engine": 31,
+      "proposal": 26
+    },
+    "comparador": {
+      "engine": 32,
+      "quick-comparison": 22,
+      "tax-equivalence": 23,
+      "tabs": 24
+    },
+    "simulador": {
+      "engine": 33,
+      "card-order": 36
+    },
+    "irpf": {
+      "engine": 25
+    },
+    "holding": {
+      "engine": 28
+    },
+    "holdingcalc": {
+      "engine": 29
+    },
+    "aderencia": {
+      "engine": 35
+    },
+    "rv": {
+      "engine": 34
+    },
+    "ajustes": {
+      "engine": 38
+    },
+    "apresentacao": {
+      "engine": 13
+    }
+  }
+}

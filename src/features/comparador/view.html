@@ -1,0 +1,122 @@
+<div class="g-panel" id="p-comparador" data-tool="comparador">
+  <div class="cmp-bar">
+    <button class="cmp-tab on" data-cmptab="root">Comparador de ativos</button
+    ><button class="cmp-tab" data-cmptab="rapido">LCI/LCA × CDB liquido</button
+    ><button class="cmp-tab" data-cmptab="juro">Juro Real</button>
+  </div>
+  <div class="cmp-panel" data-cmppanel="root">
+    <div class="wrap" id="root"></div>
+  </div>
+  <div class="cmp-panel" data-cmppanel="rapido" style="display: none">
+    <div class="qc-wrap">
+      <div class="card" style="background: var(--navy2)">
+        <div class="between" style="margin-bottom: 6px">
+          <div class="ttl" style="margin: 0">
+            Comparacao rapida · LCI/LCA × CDB <span class="badge">liquido</span>
+          </div>
+        </div>
+        <div class="muted" style="margin-bottom: 8px; line-height: 1.6">
+          Qual rende mais <b>liquido</b> por prazo? A LCI/LCA e isenta de IR; o
+          CDB paga IR regressivo (22,5% → 15%). Os valores mostram o
+          <b>% do CDI liquido</b> de cada um.
+        </div>
+        <div class="qc-inputs">
+          <label class="qc-field"
+            ><span>Taxa da LCI ou LCA (% do CDI)</span>
+            <div class="qc-inp">
+              <input id="qcLca" inputmode="decimal" value="90" /><span
+                class="suf"
+                >%</span
+              >
+            </div></label
+          >
+          <label class="qc-field"
+            ><span>Taxa do CDB (% do CDI)</span>
+            <div class="qc-inp">
+              <input id="qcCdb" inputmode="decimal" value="110" /><span
+                class="suf"
+                >%</span
+              >
+            </div></label
+          >
+        </div>
+        <div class="qc-grid" id="qcGrid"></div>
+        <div class="disc" style="margin-top: 16px">
+          Considera IR regressivo sobre o rendimento do CDB conforme o prazo de
+          resgate, sem IOF/come-cotas. A LCI/LCA e isenta de IR para pessoa
+          fisica. Confirme as taxas vigentes antes de apresentar ao cliente.
+          Rico — Grupo XP.
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="cmp-panel" data-cmppanel="juro" style="display: none">
+    <div class="qc-wrap">
+      <div class="card" style="background: var(--navy2)">
+        <div class="between" style="margin-bottom: 6px">
+          <div class="ttl" style="margin: 0">
+            Calculadora de Juro Real <span class="badge">Fisher</span>
+          </div>
+        </div>
+        <div class="muted" style="margin-bottom: 10px; line-height: 1.6">
+          Quanto a aplicacao realmente rende <b>acima da inflacao</b>. Informe a
+          taxa <b>nominal</b> direta, ou como <b>% do CDI</b> (ajustando o CDI
+          atual).
+        </div>
+        <div style="display: flex; gap: 8px; margin-bottom: 12px">
+          <button class="cmp-tab on" data-jrmode="nom">Taxa nominal</button>
+          <button class="cmp-tab" data-jrmode="cdi">% do CDI</button>
+        </div>
+        <div class="qc-inputs">
+          <label class="qc-field" data-jrf="nom"
+            ><span>Taxa nominal (% a.a.)</span>
+            <div class="qc-inp">
+              <input id="jrNom" inputmode="decimal" value="14,25" /><span
+                class="suf"
+                >%</span
+              >
+            </div></label
+          >
+          <label class="qc-field" data-jrf="cdi" style="display: none"
+            ><span>CDI atual (% a.a.)</span>
+            <div class="qc-inp">
+              <input id="jrCdi" inputmode="decimal" value="14,25" /><span
+                class="suf"
+                >%</span
+              >
+            </div></label
+          >
+          <label class="qc-field" data-jrf="cdi" style="display: none"
+            ><span>Taxa (% do CDI)</span>
+            <div class="qc-inp">
+              <input id="jrPct" inputmode="decimal" value="100" /><span
+                class="suf"
+                >%</span
+              >
+            </div></label
+          >
+          <label class="qc-field"
+            ><span>Inflacao · IPCA (% a.a.)</span>
+            <div class="qc-inp">
+              <input id="jrInf" inputmode="decimal" value="4,5" /><span
+                class="suf"
+                >%</span
+              >
+            </div></label
+          >
+        </div>
+        <div
+          class="qc-grid"
+          id="jrGrid"
+          style="grid-template-columns: 1fr"
+        ></div>
+        <div class="disc" style="margin-top: 16px">
+          Juro real pela formula de Fisher: (1 + nominal) / (1 + inflacao) - 1.
+          No modo "% do CDI", a taxa nominal = CDI × (% do CDI). A aproximacao
+          simples (nominal - inflacao) e mostrada como referencia. Material de
+          apoio interno.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

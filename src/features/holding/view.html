@@ -1,0 +1,532 @@
+<div class="g-panel" id="p-holding" data-tool="holding">
+  <div class="hp-wrap">
+    <div class="hc-sec">
+      <div class="hc-head">
+        <div>
+          <div class="hc-h">Sucessão · <b>Whole Life</b></div>
+          <div class="hc-hs">
+            Quanto o capital cresce, quando dá para resgatar e quando o resgate
+            fica integral.<span class="wl-onlyapp">
+              Ajuste os campos — tudo recalcula em tempo real.</span
+            >
+          </div>
+        </div>
+        <div class="hc-actions">
+          <button class="hc-btn" id="wlPngBtn">Gerar PNG</button>
+          <button class="hc-btn sec" onclick="window.print()">
+            Exportar PDF
+          </button>
+        </div>
+      </div>
+
+      <div class="hc-inputs">
+        <div class="hc-f">
+          <label>Capital segurado <b id="wlCobO">R$ 1.000.000</b></label
+          ><input
+            type="range"
+            id="wlCob"
+            min="100000"
+            max="20000000"
+            step="50000"
+            value="1000000"
+          />
+        </div>
+        <div class="hc-f">
+          <label>Idade do titular <b id="wlIdadeO">45 anos</b></label
+          ><input
+            type="range"
+            id="wlIdade"
+            min="25"
+            max="75"
+            step="1"
+            value="45"
+          />
+        </div>
+        <div class="hc-f">
+          <label
+            >Prêmio anual
+            <span
+              id="wlParcAuto"
+              class="hc-auto"
+              title="voltar ao cálculo automático"
+              >auto</span
+            ></label
+          ><input
+            type="number"
+            id="wlParc"
+            min="0"
+            step="500"
+            placeholder="auto"
+          />
+        </div>
+        <div class="hc-f">
+          <label>IPCA (premissa) <b id="wlIpcaO">4,5% a.a.</b></label
+          ><input
+            type="range"
+            id="wlIpca"
+            min="0"
+            max="12"
+            step="0.1"
+            value="4.5"
+          />
+        </div>
+        <div class="hc-f">
+          <label>Deságio no 3º ano <b id="wlDesO">40%</b></label
+          ><input
+            type="range"
+            id="wlDes"
+            min="0"
+            max="80"
+            step="5"
+            value="40"
+          />
+          <div class="wl-hint">interpolado até zerar no 10º ano</div>
+        </div>
+        <div class="hc-f">
+          <label>Horizonte</label
+          ><select class="hc-sel" id="wlHor">
+            <option value="10">10 anos</option>
+            <option value="15">15 anos</option>
+            <option value="20" selected="">20 anos</option>
+            <option value="30">30 anos</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="wl-toprow">
+        <label class="wl-switch"
+          ><input type="checkbox" id="wlTgPagos" checked="" /><span
+            >Mostrar prêmios pagos</span
+          ></label
+        >
+        <label class="wl-switch"
+          ><input type="checkbox" id="wlTgMarcos" checked="" /><span
+            >Marcar o 3º e o 10º ano</span
+          ></label
+        >
+        <label class="wl-switch hl"
+          ><input type="checkbox" id="wlTgCmp" /><span
+            >Comparar com Holding</span
+          ></label
+        >
+      </div>
+      <div class="wl-prem" id="wlPrem"></div>
+
+      <div class="wl-hero">
+        <div class="wl-big">
+          <div class="k">Resgate no 10º ano</div>
+          <div class="v" id="wlHeroV">—</div>
+          <div class="wl-meter"><i id="wlHeroBar" style="width: 0"></i></div>
+          <div class="s" id="wlHeroS">—</div>
+        </div>
+        <div class="hc-kpi b">
+          <div class="k">Capital segurado</div>
+          <div class="v" id="wlKCap">—</div>
+          <div class="wl-uf" id="wlKCapSub">—</div>
+        </div>
+        <div class="hc-kpi o">
+          <div class="k">Fora do inventário</div>
+          <div class="v" id="wlKInv">sem ITCMD</div>
+          <div class="wl-uf">
+            Vai direto ao beneficiário, sem partilha e sem imposto de
+            transmissão.
+          </div>
+        </div>
+      </div>
+
+      <div class="hc-kpis">
+        <div class="hc-kpi b">
+          <div class="k">
+            Prêmio anual <span style="opacity: 0.65">(10 anos)</span>
+          </div>
+          <div class="v" id="wlK1">—</div>
+        </div>
+        <div class="hc-kpi b">
+          <div class="k">Total de prêmios</div>
+          <div class="v" id="wlK2">—</div>
+        </div>
+        <div class="hc-kpi y">
+          <div class="k">Resgate no 3º ano</div>
+          <div class="v" id="wlK3">—</div>
+          <div class="wl-uf" id="wlK3s">—</div>
+        </div>
+        <div class="hc-kpi g">
+          <div class="k">Resgate no 10º ano</div>
+          <div class="v" id="wlK4">—</div>
+          <div class="wl-uf" id="wlK4s">—</div>
+        </div>
+        <div class="hc-kpi g">
+          <div class="k">Resgate no horizonte</div>
+          <div class="v" id="wlK5">—</div>
+          <div class="wl-uf" id="wlK5s">—</div>
+        </div>
+        <div class="hc-kpi y">
+          <div class="k">Vira o jogo em</div>
+          <div class="v" id="wlK6">—</div>
+          <div class="wl-uf" id="wlK6s">—</div>
+        </div>
+      </div>
+
+      <div class="hc-row2">
+        <div class="hc-chartwrap">
+          <div class="ct" style="height: 340px">
+            <canvas id="wlChart"></canvas>
+          </div>
+        </div>
+        <div class="hc-side">
+          <div class="hc-score">
+            <div class="st">
+              Resgate ÷ prêmios no 10º ano
+              <span class="pts" id="wlSegP">—</span>
+            </div>
+            <div class="hc-bar">
+              <i id="wlSegB" style="background: #2bd9a6; width: 0"></i>
+            </div>
+            <div class="lv" id="wlSegL"></div>
+          </div>
+          <div class="hc-score">
+            <div class="st">
+              Capital segurado ÷ prêmios <span class="pts" id="wlCovP">—</span>
+            </div>
+            <div class="hc-bar">
+              <i id="wlCovB" style="background: #f26522; width: 0"></i>
+            </div>
+            <div class="lv" id="wlCovL"></div>
+          </div>
+          <div class="hc-rec" id="wlRec">—</div>
+        </div>
+      </div>
+
+      <div class="wl-cmp" id="wlCmp" hidden="">
+        <div class="wl-cmp-h">
+          <div class="t">
+            Whole Life <span style="color: #afc1f7; font-weight: 600">×</span>
+            <b>Holding</b>
+          </div>
+          <div class="s">
+            Mesmo objetivo — passar o patrimônio para os herdeiros — comparado
+            pelo que a família desembolsa em cada caminho.
+          </div>
+        </div>
+        <div class="hc-inputs">
+          <div class="hc-f">
+            <label
+              >Patrimônio a transmitir <b id="cmpPatrO">R$ 3.000.000</b></label
+            ><input
+              type="range"
+              id="cmpPatr"
+              min="500000"
+              max="50000000"
+              step="100000"
+              value="3000000"
+            />
+          </div>
+          <div class="hc-f">
+            <label>Parcela em imóveis <b id="cmpImovO">60%</b></label
+            ><input
+              type="range"
+              id="cmpImov"
+              min="0"
+              max="100"
+              step="5"
+              value="60"
+            />
+            <div class="wl-hint">base do ITBI na integralização</div>
+          </div>
+          <div class="hc-f">
+            <label>Estado (ITCMD) <b id="cmpUfO">—</b></label
+            ><select class="hc-sel" id="cmpUf"></select>
+            <div class="wl-hint" id="cmpUfNota"></div>
+          </div>
+          <div class="hc-f">
+            <label>Inventário (sem holding)</label
+            ><select class="hc-sel" id="cmpMod">
+              <option value="extra">
+                Extrajudicial · honorários 6% + custas 0,8%
+              </option>
+              <option value="jud">Judicial consensual · 8% + 1,5%</option>
+              <option value="lit">Judicial litigioso · 10% + 2,5%</option>
+            </select>
+            <div class="wl-hint">piso da tabela OAB-SP: 6% do monte-mor</div>
+          </div>
+          <div class="hc-f">
+            <label>Constituição da holding</label
+            ><input
+              type="number"
+              id="cmpConst"
+              min="0"
+              step="1000"
+              value="20000"
+            />
+            <div class="wl-hint">
+              advogado, Junta, certidões e escritura — faixa de mercado R$ 8k a
+              20k só de honorários
+            </div>
+          </div>
+          <div class="hc-f">
+            <label>Imóveis a integralizar <b id="cmpNImovO">3</b></label
+            ><input
+              type="range"
+              id="cmpNImov"
+              min="0"
+              max="15"
+              step="1"
+              value="3"
+            />
+            <div class="wl-hint">≈ R$ 4.500 de cartório por matrícula</div>
+          </div>
+          <div class="hc-f">
+            <label>ITBI na integralização <b id="cmpItbiO">3%</b></label
+            ><input
+              type="range"
+              id="cmpItbi"
+              min="0"
+              max="4"
+              step="0.5"
+              value="3"
+            />
+            <div class="wl-hint">0% se o município reconhecer a imunidade</div>
+          </div>
+          <div class="hc-f">
+            <label
+              >Contabilidade da holding
+              <span style="opacity: 0.7">(R$/mês)</span></label
+            ><input
+              type="number"
+              id="cmpCont"
+              min="0"
+              step="100"
+              value="1000"
+            />
+            <div class="wl-hint">
+              mercado: R$ 500 a 1.500/mês, corrigido pelo IPCA
+            </div>
+          </div>
+          <div class="hc-f">
+            <label
+              >Aluguéis recebidos
+              <span style="opacity: 0.7">(R$/mês, opcional)</span></label
+            ><input type="number" id="cmpAlug" min="0" step="500" value="0" />
+            <div class="wl-hint">
+              crédito para a holding: 11,33% na PJ contra 27,5% na PF
+            </div>
+          </div>
+        </div>
+
+        <div class="wl-vs">
+          <div class="wl-route hold">
+            <div class="k">
+              Rota Holding · desembolso em <span id="cmpHorH">20</span> anos
+            </div>
+            <div class="v" id="cmpHoldTot">—</div>
+            <div class="s">
+              Custo concentrado no dia 1: constituição, ITBI e ITCMD da doação
+              das cotas saem do bolso agora. Depois, contabilidade todo ano
+              enquanto a holding existir.
+            </div>
+            <ul id="cmpHoldList"></ul>
+          </div>
+          <div class="wl-mid">
+            <div class="vs">VS</div>
+            <div class="dif" id="cmpDif">—</div>
+            <div class="dl" id="cmpDifL">—</div>
+          </div>
+          <div class="wl-route wl">
+            <div class="k">
+              Rota Whole Life · desembolso em <span id="cmpHorW">20</span> anos
+            </div>
+            <div class="v" id="cmpWlTot">—</div>
+            <div class="s">
+              Prêmio diluído em 10 anos. Na sucessão, o capital segurado cai na
+              conta dos herdeiros em dias e paga ITCMD, honorários e custas do
+              inventário — o patrimônio passa inteiro.
+            </div>
+            <ul id="cmpWlList"></ul>
+          </div>
+        </div>
+
+        <div class="hc-row2">
+          <div class="hc-chartwrap">
+            <div class="ct" style="height: 300px">
+              <canvas id="cmpChartBar"></canvas>
+            </div>
+          </div>
+          <div class="hc-chartwrap">
+            <div class="ct" style="height: 300px">
+              <canvas id="cmpChartAcc"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <div class="hc-kpis">
+          <div class="hc-kpi y">
+            <div class="k">Custos do inventário no horizonte</div>
+            <div class="v" id="cmpInv">—</div>
+            <div class="wl-uf" id="cmpInvS">—</div>
+          </div>
+          <div class="hc-kpi o">
+            <div class="k">Cobertura pelo capital segurado</div>
+            <div class="v" id="cmpCob">—</div>
+            <div class="wl-uf" id="cmpCobS">—</div>
+          </div>
+          <div class="hc-kpi g">
+            <div class="k">Se ninguém faltar no horizonte</div>
+            <div class="v" id="cmpVivo">—</div>
+            <div class="wl-uf" id="cmpVivoS">—</div>
+          </div>
+          <div class="hc-kpi b">
+            <div class="k">Fica para a família · Holding</div>
+            <div class="v" id="cmpFamH">—</div>
+            <div class="wl-uf" id="cmpFamHS">—</div>
+          </div>
+          <div class="hc-kpi o">
+            <div class="k">Fica para a família · Whole Life</div>
+            <div class="v" id="cmpFamW">—</div>
+            <div class="wl-uf" id="cmpFamWS">—</div>
+          </div>
+          <div class="hc-kpi y">
+            <div class="k">Prazo para o dinheiro chegar</div>
+            <div class="v" style="font-size: 14px">
+              Seguro: dias · Holding: já doado
+            </div>
+            <div class="wl-uf">
+              Inventário extrajudicial leva 30 a 90 dias; judicial, de 6 meses a
+              anos.
+            </div>
+          </div>
+        </div>
+
+        <div class="wl-honest">
+          <div class="hc-pbbox" style="border-left-color: #5b8def">
+            <div class="pbt" style="color: #5b8def">
+              O que a holding faz que o seguro não faz
+            </div>
+            <ul>
+              <li>
+                <b>Transfere os bens em si</b> (imóveis, participações) com
+                regras de governança, cláusulas de inalienabilidade e proteção
+                contra dilapidação.
+              </li>
+              <li>
+                <b>Congela a base do ITCMD hoje</b>: a doação das cotas paga
+                sobre o valor atual, não sobre o valor que os bens terão daqui a
+                20 anos.
+              </li>
+              <li>
+                <b>Aluguéis tributados a ~11%</b> no lucro presumido, contra até
+                27,5% na pessoa física — relevante quando há renda de locação.
+              </li>
+              <li>
+                <b>Elimina o inventário</b> dos bens integralizados — não só o
+                custo, mas o prazo e o litígio.
+              </li>
+            </ul>
+          </div>
+          <div class="hc-pbbox" style="border-left-color: #f26522">
+            <div class="pbt" style="color: #f26522">
+              O que o seguro faz que a holding não faz
+            </div>
+            <ul>
+              <li>
+                <b>Liquidez imediata e fora do inventário</b>: capital pago em
+                dias, sem ITCMD e sem IR (CC art. 794; Lei 15.040/2024 art.
+                116).
+              </li>
+              <li>
+                <b>Não gasta o dinheiro</b>: a partir do 3º ano há resgate; do
+                10º em diante, integral e isento. Na holding, ITBI, ITCMD e
+                contabilidade não voltam.
+              </li>
+              <li>
+                <b>Custo diluído</b> em 10 anos, em vez de um cheque grande no
+                dia 1 — e alavancado: cada R$ 1 de prêmio compra mais de R$ 1 de
+                capital.
+              </li>
+              <li>
+                <b>Não exige mexer no patrimônio</b>: nada de escritura, Junta
+                Comercial, balanço anual ou discussão de ITBI com o município.
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="wl-legal" style="border-left-color: #5b8def">
+          <b>Leitura honesta.</b> Holding e Whole Life não são substitutos
+          perfeitos: a holding reorganiza os bens; o seguro entrega dinheiro.
+          Muitas famílias usam os dois — a holding para governança e o seguro
+          para pagar o ITCMD da doação sem vender ativo.
+          <b>Base do ITCMD nas cotas:</b> a <b>LC 227/2026</b> (art. 154, II)
+          manda avaliar as cotas a <b>valor de mercado</b>, com piso no
+          patrimônio líquido ajustado — acaba a vantagem histórica de doar cotas
+          pelo valor contábil; vale conforme cada estado incorporar a regra (a
+          partir de 2027, pela anterioridade). <b>ITBI:</b> a Constituição
+          imuniza a integralização, mas exclui empresas de atividade imobiliária
+          preponderante; o STF (Tema 796) limitou a imunidade ao valor do
+          capital subscrito e a jurisprudência sobre holdings de locação segue
+          dividida — por isso o percentual é um campo. <b>IOF</b> do seguro de
+          vida (0,38%) já está embutido no prêmio; o aumento de 2025 não
+          alcançou o Whole Life. Em alguns estados parte do ITCMD da doação com
+          reserva de usufruto fica para a extinção do usufruto — aqui está
+          somado no dia 1. Sem considerar IBS/CBS sobre locação a partir de
+          2027.
+        </div>
+      </div>
+
+      <div class="wl-legal">
+        <b>A régua do resgate.</b> Nos primeiros anos o resgate sofre
+        <b>deságio</b> — devolve menos que a reserva acumulada. A partir do
+        <b>3º ano</b> já é possível resgatar, ainda com deságio; a partir do
+        <b>10º ano</b>, com os prêmios quitados, o resgate é
+        <b>integral, sem deságio nenhum</b>, e o valor recebido é
+        <b>isento de imposto de renda</b>.
+        <b>E por que não entra no inventário:</b> o capital pago por morte não é
+        considerado herança (<b>Código Civil, art. 794</b>, reforçado pelo
+        <b>art. 116 da Lei 15.040/2024</b>) — vai direto ao beneficiário
+        indicado, sem inventário e sem ITCMD. No mesmo sentido, o
+        <b>STF fixou no Tema 1214</b> (RE 1.363.013, dez/2024) que é
+        inconstitucional cobrar ITCMD sobre o repasse de VGBL e PGBL por morte
+        do titular.
+      </div>
+
+      <div class="hc-tblwrap">
+        <div class="tt">Ano a ano</div>
+        <table class="hc-t">
+          <thead>
+            <tr>
+              <th>Ano</th>
+              <th>Capital segurado</th>
+              <th>Prêmios pagos</th>
+              <th>Reserva</th>
+              <th>Deságio</th>
+              <th>Resgate</th>
+              <th>Resgate ÷ pago</th>
+            </tr>
+          </thead>
+          <tbody id="wlTbody"></tbody>
+        </table>
+      </div>
+
+      <div class="hc-pbrow">
+        <div class="hc-pbbox">
+          <div class="pbt" style="color: #f5b942">Como ler o deságio</div>
+          <div class="pbc" id="wlPb1">—</div>
+        </div>
+        <div class="hc-pbbox">
+          <div class="pbt" style="color: #2bd9a6">Como ler o 10º ano</div>
+          <div class="pbc" id="wlPb2">—</div>
+        </div>
+      </div>
+
+      <div class="hc-disc2">
+        Ferramenta educacional de apoio comercial; não substitui a orientação de
+        um assessor habilitado. A curva de deságio varia por produto, idade e
+        prazo — o campo "Deságio no 3º ano" é uma premissa que você preenche
+        pela tabela oficial do produto, e daí até o 10º ano ela é interpolada
+        linearmente até zero. Antes do 3º ano o resgate é tratado como
+        indisponível. Prêmios dependem de subscrição, idade e condições de
+        saúde. A reserva é ilustrada a IPCA+3% a.a. com prêmio pago por 10 anos.
+        A isenção de IR segue o tratamento de seguro de vida — confirme o
+        enquadramento do produto contratado. Valores ilustrativos.
+      </div>
+    </div>
+  </div>
+</div>

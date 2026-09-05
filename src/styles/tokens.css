@@ -1,0 +1,21 @@
+:root {
+  color-scheme: dark;
+  --s-bg: #0b1020;
+  --s-sidebar: #090e1b;
+  --s-panel: #131b2f;
+  --s-panel-raised: #182238;
+  --s-text: #f6f7fb;
+  --s-muted: #a4afc4;
+  --s-subtle: #77839c;
+  --s-border: #273149;
+  --s-orange: #ff621d;
+  --s-blue: #7199ff;
+  --s-green: #48d6a0;
+  --s-yellow: #ffd075;
+  --s-violet: #b29aff;
+  --s-radius: 18px;
+  --s-sidebar-width: 244px;
+  --s-heading: "Sora", sans-serif;
+  --s-body: "Manrope", sans-serif;
+  --s-mono: "JetBrains Mono", monospace;
+}

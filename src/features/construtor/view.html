@@ -1,0 +1,584 @@
+<div class="g-panel" id="p-construtor" data-tool="construtor">
+  <div class="wrap">
+    <div class="header">
+      <div>
+        <div class="logo">rico</div>
+        <div class="sub" id="construtorSub">
+          Montar a Carteira · ajuste ao vivo durante a ligação
+        </div>
+      </div>
+      <div style="display: flex; gap: 10px">
+        <button
+          class="btn-ghost"
+          id="btnPropor"
+          style="border-color: rgba(242, 101, 34, 0.55); color: var(--or)"
+        >
+          <svg class="icon" viewBox="0 0 24 24">
+            <polyline points="17 1 21 5 17 9"></polyline>
+            <path d="M3 11V9a4 4 0 0 1 4-4h14"></path>
+            <polyline points="7 23 3 19 7 15"></polyline>
+            <path d="M21 13v2a4 4 0 0 1-4 4H3"></path>
+          </svg>
+          Propor carteira
+        </button>
+        <button class="btn-ghost" id="btnCopy">
+          <svg class="icon" viewBox="0 0 24 24">
+            <rect x="9" y="9" width="13" height="13" rx="2"></rect>
+            <path
+              d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"
+            ></path>
+          </svg>
+          <span id="copyLabel">Copiar resumo</span>
+        </button>
+        <button
+          class="btn-solid"
+          id="btnProj"
+          style="
+            background: linear-gradient(135deg, #2bd9a6, #12a87b);
+            border: none;
+            color: #06251c;
+            font-weight: 800;
+            box-shadow: 0 4px 14px rgba(43, 217, 166, 0.32);
+          "
+        >
+          <svg
+            class="icon"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.4"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+            <polyline points="17 6 23 6 23 12"></polyline>
+          </svg>
+          Projeção da carteira
+        </button>
+        <button class="btn-solid" id="btnPng">
+          <svg class="icon" viewBox="0 0 24 24">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+          Gerar PNG
+        </button>
+      </div>
+    </div>
+
+    <!-- TOGGLE: Carteira completa <-> Renda Variável -->
+    <div class="rv-toggle-bar">
+      <span class="rv-toggle-label">Modo de construção</span>
+      <div class="rv-toggle" id="rvToggle">
+        <button class="rv-toggle-opt active" data-mode="full">
+          <svg viewBox="0 0 24 24">
+            <rect x="3" y="3" width="7" height="7"></rect>
+            <rect x="14" y="3" width="7" height="7"></rect>
+            <rect x="14" y="14" width="7" height="7"></rect>
+            <rect x="3" y="14" width="7" height="7"></rect>
+          </svg>
+          Carteira completa
+        </button>
+        <button class="rv-toggle-opt" data-mode="rv">
+          <svg viewBox="0 0 24 24">
+            <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline>
+            <polyline points="16 7 22 7 22 13"></polyline>
+          </svg>
+          Renda Variável
+        </button>
+      </div>
+    </div>
+
+    <div id="construtorFull">
+      <div
+        style="display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 18px"
+        id="tabs"
+      ></div>
+
+      <div
+        id="aderModal"
+        style="
+          display: none;
+          position: fixed;
+          inset: 0;
+          z-index: 2000;
+          background: rgba(3, 5, 18, 0.92);
+          overflow-y: auto;
+          -webkit-overflow-scrolling: touch;
+        "
+      >
+        <div style="max-width: 980px; margin: 0 auto; padding: 28px 20px 60px">
+          <div
+            style="
+              display: flex;
+              justify-content: space-between;
+              align-items: flex-start;
+              margin-bottom: 20px;
+            "
+          >
+            <div>
+              <div
+                style="
+                  font-family: &quot;Sora&quot;, sans-serif;
+                  font-weight: 800;
+                  font-size: 26px;
+                  color: #ff8b52;
+                  line-height: 1.1;
+                "
+              >
+                Aderencia da carteira do cliente
+              </div>
+              <div style="color: #a9b0d6; font-size: 13px; margin-top: 5px">
+                Envie a Posicao Consolidada (.xlsx do Hub XP) e compare com o
+                perfil recomendado.
+              </div>
+            </div>
+            <button
+              id="aderClose"
+              style="
+                background: none;
+                border: none;
+                color: #9aa2d0;
+                font-size: 30px;
+                cursor: pointer;
+                line-height: 1;
+              "
+            >
+              ×
+            </button>
+          </div>
+          <div
+            style="
+              background: linear-gradient(
+                160deg,
+                rgba(28, 36, 112, 0.45),
+                rgba(12, 17, 66, 0.65)
+              );
+              border: 1px solid rgba(120, 130, 210, 0.18);
+              border-radius: 16px;
+              padding: 18px;
+              margin-bottom: 18px;
+            "
+          >
+            <label class="lbl" style="display: block; margin-bottom: 10px"
+              >Perfil recomendado</label
+            >
+            <div
+              id="aderProfiles"
+              style="
+                display: flex;
+                gap: 8px;
+                flex-wrap: wrap;
+                margin-bottom: 16px;
+              "
+            >
+              <button class="ader-prof" data-prof="Conservadora">
+                Conservadora
+              </button>
+              <button class="ader-prof on" data-prof="Moderada">
+                Moderada
+              </button>
+              <button class="ader-prof" data-prof="Sofisticada">
+                Sofisticada
+              </button>
+            </div>
+            <input type="file" id="aderFile" accept=".xlsx,.xls" hidden="" />
+            <button
+              id="aderPick"
+              style="
+                background: #f26522;
+                border: none;
+                color: #fff;
+                font-family: inherit;
+                font-weight: 700;
+                font-size: 13.5px;
+                border-radius: 10px;
+                padding: 12px 18px;
+                cursor: pointer;
+              "
+            >
+              ⬆ Enviar Posicao Consolidada (.xlsx)
+            </button>
+            <div
+              id="aderStatus"
+              style="font-size: 12.5px; color: #9aa2d0; margin-top: 10px"
+            ></div>
+          </div>
+          <div id="aderResult"></div>
+        </div>
+      </div>
+
+      <div
+        style="display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 22px"
+      >
+        <div style="flex: 1 1 320px">
+          <label class="lbl">Nome do cliente</label>
+          <input class="inp" id="cliente" placeholder="Ex.: João Andrade" />
+        </div>
+        <div style="flex: 1 1 220px">
+          <label class="lbl">Patrimônio a alocar</label>
+          <div style="position: relative">
+            <span
+              style="
+                position: absolute;
+                left: 14px;
+                top: 12px;
+                color: #6f77a8;
+                font-weight: 800;
+                font-size: 16px;
+              "
+              >R$</span
+            >
+            <input
+              class="inp"
+              id="patrimonio"
+              inputmode="numeric"
+              style="padding-left: 44px"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div class="row-flex">
+        <div style="flex: 1 1 560px; min-width: 320px">
+          <div id="editor"></div>
+          <div class="tag-trash" id="tagTrash">
+            <svg
+              viewBox="0 0 24 24"
+              style="
+                width: 18px;
+                height: 18px;
+                fill: none;
+                stroke: currentColor;
+                stroke-width: 2;
+                stroke-linecap: round;
+                stroke-linejoin: round;
+              "
+            >
+              <polyline points="3 6 5 6 21 6"></polyline>
+              <path
+                d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
+              ></path>
+            </svg>
+            Solte aqui para remover a tag
+          </div>
+          <button class="add-btn" id="btnAdd">
+            <svg class="icon" viewBox="0 0 24 24">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            Adicionar ativo
+          </button>
+
+          <div id="simGavRail">
+            <div class="sgv-title">Gavetas de ativos</div>
+            <div id="libTab">
+              <span class="tabico">📁</span
+              ><span class="sgv-lbl">Ativos Gerais</span
+              ><span class="sgv-arrow">▸</span>
+            </div>
+            <div id="catTab">
+              <span class="tabico">🧰</span
+              ><span class="sgv-lbl">RV Estruturada</span
+              ><span class="sgv-arrow">▸</span>
+            </div>
+          </div>
+          <div id="libBackdrop"></div>
+          <div id="catBackdrop"></div>
+          <div id="libDrawer">
+            <div
+              style="
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                margin-bottom: 4px;
+              "
+            >
+              <div
+                style="
+                  font-family: &quot;Sora&quot;, sans-serif;
+                  font-weight: 800;
+                  font-size: 19px;
+                  color: #fff;
+                  display: flex;
+                  align-items: center;
+                  gap: 9px;
+                "
+              >
+                <span style="font-size: 23px">📁</span>Ativos Gerais
+              </div>
+              <button
+                id="libClose"
+                style="
+                  background: none;
+                  border: none;
+                  color: #9aa2d0;
+                  font-size: 20px;
+                  cursor: pointer;
+                  line-height: 1;
+                "
+              >
+                ×
+              </button>
+            </div>
+            <div
+              style="
+                font-size: 12px;
+                color: #9aa2d0;
+                line-height: 1.5;
+                margin-bottom: 10px;
+              "
+            >
+              Arraste um ativo para a carteira, ou clique para adicionar.
+              Operações estruturadas ficam no catálogo, mais abaixo.
+            </div>
+            <button
+              id="libNew"
+              style="
+                width: 100%;
+                margin-bottom: 12px;
+                background: #f26522;
+                border: none;
+                color: #fff;
+                font-family: inherit;
+                font-weight: 700;
+                font-size: 13px;
+                border-radius: 10px;
+                padding: 10px 14px;
+                cursor: pointer;
+              "
+            >
+              + Novo ativo
+            </button>
+            <div class="lib-search">
+              <span class="lib-search-ic"
+                ><svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <circle cx="11" cy="11" r="7"></circle>
+                  <line
+                    x1="21"
+                    y1="21"
+                    x2="16.65"
+                    y2="16.65"
+                  ></line></svg></span
+              ><input
+                id="libSearch"
+                class="lib-search-inp"
+                type="text"
+                placeholder="Pesquisar ativo na gaveta..."
+              />
+            </div>
+            <div id="libForm"></div>
+            <div id="libChips"></div>
+          </div>
+        </div>
+
+        <div style="flex: 1 1 360px; min-width: 300px">
+          <div class="sticky">
+            <div
+              class="card"
+              id="aderenciaCard"
+              style="
+                display: none;
+                margin-bottom: 16px;
+                border-color: rgba(54, 197, 240, 0.45);
+              "
+            ></div>
+            <div class="card" id="totalCard"></div>
+            <div
+              class="card"
+              id="retornoCard"
+              style="margin-top: 16px; border-color: rgba(43, 217, 166, 0.35)"
+            ></div>
+            <div
+              class="card"
+              id="alfaCard"
+              style="margin-top: 16px; border-color: rgba(242, 101, 34, 0.45)"
+            ></div>
+            <div class="card" id="donutCard" style="margin-top: 16px"></div>
+            <div id="glossCard"></div>
+            <div class="disclaimer" style="margin-top: 14px">
+              Material de apoio comercial · valores, liquidez e retorno
+              ilustrativos (estimativa bruta, sem IR) · liquidez marcada com "~"
+              é estimada · "resgate trabalhado" indica saída antecipada
+              negociada no mercado secundário · FIIs marcados como CETIPADO são
+              fundos de balcão (não negociados em bolsa) · não constitui
+              recomendação ou oferta. Sujeito à suitability e às condições de
+              cada produto.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top: 24px">
+        <div
+          style="
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 16px;
+          "
+        >
+          <div style="display: flex; align-items: center; gap: 8px">
+            <svg class="icon" viewBox="0 0 24 24" style="color: #2bd9a6">
+              <path d="M3 3v18h18"></path>
+              <path d="m19 9-5 5-4-4-3 3"></path>
+            </svg>
+            <span
+              style="
+                color: #a9b0d6;
+                font-weight: 700;
+                font-size: 13px;
+                letter-spacing: 1px;
+              "
+              id="projTitle"
+              >PROJEÇÃO DE RENTABILIDADE</span
+            >
+          </div>
+          <div style="display: flex; gap: 8px" id="projTabs"></div>
+        </div>
+        <div id="projChart" style="width: 100%"></div>
+        <div
+          style="display: flex; gap: 16px; flex-wrap: wrap; margin-top: 12px"
+          id="projBoxes"
+        ></div>
+        <div class="disclaimer" style="margin-top: 12px" id="projDisc"></div>
+      </div>
+
+      <div class="card explica">
+        <div class="exp-title">Entenda as estruturas de proteção</div>
+        <div class="exp-sub">
+          Como funcionam as operações estruturadas usadas nas carteiras
+        </div>
+        <div class="exp-grid">
+          <div class="exp-item">
+            <span class="exp-tag prot">🛡️ Collar UI · Proteção Total</span>
+            <p>
+              Combina a compra de uma opção de venda (put) com a venda de uma
+              opção de compra (call), normalmente a custo próximo de zero. Na
+              proteção total, a put fica próxima ao preço atual e protege
+              praticamente toda a queda do ativo; em troca, o ganho na alta fica
+              limitado a um teto.
+            </p>
+          </div>
+          <div class="exp-item">
+            <span class="exp-tag prot">🛡️ Fence · Proteção Parcial</span>
+            <p>
+              Variação do collar que protege apenas parte da queda — até um
+              determinado limite, geralmente a custo zero. Abaixo desse limite o
+              investidor volta a participar das perdas, e na alta o ganho também
+              é limitado a um teto. Troca um pouco de proteção por mais espaço
+              de valorização.
+            </p>
+          </div>
+          <div class="exp-item">
+            <span class="exp-tag cupom">💵 SmartCupom · Cupom Pré-Fixado</span>
+            <p>
+              Produto estruturado que paga um cupom com taxa pré-fixada, já
+              conhecida na contratação, em um prazo definido e condicionado ao
+              comportamento do ativo de referência. Une a previsibilidade do
+              cupom a uma exposição ao ativo.
+            </p>
+          </div>
+        </div>
+        <div class="exp-legend">
+          <span
+            ><span class="atag prot">🛡️ Proteção</span> ativo com estrutura de
+            proteção contra quedas (Collar, Fence e afins).</span
+          >
+          <span
+            ><span class="atag fgc">🔒 FGC</span> coberto pelo Fundo Garantidor
+            de Créditos — até R$ 250 mil por CPF e por instituição (limite
+            global de R$ 1 milhão a cada 4 anos).</span
+          >
+          <span
+            ><span class="atag fgc-parcial">🔒 FGC parcial</span> apenas parte
+            da posição é coberta pelo FGC.</span
+          >
+        </div>
+      </div>
+
+      <div id="opcat">
+        <div class="oc-head">
+          <h3 class="oc-title">
+            <span style="font-size: 23px">🧰</span> Renda Variável Estruturada
+          </h3>
+          <div style="display: flex; align-items: center; gap: 10px">
+            <button class="oc-new" id="ocNew">+ Nova operação</button>
+            <button class="oc-close" id="ocClose" title="Fechar">×</button>
+          </div>
+        </div>
+        <div class="oc-sub">
+          Operações estruturadas como na mesa XP: proteção, cupom pré-fixado e
+          Quanto internacional. Veja o payoff de cada cenário e toque em "+ Add"
+          para incluir o ativo na carteira (entra com 0% — defina a alocação
+          depois).
+        </div>
+        <div class="oc-tabs" id="ocTabs"></div>
+        <input
+          class="oc-search"
+          id="ocSearch"
+          placeholder="Pesquisar por ativo, tipo ou setor..."
+        />
+        <div id="ocForm"></div>
+        <div id="ocBody"></div>
+      </div>
+    </div>
+    <!-- /#construtorFull -->
+
+    <!-- RENDA VARIÁVEL: construtor focado em RV -->
+    <div id="construtorRv" style="display: none" data-tool="construtor-rv">
+      <div id="rv-app"></div>
+    </div>
+
+    <div
+      id="drawerToggleBar"
+      style="
+        max-width: 1180px;
+        margin: 36px auto 0;
+        padding: 18px 20px 6px;
+        border-top: 1px solid rgba(120, 130, 210, 0.18);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      "
+    >
+      <label
+        style="
+          display: flex;
+          align-items: center;
+          gap: 11px;
+          cursor: pointer;
+          color: #9aa2d0;
+          font-size: 13px;
+          font-weight: 600;
+          text-align: center;
+        "
+      >
+        <input
+          type="checkbox"
+          id="drawerToggle"
+          style="
+            width: 18px;
+            height: 18px;
+            accent-color: #f26522;
+            cursor: pointer;
+            flex-shrink: 0;
+          "
+        />
+        Mostrar gavetas laterais (Ativos Gerais e RV Estruturada) — desligue
+        para liberar a tela no iPad/celular
+      </label>
+    </div>
+  </div>
+</div>

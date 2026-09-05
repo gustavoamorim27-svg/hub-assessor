@@ -1,0 +1,264 @@
+/* The original Hub's lava palette, with a separate, transform-only animation layer. */
+:root {
+  --s-panel: rgba(16, 15, 44, 0.65);
+  --s-panel-raised: rgba(42, 33, 75, 0.85);
+  --s-muted: #c4c1d8;
+  --s-subtle: #a29dbb;
+  --s-border: rgba(218, 212, 255, 0.17);
+}
+body {
+  background: #241263;
+}
+#app {
+  position: relative;
+  z-index: 1;
+}
+.studio-atmosphere {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  background: linear-gradient(
+    165deg,
+    #2a1470 0%,
+    #241263 36%,
+    #43105e 70%,
+    #5c0f3f 100%
+  );
+  contain: strict;
+}
+.studio-atmosphere::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    115deg,
+    rgba(8, 8, 31, 0.22),
+    rgba(8, 8, 31, 0.3) 60%,
+    rgba(8, 8, 31, 0.12)
+  );
+}
+.lava-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(64px);
+  will-change: transform;
+}
+.lava-orange {
+  width: 64vmax;
+  height: 64vmax;
+  top: -16vmax;
+  left: -14vmax;
+  background: radial-gradient(circle, #ff3d00, transparent 68%);
+  opacity: 0.9;
+  animation: studio-lava-a 26s ease-in-out infinite;
+}
+.lava-blue {
+  width: 56vmax;
+  height: 56vmax;
+  top: 26%;
+  right: -18vmax;
+  background: radial-gradient(circle, #4533ff, transparent 70%);
+  opacity: 0.85;
+  animation: studio-lava-b 34s ease-in-out infinite;
+}
+.lava-pink {
+  width: 52vmax;
+  height: 52vmax;
+  bottom: -16vmax;
+  left: 6%;
+  background: radial-gradient(circle, #ff2d78, transparent 70%);
+  opacity: 0.7;
+  animation: studio-lava-c 40s ease-in-out infinite;
+}
+.lava-amber {
+  width: 44vmax;
+  height: 44vmax;
+  top: 52%;
+  left: -16vmax;
+  background: radial-gradient(circle, #ff6a00, transparent 70%);
+  opacity: 0.75;
+  animation: studio-lava-a 30s ease-in-out infinite reverse;
+}
+.lava-teal {
+  width: 38vmax;
+  height: 38vmax;
+  top: 6%;
+  left: 44%;
+  background: radial-gradient(circle, #0e9fb5, transparent 70%);
+  opacity: 0.4;
+  animation: studio-lava-b 46s ease-in-out infinite reverse;
+}
+.lava-cobalt {
+  width: 34vmax;
+  height: 34vmax;
+  bottom: 4%;
+  right: 8%;
+  background: radial-gradient(circle, #2b6cff, transparent 70%);
+  opacity: 0.6;
+  animation: studio-lava-c 36s ease-in-out infinite reverse;
+}
+@keyframes studio-lava-a {
+  0%,
+  100% {
+    transform: translate(0, 14vh) scale(1);
+  }
+  25% {
+    transform: translate(7vw, -6vh) scale(1.16, 0.9);
+  }
+  50% {
+    transform: translate(-5vw, -26vh) scale(0.9, 1.15);
+  }
+  75% {
+    transform: translate(9vw, -10vh) scale(1.1, 0.94);
+  }
+}
+@keyframes studio-lava-b {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  30% {
+    transform: translate(-14vw, -16vh) scale(1.2, 0.88);
+  }
+  60% {
+    transform: translate(-4vw, 12vh) scale(0.88, 1.18);
+  }
+}
+@keyframes studio-lava-c {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  25% {
+    transform: translate(12vw, -22vh) scale(1.12, 0.9);
+  }
+  55% {
+    transform: translate(-8vw, -38vh) scale(0.94, 1.16);
+  }
+  80% {
+    transform: translate(4vw, -14vh) scale(1.08, 0.92);
+  }
+}
+.studio-sidebar {
+  background: rgba(16, 10, 43, 0.74);
+  backdrop-filter: blur(22px) saturate(1.2);
+  -webkit-backdrop-filter: blur(22px) saturate(1.2);
+}
+.studio-topbar {
+  background: rgba(18, 11, 48, 0.18);
+}
+.studio-brand .brand-symbol {
+  width: 73px;
+  height: 32px;
+  display: block;
+  flex-shrink: 0;
+}
+.brand-symbol img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.studio-nav-link:hover {
+  background: rgba(255, 255, 255, 0.07);
+}
+.studio-nav-link.active {
+  background: rgba(255, 115, 54, 0.15);
+  color: #ffab78;
+}
+.conversation-card,
+.quick-compare,
+.tool-card,
+.recent-list {
+  background: rgba(16, 15, 44, 0.58);
+  border-color: rgba(232, 221, 255, 0.2);
+  backdrop-filter: blur(16px) saturate(1.15);
+  -webkit-backdrop-filter: blur(16px) saturate(1.15);
+  box-shadow:
+    0 8px 30px rgba(5, 4, 24, 0.09),
+    inset 0 1px 0 rgba(255, 255, 255, 0.025);
+}
+.conversation-card {
+  background: linear-gradient(
+    130deg,
+    rgba(28, 17, 47, 0.48),
+    rgba(14, 15, 42, 0.69)
+  );
+}
+.quick-compare {
+  background: linear-gradient(
+    140deg,
+    rgba(40, 28, 71, 0.55),
+    rgba(13, 16, 44, 0.75)
+  );
+}
+.tool-card:hover {
+  background: rgba(42, 30, 73, 0.69);
+  border-color: rgba(231, 215, 255, 0.4);
+}
+.tool-number {
+  color: #a29ab9;
+}
+.studio-date,
+.studio-kicker,
+.studio-lead p,
+.section-heading h2 {
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.18);
+}
+.studio-lead h1 em,
+.conversation-card h2 span {
+  color: #ff995e;
+}
+.studio-modal {
+  background: #1b1637;
+}
+.ambient-toggle {
+  margin-top: 14px;
+  border: 0;
+  background: none;
+  color: var(--s-muted);
+  font: 12px var(--s-body);
+  padding: 0;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+.ambient-toggle::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: #ff9161;
+  box-shadow: 0 0 12px #ff621d77;
+}
+.motion-paused .lava-orb,
+.page-hidden .lava-orb {
+  animation-play-state: paused;
+}
+.motion-paused .ambient-toggle::before {
+  background: #a29dbb;
+  box-shadow: none;
+}
+@media (max-width: 760px) {
+  .lava-orb {
+    filter: blur(45px);
+  }
+  .lava-teal,
+  .lava-cobalt {
+    display: none;
+  }
+  .studio-sidebar {
+    background: rgba(21, 12, 49, 0.96);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .lava-orb {
+    animation: none;
+    will-change: auto;
+  }
+  .ambient-toggle {
+    display: none;
+  }
+}
