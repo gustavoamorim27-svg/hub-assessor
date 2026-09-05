@@ -4,7 +4,8 @@ export function mountSidebar() {
   const root = document.documentElement;
   let hovered = false,
     keyboard = false,
-    timer;
+    timer,
+    motionTimer;
   const navigation = sidebar.querySelector("nav");
   navigation.id = "sidebar-navigation";
   const toggle = document.createElement("button");
@@ -23,9 +24,15 @@ export function mountSidebar() {
     .setAttribute("aria-label", "Preferências e dados");
   function apply(open) {
     clearTimeout(timer);
+    clearTimeout(motionTimer);
+    root.classList.add("sidebar-transitioning");
     root.classList.toggle("sidebar-expanded", open && desktop.matches);
     toggle.setAttribute("aria-expanded", String(open && desktop.matches));
     toggle.setAttribute("aria-label", open ? "Recolher menu" : "Expandir menu");
+    motionTimer = setTimeout(
+      () => root.classList.remove("sidebar-transitioning"),
+      260,
+    );
   }
   function closeLater() {
     clearTimeout(timer);

@@ -1,64 +1,106 @@
 .sidebar-reveal {
   display: none;
 }
+
 @media (min-width: 761px) {
+  :root {
+    --sidebar-collapsed-width: 76px;
+    --sidebar-motion: 220ms cubic-bezier(0.2, 0.72, 0.2, 1);
+  }
+
+  /* Keep the final width and animate only the clipped compositor layer. */
   .studio-sidebar {
-    width: 76px;
-    padding-inline: 12px;
-    transition: width 0.24s ease;
-    overflow-x: hidden;
-  }
-  .studio-wrap {
-    margin-left: 76px;
-    transition: margin-left 0.24s ease;
-  }
-  .sidebar-expanded .studio-sidebar {
     width: var(--s-sidebar-width);
+    padding-inline: 12px;
+    overflow-x: hidden;
+    clip-path: inset(
+      0 calc(var(--s-sidebar-width) - var(--sidebar-collapsed-width)) 0 0
+    );
+    transition: clip-path var(--sidebar-motion);
+    contain: layout paint style;
+    will-change: clip-path;
+    background: rgba(16, 10, 43, 0.94);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    box-shadow: 12px 0 32px rgba(7, 4, 25, 0.14);
   }
+
+  .sidebar-expanded .studio-sidebar {
+    clip-path: inset(0);
+  }
+
+  .studio-wrap,
   .sidebar-expanded .studio-wrap {
-    margin-left: var(--s-sidebar-width);
+    margin-left: var(--sidebar-collapsed-width);
+    transition: none;
   }
+
   .studio-brand {
     padding-inline: 3px;
     gap: 10px;
     white-space: nowrap;
   }
+
   .studio-brand .brand-symbol {
-    width: 46px;
-    height: 24px;
-    transition: width 0.24s;
-  }
-  .sidebar-expanded .studio-brand .brand-symbol {
     width: 73px;
     height: 32px;
+    transform: scale(0.63);
+    transform-origin: left center;
+    transition: transform var(--sidebar-motion);
   }
+
+  .sidebar-expanded .studio-brand .brand-symbol {
+    transform: scale(1);
+  }
+
   .brand-divider,
   .brand-caption,
   .studio-nav-link > span {
-    transition: opacity 0.15s;
-  }
-  html:not(.sidebar-expanded)
-    :is(.brand-divider, .brand-caption, .studio-nav-link > span) {
-    width: 0;
+    flex-shrink: 0;
     opacity: 0;
-    overflow: hidden;
-    white-space: nowrap;
+    transform: translateX(-4px);
+    transition:
+      opacity 120ms ease,
+      transform var(--sidebar-motion);
   }
+
+  .sidebar-expanded
+    :is(.brand-divider, .brand-caption, .studio-nav-link > span) {
+    opacity: 1;
+    transform: translateX(0);
+    transition-delay: 70ms;
+  }
+
+  .studio-navigation {
+    overflow-x: hidden;
+  }
+
   .studio-nav-link {
     white-space: nowrap;
     padding: 11px 16px;
     gap: 12px;
     min-height: 42px;
   }
+
   .studio-nav-link .icon {
     flex-shrink: 0;
   }
-  html:not(.sidebar-expanded) .nav-group {
-    font-size: 0;
-    height: 1px;
+
+  .nav-group {
+    height: auto;
     border-top: 1px solid var(--s-border);
-    margin: 16px 10px 10px;
+    color: transparent;
+    transition:
+      color 100ms ease,
+      border-color 100ms ease;
   }
+
+  .sidebar-expanded .nav-group {
+    color: var(--s-subtle);
+    border-top-color: transparent;
+    transition-delay: 70ms;
+  }
+
   .sidebar-reveal {
     display: grid;
     place-items: center;
@@ -67,33 +109,52 @@
     margin: -15px 9px 10px;
     border: 1px solid var(--s-border);
     border-radius: 7px;
-    background: transparent;
+    background: rgba(255, 255, 255, 0.025);
     color: var(--s-muted);
     flex-shrink: 0;
   }
+
+  .sidebar-reveal svg {
+    transition: transform var(--sidebar-motion);
+  }
+
   .sidebar-expanded .sidebar-reveal svg {
     transform: rotate(180deg);
   }
+
   .sidebar-bottom {
     padding-inline: 3px;
   }
-  html:not(.sidebar-expanded)
-    .sidebar-bottom
-    :is(.search-trigger, .ambient-toggle) {
-    font-size: 0;
-    width: 46px;
-    min-height: 34px;
-    justify-content: center;
-    gap: 0;
+
+  .sidebar-bottom :is(.search-trigger, .ambient-toggle) {
+    width: calc(var(--s-sidebar-width) - 30px);
+    white-space: nowrap;
   }
-  html:not(.sidebar-expanded) .sidebar-version {
-    display: none;
+
+  .sidebar-version {
+    opacity: 0;
+    transition: opacity 100ms ease;
+  }
+
+  .sidebar-expanded .sidebar-version {
+    opacity: 1;
+    transition-delay: 70ms;
+  }
+
+  .sidebar-transitioning .lava-orb {
+    animation-play-state: paused;
   }
 }
+
 @media (prefers-reduced-motion: reduce) {
   .studio-sidebar,
-  .studio-wrap,
-  .studio-brand .brand-symbol {
-    transition: none;
+  .studio-brand .brand-symbol,
+  .brand-divider,
+  .brand-caption,
+  .studio-nav-link > span,
+  .nav-group,
+  .sidebar-reveal svg,
+  .sidebar-version {
+    transition: none !important;
   }
 }
