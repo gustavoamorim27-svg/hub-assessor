@@ -3,6 +3,7 @@ import path from 'node:path';
 import { parse } from 'parse5';
 
 const output = path.resolve('../../outputs/gustavo-amorim.html');
+const publishedOverridesFile = path.resolve('src/published-overrides.html');
 const assets = {};
 const mime = {'.js':'text/javascript','.css':'text/css','.html':'text/html','.svg':'image/svg+xml','.json':'application/json'};
 const data = (body,type) => `data:${type};base64,${Buffer.from(body).toString('base64')}`;
@@ -52,6 +53,14 @@ const runtime=Object.fromEntries(Object.entries(urls).filter(([file])=>file.star
 const bootstrap=`window.__hubAssets=${JSON.stringify(runtime)};window.__hubAsset=p=>{const k=p.replace(/^\\.\\//,'');if(!window.__hubAssets[k])throw new Error('Recurso ausente: '+k);return window.__hubAssets[k];};`;
 html=html.replace('<script type="module" src="./src/app.js"></script>',`<script>${bootstrap}</script><script type="module" src="${app}"></script>`);
 html=html.replace('<title>Hub do Assessor · Estúdio</title>','<title>Gustavo Amorim · Hub do Assessor</title>');
+try {
+  const publishedOverrides = await fs.readFile(publishedOverridesFile, 'utf8');
+  if (publishedOverrides.trim()) {
+    html = html.replace('</body>', `${publishedOverrides.trim()}\n</body>`);
+  }
+} catch (error) {
+  if (error.code !== 'ENOENT') throw error;
+}
 parse(html);
 if(/(?:src|href)="\.\//.test(html)) throw new Error('Unresolved local reference');
 await fs.mkdir(path.dirname(output),{recursive:true});

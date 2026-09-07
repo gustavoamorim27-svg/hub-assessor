@@ -28,6 +28,12 @@ pnpm build
 
 Prévia: http://127.0.0.1:4173/. `dist/` contém o pacote estático. Assets relativos e rotas por hash permitem servir sob um subdiretório. Não abrir por `file://`: módulos exigem HTTP.
 
+## Preservação da versão publicada
+
+O repositório `hub-gustavo-amorim` é a referência oficial para publicação. Antes de qualquer novo ajuste, sincronize esse repositório e execute `pnpm sync:published`. As personalizações feitas diretamente na página publicada ficam registradas em `src/published-overrides.html` e são reinseridas por `pnpm standalone`.
+
+Nunca substitua `hub-gustavo-amorim/index.html` por uma geração baseada em uma cópia antiga. A publicação deve começar com `git pull --ff-only`, conferir que não há mudanças remotas pendentes e preservar a camada de personalizações.
+
 ## Organização
 
 `src/core`: cálculos, catálogo e dados. `src/ui` e `src/styles`: apresentação e identidade. `src/services`: carregamento e exportação. `src/features`: ferramentas migradas. `src/compat`: limite de compatibilidade. `tests`: verificação automatizada.

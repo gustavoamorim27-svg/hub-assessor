@@ -42,7 +42,6 @@ body {
 .lava-orb {
   position: absolute;
   border-radius: 50%;
-  filter: blur(64px);
   will-change: transform;
 }
 .lava-orange {
@@ -77,7 +76,13 @@ body {
   height: 44vmax;
   top: 52%;
   left: -16vmax;
-  background: radial-gradient(circle, #ff6a00, transparent 70%);
+  background: radial-gradient(
+    circle,
+    #ff6a00 0%,
+    #ff6a00cc 26%,
+    #ff6a0055 50%,
+    transparent 74%
+  );
   opacity: 0.75;
   animation: studio-lava-a 30s ease-in-out infinite reverse;
 }
@@ -86,7 +91,13 @@ body {
   height: 38vmax;
   top: 6%;
   left: 44%;
-  background: radial-gradient(circle, #0e9fb5, transparent 70%);
+  background: radial-gradient(
+    circle,
+    #0e9fb5 0%,
+    #0e9fb5cc 26%,
+    #0e9fb555 50%,
+    transparent 74%
+  );
   opacity: 0.4;
   animation: studio-lava-b 46s ease-in-out infinite reverse;
 }
@@ -95,7 +106,13 @@ body {
   height: 34vmax;
   bottom: 4%;
   right: 8%;
-  background: radial-gradient(circle, #2b6cff, transparent 70%);
+  background: radial-gradient(
+    circle,
+    #2b6cff 0%,
+    #2b6cffcc 26%,
+    #2b6cff55 50%,
+    transparent 74%
+  );
   opacity: 0.6;
   animation: studio-lava-c 36s ease-in-out infinite reverse;
 }
@@ -242,9 +259,6 @@ body {
   box-shadow: none;
 }
 @media (max-width: 760px) {
-  .lava-orb {
-    filter: blur(45px);
-  }
   .lava-teal,
   .lava-cobalt {
     display: none;

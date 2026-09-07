@@ -1,0 +1,1146 @@
+<style id="mercado-css">
+/* ===== Cotacoes no topo, no vao entre o breadcrumb e as acoes ============
+   Portado do Hub v1: mesma cadeia de fontes (CoinGecko primeiro, porque e a
+   unica liberada na rede da RICO; AwesomeAPI, Frankfurter e Yahoo via proxy
+   como reserva). O toggle guarda a escolha no localStorage do app. ===== */
+#mkt{
+  display:flex; align-items:center; gap:2px; flex:1 1 auto; justify-content:center;
+  min-width:0; overflow:hidden;
+}
+#mkt[hidden]{ display:none; }
+.mkt-it{
+  display:flex; flex-direction:column; align-items:flex-end; justify-content:center;
+  line-height:1.2; white-space:nowrap; padding:0 11px; border-right:1px solid var(--s-border);
+}
+.mkt-it:last-of-type{ border-right:0; }
+.mkt-lbl{ font-size:9px; font-weight:700; letter-spacing:.6px; text-transform:uppercase; color:var(--s-subtle); }
+.mkt-lin{ display:flex; align-items:baseline; gap:5px; }
+.mkt-val{ font-family:var(--s-heading); font-weight:700; font-size:12.5px; color:var(--s-text); }
+.mkt-chg{ font-size:9.5px; font-weight:800; }
+.mkt-chg.up{ color:var(--s-green); } .mkt-chg.down{ color:#ff6b6b; } .mkt-chg.flat{ color:var(--s-subtle); }
+#mkt-tg{
+  flex-shrink:0; border:1px solid var(--s-border); background:transparent; color:var(--s-subtle);
+  width:26px; height:26px; border-radius:7px; display:grid; place-items:center; line-height:0;
+  margin-left:8px; transition:color .15s, border-color .15s, background .15s;
+}
+#mkt-tg:hover{ color:var(--s-text); border-color:var(--s-orange); background:rgba(255,255,255,.04); }
+#mkt-tg.off{ margin-left:0; }
+html.mkt-oculto #mkt{ display:none; }
+/* o topbar tem 20px de gap; sem as cotacoes o botao encosta nas acoes */
+html.mkt-oculto .studio-topbar{ justify-content:space-between; }
+</style>
+
+<script id="mercado-js">
+(function(){
+  "use strict";
+  var CHAVE='hub:v2:mercado';
+  var ITENS=[['dolar','Dólar'],['sp500','S&P 500'],['ibov','Ibovespa'],
+             ['ouro','Ouro'],['brent','Brent'],['btc','Bitcoin']];
+  var OLHO='<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="2.6"/></svg>';
+  var OLHO_OFF='<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 3l18 18M10.6 10.7a2.6 2.6 0 0 0 3.6 3.7"/><path d="M6.5 6.6C4 8.2 2 12 2 12s3.6 7 10 7c1.9 0 3.5-.6 4.9-1.4M9.9 5.2A9.6 9.6 0 0 1 12 5c6.4 0 10 7 10 7a19 19 0 0 1-2.5 3.4"/></svg>';
+
+  function visivel(){ try{ return localStorage.getItem(CHAVE)!=='0'; }catch(e){ return true; } }
+  function salvar(v){ try{ localStorage.setItem(CHAVE, v?'1':'0'); }catch(e){} }
+
+  function montar(){
+    var barra=document.querySelector('.studio-topbar');
+    var acoes=barra && barra.querySelector('.top-actions');
+    if(!barra || !acoes || document.getElementById('mkt')) return false;
+
+    var p=document.createElement('div');
+    p.id='mkt'; p.setAttribute('role','group'); p.setAttribute('aria-label','Cotações de mercado');
+    p.innerHTML=ITENS.map(function(x){
+      return '<div class="mkt-it" data-k="'+x[0]+'"><span class="mkt-lbl">'+x[1]+'</span>'+
+             '<span class="mkt-lin"><span class="mkt-val">—</span><span class="mkt-chg flat"></span></span></div>';
+    }).join('');
+    barra.insertBefore(p, acoes);
+
+    var b=document.createElement('button');
+    b.id='mkt-tg'; b.type='button';
+    barra.insertBefore(b, acoes);
+
+    function pintarBotao(v){
+      b.innerHTML = v ? OLHO : OLHO_OFF;
+      b.title = v ? 'Esconder cotações' : 'Mostrar cotações';
+      b.setAttribute('aria-label', b.title);
+      b.setAttribute('aria-pressed', v ? 'false' : 'true');
+      b.classList.toggle('off', !v);
+    }
+    function aplicar(v, gravar){
+      document.documentElement.classList.toggle('mkt-oculto', !v);
+      pintarBotao(v);
+      if(gravar) salvar(v);
+    }
+    b.onclick=function(){ aplicar(document.documentElement.classList.contains('mkt-oculto'), true); };
+    aplicar(visivel(), false);
+    return true;
+  }
+
+  /* o app monta o topbar em #app depois do boot: tenta ate aparecer */
+  function aguardarBarra(tentativas){
+    if(montar()) return true;
+    if(tentativas<=0) return false;
+    setTimeout(function(){ aguardarBarra(tentativas-1); }, 120);
+    return false;
+  }
+
+
+  // BRENT_BNO_MULT: fator de conversao do token BNO (us-brent-oil-fund-ondo-tokenized)
+  // para o preco do Brent. O fundo BNO (~US$41,5) acompanha o Brent (~US$75), entao
+  // preco_token x ~1.805 aproxima o barril. APROXIMACAO: pode desviar com o tempo
+  // (rebalanceamento do fundo, drift). Usado SO como fallback quando o Yahoo falha (ex.: rede RICO).
+  var BRENT_BNO_MULT = 1.805;
+  // IBOV_EWZ_MULT: fator de conversao do token EWZ (ishares-msci-brazil-etf-ondo-tokenized)
+  // para o Ibovespa em pontos. EWZ (em US$) x dolar (USD/BRL) x esse fator ~ Ibovespa.
+  // APROXIMACAO: o EWZ replica o MSCI Brazil, correlacionado mas NAO identico ao Ibovespa
+  // (composicao/peso diferentes), entao pode desviar com o tempo. Usado SO como fallback
+  // quando o Yahoo (^BVSP, fonte primaria) falha (ex.: rede RICO).
+  var IBOV_EWZ_MULT = 966.84;
+  // Ticker de cotacoes. Fonte PRINCIPAL = CoinGecko (api.coingecko.com), unica liberada
+  // em redes corporativas que bloqueiam AwesomeAPI/Frankfurter/proxies (ex.: rede RICO).
+  // Uma unica chamada combinada cobre Bitcoin, Dolar e Ouro:
+  //   - Bitcoin (US$):   CoinGecko bitcoin.usd            (exibido em dolar).
+  //   - Dolar (USD/BRL): CoinGecko tether.brl (USDT~US$1) -> AwesomeAPI -> Frankfurter -> Yahoo.
+  //   - Ouro (XAU/USD):  CoinGecko pax-gold.usd (PAXG~1oz)-> AwesomeAPI -> Yahoo.
+  //   - S&P500 / Ibov / Brent: sem fonte CoinGecko/CORS -> Yahoo via proxy (best-effort).
+  // Para cada instrumento paramos no primeiro que retornar valor valido.
+  // Tudo defensivo (try/catch): se uma fonte/proxy cair, os demais seguem.
+  var TK = [
+    {k:'dolar', sym:'BRL=X', dec:2, prefix:'R$ ',   awPair:'USD-BRL'},
+    {k:'sp500', sym:'^GSPC', dec:0, prefix:''},
+    {k:'ibov',  sym:'^BVSP', dec:0, prefix:''},
+    {k:'ouro',  sym:'GC=F',  dec:2, prefix:'US$ ',  awPair:'XAU-USD'},
+    {k:'brent', sym:'BZ=F',  dec:2, prefix:'US$ '},
+    {k:'btc',   sym:'BTC-BRL',dec:0, prefix:'US$ ', awPair:'BTC-BRL'}
+  ];
+
+  function fmt(v, dec){ return v.toLocaleString('pt-BR',{minimumFractionDigits:dec, maximumFractionDigits:dec}); }
+
+  // ---- AwesomeAPI DIRETO (sem proxy): uma chamada cobrindo os 3 pares ----
+  // Reaproveitada por Dolar, Ouro e Bitcoin no mesmo ciclo (1 requisicao).
+  var AWESOME_PAIRS = ['USD-BRL','XAU-USD','BTC-BRL'];
+  async function fetchAwesome(){
+    var url='https://economia.awesomeapi.com.br/json/last/'+AWESOME_PAIRS.join(',');
+    var out={};
+    try{
+      var r=await fetch(url,{cache:'no-store'});
+      if(!r.ok) return out;
+      var j=await r.json();
+      for(var key in j){
+        if(!Object.prototype.hasOwnProperty.call(j,key)) continue;
+        var d=j[key];
+        var price=parseFloat(d.bid);
+        var pct=parseFloat(d.pctChange);
+        if(!isNaN(price)){
+          var code=(d.code||'')+'-'+(d.codein||'');
+          out[code]={price:price, pct:isNaN(pct)?null:pct};
+        }
+      }
+    }catch(e){}
+    return out;
+  }
+
+  // ---- CoinGecko DIRETO (sem proxy): UMA chamada combinada ----
+  // Cobre Bitcoin (US$), Dolar (via Tether/BRL) e Ouro (via PAX Gold/USD).
+  // E a unica fonte liberada em redes corporativas (ex.: RICO), entao e a PRINCIPAL.
+  async function fetchCoinGecko(){
+    var url='https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,tether,pax-gold,spdr-s-p-500-etf-ondo-tokenized-etf,us-brent-oil-fund-ondo-tokenized,ishares-msci-brazil-etf-ondo-tokenized&vs_currencies=usd,brl&include_24hr_change=true';
+    var out={btc:null, dolar:null, ouro:null, sp500:null, brent:null, ibov:null};
+    try{
+      var r=await fetch(url,{cache:'no-store'});
+      if(!r.ok) return out;
+      var j=await r.json();
+      // Bitcoin em US$
+      var b=j && j.bitcoin;
+      if(b && b.usd!=null){ out.btc={price:b.usd, pct:(b.usd_24h_change!=null? b.usd_24h_change : null)}; }
+      // Dolar: USDT/BRL ~ USD/BRL (USDT ~ US$1)
+      var t=j && j.tether;
+      if(t && t.brl!=null){ out.dolar={price:t.brl, pct:(t.brl_24h_change!=null? t.brl_24h_change : null)}; }
+      // Ouro: PAXG/USD ~ onca de ouro em US$ (PAXG ~ 1oz)
+      var g=j && j['pax-gold'];
+      if(g && g.usd!=null){ out.ouro={price:g.usd, pct:(g.usd_24h_change!=null? g.usd_24h_change : null)}; }
+      // S&P500 (FALLBACK): ETF tokenizado SPYON (~SPY) ~ 1/10 do indice -> usd x10 aproxima o indice.
+      // Variacao % usa usd_24h_change (exata). So usado se o Yahoo (^GSPC, fonte primaria) falhar.
+      var sp=j && j['spdr-s-p-500-etf-ondo-tokenized-etf'];
+      if(sp && sp.usd!=null){ out.sp500={price:sp.usd*10, pct:(sp.usd_24h_change!=null? sp.usd_24h_change : null)}; }
+      // Brent (FALLBACK): token BNO (us-brent-oil-fund-ondo-tokenized) x BRENT_BNO_MULT aproxima o barril.
+      // Variacao % usa usd_24h_change (do token). So usado se o Yahoo (BZ=F, fonte primaria) falhar.
+      var br=j && j['us-brent-oil-fund-ondo-tokenized'];
+      if(br && br.usd!=null){ out.brent={price:br.usd*BRENT_BNO_MULT, pct:(br.usd_24h_change!=null? br.usd_24h_change : null)}; }
+      // Ibovespa (FALLBACK): token EWZ (ishares-msci-brazil-etf-ondo-tokenized, iShares MSCI Brazil)
+      // em US$ x dolar (USD/BRL via tether.brl) x IBOV_EWZ_MULT aproxima o indice em pontos.
+      // Variacao % ~ combinacao da variacao do EWZ (US$) com a do dolar (USD/BRL).
+      // So usado se o Yahoo (^BVSP, fonte primaria) falhar.
+      var ewz=j && j['ishares-msci-brazil-etf-ondo-tokenized'];
+      var usdbrl=(j && j.tether && j.tether.brl!=null)? j.tether.brl : null;
+      if(ewz && ewz.usd!=null && usdbrl!=null){
+        var ibovValor=ewz.usd*usdbrl*IBOV_EWZ_MULT;
+        var ewzChg=(ewz.usd_24h_change!=null? ewz.usd_24h_change : 0);
+        var brlChg=(j.tether && j.tether.brl_24h_change!=null? j.tether.brl_24h_change : 0);
+        var ibovPct=((1 + ewzChg/100) * (1 + brlChg/100) - 1) * 100;
+        out.ibov={price:ibovValor, pct:ibovPct};
+      }
+    }catch(e){}
+    return out;
+  }
+
+  // ---- Frankfurter DIRETO (sem proxy): fallback do Dolar (sem variacao) ----
+  async function fetchFrankfurterUSDBRL(){
+    var url='https://api.frankfurter.app/latest?from=USD&to=BRL';
+    try{
+      var r=await fetch(url,{cache:'no-store'});
+      if(!r.ok) return null;
+      var j=await r.json();
+      if(j && j.rates && j.rates.BRL!=null){
+        return {price:j.rates.BRL, pct:null};
+      }
+    }catch(e){}
+    return null;
+  }
+
+  // ---- Yahoo Finance via proxies CORS (ULTIMO RECURSO) ----
+  function proxies(u){
+    return [
+      'https://corsproxy.io/?url='+encodeURIComponent(u),
+      'https://api.allorigins.win/raw?url='+encodeURIComponent(u),
+      'https://thingproxy.freeboard.io/fetch/'+u
+    ];
+  }
+  async function fetchYahoo(sym){
+    var yurl='https://query1.finance.yahoo.com/v8/finance/chart/'+encodeURIComponent(sym)+'?range=1d&interval=1d';
+    var ps=proxies(yurl);
+    for(var i=0;i<ps.length;i++){
+      try{
+        var r=await fetch(ps[i],{cache:'no-store'});
+        if(!r.ok) continue;
+        var j=await r.json();
+        var m=j && j.chart && j.chart.result && j.chart.result[0] && j.chart.result[0].meta;
+        if(m && m.regularMarketPrice!=null){
+          var price=m.regularMarketPrice;
+          var prev=(m.chartPreviousClose!=null? m.chartPreviousClose : m.previousClose);
+          return {price:price, pct:(prev? ((price-prev)/prev*100):null)};
+        }
+      }catch(e){}
+    }
+    return null;
+  }
+
+  function render(it, q){
+    var el=document.querySelector('.mkt-it[data-k="'+it.k+'"]'); if(!el) return;
+    var valEl=el.querySelector('.mkt-val'), chgEl=el.querySelector('.mkt-chg');
+    // q invalido: mantem o ultimo valor exibido (fallback elegante; so fica "—" se nunca veio nada)
+    if(!q || q.price==null){ return; }
+    valEl.textContent=it.prefix+fmt(q.price, it.dec);
+    var pct = (q.pct==null? 0 : q.pct);
+    var hasPct = (q.pct!=null);
+    var arrow = pct>0?'▲':(pct<0?'▼':'•');
+    chgEl.textContent = hasPct
+      ? arrow+' '+(pct>0?'+':'')+pct.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})+'%'
+      : '';
+    chgEl.className='mkt-chg '+(pct>0?'up':(pct<0?'down':'flat'));
+  }
+
+  async function load(){
+    // Contador de sucessos do ciclo (qualquer fonte/instrumento conta).
+    var anyOk=false;
+    // Pre-busca a CoinGecko (fonte PRINCIPAL) uma unica vez: cobre Bitcoin, Dolar e Ouro.
+    var cgPromise=fetchCoinGecko();
+    // Pre-busca AwesomeAPI uma unica vez (fallback p/ Dolar/Ouro fora da RICO).
+    var awPromise=fetchAwesome();
+
+    var jobs=TK.map(function(it){
+      return (async function(){
+        var q=null;
+        try{
+          if(it.k==='dolar'){
+            // 1) CoinGecko (tether.brl) -> 2) AwesomeAPI -> 3) Frankfurter -> 4) Yahoo proxy
+            try{ var cg=await cgPromise; if(cg && cg.dolar && cg.dolar.price!=null) q=cg.dolar; }catch(e){}
+            if(!q || q.price==null){ try{ var aw=await awPromise; var a=aw && aw[it.awPair]; if(a && a.price!=null) q=a; }catch(e){} }
+            if(!q || q.price==null){ try{ q=await fetchFrankfurterUSDBRL(); }catch(e){ q=null; } }
+            if(!q || q.price==null){ try{ q=await fetchYahoo(it.sym); }catch(e){ q=null; } }
+          } else if(it.k==='btc'){
+            // 1) CoinGecko (bitcoin.usd) -> 2) Yahoo proxy
+            try{ var cg2=await cgPromise; if(cg2 && cg2.btc && cg2.btc.price!=null) q=cg2.btc; }catch(e){}
+            if(!q || q.price==null){ try{ q=await fetchYahoo(it.sym); }catch(e){ q=null; } }
+          } else if(it.k==='ouro'){
+            // 1) CoinGecko (pax-gold.usd) -> 2) AwesomeAPI -> 3) Yahoo proxy
+            try{ var cg3=await cgPromise; if(cg3 && cg3.ouro && cg3.ouro.price!=null) q=cg3.ouro; }catch(e){}
+            if(!q || q.price==null){ try{ var aw3=await awPromise; var o=aw3 && aw3[it.awPair]; if(o && o.price!=null) q=o; }catch(e){} }
+            if(!q || q.price==null){ try{ q=await fetchYahoo(it.sym); }catch(e){ q=null; } }
+          } else if(it.k==='sp500'){
+            // 1) Yahoo (^GSPC, indice real) PRIMARIO -> 2) CoinGecko SPYON x10 (FALLBACK p/ RICO)
+            try{ q=await fetchYahoo(it.sym); }catch(e){ q=null; }
+            if(!q || q.price==null){ try{ var cg4=await cgPromise; if(cg4 && cg4.sp500 && cg4.sp500.price!=null) q=cg4.sp500; }catch(e){} }
+          } else if(it.k==='brent'){
+            // 1) Yahoo (BZ=F, Brent real) PRIMARIO -> 2) CoinGecko BNO x BRENT_BNO_MULT (FALLBACK p/ RICO)
+            try{ q=await fetchYahoo(it.sym); }catch(e){ q=null; }
+            if(!q || q.price==null){ try{ var cg5=await cgPromise; if(cg5 && cg5.brent && cg5.brent.price!=null) q=cg5.brent; }catch(e){} }
+          } else if(it.k==='ibov'){
+            // 1) Yahoo (^BVSP, Ibovespa real) PRIMARIO -> 2) CoinGecko EWZ x dolar x IBOV_EWZ_MULT (FALLBACK p/ RICO)
+            try{ q=await fetchYahoo(it.sym); }catch(e){ q=null; }
+            if(!q || q.price==null){ try{ var cg6=await cgPromise; if(cg6 && cg6.ibov && cg6.ibov.price!=null) q=cg6.ibov; }catch(e){} }
+          } else {
+            // outros instrumentos sem fonte dedicada -> Yahoo proxy (best-effort)
+            try{ q=await fetchYahoo(it.sym); }catch(e){ q=null; }
+          }
+        }catch(e){ q=null; }
+
+        if(q && q.price!=null){ anyOk=true; render(it, q); }
+        else { render(it, null); }
+      })();
+    });
+
+    try{ await Promise.all(jobs); }catch(e){}
+  }
+
+  
+  function iniciar(){
+    aguardarBarra(60);
+    load(); setInterval(load, 60000);
+    /* o topbar e recriado em algumas trocas de rota -- reinsere se sumir */
+    setInterval(function(){ if(!document.getElementById('mkt') && document.querySelector('.studio-topbar')){ if(montar()) load(); } }, 1500);
+  }
+  if(document.readyState==='loading'){ document.addEventListener('DOMContentLoaded', iniciar); } else { iniciar(); }
+})();
+</script>
+
+<style id="raioxp-css">
+/* ===== Card do Raio-XP: aparece so nos 5 dias seguintes a publicacao =====
+   Nada do conteudo da XP e copiado -- so titulo, data e link. O item vem do
+   feed publico de relatorios, filtrado pelo slug raio-xp. ============== */
+#raioxp{
+  display:flex; align-items:center; gap:16px; flex-wrap:wrap;
+  margin:0 0 22px; padding:16px 20px; border-radius:var(--s-radius);
+  border:1px solid rgba(255,98,29,.42);
+  background:linear-gradient(135deg, rgba(255,98,29,.15), rgba(255,98,29,.04));
+  text-decoration:none; color:inherit; transition:border-color .18s, transform .18s;
+}
+#raioxp:hover{ border-color:var(--s-orange); transform:translateY(-1px); }
+#raioxp .tag{
+  flex-shrink:0; font-family:var(--s-heading); font-weight:800; font-size:10px; letter-spacing:1.2px;
+  text-transform:uppercase; color:#fff; background:var(--s-orange); border-radius:100px; padding:5px 12px;
+}
+#raioxp .txt{ flex:1 1 300px; min-width:0; }
+#raioxp .tt{ font-family:var(--s-heading); font-weight:700; font-size:15px; color:var(--s-text); line-height:1.35; }
+#raioxp .dt{ font-size:11.5px; color:var(--s-subtle); margin-top:3px; font-family:var(--s-mono); }
+#raioxp .ir{ flex-shrink:0; display:inline-flex; align-items:center; gap:7px; font-family:var(--s-heading); font-weight:700; font-size:13px; color:var(--s-orange); }
+</style>
+
+<script id="raioxp-js">
+(function(){
+  "use strict";
+  /* Le o feed publico de relatorios da XP e, se houver um Raio-XP publicado
+     ha 5 dias ou menos, mostra um card com titulo, data e link no topo da
+     Visao geral. Nenhum texto da XP e armazenado -- so o link.
+     Os feeds sao lidos pela mesma cadeia de proxies CORS que o resto do app
+     usa; se a rede bloquear, o card simplesmente nao aparece. */
+  var DIAS=5;
+  var FEEDS=['https://conteudos.xpi.com.br/acoes/relatorios/feed/',
+             'https://conteudos.xpi.com.br/acoes/relatorios/feed/?paged=2'];
+  var PROXIES=[
+    function(u){ return 'https://corsproxy.io/?url='+encodeURIComponent(u); },
+    function(u){ return 'https://api.allorigins.win/raw?url='+encodeURIComponent(u); },
+    function(u){ return 'https://api.codetabs.com/v1/proxy/?quest='+encodeURIComponent(u); }
+  ];
+
+  async function texto(url){
+    for(var i=0;i<PROXIES.length;i++){
+      try{
+        var r=await fetch(PROXIES[i](url),{cache:'no-store'});
+        if(!r.ok) continue;
+        var t=await r.text();
+        if(t && t.indexOf('<item')>=0) return t;
+      }catch(e){}
+    }
+    return null;
+  }
+
+  function acharRaio(xml){
+    var doc;
+    try{ doc=new DOMParser().parseFromString(xml,'text/xml'); }catch(e){ return null; }
+    var itens=doc.querySelectorAll('item'), achado=null;
+    itens.forEach(function(it){
+      var link=(it.querySelector('link')&&it.querySelector('link').textContent||'').trim();
+      var tit=(it.querySelector('title')&&it.querySelector('title').textContent||'').trim();
+      var dt=(it.querySelector('pubDate')&&it.querySelector('pubDate').textContent||'').trim();
+      /* so relatorio da XP com slug raio-xp -- links de terceiros ficam de fora */
+      if(link.indexOf('conteudos.xpi.com.br')<0) return;
+      if(link.indexOf('raio-xp')<0 && !/^raio[- ]xp/i.test(tit)) return;
+      var d=new Date(dt); if(isNaN(d)) return;
+      if(!achado || d>achado.data) achado={titulo:tit, link:link, data:d};
+    });
+    return achado;
+  }
+
+  function montar(r){
+    var home=document.getElementById('studio-home');
+    if(!home || document.getElementById('raioxp')) return;
+    var dias=Math.floor((Date.now()-r.data.getTime())/86400000);
+    var a=document.createElement('a');
+    a.id='raioxp'; a.href=r.link; a.target='_blank'; a.rel='noopener noreferrer';
+    a.innerHTML='<span class="tag">Novo Raio-XP</span>'+
+      '<span class="txt"><span class="tt"></span>'+
+      '<span class="dt">'+r.data.toLocaleDateString('pt-BR')+(dias===0?' · hoje':(dias===1?' · ontem':' · há '+dias+' dias'))+' · conteudos.xpi.com.br</span></span>'+
+      '<span class="ir">Ler no XPI ↗</span>';
+    a.querySelector('.tt').textContent=r.titulo;   /* textContent: titulo vem de fora */
+    home.insertBefore(a, home.firstChild);
+  }
+
+  async function checar(){
+    for(var i=0;i<FEEDS.length;i++){
+      var xml=await texto(FEEDS[i]);
+      if(!xml) continue;
+      var r=acharRaio(xml);
+      if(r && (Date.now()-r.data.getTime()) <= DIAS*86400000){ montar(r); return r; }
+    }
+    return null;
+  }
+
+  function iniciar(){
+    var t=0;
+    (function esperar(){
+      if(document.getElementById('studio-home')) return checar();
+      if(++t>60) return;
+      setTimeout(esperar,150);
+    })();
+  }
+  window.__checarRaioXP=checar;   /* util para testar na mao no console */
+  if(document.readyState==='loading'){ document.addEventListener('DOMContentLoaded', iniciar); } else { iniciar(); }
+})();
+</script>
+
+<style id="botoes-css">
+/* ===== Barra de acoes da ferramenta: uma cor primaria so ==================
+   O "Projecao da carteira" vinha com gradiente verde em style inline, fora
+   da paleta e mais largo que os vizinhos. Vira ghost como os outros; o
+   laranja solido fica reservado para o Gerar PNG, que e a acao principal.
+   O verde continua onde faz sentido: o % alocado por categoria. ======== */
+#btnProj.btn-solid{
+  background:transparent !important;
+  background-image:none !important;
+  border:1px solid rgba(255,98,29,.55) !important;
+  color:var(--s-orange) !important;
+  box-shadow:none !important;
+  font-weight:700 !important;
+}
+#btnProj.btn-solid:hover{ background:rgba(255,98,29,.10) !important; }
+/* larguras proximas para a linha nao ficar torta */
+#btnPropor,#btnCopy,#btnProj,#btnPng{ min-width:168px; justify-content:center; }
+</style>
+
+<style id="ajustes-css">
+/* ===== 1. Campo de detalhe do ativo: era uma barra escura sem borda ======
+   .det-input tem fundo escuro, sem borda e sem raio, ocupando a largura
+   toda dentro de um card mais claro -- lia como retangulo preto colado.
+   Ganha borda e raio para parecer campo, e fundo um pouco mais leve. */
+.det-input{
+  background:rgba(28,47,99,.42) !important;
+  border:1px solid rgba(140,166,236,.22) !important;
+  border-radius:8px !important;
+  padding-left:10px !important; padding-right:10px !important;
+}
+.det-input:focus{ border-color:rgba(255,98,29,.55) !important; outline:none !important; }
+
+/* ===== 2. Renda Variavel: acoes fixas no topo ============================
+   A barra ja nascia no topo, mas rolava junto e o Gerar PNG ficava longe
+   depois de descer a pagina. Sticky resolve sem mudar o layout. */
+#rv-app > .header{
+  position:sticky; top:0; z-index:40;
+  background:linear-gradient(180deg, rgba(11,16,32,.94), rgba(11,16,32,.78));
+  backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
+  padding-top:10px !important; padding-bottom:10px !important;
+  margin-left:-6px; margin-right:-6px; padding-left:6px; padding-right:6px;
+  border-radius:0 0 12px 12px;
+}
+/* mesmo verde fora da paleta do outro botao */
+#rvBtnProj.btn-solid{
+  background:transparent !important; background-image:none !important;
+  border:1px solid rgba(255,98,29,.55) !important; color:var(--s-orange) !important;
+  box-shadow:none !important; font-weight:700 !important;
+}
+#rvBtnProj.btn-solid:hover{ background:rgba(255,98,29,.10) !important; }
+
+/* ===== 3. Atalhos de categoria dentro da gaveta ========================= */
+#libAtalhos{
+  position:sticky; top:0; z-index:5;
+  display:flex; gap:7px; flex-wrap:wrap; padding:10px 0 11px; margin:0 0 4px;
+  background:linear-gradient(180deg, rgba(12,8,33,.97) 76%, rgba(12,8,33,0));
+}
+#libAtalhos button{
+  border:1px solid rgba(140,166,236,.26); background:rgba(255,255,255,.05);
+  color:#C8D0F2; border-radius:100px; padding:6px 13px; font-size:12px; font-weight:600;
+  white-space:nowrap; transition:border-color .15s, color .15s, background .15s;
+}
+#libAtalhos button:hover{ border-color:rgba(255,98,29,.6); color:#fff; background:rgba(255,98,29,.12); }
+#libAtalhos button.aqui{ border-color:var(--s-orange); color:#fff; background:rgba(255,98,29,.18); }
+</style>
+<script id="ajustes-js">
+(function(){
+  "use strict";
+  /* Atalhos de categoria na gaveta de ativos: a lista tem ~4.500px de altura,
+     entao rolar ate "Fundos Listados" na mao e cansativo. Os chips sao
+     construidos a partir dos proprios .lib-sec, entao acompanham a lista
+     sem lista fixa no codigo. */
+  function montarAtalhos(){
+    var dr=document.getElementById('libDrawer');
+    if(!dr || !dr.classList.contains('open')) return;
+    var secs=[].slice.call(dr.querySelectorAll('.lib-sec'));
+    if(!secs.length) return;
+    var velho=document.getElementById('libAtalhos');
+    if(velho && velho.dataset.n===String(secs.length)) return;   /* ja montado p/ esta lista */
+    if(velho) velho.remove();
+
+    var barra=document.createElement('div');
+    barra.id='libAtalhos'; barra.dataset.n=String(secs.length);
+    barra.setAttribute('role','group'); barra.setAttribute('aria-label','Ir para categoria');
+    secs.forEach(function(sec,i){
+      var b=document.createElement('button');
+      b.type='button';
+      b.textContent=(sec.textContent||'').trim();
+      b.onclick=function(){
+        var y=sec.getBoundingClientRect().top - dr.getBoundingClientRect().top + dr.scrollTop - 54;
+        dr.scrollTo({top:Math.max(0,y), behavior:'smooth'});
+      };
+      barra.appendChild(b);
+    });
+    /* entra logo depois da busca, antes da lista */
+    var busca=dr.querySelector('.lib-search');
+    if(busca && busca.parentElement===dr) dr.insertBefore(barra, busca.nextSibling);
+    else dr.insertBefore(barra, dr.firstChild);
+
+    /* marca a categoria em que o scroll esta */
+    var btns=[].slice.call(barra.querySelectorAll('button'));
+    function marcar(){
+      var topo=dr.getBoundingClientRect().top+70, atual=0;
+      secs.forEach(function(s,i){ if(s.getBoundingClientRect().top<=topo) atual=i; });
+      btns.forEach(function(b,i){ b.classList.toggle('aqui', i===atual); });
+    }
+    dr.addEventListener('scroll', marcar, {passive:true});
+    marcar();
+  }
+
+  function vigiar(){
+    montarAtalhos();
+    var dr=document.getElementById('libDrawer');
+    if(dr && !dr.__obs){
+      dr.__obs=true;
+      new MutationObserver(function(){ setTimeout(montarAtalhos,60); })
+        .observe(dr,{childList:true,subtree:false,attributes:true,attributeFilter:['class']});
+    }
+  }
+  document.addEventListener('click', function(e){
+    var t=e.target.closest && e.target.closest('#libTab');
+    if(t) setTimeout(vigiar,180);
+  });
+  setInterval(vigiar, 1200);
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', vigiar); else vigiar();
+})();
+</script>
+
+
+<style id="ajustes2-css">
+/* ===== Menos texto nos botoes secundarios =============================== */
+/* "Editar modelo" e "Restaurar template" ficam so com o icone; o rotulo vai
+   para o title/aria-label, entao continua acessivel. */
+button.tab.so-icone{ font-size:0 !important; padding-left:11px !important; padding-right:11px !important; }
+button.tab.so-icone .icon{ font-size:initial; margin-right:0 !important; }
+
+/* ===== Brasil / Global com icone, como no app da Rico =================== */
+button.mkt-br::before{ content:"🇧🇷"; margin-right:6px; font-size:13px; line-height:1; }
+button.mkt-gl::before{ content:"🌐"; margin-right:6px; font-size:13px; line-height:1; }
+</style>
+<script id="ajustes2-js">
+(function(){
+  "use strict";
+  /* Os botoes sao recriados a cada render do construtor, entao a marcacao e
+     reaplicada por varredura leve em vez de uma vez so no boot. */
+  function marcar(){
+    document.querySelectorAll('button.tab').forEach(function(b){
+      var t=(b.textContent||'').trim();
+      if(/^Editar modelo$/.test(t) || /^Restaurar template$/.test(t)){
+        if(!b.classList.contains('so-icone')){
+          b.title=t; b.setAttribute('aria-label',t); b.classList.add('so-icone');
+        }
+      }
+    });
+    document.querySelectorAll('button').forEach(function(b){
+      var t=(b.textContent||'').trim();
+      if(/^Brasil\s+\d+%$/.test(t)) b.classList.add('mkt-br');
+      else if(/^Global\s+\d+%$/.test(t)) b.classList.add('mkt-gl');
+    });
+  }
+  setInterval(marcar, 900);
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', marcar); else marcar();
+})();
+</script>
+
+<style id="disclaimer-css">
+/* ===== Aviso de nao afiliacao =========================================== */
+.studio-footer{ flex-wrap:wrap; }
+#semAfiliacao{
+  flex:1 1 100%; order:99; margin-top:12px; padding-top:11px;
+  border-top:1px solid var(--s-border);
+  font-size:11.5px; line-height:1.55; color:var(--s-subtle); max-width:none;
+}
+#semAfiliacao b{ color:var(--s-muted); font-weight:700; }
+</style>
+<script id="disclaimer-js">
+(function(){
+  "use strict";
+  /* Vai no rodape, que aparece em todas as rotas. Reinserido se o shell for
+     recriado numa troca de rota. */
+  var TXT='<b>Projeto pessoal, sem afiliação com a Rico ou o grupo XP.</b> '+
+    'Este site não é um material oficial, não tem vínculo, patrocínio ou endosso da Rico, da XP Inc. '+
+    'ou de suas controladas, e não constitui recomendação de investimento, oferta ou análise. '+
+    'É uma ferramenta de apoio ao trabalho do dia a dia do assessor. '+
+    'Marcas, nomes e conteúdos de terceiros pertencem aos seus respectivos titulares.';
+  function por(){
+    var rod=document.querySelector('.studio-footer');
+    if(!rod || document.getElementById('semAfiliacao')) return;
+    var p=document.createElement('p');
+    p.id='semAfiliacao'; p.innerHTML=TXT;
+    rod.appendChild(p);
+  }
+  setInterval(por, 1200);
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', por); else por();
+})();
+</script>
+
+<style id="design3-css">
+/* ===== Topbar: nada de texto quebrando em duas linhas ==================== */
+.studio-topbar .breadcrumb, .studio-topbar .storage-dot,
+.studio-topbar .search-trigger, .studio-topbar .search-trigger span{ white-space:nowrap; }
+.studio-topbar .breadcrumb{ flex-shrink:0; }
+.studio-topbar .top-actions{ flex-shrink:0; }
+
+/* As cotacoes eram 41% da barra em 1440px e espremiam o resto. Agora a faixa
+   tem teto de largura e mostra menos itens em tela de notebook -- a ordem de
+   corte segue a importancia: Dolar, Ibovespa, S&P e Brent ficam por ultimo. */
+#mkt{ max-width:520px; }
+.mkt-it{ padding:0 10px; }
+@media (max-width:1900px){ .mkt-it[data-k="btc"]{ display:none; } }
+@media (max-width:1700px){ .mkt-it[data-k="ouro"]{ display:none; } }
+@media (max-width:1340px){ .mkt-it[data-k="brent"]{ display:none; } #mkt{ max-width:300px; } }
+@media (max-width:1160px){ .mkt-it[data-k="sp500"]{ display:none; } }
+@media (max-width:1020px){ #mkt, #mkt-tg{ display:none !important; } }
+
+/* ===== Brasil / Global: so o icone e o percentual ======================= */
+button.mkt-br .rot, button.mkt-gl .rot{ display:none; }
+
+/* ===== Perfis de carteira: um controle segmentado, nao quatro pilulas ===
+   Eram 47px de altura e 16px de fonte, soltos na linha. Viram um grupo
+   unico e compacto, com o ativo em laranja solido. */
+#perfilGrupo{
+  display:inline-flex; align-items:center; gap:3px; padding:3px;
+  border:1px solid var(--s-border); border-radius:11px;
+  background:rgba(255,255,255,.04);
+}
+#perfilGrupo button.tab{
+  min-height:0 !important; height:32px !important; padding:0 14px !important;
+  font-size:12.5px !important; font-weight:600 !important; border-radius:8px !important;
+  border:0 !important; background:transparent !important; color:var(--s-muted) !important;
+  box-shadow:none !important; transform:none !important; transition:background .15s, color .15s;
+}
+#perfilGrupo button.tab:hover{ background:rgba(255,255,255,.07) !important; color:var(--s-text) !important; }
+#perfilGrupo button.tab.active{ background:var(--s-orange) !important; color:#fff !important; font-weight:700 !important; }
+#perfilGrupo .sep{ width:1px; height:18px; background:var(--s-border); margin:0 2px; flex-shrink:0; }
+#perfilGrupo button.tab.zero{ color:var(--s-subtle) !important; }
+#perfilGrupo button.tab.zero:hover{ color:var(--s-orange) !important; }
+</style>
+<script id="design3-js">
+(function(){
+  "use strict";
+  var PERFIS=/^(Conservadora|Moderada|Sofisticada)$/, ZERO=/^\+?\s*Montar do zero$/;
+  function agrupar(){
+    var tabs=[].slice.call(document.querySelectorAll('button.tab')).filter(function(b){
+      var t=(b.textContent||'').trim(); return PERFIS.test(t)||ZERO.test(t);
+    });
+    if(tabs.length<3) return;
+    /* Um grupo so por render. Se o app redesenhou a barra, sobra um grupo
+       velho -- com os botoes antigos dentro -- ao lado dos novos: dai o
+       "Montar do zero" duplicado. Todo grupo que nao contem os botoes
+       atuais e lixo e sai antes de montar o proximo. */
+    var vivos=tabs.filter(function(b){ return document.contains(b); });
+    if(vivos.length<3) return;
+    [].slice.call(document.querySelectorAll('#perfilGrupo, .perfil-grupo'))
+      .forEach(function(g){
+        if(!vivos.some(function(b){ return g.contains(b); })) g.remove();
+      });
+    var jaFeito=document.getElementById('perfilGrupo');
+    if(jaFeito && vivos.every(function(b){ return jaFeito.contains(b); })) return;
+    if(jaFeito) jaFeito.remove();
+    tabs=vivos;
+    var pai=tabs[0].parentElement;
+    if(!pai) return;
+    var grupo=document.createElement('div');
+    grupo.id='perfilGrupo'; grupo.className='perfil-grupo';
+    pai.insertBefore(grupo, tabs[0]);
+    tabs.forEach(function(b,i){
+      if(ZERO.test((b.textContent||'').trim())){
+        var s=document.createElement('span'); s.className='sep'; grupo.appendChild(s);
+        b.classList.add('zero');
+      }
+      grupo.appendChild(b);
+    });
+  }
+  function rotulos(){
+    document.querySelectorAll('button').forEach(function(b){
+      var t=(b.textContent||'').trim();
+      var m=/^(Brasil|Global)\s+(\d+%)$/.exec(t);
+      if(m && !b.querySelector('.rot')){
+        b.classList.add(m[1]==='Brasil'?'mkt-br':'mkt-gl');
+        b.innerHTML='<span class="rot">'+m[1]+' </span>'+m[2];   /* rotulo fica no DOM p/ leitor de tela */
+      }
+    });
+  }
+  function passe(){ try{ agrupar(); }catch(e){} try{ rotulos(); }catch(e){} }
+  setInterval(passe, 900);
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', passe); else passe();
+})();
+</script>
+
+<style id="cores-css">
+/* ===== Unificacao das superficies =======================================
+   Havia tres sistemas convivendo: cards em rgba(22,15,49,.43) (roxo, 43%),
+   gaveta e selects em branco ~6% (neutro, acompanha o fundo) e os campos de
+   texto em rgba(28,47,99,.78) -- azul e quase opaco. Por isso todo lugar
+   "onde se escreve" saltava do card em volta.
+   O sistema neutro vence porque tinge o que estiver atras em vez de impor
+   uma cor propria; entao os campos passam a usa-lo, com a mesma borda dos
+   selects e dos cards da gaveta. ===================================== */
+/* o CSS do painel usa #tool-workspace :is(...) -- o :not(#_) sobe a
+   especificidade acima dela sem mudar o alvo */
+#tool-workspace :is(input[type=text], input[type=number], textarea,
+  .pct-input, .name-input, .det-input, .mini-input, .inp,
+  .lib-search-inp, .oc-search, .proj-anos-input, .hp-inp):not(#_){
+  background:rgba(255,255,255,.065) !important;
+  border:1px solid rgba(231,220,255,.20) !important;
+  color:var(--s-text) !important;
+}
+#tool-workspace :is(input, textarea):not(#_)::placeholder{ color:rgba(231,224,255,.38) !important; }
+
+/* foco: laranja da marca, um so padrao em todo campo */
+#tool-workspace :is(input, textarea, select):focus:not(#_){
+  border-color:rgba(255,98,29,.55) !important;
+  background:rgba(255,255,255,.085) !important;
+  outline:none !important;
+}
+/* selects ja estavam no sistema neutro -- so alinha a borda */
+#tool-workspace :is(.sel, .ret-sel, select):not(#_){ border-color:rgba(231,220,255,.20) !important; }
+
+/* ===== Barra de atalhos da gaveta ======================================
+   Eu tinha inventado um fundo quase preto (12,8,33) que nao existia no
+   resto; passa a usar a propria cor da gaveta, e os chips o mesmo neutro
+   dos cards de ativo. */
+#libAtalhos{
+  background:linear-gradient(180deg, rgba(32,20,58,.97) 78%, rgba(32,20,58,0)) !important;
+}
+#libAtalhos button{
+  background:rgba(255,255,255,.055) !important;
+  border:1px solid rgba(231,220,255,.20) !important;
+  color:var(--s-muted) !important;
+}
+#libAtalhos button:hover{
+  background:rgba(255,255,255,.10) !important;
+  border-color:rgba(231,220,255,.34) !important; color:var(--s-text) !important;
+}
+#libAtalhos button.aqui{
+  background:rgba(255,98,29,.16) !important;
+  border-color:rgba(255,98,29,.55) !important; color:#fff !important;
+}
+</style>
+
+<style id="xpi-css">
+/* ===== Link XP por ativo ================================================
+   Antes: 38 chips iguais apontando para o mesmo Raio-XP, inclusive em CDB e
+   LCA. Agora o chip so aparece quando existe pagina do ativo na XP -- acoes,
+   BDRs e fundos listados. Renda fixa e multimercado nao recebem chip. */
+.xp-research-link{
+  display:inline-flex; align-items:center; gap:5px;
+  margin:6px 0 0 34px; padding:3px 9px;
+  font-size:11.5px; font-weight:600; letter-spacing:.01em;
+  border-radius:999px; text-decoration:none;
+  background:rgba(255,98,29,.11);
+  border:1px solid rgba(255,98,29,.34);
+  color:#ffb490;
+  transition:background .15s, border-color .15s, color .15s;
+}
+.xp-research-link:hover{
+  background:rgba(255,98,29,.2); border-color:rgba(255,98,29,.6); color:#fff;
+}
+.lib-card .xp-research-link, .rvitem .xp-research-link{ margin-left:0; }
+
+/* ===== Ativos na busca global ========================================== */
+#buscaAtivos{ margin-top:14px; border-top:1px solid var(--s-border); padding-top:12px; }
+#buscaAtivos .ba-tit{
+  font-size:10.5px; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--s-subtle); margin:0 0 8px 2px; font-weight:700;
+}
+#buscaAtivos .ba-linha{ display:flex; gap:6px; margin-bottom:4px; align-items:stretch; }
+#buscaAtivos .ba-row{
+  display:flex; align-items:center; gap:10px; flex:1; min-width:0;
+  padding:8px 10px; border-radius:10px; cursor:pointer;
+  border:1px solid transparent; background:rgba(255,255,255,.04);
+  text-align:left; color:var(--s-text); text-decoration:none;
+  font:inherit;
+}
+#buscaAtivos .ba-row:hover{ background:rgba(255,255,255,.085); border-color:var(--s-border); }
+#buscaAtivos .ba-xpbtn{
+  display:flex; align-items:center; padding:0 12px; border-radius:10px;
+  font-size:11.5px; font-weight:700; text-decoration:none; white-space:nowrap;
+  background:rgba(255,98,29,.12); border:1px solid rgba(255,98,29,.34); color:#ffb490;
+}
+#buscaAtivos .ba-xpbtn:hover{ background:rgba(255,98,29,.22); border-color:rgba(255,98,29,.6); color:#fff; }
+#buscaAtivos .ba-tick{
+  font-family:var(--s-mono,monospace); font-size:11px; font-weight:700;
+  padding:2px 7px; border-radius:6px; flex-shrink:0;
+  background:rgba(255,98,29,.14); border:1px solid rgba(255,98,29,.3); color:#ffb490;
+}
+#buscaAtivos .ba-tick.rf{ background:rgba(72,214,160,.13); border-color:rgba(72,214,160,.3); color:#8fe8c6; }
+#buscaAtivos .ba-nome{ flex:1; min-width:0; font-size:13px; font-weight:600;
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+#buscaAtivos .ba-sub{ font-size:11px; color:var(--s-subtle); font-weight:500; flex-shrink:0; }
+#buscaAtivos .ba-xp{ font-size:11px; color:#ffb490; flex-shrink:0; font-weight:600; }
+#buscaAtivos .ba-vazio{ font-size:12px; color:var(--s-subtle); padding:2px; }
+
+/* ===== Faixas de controle (ITCMD, ITBI, alavancas do simulador) =========
+   Eram o slider cru do navegador -- cinza 59,59,59, o unico controle que
+   nao seguia a paleta. */
+#tool-workspace input[type="range"]{
+  -webkit-appearance:none; appearance:none;
+  width:100%; height:5px; padding:0; cursor:pointer; outline:none;
+  border:0 !important; border-radius:999px;
+  background:rgba(255,255,255,.14) !important;
+}
+#tool-workspace input[type="range"]::-webkit-slider-thumb{
+  -webkit-appearance:none; appearance:none;
+  width:16px; height:16px; border-radius:50%;
+  background:var(--s-orange); border:2px solid rgba(255,255,255,.85);
+  box-shadow:0 1px 6px rgba(0,0,0,.45); cursor:pointer;
+}
+#tool-workspace input[type="range"]::-moz-range-track{
+  height:5px; border-radius:999px; background:rgba(255,255,255,.14); border:0;
+}
+#tool-workspace input[type="range"]::-moz-range-thumb{
+  width:16px; height:16px; border-radius:50%;
+  background:var(--s-orange); border:2px solid rgba(255,255,255,.85);
+  box-shadow:0 1px 6px rgba(0,0,0,.45); cursor:pointer;
+}
+#tool-workspace input[type="range"]:focus::-webkit-slider-thumb{
+  box-shadow:0 0 0 4px rgba(255,98,29,.28);
+}
+</style>
+<script id="xpi-js">
+(function(){
+  "use strict";
+
+  /* ===================================================================
+     Paginas de ativo da XP verificadas em 06/09/2026.
+     Acoes e BDRs seguem conteudos.xpi.com.br/acoes/<ticker>/.
+     FIIs nao seguem padrao -- cada um tem slug proprio, entao ficam
+     na lista explicita. ETF nem sempre existe (SMAL11 e NASD11 dao 404),
+     por isso so entram os que foram conferidos.
+     =================================================================== */
+  var RAIZ='https://conteudos.xpi.com.br/acoes/';
+
+  var ACOES={};
+  ('BOVA11 BMOB3 BBAS3 ALUP11 AXIA3 ALOS3 BPAC11 BRBI11 CPLE3 CEAB3 CURY3 '+
+   'CXSE3 CSMG3 EMBJ3 DIRR3 EQTL3 ECOR3 IGTI11 ITUB4 JCCJ11 GGBR4 LWSA3 '+
+   'ORVR3 LREN3 PRIO3 PETR4 PRNR3 RDOR3 ROXO34 SLCE3 TOTS3 SBSP3 SAPR11 '+
+   'TTEN3 TUPY3 VIVA3 VIVT3 VALE3 WEGE3 '+
+   /* BDRs conferidos */
+   'MSFT34 NVDC34 AAPL34 AMZO34 GOGL34 M1TA34 TSLA34 NFLX34 AVGO34'
+  ).split(/\s+/).forEach(function(t){ if(t) ACOES[t]=1; });
+
+  var FUNDOS={
+    XPLG11:'https://conteudos.xpi.com.br/fundos-imobiliarios/xp-log-fii-xplg11/',
+    HABT11:'https://conteudos.xpi.com.br/fundos-imobiliarios/habitat-ii-fii-habt11/',
+    XPAG11:'https://conteudos.xpi.com.br/fundos-de-investimento/xp-credito-agro-xpag11/'
+  };
+
+  /* nome do papel -> ticker, para quando a linha nao traz o codigo */
+  var NOMES=[
+    [/\bMICROSOFT\b/,'MSFT34'], [/\bAPPLE\b/,'AAPL34'], [/\bNVIDIA\b/,'NVDC34'],
+    [/\bAMAZON\b/,'AMZO34'], [/\bGOOGLE\b|\bALPHABET\b/,'GOGL34'],
+    [/\bMETA\b|\bFACEBOOK\b/,'M1TA34'], [/\bTESLA\b/,'TSLA34'],
+    [/\bNETFLIX\b/,'NFLX34'], [/\bBROADCOM\b/,'AVGO34'],
+    [/\bPETROBRAS\b/,'PETR4'], [/\bVALE\b/,'VALE3'], [/\bITA[UÚ]\b/,'ITUB4'],
+    [/\bBANCO DO BRASIL\b/,'BBAS3'], [/\bWEG\b/,'WEGE3'], [/\bBTG\b/,'BPAC11'],
+    [/\bEQUATORIAL\b/,'EQTL3'], [/\bSABESP\b/,'SBSP3'], [/\bTOTVS\b/,'TOTS3'],
+    [/\bAXIA\b/,'AXIA3'], [/\bJHSF\b/,'JCCJ11'], [/\bXP LOG[IÍ]STICO\b|\bXP LOG\b/,'XPLG11'],
+    [/\bXPAG\b|\bCR[EÉ]DITO DO AGRO\b/,'XPAG11'], [/\bHABITAT\b/,'HABT11']
+  ];
+
+  /* classes que nao tem pagina de ativo na XP */
+  var SEM_LINK=/renda\s*fixa|multimercad/i;
+
+  function urlAcao(t){ return RAIZ + t.toLowerCase() + '/'; }
+  function urlBusca(t){ return 'https://conteudos.xpi.com.br/?s=' + encodeURIComponent(t); }
+
+  /* Resolve o ativo -> {url, tick} ou null. */
+  function resolver(item){
+    if(!item) return null;
+    var classe = String(item.classe || item.class || '');
+    if(SEM_LINK.test(classe)) return null;
+    var txt = String(item.ticker || '') + ' ' +
+              [item.nome, item.ativo, item.detalhe].filter(Boolean).join(' ');
+    var T = txt.toUpperCase();
+    var achados = T.match(/\b[A-Z]{4}\d{1,2}\b/g) || [];
+    for(var i=0;i<achados.length;i++){
+      var t=achados[i];
+      if(FUNDOS[t]) return {url:FUNDOS[t], tick:t};
+      if(ACOES[t])  return {url:urlAcao(t), tick:t};
+    }
+    for(var j=0;j<NOMES.length;j++){
+      if(NOMES[j][0].test(T)){
+        var b=NOMES[j][1];
+        return {url: FUNDOS[b] || urlAcao(b), tick:b};
+      }
+    }
+    return null;
+  }
+
+  function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+
+  function html(item){
+    var r=resolver(item);
+    if(!r) return '';
+    return '<a class="xp-research-link" href="'+esc(r.url)+'" target="_blank" '+
+           'rel="noopener noreferrer" title="'+esc('Análise de '+r.tick+' na XP')+'" '+
+           'aria-label="'+esc('Análise de '+r.tick+' na XP')+'">'+esc(r.tick)+' na XP ↗</a>';
+  }
+
+  /* O chip pode precisar nascer ou morrer quando o assessor troca o nome do
+     ativo na linha -- por isso o update insere e remove, nao so atualiza. */
+  function atualizar(container, item){
+    if(!container) return;
+    var atual=container.querySelector('.xp-research-link');
+    var r=resolver(item);
+    if(!r){ if(atual) atual.remove(); return; }
+    if(!atual){
+      var tmp=document.createElement('div');
+      tmp.innerHTML=html(item);
+      atual=tmp.firstElementChild;
+      if(!atual) return;
+      var ancora=container.firstElementChild;
+      if(ancora && ancora.nextSibling) container.insertBefore(atual, ancora.nextSibling);
+      else container.appendChild(atual);
+      return;
+    }
+    atual.href=r.url;
+    atual.textContent=r.tick+' na XP ↗';
+    atual.title='Análise de '+r.tick+' na XP';
+    atual.setAttribute('aria-label', atual.title);
+  }
+
+  /* Toma o lugar do gerador original: o modulo original atribui esses dois
+     globais quando carrega, entao o setter descarta a versao dele. */
+  function fixar(nome, fn){
+    try{
+      Object.defineProperty(window, nome, {
+        configurable:true, get:function(){ return fn; }, set:function(){}
+      });
+    }catch(e){ window[nome]=fn; }
+  }
+  fixar('__xpAssetLink', html);
+  fixar('__xpUpdateLink', atualizar);
+  window.__xpiResolver = resolver;
+
+  /* ===================================================================
+     Busca global: alem das ferramentas, encontra ativos.
+     =================================================================== */
+  var CATALOGO=[
+    /* --- renda fixa: nao tem pagina de ativo, mas leva ao comparador --- */
+    {t:'LCA',  n:'Letra de Crédito do Agronegócio', s:'Renda fixa · isenta de IR', rota:'comparador', rf:1},
+    {t:'LCI',  n:'Letra de Crédito Imobiliário',    s:'Renda fixa · isenta de IR', rota:'comparador', rf:1},
+    {t:'LCD',  n:'Letra de Crédito ao Desenvolvimento', s:'Renda fixa · isenta de IR', rota:'comparador', rf:1},
+    {t:'CDB',  n:'Certificado de Depósito Bancário',  s:'Renda fixa · IR regressivo', rota:'comparador', rf:1},
+    {t:'CRA',  n:'Certificado de Recebíveis do Agronegócio', s:'Renda fixa · isento', rota:'comparador', rf:1},
+    {t:'CRI',  n:'Certificado de Recebíveis Imobiliários', s:'Renda fixa · isento', rota:'comparador', rf:1},
+    {t:'DEB',  n:'Debênture incentivada',           s:'Renda fixa · isenta (Lei 12.431)', rota:'comparador', rf:1},
+    {t:'LF',   n:'Letra Financeira',                s:'Renda fixa · prazo mínimo 2 anos', rota:'comparador', rf:1},
+    {t:'SELIC',n:'Tesouro Selic',                   s:'Pós-fixado · liquidez diária', rota:'comparador', rf:1},
+    {t:'NTN-B',n:'Tesouro IPCA+ (NTN-B)',           s:'Inflação · juro real', rota:'comparador', rf:1},
+    {t:'LTN',  n:'Tesouro Prefixado (LTN)',         s:'Prefixado', rota:'comparador', rf:1},
+    /* --- fundos listados --- */
+    {t:'XPLG11', n:'XP Log FII',            s:'Galpões logísticos', rota:'rv'},
+    {t:'XPAG11', n:'XP Crédito Agro (Fiagro)', s:'Crédito do agro', rota:'rv'},
+    {t:'HABT11', n:'Habitat II FII',        s:'Recebíveis pulverizados', rota:'rv'},
+    {t:'JCCJ11', n:'JHSF Capital Malls',    s:'Shoppings premium', rota:'rv'},
+    {t:'IGTI11', n:'Iguatemi',              s:'Shoppings', rota:'rv'}
+  ];
+  /* acoes e BDRs entram automaticamente a partir da lista verificada */
+  var APELIDO={PETR4:'Petrobras',VALE3:'Vale',ITUB4:'Itaú Unibanco',BBAS3:'Banco do Brasil',
+    WEGE3:'WEG',BPAC11:'BTG Pactual',EQTL3:'Equatorial',SBSP3:'Sabesp',TOTS3:'Totvs',
+    PRIO3:'PRIO',RDOR3:'Rede D\u2019Or',LREN3:'Lojas Renner',VIVT3:'Vivo',GGBR4:'Gerdau',
+    CPLE3:'Copel',CXSE3:'Caixa Seguridade',ALOS3:'Allos',CURY3:'Cury',DIRR3:'Direcional',
+    CEAB3:'C&A',SLCE3:'SLC Agrícola',TTEN3:'3tentos',TUPY3:'Tupy',VIVA3:'Vivara',
+    CSMG3:'Copasa',SAPR11:'Sanepar',ALUP11:'Alupar',ECOR3:'EcoRodovias',ORVR3:'Orizon',
+    LWSA3:'Locaweb',BMOB3:'Bemobi',BRBI11:'BR Partners',EMBJ3:'Embraer (EMBJ3)',
+    PRNR3:'Priner',AXIA3:'Axia Energia',BOVA11:'BOVA11 · ETF Ibovespa',
+    JCCJ11:'JHSF Capital Malls',IGTI11:'Iguatemi',ROXO34:'Nubank (BDR)',
+    MSFT34:'Microsoft (BDR)',NVDC34:'Nvidia (BDR)',AAPL34:'Apple (BDR)',
+    AMZO34:'Amazon (BDR)',GOGL34:'Alphabet (BDR)',M1TA34:'Meta (BDR)',
+    TSLA34:'Tesla (BDR)',NFLX34:'Netflix (BDR)',AVGO34:'Broadcom (BDR)'};
+  Object.keys(ACOES).forEach(function(t){
+    if(CATALOGO.some(function(c){ return c.t===t; })) return;
+    CATALOGO.push({t:t, n:APELIDO[t]||t, s:/34$/.test(t)?'BDR · bolsa americana':'Renda variável', rota:'rv'});
+  });
+
+  function normal(s){
+    return String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+  }
+  function buscarAtivos(q){
+    var termos=normal(q).split(/\s+/).filter(Boolean);
+    if(!termos.length) return [];
+    return CATALOGO.filter(function(a){
+      var alvo=normal(a.t+' '+a.n+' '+a.s);
+      return termos.every(function(w){ return alvo.indexOf(w)>=0; });
+    }).slice(0,8);
+  }
+
+  function linhaAtivo(a){
+    var url = a.rf ? null : (FUNDOS[a.t] || (ACOES[a.t] ? urlAcao(a.t) : null));
+    return '<div class="ba-linha">'+
+      '<button type="button" class="ba-row" data-ba-t="'+esc(a.t)+'" '+
+        'data-ba-rv="'+(a.rf?'0':'1')+'" title="Abrir na gaveta de ativos">'+
+        '<span class="ba-tick'+(a.rf?' rf':'')+'">'+esc(a.t)+'</span>'+
+        '<span class="ba-nome">'+esc(a.n)+'</span>'+
+        '<span class="ba-sub">'+esc(a.s)+'</span>'+
+      '</button>'+
+      (url ? '<a class="ba-xpbtn" href="'+esc(url)+'" target="_blank" rel="noopener noreferrer" '+
+        'title="Abrir '+esc(a.t)+' no conteúdo da XP">XP ↗</a>' : '')+
+      '</div>';
+  }
+
+  /* ===================================================================
+     Levar o resultado ate o ativo. Antes o clique so trocava de rota e
+     largava o assessor na tela -- agora abre a gaveta certa e ja filtra
+     pelo termo, que e o passo que ele faria na mao em seguida.
+     =================================================================== */
+  function espera(ms){ return new Promise(function(r){ setTimeout(r, ms); }); }
+  function visiveis(sel){
+    return [].slice.call(document.querySelectorAll(sel))
+             .filter(function(c){ return c.offsetParent; }).length;
+  }
+  async function preencher(tabId, campoId, seletor, termo){
+    var tab=document.getElementById(tabId), campo=document.getElementById(campoId);
+    if(!tab || !campo) return -1;
+    var gaveta=campo.closest('#libDrawer, #opcat');
+    if(gaveta && !gaveta.classList.contains('open')){ tab.click(); await espera(360); }
+    campo.value=termo;
+    campo.dispatchEvent(new Event('input',{bubbles:true}));
+    await espera(320);
+    return visiveis(seletor);
+  }
+  async function abrirNaGaveta(termo, ehRV){
+    if(!/^#\/(construtor|rv)$/.test(location.hash)) location.hash='/construtor';
+    for(var i=0;i<70 && !document.getElementById('libTab');i++) await espera(120);
+    if(!document.getElementById('libTab')) return;
+    await espera(250);
+    var GERAL=['libTab','libSearch','#libDrawer .lib-card'];
+    var RVES =['catTab','ocSearch','#opcat .opcard'];
+    var primeira = ehRV ? RVES : GERAL, segunda = ehRV ? GERAL : RVES;
+    var n=await preencher(primeira[0], primeira[1], primeira[2], termo);
+    /* o ativo pode estar so na outra gaveta -- CDB nao esta na RV
+       estruturada, TUPY3 nao esta na gaveta geral */
+    var m = n===0 ? await preencher(segunda[0], segunda[1], segunda[2], termo) : n;
+    if(n<=0 && m<=0){
+      /* o ativo existe na XP mas nao esta nas gavetas do Hub -- dizer isso
+         e melhor do que deixar o assessor olhando uma gaveta vazia */
+      ['libDrawer','opcat','libBackdrop','catBackdrop'].forEach(function(k){
+        var e=document.getElementById(k); if(e) e.classList.remove('open');
+      });
+      try{ window.showToast(termo+' não está nas gavetas do Hub — use o botão XP na busca para abrir a análise.'); }catch(e){}
+      return;
+    }
+    var aberta=document.querySelector('#opcat.open, #libDrawer.open');
+    if(aberta) aberta.scrollIntoView({behavior:'smooth', block:'center'});
+  }
+
+  function montarBusca(dlg){
+    var input=dlg.querySelector('.search-input');
+    var res=dlg.querySelector('.search-results');
+    if(!input || !res || dlg.__ba) return;
+    dlg.__ba=1;
+    var cx=document.createElement('div');
+    cx.id='buscaAtivos'; cx.hidden=true;
+    res.parentNode.insertBefore(cx, res.nextSibling);
+    input.placeholder='Busque uma ferramenta ou um ativo: PETR4, CDB, Microsoft…';
+
+    function passe(){
+      var q=input.value.trim();
+      var achados=buscarAtivos(q);
+      var ticker=/^[A-Za-z]{4}\d{1,2}$/.test(q) ? q.toUpperCase() : null;
+      if(!achados.length && !ticker){ cx.hidden=true; cx.innerHTML=''; return; }
+      var h='<p class="ba-tit">Ativos</p>';
+      if(achados.length) h+=achados.map(linhaAtivo).join('');
+      else if(ticker){
+        /* ticker que nao esta no catalogo: a pagina /acoes/<ticker>/ existe
+           para acoes e BDRs, mas nao para ETF e FII -- por isso o rotulo
+           diz "tentar" e a busca do site fica como segunda opcao. */
+        h+='<a class="ba-row" href="'+esc(urlAcao(ticker))+'" target="_blank" rel="noopener noreferrer">'+
+             '<span class="ba-tick">XP</span><span class="ba-nome">Tentar '+esc(ticker)+
+             ' no conteúdo da XP</span><span class="ba-xp">↗</span></a>'+
+           '<a class="ba-row" href="'+esc(urlBusca(ticker))+'" target="_blank" rel="noopener noreferrer">'+
+             '<span class="ba-tick">XP</span><span class="ba-nome">Buscar “'+esc(ticker)+
+             '” no site da XP</span><span class="ba-xp">↗</span></a>';
+      }
+      cx.innerHTML=h; cx.hidden=false;
+      /* "Nenhuma ferramenta encontrada" fica estranho logo acima de uma lista
+         de ativos encontrados -- some quando o ativo responde pela busca. */
+      var vazio=res.querySelector('.studio-muted');
+      if(vazio) vazio.style.display='none';
+      cx.querySelectorAll('[data-ba-t]').forEach(function(b){
+        b.addEventListener('click', function(){
+          var termo=b.getAttribute('data-ba-t');
+          var ehRV=b.getAttribute('data-ba-rv')==='1';
+          try{ dlg.close(); }catch(e){}
+          abrirNaGaveta(termo, ehRV);
+        });
+      });
+    }
+    input.addEventListener('input', passe);
+    passe();
+  }
+
+  new MutationObserver(function(muts){
+    for(var i=0;i<muts.length;i++){
+      var add=muts[i].addedNodes;
+      for(var j=0;j<add.length;j++){
+        var n=add[j];
+        if(n.nodeType===1 && n.id==='tool-search') montarBusca(n);
+      }
+    }
+  }).observe(document.body, {childList:true});
+  var jaAberto=document.getElementById('tool-search');
+  if(jaAberto) montarBusca(jaAberto);
+})();
+</script>
+<script id="nav-js">
+(function(){
+  "use strict";
+  /* Planejamento nasce no grupo Assessoria porque a lista de ferramentas
+     vive num modulo fechado. Como a barra e montada uma vez no boot, mover
+     o link no DOM e suficiente -- e a rota #/simulador segue a mesma. */
+  function mover(){
+    var nav=document.querySelector('.studio-navigation');
+    if(!nav) return false;
+    var link=nav.querySelector('a[data-route="simulador"]');
+    if(!link) return false;
+    var patrimonio=[].slice.call(nav.querySelectorAll('.nav-group'))
+      .filter(function(g){ return /patrim/i.test(g.textContent||''); })[0];
+    if(!patrimonio) return false;
+    if(link.previousElementSibling===patrimonio) return true;   /* ja esta la */
+    patrimonio.parentNode.insertBefore(link, patrimonio.nextSibling);
+    return true;
+  }
+  var tentativas=0;
+  (function tentar(){
+    if(mover() || tentativas++>60) return;
+    setTimeout(tentar, 150);
+  })();
+  window.addEventListener('hashchange', mover);
+})();
+</script>
