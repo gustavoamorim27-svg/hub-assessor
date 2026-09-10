@@ -12,7 +12,7 @@ const expectedPublishedHashes = {
   'src/features/construtor/asset-library.js':
     '479da1d98e71f53c58871f39d3bc4c58ebb6b89981093816e749167a8023c295',
   'src/features/construtor/engine.js':
-    'e07036998bcb9438863e13f81b271ef67e2fdf829860c5df4774d48232eaec5a',
+    '31d02e5d81debd783caf23896525778f4627a49a65700e96a19acd3056dc7216',
 };
 
 function decodeAsset(dataUrl) {

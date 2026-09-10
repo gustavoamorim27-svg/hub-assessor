@@ -1092,6 +1092,7 @@
             projAnos: Number(S.projAnos) || 5,
             recomendadaTemplate: S.recomendadaTemplate || "Moderada",
             usarRetornoAtivo: !!S.usarRetornoAtivo,
+            saidas: Array.isArray(S.saidas) ? S.saidas.slice() : [],
             posicaoAtual:
               S.posicaoAtual && S.posicaoAtual.comp
                 ? {
@@ -1145,6 +1146,7 @@
             S.usarRetornoAtivo = snap.usarRetornoAtivo;
           if (snap.posicaoAtual && snap.posicaoAtual.comp && !S.posicaoAtual)
             S.posicaoAtual = snap.posicaoAtual;
+          S.saidas = Array.isArray(snap.saidas) ? snap.saidas.slice() : [];
         } catch (_) {
           __ctorRestoring = false;
           return false;
@@ -1195,6 +1197,7 @@
           projAnos: Number(S.projAnos) || 5,
           recomendadaTemplate: S.recomendadaTemplate || "Moderada",
           usarRetornoAtivo: !!S.usarRetornoAtivo,
+          saidas: Array.isArray(S.saidas) ? S.saidas.slice() : [],
           posicaoAtual:
             S.posicaoAtual && S.posicaoAtual.comp
               ? { conta: S.posicaoAtual.conta || null, patrimonio: S.posicaoAtual.patrimonio || 0,
@@ -1288,6 +1291,7 @@
           if (typeof snap.usarRetornoAtivo === "boolean")
             S.usarRetornoAtivo = snap.usarRetornoAtivo;
           S.posicaoAtual = snap.posicaoAtual && snap.posicaoAtual.comp ? snap.posicaoAtual : null;
+          S.saidas = Array.isArray(snap.saidas) ? snap.saidas.slice() : [];
         } finally {
           __ctorRestoring = false;
         }
@@ -1517,6 +1521,7 @@
         clienteCDI: 0,
         projAnos: 5,
         posicaoAtual: null, // posição consolidada importada (categoria -> %)
+        saidas: [], // ativos da posicao importada que o assessor tirou da proposta
         recomendadaTemplate: "Moderada", // template ideal de referência p/ aderência da aba Atual
         usarRetornoAtivo: true, // Parte A: calcula o retorno da carteira pelo "Retorno" de cada ativo
         editandoTemplate: null, // Tarefa 3: nome do modelo em edicao (Conservadora/Moderada/Sofisticada) ou null
@@ -1531,6 +1536,63 @@
         Alternativos: "Alternativos (posição atual)",
         Internacional: "Internacional (posição atual)",
       };
+
+      /* ---------- atual x novo x saiu ----------
+         Depois de importar a Posicao Consolidada, cada ativo que veio da
+         planilha carrega origem:"atual" (e pctAtual, o peso que tinha); o
+         que o assessor acrescenta depois nasce origem:"novo"; o que ele tira
+         vai para S.saidas. Na tela e no PNG isso vira "o que fica, o que
+         entra, o que sai" -- mais claro para o cliente do que uma lista so. */
+      function modoComparacao() {
+        return (
+          S.template === "Atual" &&
+          !!(S.posicaoAtual && S.posicaoAtual.comp) &&
+          (S.items.some(function (it) { return it.origem === "atual"; }) ||
+            (S.saidas && S.saidas.length > 0))
+        );
+      }
+      function marcarNovo(o) {
+        if (o && S.template === "Atual" && S.posicaoAtual && S.posicaoAtual.comp && !o.origem)
+          o.origem = "novo";
+        return o;
+      }
+      function pesoMudou(it) {
+        return (
+          it.origem === "atual" &&
+          it.pctAtual != null &&
+          Math.abs((Number(it.pct) || 0) - Number(it.pctAtual)) >= 0.05
+        );
+      }
+      function registrarSaida(it) {
+        if (!it || it.origem !== "atual") return;
+        if (!Array.isArray(S.saidas)) S.saidas = [];
+        S.saidas.push({
+          nome: it.nome,
+          classe: it.classe,
+          pct: it.pctAtual != null ? Number(it.pctAtual) : Number(it.pct) || 0,
+          detalhe: it.detalhe || "",
+          liquidez: it.liquidez || "",
+        });
+      }
+      function desfazerSaida(idx) {
+        if (!Array.isArray(S.saidas) || !S.saidas[idx]) return;
+        var sd = S.saidas.splice(idx, 1)[0];
+        var o = mk(sd.classe, sd.nome, sd.pct, sd.detalhe, sd.liquidez, null);
+        o.origem = "atual";
+        o.pctAtual = sd.pct;
+        S.items.push(o);
+      }
+      function resumoMudanca() {
+        var r = { mantem: 0, ajusta: 0, novos: 0, saem: (S.saidas || []).length };
+        S.items.forEach(function (it) {
+          if (it.origem === "novo") r.novos++;
+          else if (it.origem === "atual") {
+            if (pesoMudou(it)) r.ajusta++;
+            else r.mantem++;
+          }
+        });
+        return r;
+      }
 
       /* Recebe a posição atual do cliente (vinda da aba Aderência) e cria a aba "Atual" */
       window.__setPosicaoAtual = function (pos) {
@@ -1582,21 +1644,28 @@
           });
           lista.forEach((a) => {
             if ((a.pct || 0) < 0.01) return;
-            const detalhe =
-              "Posição atual · " +
-              (a.detalhe
-                ? a.detalhe
-                : subcatLabel(a) + (a.taxa ? " · " + a.taxa : ""));
-            out.push(
-              mk(
-                a.categoria || "Multimercados",
-                a.name,
-                Math.round((a.pct || 0) * 10) / 10,
-                detalhe,
-                "",
-                null,
-              ),
+            /* o selo ATUAL ja diz de onde veio; o detalhe fica so com o produto */
+            const detalhe = a.detalhe
+              ? a.detalhe
+              : subcatLabel(a) + (a.taxa ? " · " + a.taxa : "");
+            var itPos = mk(
+              a.categoria || "Multimercados",
+              a.name,
+              Math.round((a.pct || 0) * 10) / 10,
+              detalhe,
+              a.liquidez || "",
+              null,
             );
+            itPos.origem = "atual";
+            itPos.pctAtual = itPos.pct;
+            /* saldo parado em conta nao rende: entra com 0% do CDI ate o
+               assessor alocar (ou informar remuneracao de saldo) */
+            if (a.saldo) {
+              itPos.retCat = "pos";
+              itPos.retVal = 0;
+              itPos.retIsento = false;
+            }
+            out.push(itPos);
           });
         }
         if (out.length) return out;
@@ -1611,16 +1680,17 @@
         CLASSES.forEach((cat) => {
           const pct = comp[cat] || 0;
           if (pct < 0.05) return;
-          out.push(
-            mk(
-              cat,
-              CAT_ATUAL_NOMES[cat] || cat,
-              Math.round(pct * 10) / 10,
-              "Posição consolidada importada do Hub XP",
-              "",
-              null,
-            ),
+          var itCat = mk(
+            cat,
+            CAT_ATUAL_NOMES[cat] || cat,
+            Math.round(pct * 10) / 10,
+            "Posição consolidada importada do Hub XP",
+            "",
+            null,
           );
+          itCat.origem = "atual";
+          itCat.pctAtual = itCat.pct;
+          out.push(itCat);
         });
         return out;
       }
@@ -1960,6 +2030,7 @@
         histGuardar("template");
         S.template = t;
         S.recomendadaTemplate = t;
+        S.saidas = [];
         S.items =
           CTOR_CART === "global"
             ? GLOBAL_TEMPLATE()
@@ -1974,6 +2045,7 @@
         histGuardar("nova");
         S.template = "Nova";
         S.recomendadaTemplate = "Moderada";
+        S.saidas = [];
         S.items = [];
         S.cdiMult = CDI_MULT.Moderada;
         render();
@@ -1984,6 +2056,7 @@
         if (!S.posicaoAtual || !S.posicaoAtual.comp) return;
         histGuardar("atual");
         S.template = "Atual";
+        S.saidas = [];
         S.items = itensDaPosicao(S.posicaoAtual);
         if (S.posicaoAtual.patrimonio) S.patrimonio = S.posicaoAtual.patrimonio;
         if (S.posicaoAtual.conta && (!S.cliente || /^Conta /.test(S.cliente)))
@@ -2280,8 +2353,20 @@
         );
       }
 
+      /* "≈ R$ X" e, na comparacao, quanto pesava antes */
+      function vhintTexto(i) {
+        var t = "≈ R$ " + fmtBRL((S.patrimonio * (Number(i.pct) || 0)) / 100);
+        if (modoComparacao() && pesoMudou(i)) {
+          var d = (Number(i.pct) || 0) - Number(i.pctAtual);
+          t +=
+            " · era " + fmtPct(i.pctAtual) + "% (" + (d > 0 ? "+" : "−") +
+            fmtPct(Math.abs(d)) + " p.p.)";
+        }
+        return t;
+      }
       function renderEditor(D) {
         const el = document.getElementById("editor");
+        const cmp = modoComparacao();
         let h = "";
         if (!S.items.length) {
           h +=
@@ -2331,6 +2416,7 @@
             <input class="pct-input num" type="text" inputmode="decimal" value="${String(i.pct).replace(".", ",")}" data-f="pct" data-id="${i.id}">
             <span class="pct-suffix">%</span>
           </div>
+          ${cmp && i.origem === "atual" ? '<span class="orig-badge orig-atual" title="Já está na carteira do cliente">Atual</span>' : ""}${cmp && i.origem === "novo" ? '<span class="orig-badge orig-novo" title="Entra na proposta">Novo</span>' : ""}
           <input class="name-input" value="${esc(i.nome)}" data-f="nome" data-id="${i.id}">
           <select class="sel" data-f="classe" data-id="${i.id}">${selOpts}</select>
           <button class="del-btn" data-del="${i.id}"><svg class="icon" viewBox="0 0 24 24" style="width:15px;height:15px;"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
@@ -2341,11 +2427,19 @@
         <input class="det-input" value="${esc(i.detalhe)}" placeholder="Detalhe (estrutura, prazo, taxa…)" data-f="detalhe" data-id="${i.id}">
         ${retornoSectionHTML(i)}
         ${i.catalogOp ? `<button type="button" class="op-how-btn" data-howtoggle="${i.id}">${i._howOpen ? "▴" : "▾"} Como funciona a operação</button><div class="op-how-body" data-howbody="${i.id}" style="display:${i._howOpen ? "block" : "none"}">${i._howOpen && window.__opPayoffHTML ? window.__opPayoffHTML(i.catalogOp) : ""}</div>` : ""}
-        <div class="vhint" data-vhint="${i.id}" style="font-size:12px; color:#6F77A8; margin-top:4px;">≈ R$ ${fmtBRL((S.patrimonio * (Number(i.pct) || 0)) / 100)}</div>
+        <div class="vhint" data-vhint="${i.id}" style="font-size:12px; color:#6F77A8; margin-top:4px;">${vhintTexto(i)}</div>
       </div>`;
           });
           h += `</div>`;
         });
+        /* o que saiu da carteira do cliente: fica a vista e da para voltar */
+        if (cmp && Array.isArray(S.saidas) && S.saidas.length) {
+          h += `<div class="saidas-box"><div class="saidas-tit">Saem da carteira <span>${S.saidas.length}</span></div>`;
+          S.saidas.forEach((sd, idx) => {
+            h += `<div class="saida-row"><span class="saida-dot" style="background:${CLASS_COLORS[sd.classe] || "#8A93D8"}"></span><span class="saida-nome">${esc(sd.nome)}</span><span class="saida-pct">${fmtPct(sd.pct)}%</span><button type="button" class="saida-voltar" data-voltar="${idx}" title="Devolver à proposta">↩ voltar</button></div>`;
+          });
+          h += `</div>`;
+        }
         el.innerHTML = h;
         // listeners
         el.querySelectorAll("[data-f]").forEach((inp) => {
@@ -2381,7 +2475,15 @@
         });
         el.querySelectorAll("[data-del]").forEach((b) => {
           b.onclick = () => {
+            if (modoComparacao())
+              registrarSaida(S.items.find((x) => x.id === b.dataset.del));
             S.items = S.items.filter((x) => x.id !== b.dataset.del);
+            render();
+          };
+        });
+        el.querySelectorAll("[data-voltar]").forEach((b) => {
+          b.onclick = () => {
+            desfazerSaida(Number(b.dataset.voltar));
             render();
           };
         });
@@ -2683,7 +2785,7 @@
             o.catalogOp = op;
             o._howOpen = true;
           }
-          S.items.push(o);
+          S.items.push(marcarNovo(o));
           render();
           return true;
         } catch (e) {
@@ -2732,9 +2834,7 @@
         renderProj(D);
         S.items.forEach((i) => {
           const e = document.querySelector('[data-vhint="' + i.id + '"]');
-          if (e)
-            e.textContent =
-              "≈ R$ " + fmtBRL((S.patrimonio * (Number(i.pct) || 0)) / 100);
+          if (e) e.textContent = vhintTexto(i);
         });
         // Atualiza os subtotais por classe (o cabecalho 'Renda Fixa X%') sem reconstruir os inputs em foco
         document.querySelectorAll("[data-classpct]").forEach((e) => {
@@ -3209,7 +3309,7 @@
         ctorPersist();
       });
       document.getElementById("btnAdd").onclick = () => {
-        S.items.push(mk("Renda Fixa", "Novo ativo", 0, "", ""));
+        S.items.push(marcarNovo(mk("Renda Fixa", "Novo ativo", 0, "", "")));
         render();
       };
 
@@ -3266,6 +3366,7 @@
         });
 
         histGuardar("importar"); /* o que estava na tela vai para o historico */
+        S.saidas = [];
         S.posicaoAtual = {
           conta: pos.conta,
           patrimonio: pos.patrimonio || tot,
@@ -3434,6 +3535,13 @@
           cdi = S.cdi;
         const FF = "Arial, Helvetica, sans-serif";
         const nome = (cliente || "").trim();
+        /* comparacao atual x proposta (depois de importar a posicao) */
+        const cmp = modoComparacao();
+        const saidas = cmp && Array.isArray(S.saidas) ? S.saidas : [];
+        const resumo = cmp ? resumoMudanca() : null;
+        const COR_ATUAL = "#8A93D8",
+          COR_NOVO = "#2BD9A6",
+          COR_SAI = "#FF5C7A";
 
         /* ---- helpers ---- */
         const tagFor = (i) => {
@@ -3470,18 +3578,20 @@
           activeClasses.push(c);
           rowsH += CLASS_HEAD_H;
           list.forEach((i) => {
-            const second = !!(i.detalhe || tagFor(i));
+            const second = !!(i.detalhe || tagFor(i) || (cmp && pesoMudou(i)));
             rowsH += second ? HOLD_H2 : HOLD_H1;
           });
           rowsH += CLASS_GAP;
         });
+        if (saidas.length) rowsH += CLASS_HEAD_H + saidas.length * HOLD_H1 + CLASS_GAP;
         const rightColH = 84 + rowsH;
 
         /* coluna esquerda */
         const legendClasses = CLASSES.filter((c) => byClass[c] > 0);
         const LEG_BASE_OFF = 530,
           LEG_STEP = 30;
-        const leftColH = LEG_BASE_OFF + legendClasses.length * LEG_STEP + 10;
+        const SUM_H = cmp ? 112 : 0; /* cartao "o que muda" */
+        const leftColH = LEG_BASE_OFF + legendClasses.length * LEG_STEP + 10 + SUM_H;
 
         const bodyH = Math.max(leftColH, rightColH);
         const bodyBottom = bodyTop + bodyH + 26;
@@ -3561,6 +3671,17 @@
           }
         };
 
+        /* selo pequeno (ATUAL / NOVO / SAI) alinhado a linha de texto */
+        const pill = (txt, x, yBase, fill, color) => {
+          ctx.font = `800 9.5px ${FF}`;
+          const w = Math.round(ctx.measureText(txt).width) + 14;
+          ctx.fillStyle = fill;
+          rr(x, yBase - 12, w, 16, 8);
+          ctx.fill();
+          T(txt, x + w / 2, yBase - 1, 9.5, color, "800", "center");
+          return w;
+        };
+
         /* ---- fundo ---- */
         const bg = ctx.createLinearGradient(0, 0, W, H);
         bg.addColorStop(0, "#0A0F38");
@@ -3625,7 +3746,7 @@
           year: "numeric",
         });
         spaced(
-          "PERFIL " + String(template || "").toUpperCase(),
+          cmp ? "CARTEIRA ATUAL → PROPOSTA" : "PERFIL " + String(template || "").toUpperCase(),
           W - MX,
           72,
           13,
@@ -3788,6 +3909,35 @@
           );
           ly += LEG_STEP;
         });
+        if (cmp && resumo) {
+          const sy = ly + 8;
+          spaced("O QUE MUDA", LX, sy + 12, 11.5, "#6F77A8", "700", 1.5, "left");
+          const tiles = [
+            { n: resumo.mantem, l: "mantidos", c: COR_ATUAL },
+            { n: resumo.ajusta, l: "ajustados", c: "#FFB020" },
+            { n: resumo.novos, l: "novos", c: COR_NOVO },
+            { n: resumo.saem, l: "saem", c: COR_SAI },
+          ];
+          const tg = 8,
+            tw = Math.floor((LW - tg * 3) / 4),
+            th = 58,
+            ty = sy + 26;
+          tiles.forEach((tl, k) => {
+            const tx = LX + k * (tw + tg);
+            ctx.fillStyle = "rgba(255,255,255,.03)";
+            rr(tx, ty, tw, th, 12);
+            ctx.fill();
+            ctx.strokeStyle = "rgba(120,130,210,.18)";
+            ctx.lineWidth = 1;
+            rr(tx, ty, tw, th, 12);
+            ctx.stroke();
+            ctx.fillStyle = tl.c;
+            rr(tx, ty + 14, 3, 30, 2);
+            ctx.fill();
+            T(String(tl.n), tx + 14, ty + 30, 22, tl.c, "800", "left");
+            T(tl.l, tx + 14, ty + 48, 11, "#A9B0D6", "600", "left");
+          });
+        }
 
         /* ---- divisor vertical ---- */
         ctx.strokeStyle = "rgba(120,130,210,.16)";
@@ -3841,15 +3991,33 @@
           list.forEach((i) => {
             const valor = (patrimonio * (Number(i.pct) || 0)) / 100;
             const tg = tagFor(i);
-            const second = !!(i.detalhe || tg);
+            const mudou = cmp && pesoMudou(i);
+            const second = !!(i.detalhe || tg || mudou);
             T(fmtPct(i.pct) + "%", RX + 16, y, 15, "#FF6B2C", "800", "left");
+            if (mudou) {
+              const dlt = (Number(i.pct) || 0) - Number(i.pctAtual);
+              T(
+                "era " + fmtPct(i.pctAtual) + "%",
+                RX + 16,
+                y + 18,
+                11,
+                dlt > 0 ? COR_NOVO : COR_SAI,
+                "700",
+                "left",
+              );
+            }
+            let nx = RX + 86;
+            if (cmp && i.origem === "atual")
+              nx += pill("ATUAL", nx, y, "rgba(138,147,216,.16)", COR_ATUAL) + 8;
+            else if (cmp && i.origem === "novo")
+              nx += pill("NOVO", nx, y, "rgba(43,217,166,.16)", COR_NOVO) + 8;
             let nm = i.nome;
             ctx.font = `700 15.5px ${FF}`;
-            const maxNameW = W - MX - 150 - (RX + 86);
+            const maxNameW = W - MX - 150 - nx;
             while (ctx.measureText(nm).width > maxNameW && nm.length > 4)
               nm = nm.slice(0, -1);
             if (nm !== i.nome) nm = nm.trim() + "…";
-            T(nm, RX + 86, y, 15.5, "#fff", "700", "left");
+            T(nm, nx, y, 15.5, "#fff", "700", "left");
             if (i.detalhe)
               T(i.detalhe, RX + 86, y + 18, 12, "#A9B0D6", "500", "left");
             T(
@@ -3873,6 +4041,58 @@
           });
           y += CLASS_GAP;
         });
+        if (saidas.length) {
+          ctx.fillStyle = COR_SAI;
+          rr(RX, y - 16, 5, 22, 2);
+          ctx.fill();
+          T("Saem da carteira", RX + 16, y, 18, "#fff", "800", "left");
+          T(
+            saidas.length + (saidas.length === 1 ? " ativo" : " ativos") + " · deixam a proposta",
+            W - MX,
+            y,
+            13,
+            "#FF8FA5",
+            "700",
+            "right",
+          );
+          y += CLASS_HEAD_H;
+          saidas.forEach((sd) => {
+            T(fmtPct(sd.pct) + "%", RX + 16, y, 15, "#FF8FA5", "800", "left");
+            let nx = RX + 86;
+            nx += pill("SAI", nx, y, "rgba(255,92,122,.16)", COR_SAI) + 8;
+            let nm = sd.nome || "";
+            ctx.font = `700 15.5px ${FF}`;
+            const maxW = W - MX - 150 - nx;
+            while (ctx.measureText(nm).width > maxW && nm.length > 4) nm = nm.slice(0, -1);
+            if (nm !== (sd.nome || "")) nm = nm.trim() + "…";
+            T(nm, nx, y, 15.5, "#B9BFE3", "700", "left");
+            /* risco no nome: saiu */
+            const nw = ctx.measureText(nm).width;
+            ctx.strokeStyle = "rgba(255,92,122,.75)";
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.moveTo(nx, y - 5);
+            ctx.lineTo(nx + nw, y - 5);
+            ctx.stroke();
+            T(
+              "R$ " + fmtBRL((patrimonio * (Number(sd.pct) || 0)) / 100),
+              W - MX,
+              y,
+              14.5,
+              "#8A93D8",
+              "600",
+              "right",
+            );
+            ctx.strokeStyle = "rgba(120,130,210,.10)";
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(RX + 16, y + 16);
+            ctx.lineTo(W - MX, y + 16);
+            ctx.stroke();
+            y += HOLD_H1;
+          });
+          y += CLASS_GAP;
+        }
 
         /* ---- projecao ----
            Um cartao com o grafico a esquerda (area preenchida, grade,
@@ -3899,7 +4119,7 @@
           /* cabecalho: titulo + subtitulo a esquerda, legenda a direita */
           spaced(
             "PROJEÇÃO DE RENTABILIDADE · " +
-              String(template || "").toUpperCase(),
+              (cmp ? "PROPOSTA" : String(template || "").toUpperCase()),
             cardX + padX,
             cardY + 32,
             13,
@@ -3925,7 +4145,7 @@
 
           const series = [
             {
-              lbl: `Carteira ${template} (${fmtPct(retAA)}% a.a.)`,
+              lbl: `Carteira ${cmp ? "proposta" : template} (${fmtPct(retAA)}% a.a.)`,
               cor: "#2BD9A6",
               w: 3,
               dash: null,
