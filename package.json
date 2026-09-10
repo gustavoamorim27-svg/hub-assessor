@@ -8,6 +8,8 @@
     "build": "node scripts/build.mjs",
     "standalone": "node scripts/standalone.mjs",
     "sync:published": "node scripts/sync-published-overrides.mjs",
+    "sync:runtime": "node scripts/sync-published-runtime.mjs",
+    "patch:published": "node scripts/patch-published-runtime.mjs",
     "test": "node --test tests/*.test.mjs",
     "check": "node scripts/check.mjs",
     "format": "prettier --write src scripts tests index.html"

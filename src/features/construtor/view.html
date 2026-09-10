@@ -10,17 +10,17 @@
       <div style="display: flex; gap: 10px">
         <button
           class="btn-ghost"
-          id="btnPropor"
-          style="border-color: rgba(242, 101, 34, 0.55); color: var(--or)"
+          id="btnImportar"
+          title="Carregar a Posição Consolidada (xlsx) do Hub XP como carteira editável"
         >
           <svg class="icon" viewBox="0 0 24 24">
-            <polyline points="17 1 21 5 17 9"></polyline>
-            <path d="M3 11V9a4 4 0 0 1 4-4h14"></path>
-            <polyline points="7 23 3 19 7 15"></polyline>
-            <path d="M21 13v2a4 4 0 0 1-4 4H3"></path>
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
           </svg>
-          Propor carteira
+          Importar carteira
         </button>
+        <input type="file" id="inpImportar" accept=".xlsx,.xls" hidden />
         <button class="btn-ghost" id="btnCopy">
           <svg class="icon" viewBox="0 0 24 24">
             <rect x="9" y="9" width="13" height="13" rx="2"></rect>
@@ -90,6 +90,17 @@
     </div>
 
     <div id="construtorFull">
+      <div class="card" id="ctorHistorico" hidden>
+        <div class="hist-cab">
+          <span class="exp-title">Carteiras recentes</span>
+          <span class="exp-sub">
+            guardadas sozinhas ao trocar de modelo, restaurar o template ou
+            montar do zero · as cinco últimas · toque para reabrir
+          </span>
+        </div>
+        <div id="ctorHistLista"></div>
+      </div>
+
       <div
         style="display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 18px"
         id="tabs"
@@ -453,59 +464,6 @@
           id="projBoxes"
         ></div>
         <div class="disclaimer" style="margin-top: 12px" id="projDisc"></div>
-      </div>
-
-      <div class="card explica">
-        <div class="exp-title">Entenda as estruturas de proteção</div>
-        <div class="exp-sub">
-          Como funcionam as operações estruturadas usadas nas carteiras
-        </div>
-        <div class="exp-grid">
-          <div class="exp-item">
-            <span class="exp-tag prot">🛡️ Collar UI · Proteção Total</span>
-            <p>
-              Combina a compra de uma opção de venda (put) com a venda de uma
-              opção de compra (call), normalmente a custo próximo de zero. Na
-              proteção total, a put fica próxima ao preço atual e protege
-              praticamente toda a queda do ativo; em troca, o ganho na alta fica
-              limitado a um teto.
-            </p>
-          </div>
-          <div class="exp-item">
-            <span class="exp-tag prot">🛡️ Fence · Proteção Parcial</span>
-            <p>
-              Variação do collar que protege apenas parte da queda — até um
-              determinado limite, geralmente a custo zero. Abaixo desse limite o
-              investidor volta a participar das perdas, e na alta o ganho também
-              é limitado a um teto. Troca um pouco de proteção por mais espaço
-              de valorização.
-            </p>
-          </div>
-          <div class="exp-item">
-            <span class="exp-tag cupom">💵 SmartCupom · Cupom Pré-Fixado</span>
-            <p>
-              Produto estruturado que paga um cupom com taxa pré-fixada, já
-              conhecida na contratação, em um prazo definido e condicionado ao
-              comportamento do ativo de referência. Une a previsibilidade do
-              cupom a uma exposição ao ativo.
-            </p>
-          </div>
-        </div>
-        <div class="exp-legend">
-          <span
-            ><span class="atag prot">🛡️ Proteção</span> ativo com estrutura de
-            proteção contra quedas (Collar, Fence e afins).</span
-          >
-          <span
-            ><span class="atag fgc">🔒 FGC</span> coberto pelo Fundo Garantidor
-            de Créditos — até R$ 250 mil por CPF e por instituição (limite
-            global de R$ 1 milhão a cada 4 anos).</span
-          >
-          <span
-            ><span class="atag fgc-parcial">🔒 FGC parcial</span> apenas parte
-            da posição é coberta pelo FGC.</span
-          >
-        </div>
       </div>
 
       <div id="opcat">

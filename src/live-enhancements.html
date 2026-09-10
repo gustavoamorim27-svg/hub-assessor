@@ -1,0 +1,146 @@
+<style id="scroll-depth-css">
+.scroll-depth-field {
+  position: absolute;
+  inset: -18vh -12vw;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+  opacity: .72;
+  contain: strict;
+  will-change: transform;
+}
+.scroll-depth-orb {
+  position: absolute;
+  border-radius: 50%;
+  will-change: transform;
+  transform: translate3d(0, 0, 0);
+  mix-blend-mode: screen;
+}
+.scroll-depth-a {
+  width: 58vmax;
+  height: 58vmax;
+  left: 3vw;
+  top: 9vh;
+  opacity: .38;
+  background: radial-gradient(circle, rgba(255,89,25,.8) 0%, rgba(255,55,80,.38) 38%, transparent 72%);
+}
+.scroll-depth-b {
+  width: 48vmax;
+  height: 48vmax;
+  right: -8vw;
+  top: 34vh;
+  opacity: .36;
+  background: radial-gradient(circle, rgba(59,111,255,.78) 0%, rgba(83,50,255,.34) 42%, transparent 73%);
+}
+.scroll-depth-c {
+  width: 42vmax;
+  height: 42vmax;
+  left: 27vw;
+  bottom: -12vh;
+  opacity: .28;
+  background: radial-gradient(circle, rgba(19,204,190,.7) 0%, rgba(18,137,184,.24) 45%, transparent 74%);
+}
+.motion-paused .scroll-depth-field,
+.page-hidden .scroll-depth-field {
+  transform: none !important;
+}
+.motion-paused .scroll-depth-orb,
+.page-hidden .scroll-depth-orb {
+  transform: translate3d(0,0,0) !important;
+}
+.rf-reference-note {
+  margin: 8px 0 2px;
+  color: var(--s-subtle);
+  font-size: 11px;
+  line-height: 1.4;
+}
+@media (prefers-reduced-motion: reduce) {
+  .scroll-depth-field,
+  .scroll-depth-orb {
+    transform: none !important;
+  }
+}
+</style>
+<script id="scroll-depth-js">
+(function(){
+  'use strict';
+  if(window.__scrollDepthMounted) return;
+  window.__scrollDepthMounted=true;
+
+  var reduce=window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)');
+  var field=null, orbs=[], target=0, current=0, raf=0;
+
+  function mount(){
+    var atmosphere=document.querySelector('.studio-atmosphere');
+    if(!atmosphere) return false;
+    field=document.createElement('div');
+    field.className='scroll-depth-field';
+    field.setAttribute('aria-hidden','true');
+    field.innerHTML='<i class="scroll-depth-orb scroll-depth-a"></i><i class="scroll-depth-orb scroll-depth-b"></i><i class="scroll-depth-orb scroll-depth-c"></i>';
+    atmosphere.appendChild(field);
+    orbs=[].slice.call(field.children);
+    return true;
+  }
+
+  function progress(){
+    var doc=document.scrollingElement || document.documentElement;
+    var main=document.querySelector('.studio-content');
+    var options=[doc,main].filter(Boolean).map(function(el){
+      var max=Math.max(0,el.scrollHeight-el.clientHeight);
+      return {max:max, top:Math.max(0,el.scrollTop||0)};
+    }).sort(function(a,b){ return b.max-a.max; });
+    if(!options.length || !options[0].max) return 0;
+    return Math.max(0,Math.min(1,options[0].top/options[0].max));
+  }
+
+  function paused(){
+    return (reduce && reduce.matches) ||
+      document.documentElement.classList.contains('motion-paused') ||
+      document.body.classList.contains('motion-paused');
+  }
+
+  function paint(){
+    raf=0;
+    if(!field || paused()) return;
+    current+=(target-current)*.115;
+    var p=current, wave=Math.sin(p*Math.PI*2);
+    field.style.transform='translate3d(0,'+(-p*9)+'vh,0) rotate('+(wave*1.4)+'deg) scale('+(1+p*.035)+')';
+    orbs[0].style.transform='translate3d('+(p*13)+'vw,'+(-p*18)+'vh,0) scale('+(1+p*.13)+')';
+    orbs[1].style.transform='translate3d('+(-p*16)+'vw,'+(p*12)+'vh,0) scale('+(1.08-p*.11)+')';
+    orbs[2].style.transform='translate3d('+(wave*8)+'vw,'+(-p*25)+'vh,0) scale('+(1+p*.17)+')';
+    if(Math.abs(target-current)>.001) raf=requestAnimationFrame(paint);
+  }
+
+  function sample(){
+    target=progress();
+    if(!raf) raf=requestAnimationFrame(paint);
+  }
+
+  function annotate(){
+    var drawer=document.getElementById('libDrawer');
+    if(!drawer || drawer.querySelector('.rf-reference-note')) return;
+    var search=drawer.querySelector('#libSearch');
+    if(!search) return;
+    var note=document.createElement('p');
+    note.className='rf-reference-note';
+    note.textContent='Taxas indicativas: XP Research Set/26. FIIs: somente balcão CETIP, Radar XP 2T26. Confirme estoque, preço e suitability.';
+    search.insertAdjacentElement('afterend',note);
+  }
+
+  function start(){
+    if(!mount()){
+      var tries=0, timer=setInterval(function(){
+        if(mount() || ++tries>60){ clearInterval(timer); sample(); }
+      },120);
+    }
+    window.addEventListener('scroll',sample,{passive:true,capture:true});
+    window.addEventListener('resize',sample,{passive:true});
+    window.addEventListener('hashchange',function(){ setTimeout(function(){ sample(); annotate(); },180); });
+    new MutationObserver(function(){ annotate(); }).observe(document.body,{childList:true,subtree:true});
+    annotate();
+    sample();
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',start,{once:true});
+  else start();
+})();
+</script>

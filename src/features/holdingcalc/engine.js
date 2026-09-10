@@ -27,12 +27,18 @@
     mod: "extra",
     abert: 15000,
     cart: 4500,
-    doa: 5000,
+    doa: 25000,
     cont: 1000,
     alug: false,
     alugV: 15000,
     pf: 27.5,
   };
+  /* medias de mercado no Brasil (2026), pre-preenchidas: o assessor so ajusta
+     se quiser. Abertura simples: honorarios R$ 8-20 mil + Junta; cartorio por
+     matricula R$ 3-6 mil; estruturacao sucessoria (planejamento, doacao das
+     cotas com usufruto e clausulas, acordo de socios) R$ 20-60 mil;
+     contabilidade R$ 600-1.500/mes. */
+  var MEDIAS = { abert: 15000, cart: 4500, doa: 25000, cont: 1000 };
   var INV = {
     extra: { h: 6, c: 0.8, r: "extrajudicial" },
     jud: { h: 8, c: 1.5, r: "judicial consensual" },
@@ -168,8 +174,8 @@
   function linhas(x, m, tipo) {
     var h = "";
     h +=
-      "<li>Abertura" +
-      (tipo === "suc" ? " + doação das cotas" : "") +
+      "<li>" +
+      (tipo === "suc" ? "Estruturação (abertura + sucessória)" : "Abertura") +
       "<b>" +
       (x.ab > 0 ? brl(x.ab) : "—") +
       "</b></li>";
@@ -287,8 +293,29 @@
       ST.nImov +
       " × " +
       brl(ST.cart) +
-      " de cartório" +
-      (ST.doa > 0 ? " · +" + brl(ST.doa) + " na doação" : "");
+      " de cartório";
+    if (el("hkKAbSuc")) {
+      el("hkKAbSuc").textContent = brl(m.abert + ST.doa);
+      el("hkKAbSucS").textContent =
+        "a mesma abertura + " +
+        brl(ST.doa) +
+        " de estruturação sucessória (doação, cláusulas, acordo de sócios)";
+    }
+    /* resumo das medias no bloco 3 */
+    if (el("hkMAbert")) {
+      el("hkMAbert").textContent = brl(ST.abert);
+      el("hkMCart").textContent = brl(ST.cart);
+      el("hkMDoa").textContent = brl(ST.doa);
+      el("hkMCont").textContent = brl(ST.cont) + "/mês";
+      var padrao =
+        ST.abert === MEDIAS.abert && ST.cart === MEDIAS.cart &&
+        ST.doa === MEDIAS.doa && ST.cont === MEDIAS.cont;
+      var res = el("hkCustosResumo");
+      if (res)
+        res.textContent = padrao
+          ? "Preenchidos com a média de mercado no Brasil — não precisa mexer."
+          : "Valores ajustados por você. As médias de mercado ficam a um clique.";
+    }
     el("hkKItbi").textContent = brl(m.itbi);
     el("hkKItbiS").textContent =
       pct(ST.itbi) + " sobre " + brlK(m.I) + " em imóveis";
@@ -330,7 +357,7 @@
         r.sim.ab - 0,
         r.suc.ab - ST.doa,
       ],
-      ["Doação das cotas (escritura e cláusulas)", 0, 0, ST.doa],
+      ["Estruturação sucessória (doação, cláusulas, acordo de sócios)", 0, 0, ST.doa],
       [
         "ITBI na integralização (" + pct(ST.itbi) + ")",
         r.inv.itbi,
@@ -410,16 +437,14 @@
         "</i>" +
         "<i>ITCMD <b>" +
         pct(ST.itcmd) +
-        "</b> · " +
-        ST.uf +
-        "</i><i>ITBI <b>" +
+        "</b></i><i>ITBI <b>" +
         pct(ST.itbi) +
         "</b></i><i>Invent&aacute;rio <b>" +
         m.inv.r +
         "</b></i>" +
         "<i>Abertura <b>" +
         brl(m.abert) +
-        "</b> · doa&ccedil;&atilde;o <b>" +
+        "</b> · estrutura&ccedil;&atilde;o sucess&oacute;ria <b>" +
         brl(ST.doa) +
         "</b> · contabilidade <b>" +
         brl(ST.cont) +
@@ -460,7 +485,7 @@
       grid = { color: "rgba(120,130,210,.14)" };
     var ds = [
       {
-        label: "Abertura + doação",
+        label: "Estruturação",
         data: [r.inv.ab, r.sim.ab, r.suc.ab],
         backgroundColor: "#5B8DEF",
       },
@@ -627,6 +652,8 @@
   }
 
   function aplicaUf() {
+    /* o seletor de estado saiu da tela: o ITCMD e a faixa, ajustada na mao */
+    if (!el("hkUf")) return;
     var api = UFAPI();
     var nota = el("hkUfNota");
     if (!api) {
@@ -726,6 +753,19 @@
     num("hkCart", "cart");
     num("hkDoa", "doa");
     num("hkCont", "cont");
+    on("hkAjustar", "click", function () {
+      var campos = el("hkCustosCampos");
+      if (!campos) return;
+      var aberto = campos.classList.toggle("hk-off");
+      this.textContent = aberto ? "Ajustar valores" : "Ocultar campos";
+    });
+    on("hkRestaurar", "click", function () {
+      ST.abert = MEDIAS.abert; ST.cart = MEDIAS.cart; ST.doa = MEDIAS.doa; ST.cont = MEDIAS.cont;
+      [["hkAbert", "abert"], ["hkCart", "cart"], ["hkDoa", "doa"], ["hkCont", "cont"]].forEach(function (p) {
+        var e = el(p[0]); if (e) e.value = ST[p[1]];
+      });
+      render();
+    });
     on("hkAlug", "change", function () {
       ST.alug = this.checked;
       render();

@@ -11,8 +11,12 @@
 .mkt-it{
   display:flex; flex-direction:column; align-items:flex-end; justify-content:center;
   line-height:1.2; white-space:nowrap; padding:0 11px; border-right:1px solid var(--s-border);
+  flex-shrink:0;   /* nunca espremer: "R$ 5,08" virava "08" no notebook da Rico */
 }
-.mkt-it:last-of-type{ border-right:0; }
+.mkt-it[data-oculto]{ display:none; }
+/* o ultimo item VISIVEL e que fica sem borda */
+.mkt-it{ border-right:1px solid var(--s-border); }
+.mkt-it.mkt-ultimo{ border-right:0; }
 .mkt-lbl{ font-size:9px; font-weight:700; letter-spacing:.6px; text-transform:uppercase; color:var(--s-subtle); }
 .mkt-lin{ display:flex; align-items:baseline; gap:5px; }
 .mkt-val{ font-family:var(--s-heading); font-weight:700; font-size:12.5px; color:var(--s-text); }
@@ -238,7 +242,42 @@ html.mkt-oculto .studio-topbar{ justify-content:space-between; }
       ? arrow+' '+(pct>0?'+':'')+pct.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})+'%'
       : '';
     chgEl.className='mkt-chg '+(pct>0?'up':(pct<0?'down':'flat'));
+    ajustarDepois();
   }
+
+  /* Cabe o que cabe: mede o espaco real da faixa e esconde, da menos para a
+     mais importante, ate sobrar. Ordem de corte: Bitcoin, Ouro, Brent,
+     S&P, Ibovespa -- o Dolar e o ultimo a sair. */
+  var CORTE=['btc','ouro','brent','sp500','ibov','dolar'];
+  function ajustar(){
+    var box=document.getElementById('mkt'); if(!box || box.hidden) return;
+    var itens=[].slice.call(box.querySelectorAll('.mkt-it'));
+    if(!itens.length) return;
+    itens.forEach(function(e){ e.removeAttribute('data-oculto'); e.classList.remove('mkt-ultimo'); });
+    var disp=box.clientWidth - 2;
+    function soma(){
+      return itens.reduce(function(t,e){ return t+(e.hasAttribute('data-oculto')?0:e.offsetWidth); }, 0);
+    }
+    for(var i=0;i<CORTE.length && soma()>disp;i++){
+      var e=box.querySelector('.mkt-it[data-k="'+CORTE[i]+'"]');
+      if(e) e.setAttribute('data-oculto','1');
+    }
+    var vis=itens.filter(function(e){ return !e.hasAttribute('data-oculto'); });
+    if(vis.length) vis[vis.length-1].classList.add('mkt-ultimo');
+  }
+  var _ajT=null;
+  function ajustarDepois(){ clearTimeout(_ajT); _ajT=setTimeout(ajustar, 60); }
+  window.addEventListener('resize', ajustarDepois);
+  try{
+    /* a barra lateral abrindo/fechando muda o vao sem mudar a janela */
+    new ResizeObserver(ajustarDepois).observe(document.documentElement);
+    var _mo=new MutationObserver(function(){
+      var b=document.getElementById('mkt');
+      if(b && !b.__ro){ b.__ro=true; new ResizeObserver(ajustarDepois).observe(b); ajustarDepois(); }
+    });
+    _mo.observe(document.body,{childList:true,subtree:true});
+  }catch(e){}
+  window.__ajustarMkt=ajustar;
 
   async function load(){
     // Contador de sucessos do ciclo (qualquer fonte/instrumento conta).
@@ -386,7 +425,32 @@ html.mkt-oculto .studio-topbar{ justify-content:space-between; }
     home.insertBefore(a, home.firstChild);
   }
 
+  /* rss2json (JSON, com CORS) antes dos proxies: em 07/09/2026 era o unico
+     caminho vivo na rede real */
+  async function viaJson(url){
+    try{
+      var ctrl=new AbortController(); var t=setTimeout(function(){ ctrl.abort(); }, 12000);
+      var r=await fetch('https://api.rss2json.com/v1/api.json?rss_url='+encodeURIComponent(url),{cache:'no-store',signal:ctrl.signal});
+      clearTimeout(t);
+      if(!r.ok) return null;
+      var j=await r.json();
+      if(!j || j.status!=='ok' || !j.items) return null;
+      var achado=null;
+      j.items.forEach(function(it){
+        var link=String(it.link||''), tit=String(it.title||'').trim();
+        if(link.indexOf('conteudos.xpi.com.br')<0) return;
+        if(link.indexOf('raio-xp')<0 && !/^raio[- ]xp/i.test(tit)) return;
+        var d=new Date(String(it.pubDate||'').replace(' ','T')); if(isNaN(d)) return;
+        if(!achado || d>achado.data) achado={titulo:tit, link:link, data:d};
+      });
+      return achado;
+    }catch(e){ return null; }
+  }
   async function checar(){
+    for(var j=0;j<FEEDS.length;j++){
+      var rj=await viaJson(FEEDS[j]);
+      if(rj && (Date.now()-rj.data.getTime()) <= DIAS*86400000){ montar(rj); return rj; }
+    }
     for(var i=0;i<FEEDS.length;i++){
       var xml=await texto(FEEDS[i]);
       if(!xml) continue;
@@ -616,12 +680,11 @@ button.mkt-gl::before{ content:"🌐"; margin-right:6px; font-size:13px; line-he
 /* As cotacoes eram 41% da barra em 1440px e espremiam o resto. Agora a faixa
    tem teto de largura e mostra menos itens em tela de notebook -- a ordem de
    corte segue a importancia: Dolar, Ibovespa, S&P e Brent ficam por ultimo. */
-#mkt{ max-width:520px; }
+#mkt{ max-width:760px; }
 .mkt-it{ padding:0 10px; }
-@media (max-width:1900px){ .mkt-it[data-k="btc"]{ display:none; } }
-@media (max-width:1700px){ .mkt-it[data-k="ouro"]{ display:none; } }
-@media (max-width:1340px){ .mkt-it[data-k="brent"]{ display:none; } #mkt{ max-width:300px; } }
-@media (max-width:1160px){ .mkt-it[data-k="sp500"]{ display:none; } }
+/* quais itens cabem e decidido por medida do espaco real (mercado-js), nao
+   por largura de tela: o notebook da Rico roda com zoom e enganava as
+   media queries. Abaixo de 1020px o topo nao tem vao nenhum. */
 @media (max-width:1020px){ #mkt, #mkt-tg{ display:none !important; } }
 
 /* ===== Brasil / Global: so o icone e o percentual ======================= */
@@ -1142,5 +1205,511 @@ button.mkt-br .rot, button.mkt-gl .rot{ display:none; }
     setTimeout(tentar, 150);
   })();
   window.addEventListener('hashchange', mover);
+})();
+</script>
+
+<style id="apresentar-css">
+/* Modo apresentacao: o iframe da Apresentacao pede para o Hub sumir com a
+   barra lateral e o topo. Onde o fullscreen existe ele ja cobre a tela; isto
+   e o que garante a mesma coisa no iPad. */
+body.apresentando .studio-sidebar, body.apresentando .studio-topbar,
+body.apresentando #route-title, body.apresentando #route-status,
+body.apresentando .studio-footer, body.apresentando #hub-disclaimer{ display:none !important; }
+body.apresentando .studio-wrap, body.apresentando .studio-content, body.apresentando #studio-route,
+body.apresentando #tool-workspace, body.apresentando #p-apresentacao{ margin:0 !important; padding:0 !important; max-width:none !important; }
+body.apresentando #apresentacaoFrame{
+  position:fixed !important; inset:0 !important; width:100vw !important; height:100vh !important;
+  z-index:99990 !important; border:0 !important; border-radius:0 !important;
+}
+</style>
+<script id="apresentar-js">
+(function(){
+  "use strict";
+  window.addEventListener('message', function(e){
+    var d=e && e.data;
+    if(!d || typeof d!=='object' || d.rico!=='apresentar') return;
+    document.body.classList.toggle('apresentando', !!d.on);
+    document.documentElement.style.overflow = d.on ? 'hidden' : '';
+  });
+  /* saiu da Apresentacao por outra rota: nada pode ficar escondido */
+  window.addEventListener('hashchange', function(){
+    if(!/#\/apresentacao/.test(location.hash) && document.body.classList.contains('apresentando')){
+      document.body.classList.remove('apresentando');
+      document.documentElement.style.overflow='';
+    }
+  });
+})();
+</script>
+
+<script id="noticias-js">
+(function(){
+  "use strict";
+  /* As noticias da Visao geral vinham de um news.json gravado no build --
+     por isso pararam no dia em que o site foi gerado. Agora o card le os
+     feeds RSS ao vivo pela mesma cadeia de proxies das cotacoes; guarda a
+     ultima leitura boa no navegador; e, se a rede bloquear tudo, deixa o
+     conteudo do build como estava (com a data dele). */
+  var K_CACHE='hub:v2:noticias';
+  /* ordem = preferencia: primeiro os feeds de mercado, depois os gerais */
+  var FEEDS={
+    nacional:[
+      'https://www.moneytimes.com.br/feed/',
+      'https://www.infomoney.com.br/mercados/feed/',
+      'https://www.infomoney.com.br/feed/',
+      'https://g1.globo.com/rss/g1/economia/'
+    ],
+    internacional:[
+      'https://www.cnbc.com/id/10000664/device/rss/rss.html',
+      'https://finance.yahoo.com/news/rssindex',
+      'https://feeds.content.dowjones.io/public/rss/mw_topstories'
+    ]
+  };
+  var FONTE={ 'moneytimes.com.br':'Money Times', 'infomoney.com.br':'InfoMoney', 'g1.globo.com':'g1 Economia',
+              'valor.globo.com':'Valor', 'cnbc.com':'CNBC', 'marketwatch.com':'MarketWatch',
+              'dowjones.io':'MarketWatch', 'yahoo.com':'Yahoo Finance' };
+  /* rss2json entrega o feed ja em JSON, com CORS liberado -- e o unico caminho
+     que passou na rede real em 07/09/2026 (corsproxy.io passou a exigir chave;
+     allorigins e codetabs estouram o tempo). Os proxies ficam como reserva. */
+  var RSS2JSON='https://api.rss2json.com/v1/api.json?rss_url=';
+  var PROXIES=[
+    function(u){ return 'https://corsproxy.io/?url='+encodeURIComponent(u); },
+    function(u){ return 'https://api.allorigins.win/raw?url='+encodeURIComponent(u); },
+    function(u){ return 'https://api.codetabs.com/v1/proxy/?quest='+encodeURIComponent(u); }
+  ];
+  var MESES=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+  /* os feeds sao "ultimas" gerais; para "Principais noticias" de uma
+     ferramenta de investimento, quem fala de mercado sobe na fila */
+  var TEMA={
+    nacional:/ibovespa|\bbolsa\b|d[oó]lar|selic|juros|copom|\bcdi\b|petrobras|\bvale\b|mercado|renda fixa|tesouro|infla[cç][aã]o|ipca|\bfii|\bb3\b|banco central|\bfed\b|a[cç][oõ]es|fundos?|investi|câmbio|cambio|dividendo|balan[cç]o|\bcvm\b|\bxp\b|itaú|bradesco|nubank|treasur/i,
+    internacional:/\bfed\b|treasur|s&p|nasdaq|\bdow\b|wall street|stocks?|markets?|rates?|inflation|\boil\b|dollar|bonds?|earnings|nvidia|apple|microsoft|tesla|amazon|bank|yields?|recession|gdp|jobs|tariff/i
+  };
+  function pontuar(it, regiao){
+    var rx=TEMA[regiao]; if(!rx) return 0;
+    var txt=(it.title||'')+' '+(it.resumo||'');
+    var m=txt.match(new RegExp(rx.source,'gi'));
+    return m?m.length:0;
+  }
+  function ordenar(itens, regiao){
+    var agora=Date.now();
+    return itens.slice().sort(function(a,b){
+      /* mercado primeiro; dentro do mesmo grupo, mais recente primeiro.
+         noticia com mais de 3 dias so entra se nao houver outra */
+      var va=(agora-a.ts>3*86400000)?-100:0, vb=(agora-b.ts>3*86400000)?-100:0;
+      var pa=Math.min(pontuar(a,regiao),3)+va, pb=Math.min(pontuar(b,regiao),3)+vb;
+      if(pb!==pa) return pb-pa;
+      return b.ts-a.ts;
+    });
+  }
+
+  function ler(){ try{ return JSON.parse(localStorage.getItem(K_CACHE)||'null'); }catch(e){ return null; } }
+  function gravar(o){ try{ localStorage.setItem(K_CACHE, JSON.stringify(o)); }catch(e){} }
+  function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+  function limparHtml(s){
+    var d=document.createElement('div'); d.innerHTML=String(s||'');
+    return (d.textContent||'').replace(/\s+/g,' ').trim();
+  }
+  function fonteDe(url){
+    try{
+      var h=new URL(url).hostname.replace(/^www\./,'');
+      for(var k in FONTE) if(h.indexOf(k)>=0) return FONTE[k];
+      return h;
+    }catch(e){ return ''; }
+  }
+  function dataCurta(d){ return String(d.getDate()).padStart(2,'0')+' '+MESES[d.getMonth()]+' '+d.getFullYear(); }
+
+  async function baixar(url){
+    for(var i=0;i<PROXIES.length;i++){
+      try{
+        var ctrl=new AbortController(); var t=setTimeout(function(){ ctrl.abort(); }, 9000);
+        var r=await fetch(PROXIES[i](url),{cache:'no-store',signal:ctrl.signal});
+        clearTimeout(t);
+        if(!r.ok) continue;
+        var txt=await r.text();
+        if(txt && txt.indexOf('<item')>=0) return txt;
+      }catch(e){}
+    }
+    return null;
+  }
+
+  function itensDe(xml, regiao){
+    var doc; try{ doc=new DOMParser().parseFromString(xml,'text/xml'); }catch(e){ return []; }
+    var saida=[];
+    doc.querySelectorAll('item').forEach(function(it){
+      var g=function(tag){ var e=it.querySelector(tag); return e?(e.textContent||'').trim():''; };
+      var link=g('link')||g('guid');
+      var tit=limparHtml(g('title'));
+      var desc=limparHtml(g('description'));
+      var d=new Date(g('pubDate')||g('dc\\:date')||'');
+      if(!/^https?:\/\//.test(link) || !tit || isNaN(d)) return;
+      /* corta a descricao no fim da primeira frase que passe de 90 caracteres */
+      var resumo=desc;
+      var m=/^(.{60,220}?[.!?])\s/.exec(desc+' ');
+      if(m) resumo=m[1];
+      if(resumo.length>220) resumo=resumo.slice(0,217).replace(/\s+\S*$/,'')+'…';
+      saida.push({region:regiao, title:tit, resumo:resumo, source:fonteDe(link), date:dataCurta(d), ts:d.getTime(), url:link});
+    });
+    saida.sort(function(a,b){ return b.ts-a.ts; });
+    return saida;
+  }
+
+  function itensDeJson(j, regiao){
+    var saida=[];
+    ((j&&j.items)||[]).forEach(function(it){
+      var link=String(it.link||it.guid||'');
+      var tit=limparHtml(it.title||'');
+      var desc=limparHtml(it.description||it.content||'');
+      var d=new Date(String(it.pubDate||'').replace(' ','T')+(/[zZ]|[+-]\d\d:?\d\d$/.test(String(it.pubDate||''))?'':'Z'));
+      if(isNaN(d)) d=new Date(it.pubDate||'');
+      if(!/^https?:\/\//.test(link) || !tit || isNaN(d)) return;
+      var resumo=desc;
+      var m=/^(.{60,220}?[.!?])\s/.exec(desc+' ');
+      if(m) resumo=m[1];
+      if(resumo.length>220) resumo=resumo.slice(0,217).replace(/\s+\S*$/,'')+'…';
+      saida.push({region:regiao, title:tit, resumo:resumo, source:fonteDe(link), date:dataCurta(d), ts:d.getTime(), url:link});
+    });
+    saida.sort(function(a,b){ return b.ts-a.ts; });
+    return saida;
+  }
+  async function viaJson(url, regiao){
+    try{
+      var ctrl=new AbortController(); var t=setTimeout(function(){ ctrl.abort(); }, 12000);
+      var r=await fetch(RSS2JSON+encodeURIComponent(url),{cache:'no-store',signal:ctrl.signal});
+      clearTimeout(t);
+      if(!r.ok) return [];
+      var j=await r.json();
+      if(!j || j.status!=='ok') return [];
+      return itensDeJson(j, regiao);
+    }catch(e){ return []; }
+  }
+  async function primeiroFeed(lista, regiao, n){
+    for(var i=0;i<lista.length;i++){
+      var itens=await viaJson(lista[i], regiao);
+      if(itens.length) return ordenar(itens, regiao).slice(0,n);
+    }
+    for(var k=0;k<lista.length;k++){
+      var xml=await baixar(lista[k]);
+      if(!xml) continue;
+      var itens2=itensDe(xml, regiao);
+      if(itens2.length) return ordenar(itens2, regiao).slice(0,n);
+    }
+    return [];
+  }
+
+  function render(dados){
+    var host=document.getElementById('studio-home'); if(!host) return false;
+    var alvo=host.querySelector('#news-items'), data=host.querySelector('#news-date');
+    if(!alvo || !dados || !dados.items || !dados.items.length) return false;
+    var nac=dados.items.filter(function(i){ return i.region==='nacional'; }).slice(0,2);
+    var intl=dados.items.filter(function(i){ return i.region==='internacional'; }).slice(0,1);
+    var lista=nac.concat(intl);
+    if(!lista.length) return false;
+    alvo.innerHTML=lista.map(function(n){
+      return '<a class="news-item" href="'+esc(n.url)+'" target="_blank" rel="noopener noreferrer">'+
+        '<div class="news-meta">'+esc(n.source)+' · '+esc(n.date)+'</div>'+
+        '<h3>'+esc(n.title)+'</h3>'+
+        '<p>'+esc(n.resumo||'')+'</p>'+
+        '<span class="news-read">Ler notícia ↗</span></a>';
+    }).join('');
+    if(data){
+      var d=new Date(dados.updatedTs||Date.now());
+      data.textContent='Atualização: '+d.toLocaleDateString('pt-BR')+' '+
+        String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+    }
+    if(alvo.firstElementChild) alvo.firstElementChild.dataset.vivo='1';
+    return true;
+  }
+
+  var ultimo=null, buscando=null;
+  async function atualizar(){
+    if(buscando) return buscando;
+    buscando=(async function(){
+      var nac=await primeiroFeed(FEEDS.nacional,'nacional',3);
+      var intl=await primeiroFeed(FEEDS.internacional,'internacional',2);
+      if(nac.length || intl.length){
+        var cache=ler();
+        /* completa a regiao que falhou com o que havia no cache */
+        if(!nac.length && cache) nac=cache.items.filter(function(i){ return i.region==='nacional'; });
+        if(!intl.length && cache) intl=cache.items.filter(function(i){ return i.region==='internacional'; });
+        ultimo={ updatedTs:Date.now(), items:nac.concat(intl) };
+        gravar(ultimo);
+        render(ultimo);
+      }
+      buscando=null;
+      return ultimo;
+    })();
+    return buscando;
+  }
+
+  function aplicar(){
+    var host=document.getElementById('studio-home');
+    if(!host || !host.querySelector('#news-items')) return;
+    if(host.querySelector('#news-items > [data-vivo]')) return;
+    var cache=ultimo||ler();
+    /* cache com menos de 12h: mostra e nao bate na rede de novo */
+    if(cache && cache.items && cache.items.length){
+      render(cache);
+      if(Date.now()-(cache.updatedTs||0) < 12*3600*1000) return;
+    }
+    atualizar();
+  }
+
+  /* a Visao geral e remontada a cada volta para #/home, e ela regrava as
+     noticias do build -- entao o card e reaplicado a cada mudanca */
+  var obs=new MutationObserver(function(){ clearTimeout(obs._t); obs._t=setTimeout(aplicar,120); });
+  function iniciar(){
+    var t=0;
+    (function esperar(){
+      var home=document.getElementById('studio-home');
+      if(home){ obs.observe(home,{childList:true,subtree:true}); aplicar(); return; }
+      if(++t>80) return;
+      setTimeout(esperar,150);
+    })();
+  }
+  window.__atualizarNoticias=atualizar;
+  if(document.readyState==='loading'){ document.addEventListener('DOMContentLoaded', iniciar); } else { iniciar(); }
+})();
+</script>
+
+<style id="sync-css">
+#sync-block .sync-linha{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-top:10px; }
+#sync-block .sync-dot{ width:8px; height:8px; border-radius:50%; background:var(--s-subtle); flex-shrink:0; }
+#sync-block .sync-dot.on{ background:var(--s-green); box-shadow:0 0 0 3px rgba(72,214,160,.18); }
+#sync-block .sync-dot.off{ background:#ff6b6b; }
+#sync-block .sync-quem{ font-size:12.5px; color:var(--s-muted); }
+#sync-block .sync-quem b{ color:var(--s-text); font-weight:600; }
+</style>
+<script id="sync-js">
+(function(){
+  "use strict";
+  /* Camada compartilhada: o que o administrador adiciona nas gavetas ou muda
+     nos modelos vai para o Firestore (projeto rico-hub, colecao hubV2) e
+     chega em todo navegador aberto no Hub. Quem nao esta autenticado so le.
+     Se o SDK nao carregar (rede corporativa), o Hub segue 100% local. */
+  var CFG={ apiKey:"AIzaSyBLf_FAZ6ZVl_BonLefRgSqW10RXxxf-xQ", authDomain:"rico-hub.firebaseapp.com",
+            projectId:"rico-hub", appId:"1:338592565594:web:e9fae97d56eed68cb38b63" };
+  var COL='hubV2', DONO='gustavo.amorim27@gmail.com', PREFIXO='hub:v2:';
+  var SDK='https://www.gstatic.com/firebasejs/10.12.0/';
+  var CHAVES={
+    hubCustomLib:          {tipo:'lista', hook:'__cloudLibReload', rotulo:'Gaveta de ativos'},
+    hubLibSementesOcultas: {tipo:'valor', hook:'__cloudLibReload', rotulo:'Gaveta de ativos'},
+    hubRvCustomOps:        {tipo:'lista', hook:'__cloudRvReload',  rotulo:'Gaveta RV estruturada'},
+    hubRvHiddenOps:        {tipo:'valor', hook:'__cloudRvReload',  rotulo:'Gaveta RV estruturada'},
+    hubTemplatesOverride:  {tipo:'valor', hook:'__cloudTplReload', rotulo:'Modelos de carteira'},
+    hubRvTemplateOverride: {tipo:'valor', hook:null,               rotulo:'Modelos de RV'},
+    hubRvStructOverride:   {tipo:'valor', hook:null,               rotulo:'Estruturas de RV'}
+  };
+  var E={ sdk:null, db:null, auth:null, user:null, admin:false, admins:[], aplicando:false,
+          remoto:{}, primeiroSnap:false, ultimaEm:null, erro:null, pendentes:{} };
+
+  /* ---- acesso ao storage do app (respeita o cache em memoria do modulo) ---- */
+  function ler(k){
+    try{ if(window.hubStorage) return window.hubStorage.getItem(k); }catch(e){}
+    try{ return localStorage.getItem(PREFIXO+k); }catch(e){ return null; }
+  }
+  function gravarLocal(k,v){
+    E.aplicando=true;
+    try{
+      if(window.hubStorage) window.hubStorage.setItem(k,v);
+      else localStorage.setItem(PREFIXO+k,v);
+    }catch(e){}
+    E.aplicando=false;
+  }
+  function toast(m){ try{ window.showToast(m); }catch(e){} }
+
+  /* ---- SDK ---- */
+  function script(u){ return new Promise(function(res,rej){
+    var s=document.createElement('script'); s.src=u; s.async=true;
+    s.onload=res; s.onerror=function(){ rej(new Error('sdk')); }; document.head.appendChild(s); }); }
+  async function carregarSdk(){
+    if(window.firebase && firebase.firestore && firebase.auth) return true;
+    try{
+      await script(SDK+'firebase-app-compat.js');
+      await Promise.all([script(SDK+'firebase-firestore-compat.js'), script(SDK+'firebase-auth-compat.js')]);
+      return !!(window.firebase && firebase.firestore && firebase.auth);
+    }catch(e){ return false; }
+  }
+
+  /* ---- envio (admin) ---- */
+  function semMarcaNuvem(v){
+    try{
+      var arr=JSON.parse(v||'[]'); if(!Array.isArray(arr)) return v;
+      return JSON.stringify(arr.map(function(x){
+        if(x && typeof x==='object'){ var c=Object.assign({},x); delete c.__cloud; return c; } return x; }));
+    }catch(e){ return v; }
+  }
+  function agendarPush(k){
+    if(!E.admin || !E.db) return;
+    clearTimeout(E.pendentes[k]);
+    E.pendentes[k]=setTimeout(function(){ push(k); }, 500);
+  }
+  function push(k){
+    if(!E.admin || !E.db || !E.user) return;
+    var v=ler(k); if(v==null) v = CHAVES[k].tipo==='lista' ? '[]' : '{}';
+    if(CHAVES[k].tipo==='lista') v=semMarcaNuvem(v);
+    if(E.remoto[k]===v) return;   /* ja esta igual na nuvem */
+    E.db.collection(COL).doc(k).set({
+      valor:v, em:firebase.firestore.FieldValue.serverTimestamp(), por:E.user.email||''
+    }).then(function(){ E.remoto[k]=v; })
+      .catch(function(err){
+        E.erro=err && err.message;
+        toast('Não consegui publicar '+CHAVES[k].rotulo.toLowerCase()+': '+(err.code==='permission-denied'?'sem permissão para escrever.':(err.message||'erro')));
+      });
+  }
+
+  /* admin: o que existe so neste navegador (antes da nuvem, ou criado
+     offline) sobe assim que houver permissao e o primeiro snapshot */
+  function publicarLocaisNovos(){
+    if(!E.admin || !E.primeiroSnap) return;
+    Object.keys(CHAVES).forEach(function(k){
+      var v=ler(k);
+      if(E.remoto[k]==null){ if(v && v!=='[]' && v!=='{}') agendarPush(k); }
+      else if(CHAVES[k].tipo==='lista' && v && semMarcaNuvem(v)!==E.remoto[k]) agendarPush(k);
+    });
+  }
+
+  /* ---- recepcao (todos) ---- */
+  function aplicar(k, dados, avisos){
+    var rv=dados && dados.valor; if(typeof rv!=='string') return;
+    E.remoto[k]=rv;
+    var local=ler(k), novo;
+    if(CHAVES[k].tipo==='lista'){
+      var R=[], L=[];
+      try{ R=JSON.parse(rv||'[]')||[]; }catch(e){ R=[]; }
+      try{ L=JSON.parse(local||'[]')||[]; }catch(e){ L=[]; }
+      if(!Array.isArray(R)) R=[]; if(!Array.isArray(L)) L=[];
+      var ids={}; R.forEach(function(x){ if(x && x.id!=null) ids[x.id]=1; });
+      var junto=R.map(function(x){ return (x && typeof x==='object') ? Object.assign({},x,{__cloud:true}) : x; });
+      /* o que a pessoa criou so aqui (sem marca da nuvem) fica; o que veio da
+         nuvem e sumiu de la, sai */
+      L.forEach(function(x){ if(x && x.id!=null && !ids[x.id] && !x.__cloud) junto.push(x); });
+      novo=JSON.stringify(junto);
+      /* admin com itens locais que a nuvem nao tem: publica */
+      if(E.admin && semMarcaNuvem(novo)!==rv) agendarPush(k);
+    } else novo=rv;
+    if(novo===local) return;
+    gravarLocal(k,novo);
+    var h=CHAVES[k].hook; if(h && typeof window[h]==='function'){ try{ window[h](); }catch(e){} }
+    if(avisos && !(E.user && dados.por===E.user.email)){
+      var quem=dados.por ? String(dados.por).split('@')[0] : 'administrador';
+      avisos[CHAVES[k].rotulo]=quem;
+    }
+  }
+  function ouvir(){
+    E.db.collection(COL).onSnapshot(function(snap){
+      var avisos={}, primeira=!E.primeiroSnap;
+      snap.docChanges().forEach(function(ch){
+        var id=ch.doc.id, d=ch.doc.data()||{};
+        if(id==='_config'){ E.admins=Array.isArray(d.admins)?d.admins:[]; reavaliarAdmin(); return; }
+        if(!CHAVES[id]) return;
+        if(ch.type==='removed') return;
+        aplicar(id, d, primeira?null:avisos);
+        if(d.em && d.em.toDate){ var t=d.em.toDate(); if(!E.ultimaEm || t>E.ultimaEm) E.ultimaEm=t; }
+      });
+      if(primeira){ E.primeiroSnap=true; publicarLocaisNovos(); }
+      var rotulos=Object.keys(avisos);
+      if(rotulos.length){
+        var quem=avisos[rotulos[0]];
+        toast(rotulos.join(', ')+(rotulos.length>1?' atualizados':' atualizada')+' por '+quem+'.');
+      }
+      atualizarUI();
+    }, function(err){ E.erro=err && err.message; atualizarUI(); });
+  }
+
+  /* ---- envolve o storage do app para capturar edicoes do admin ---- */
+  function envolver(){
+    var st=window.hubStorage; if(!st) return false; if(st.__sync) return true;
+    var set=st.setItem.bind(st), rm=st.removeItem.bind(st);
+    st.setItem=function(k,v){ set(k,v); if(CHAVES[k] && !E.aplicando) agendarPush(k); };
+    st.removeItem=function(k){ rm(k); if(CHAVES[k] && !E.aplicando) agendarPush(k); };
+    st.__sync=true;
+    return true;
+  }
+  (function esperarStorage(){ if(!envolver()) setTimeout(esperarStorage,200); })();
+
+  /* ---- auth ---- */
+  function reavaliarAdmin(){
+    var u=E.user, email=u && u.email ? String(u.email).toLowerCase() : '';
+    E.admin=!!email && (email===DONO || E.admins.map(function(x){ return String(x).toLowerCase(); }).indexOf(email)>=0);
+    atualizarUI();
+    publicarLocaisNovos();
+  }
+  async function entrar(){
+    if(!E.auth) return;
+    var prov=new firebase.auth.GoogleAuthProvider();
+    prov.setCustomParameters({prompt:'select_account'});
+    try{ await E.auth.signInWithPopup(prov); }
+    catch(e){
+      if(e && /popup/i.test(e.code||'')){ try{ await E.auth.signInWithRedirect(prov); }catch(e2){ toast('Não consegui abrir o login do Google.'); } }
+      else toast('Login não concluído: '+(e && e.message ? e.message : e));
+    }
+  }
+  function sair(){ if(E.auth) E.auth.signOut(); }
+
+  /* ---- bloco em Preferencias e dados ---- */
+  function atualizarUI(){
+    var b=document.getElementById('sync-block'); if(!b) return;
+    var dot=b.querySelector('.sync-dot'), txt=b.querySelector('#sync-status'), quem=b.querySelector('.sync-quem');
+    var login=b.querySelector('#sync-login'), logout=b.querySelector('#sync-logout');
+    if(E.sdk===false){
+      dot.className='sync-dot off';
+      txt.textContent='Sem conexão com a nuvem nesta rede. As gavetas e os modelos ficam só neste navegador; quando a conexão voltar, o que o administrador publicou aparece sozinho.';
+      login.hidden=true; logout.hidden=true; quem.textContent=''; return;
+    }
+    if(!E.db){ dot.className='sync-dot'; txt.textContent='Conectando à nuvem…'; login.hidden=true; logout.hidden=true; quem.textContent=''; return; }
+    if(E.erro && !E.primeiroSnap){
+      dot.className='sync-dot off';
+      txt.textContent='A nuvem recusou a leitura ('+E.erro+'). Normalmente é regra de acesso ainda não publicada no Firebase. As gavetas e os modelos ficam locais até isso ser resolvido.';
+      login.hidden=true; logout.hidden=true; quem.textContent=''; return;
+    }
+    dot.className='sync-dot on';
+    var quando=E.ultimaEm ? ' Última publicação: '+E.ultimaEm.toLocaleDateString('pt-BR')+' '+String(E.ultimaEm.getHours()).padStart(2,'0')+':'+String(E.ultimaEm.getMinutes()).padStart(2,'0')+'.' : '';
+    if(E.user){
+      quem.innerHTML='Conectado como <b></b> · '+(E.admin?'administrador':'somente leitura');
+      quem.querySelector('b').textContent=E.user.email||'';
+      txt.textContent=E.admin
+        ? 'O que você adicionar nas gavetas ou mudar nos modelos de carteira é publicado para todos os assessores que usam o Hub.'+quando
+        : 'Esta conta não está na lista de administradores: você recebe as gavetas e os modelos publicados, mas suas edições ficam só neste navegador.'+quando;
+      login.hidden=true; logout.hidden=false;
+    } else {
+      quem.textContent='';
+      txt.textContent='As gavetas de ativos e os modelos de carteira publicados pelo administrador chegam aqui automaticamente. Para editar o que todos veem, entre com a conta autorizada.'+quando;
+      login.hidden=false; logout.hidden=true;
+    }
+  }
+  function montarBloco(dlg){
+    if(!dlg || dlg.querySelector('#sync-block')) return;
+    var alvo=dlg.querySelector('.settings-block'); if(!alvo) return;
+    var b=document.createElement('div'); b.className='settings-block'; b.id='sync-block';
+    b.innerHTML='<h3>Gavetas e modelos compartilhados</h3><p id="sync-status">Conectando à nuvem…</p>'+
+      '<div class="sync-linha"><span class="sync-dot"></span><span class="sync-quem"></span></div>'+
+      '<div class="sync-linha"><button id="sync-login" class="studio-btn" hidden>Entrar com Google</button>'+
+      '<button id="sync-logout" class="studio-btn subtle" hidden>Sair</button></div>';
+    alvo.parentNode.insertBefore(b, alvo.nextSibling);
+    b.querySelector('#sync-login').onclick=entrar;
+    b.querySelector('#sync-logout').onclick=sair;
+    atualizarUI();
+  }
+  new MutationObserver(function(m){
+    m.forEach(function(x){ x.addedNodes.forEach(function(n){
+      if(n.nodeType===1 && n.tagName==='DIALOG' && /Prefer/i.test(n.textContent||'')) setTimeout(function(){ montarBloco(n); },0);
+    }); });
+  }).observe(document.documentElement,{childList:true,subtree:true});
+
+  /* ---- boot ---- */
+  (async function iniciar(){
+    E.sdk=await carregarSdk();
+    if(!E.sdk){ atualizarUI(); return; }
+    try{
+      var app=(firebase.apps && firebase.apps.length) ? firebase.app() : firebase.initializeApp(CFG);
+      E.db=app.firestore(); E.auth=app.auth();
+      try{ await E.auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL); }catch(e){}
+      E.auth.onAuthStateChanged(function(u){ E.user=u||null; reavaliarAdmin(); });
+      try{ await E.auth.getRedirectResult(); }catch(e){}
+      ouvir();
+    }catch(e){ E.sdk=false; E.erro=e && e.message; atualizarUI(); }
+  })();
+
+  window.__hubSync={ estado:E, entrar:entrar, sair:sair, publicar:function(k){ push(k); } };
 })();
 </script>

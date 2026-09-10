@@ -97,14 +97,7 @@
             <span class="n">2</span> Impostos onde ele mora
           </div>
           <div class="hc-f">
-            <label
-              >Estado
-              <span style="opacity: 0.7">(preenche o ITCMD)</span></label
-            ><select class="hc-sel" id="hkUf"></select>
-            <div class="wl-hint" id="hkUfNota"></div>
-          </div>
-          <div class="hc-f">
-            <label>ITCMD <b id="hkItcmdO">4%</b></label
+            <label>ITCMD do estado <b id="hkItcmdO">4%</b></label
             ><input
               type="range"
               id="hkItcmd"
@@ -114,8 +107,9 @@
               value="4"
             />
             <div class="wl-hint">
-              faixa de controle: ajuste fino pela alíquota efetiva do estado
-              (teto de 8%)
+              faixa de controle (teto de 8%). Referência: SP 4% · PR 4% · MG 5%
+              · RJ 4 a 8% · RS 3 a 6% · SC 1 a 8% · BA 4 a 8% · DF 4 a 6% ·
+              GO 2 a 8% · PE 2 a 8%
             </div>
           </div>
           <div class="hc-f">
@@ -134,64 +128,81 @@
             </div>
           </div>
           <div class="hc-f">
-            <label>Inventário (do que ficar fora)</label
-            ><select class="hc-sel" id="hkMod">
-              <option value="extra">
-                Extrajudicial · honorários 6% + custas 0,8%
-              </option>
-              <option value="jud">Judicial consensual · 8% + 1,5%</option>
-              <option value="lit">Judicial litigioso · 10% + 2,5%</option>
-            </select>
-            <div class="wl-hint">piso OAB-SP: 6% do monte-mor</div>
+            <label>Inventário do que ficar fora</label>
+            <div class="wl-hint" style="margin-top: 0">
+              honorários 6% + custas 0,8% do monte-mor (piso OAB-SP), aplicados
+              sobre o patrimônio corrigido no fim do horizonte
+            </div>
           </div>
         </div>
 
-        <div class="hk-g">
+        <div class="hk-g" id="hkCustosG">
           <div class="hk-gt"><span class="n">3</span> Custos da holding</div>
-          <div class="hc-f">
-            <label
-              >Abertura
-              <span style="opacity: 0.7"
-                >(advogado + contador + Junta, R$)</span
-              ></label
-            ><input
-              type="number"
-              id="hkAbert"
-              min="0"
-              step="1000"
-              value="15000"
-            />
-            <div class="wl-hint">
-              mercado: R$ 8k a 20k de honorários + R$ 800 a 1.500 de Junta
-            </div>
+          <div class="wl-hint" style="margin-top: 0" id="hkCustosResumo">
+            Preenchidos com a média de mercado no Brasil — não precisa mexer.
           </div>
-          <div class="hc-f">
-            <label
-              >Cartório por imóvel <span style="opacity: 0.7">(R$)</span></label
-            ><input type="number" id="hkCart" min="0" step="500" value="4500" />
-            <div class="wl-hint">
-              registro da integralização: R$ 3k a 6k por matrícula
+          <ul class="hk-medias" id="hkMedias">
+            <li><span>Abertura da holding simples</span><b id="hkMAbert">R$ 15.000</b></li>
+            <li><span>Cartório por imóvel</span><b id="hkMCart">R$ 4.500</b></li>
+            <li><span>Estruturação sucessória</span><b id="hkMDoa">R$ 25.000</b></li>
+            <li><span>Contabilidade</span><b id="hkMCont">R$ 1.000/mês</b></li>
+          </ul>
+          <button type="button" class="hc-btn sec hk-ajustar" id="hkAjustar">
+            Ajustar valores
+          </button>
+          <div id="hkCustosCampos" class="hk-off">
+            <div class="hc-f">
+              <label
+                >Abertura da holding simples
+                <span style="opacity: 0.7"
+                  >(advogado + contador + Junta, R$)</span
+                ></label
+              ><input
+                type="number"
+                id="hkAbert"
+                min="0"
+                step="1000"
+                value="15000"
+              />
+              <div class="wl-hint">
+                mercado: R$ 8 mil a 20 mil de honorários + R$ 800 a 1.500 de
+                Junta Comercial
+              </div>
             </div>
-          </div>
-          <div class="hc-f">
-            <label
-              >Doação das cotas
-              <span style="opacity: 0.7"
-                >(escritura + cláusulas, R$)</span
-              ></label
-            ><input type="number" id="hkDoa" min="0" step="500" value="5000" />
-            <div class="wl-hint">
-              só na holding para sucessão: usufruto, inalienabilidade,
-              incomunicabilidade
+            <div class="hc-f">
+              <label
+                >Cartório por imóvel <span style="opacity: 0.7">(R$)</span></label
+              ><input type="number" id="hkCart" min="0" step="500" value="4500" />
+              <div class="wl-hint">
+                registro da integralização na matrícula: R$ 3 mil a 6 mil por
+                imóvel
+              </div>
             </div>
-          </div>
-          <div class="hc-f">
-            <label
-              >Contabilidade <span style="opacity: 0.7">(R$/mês)</span></label
-            ><input type="number" id="hkCont" min="0" step="100" value="1000" />
-            <div class="wl-hint">
-              R$ 500 a 1.500/mês, corrigido pelo IPCA no horizonte
+            <div class="hc-f">
+              <label
+                >Estruturação sucessória
+                <span style="opacity: 0.7"
+                  >(só na holding para sucessão, R$)</span
+                ></label
+              ><input type="number" id="hkDoa" min="0" step="1000" value="25000" />
+              <div class="wl-hint">
+                planejamento, doação das cotas com usufruto e cláusulas
+                (inalienabilidade, incomunicabilidade, impenhorabilidade),
+                acordo de sócios e escrituras: R$ 20 mil a 60 mil conforme o
+                patrimônio e o número de herdeiros
+              </div>
             </div>
+            <div class="hc-f">
+              <label
+                >Contabilidade <span style="opacity: 0.7">(R$/mês)</span></label
+              ><input type="number" id="hkCont" min="0" step="100" value="1000" />
+              <div class="wl-hint">
+                R$ 600 a 1.500/mês, corrigido pelo IPCA no horizonte
+              </div>
+            </div>
+            <button type="button" class="hc-btn sec hk-ajustar" id="hkRestaurar">
+              Voltar às médias de mercado
+            </button>
           </div>
         </div>
 
@@ -269,9 +280,9 @@
           <div class="k">Holding para sucessão</div>
           <div class="v" id="hkTotSuc">—</div>
           <div class="s">
-            Abre, integraliza e doa as cotas com usufruto e cláusulas. Paga o
-            ITCMD hoje, sobre o valor de hoje, e o que entrou na holding não
-            passa por inventário.
+            Estruturação mais cara: abre, integraliza e doa as cotas com
+            usufruto e cláusulas. Paga o ITCMD hoje, sobre o valor de hoje, e
+            o que entrou na holding não passa por inventário.
           </div>
           <ul id="hkListSuc"></ul>
         </div>
@@ -279,9 +290,14 @@
 
       <div class="hc-kpis">
         <div class="hc-kpi b">
-          <div class="k">Custo de abertura</div>
+          <div class="k">Estruturação · holding simples</div>
           <div class="v" id="hkKAb">—</div>
           <div class="wl-uf" id="hkKAbS">—</div>
+        </div>
+        <div class="hc-kpi o">
+          <div class="k">Estruturação · holding p/ sucessão</div>
+          <div class="v" id="hkKAbSuc">—</div>
+          <div class="wl-uf" id="hkKAbSucS">—</div>
         </div>
         <div class="hc-kpi b">
           <div class="k">ITBI na integralização</div>

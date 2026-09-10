@@ -238,7 +238,12 @@
         }
         // detecta % a.a. pré-fixado
         var mPre = txt.match(/([\d.,]+)\s*%\s*a\.?\s*a/);
-        if (mPre && /pré|pre-fix|pré-fix|cdb pré|cupom/.test(txt)) {
+        if (
+          mPre &&
+          /pré|pre-fix|pré-fix|prefix|\bltn\b|\bntn-f\b|cdb pré|cupom/.test(
+            txt,
+          )
+        ) {
           r.retCat = "pre";
           r.retVal = parseFloat(mPre[1].replace(",", ".")) || 14;
           r.retIsento = /isent|lci|lca/.test(txt);
@@ -997,6 +1002,18 @@
       var __tplOverrides = loadTplOverrides();
       if (!__tplOverrides || typeof __tplOverrides !== "object")
         __tplOverrides = {};
+      /* A camada compartilhada (Firestore) grava os modelos editados no
+         hubStorage; este gancho recarrega e redesenha as abas sem mexer na
+         carteira que esta na tela -- o proximo clique no modelo ja traz a
+         versao nova. */
+      window.__cloudTplReload = function () {
+        try {
+          __tplOverrides = loadTplOverrides();
+          if (!__tplOverrides || typeof __tplOverrides !== "object") __tplOverrides = {};
+          applyTplOverrideWrappers();
+          if (document.getElementById("tabs")) renderTabs();
+        } catch (_) {}
+      };
 
       /* Reescreve cada TEMPLATES[name] para devolver o override salvo (se houver)
    ou a fabrica original. Como window.RICO_TEMPLATES === TEMPLATES, todos os
@@ -1075,6 +1092,15 @@
             projAnos: Number(S.projAnos) || 5,
             recomendadaTemplate: S.recomendadaTemplate || "Moderada",
             usarRetornoAtivo: !!S.usarRetornoAtivo,
+            posicaoAtual:
+              S.posicaoAtual && S.posicaoAtual.comp
+                ? {
+                    conta: S.posicaoAtual.conta || null,
+                    patrimonio: S.posicaoAtual.patrimonio || 0,
+                    comp: S.posicaoAtual.comp,
+                    atualizadoEm: S.posicaoAtual.atualizadoEm || 0,
+                  }
+                : null,
             _v: 1,
           };
           window.hubStorage.setItem(LS_CTOR_STATE, JSON.stringify(snap));
@@ -1117,6 +1143,8 @@
             S.recomendadaTemplate = snap.recomendadaTemplate;
           if (typeof snap.usarRetornoAtivo === "boolean")
             S.usarRetornoAtivo = snap.usarRetornoAtivo;
+          if (snap.posicaoAtual && snap.posicaoAtual.comp && !S.posicaoAtual)
+            S.posicaoAtual = snap.posicaoAtual;
         } catch (_) {
           __ctorRestoring = false;
           return false;
@@ -1130,6 +1158,307 @@
           persistCtorState();
         } catch (_) {}
       }
+
+      /* ---------- HISTORICO DE CARTEIRAS (ultimas 5) ----------
+         Sem botao de salvar: a carteira e guardada no instante em que o
+         construtor vai descarta-la -- troca de modelo, Montar do zero,
+         Restaurar template, carregar posicao. Um template intocado nao entra
+         (nao ha o que perder); a mesma carteira nao entra duas vezes. */
+      var LS_CTOR_HIST = "hubConstrutorHistorico";
+      var HIST_MAX = 5;
+      var __histUltimaRender = "";
+      function histLer() {
+        try {
+          var a = JSON.parse(window.hubStorage.getItem(LS_CTOR_HIST) || "[]");
+          return Array.isArray(a) ? a : [];
+        } catch (_) {
+          return [];
+        }
+      }
+      function histGravar(lista) {
+        try {
+          window.hubStorage.setItem(
+            LS_CTOR_HIST,
+            JSON.stringify(lista.slice(0, HIST_MAX)),
+          );
+        } catch (_) {}
+      }
+      function histSnap() {
+        return {
+          template: S.template,
+          items: serItems(S.items),
+          cliente: S.cliente || "",
+          patrimonio: Number(S.patrimonio) || 0,
+          cdi: Number(S.cdi) || 0,
+          cdiMult: Number(S.cdiMult) || 0,
+          clienteCDI: Number(S.clienteCDI) || 0,
+          projAnos: Number(S.projAnos) || 5,
+          recomendadaTemplate: S.recomendadaTemplate || "Moderada",
+          usarRetornoAtivo: !!S.usarRetornoAtivo,
+          posicaoAtual:
+            S.posicaoAtual && S.posicaoAtual.comp
+              ? { conta: S.posicaoAtual.conta || null, patrimonio: S.posicaoAtual.patrimonio || 0,
+                  comp: S.posicaoAtual.comp, atualizadoEm: S.posicaoAtual.atualizadoEm || 0 }
+              : null,
+          _v: 1,
+        };
+      }
+      function histAssinatura(snap) {
+        return JSON.stringify([
+          snap.template,
+          snap.cliente,
+          snap.patrimonio,
+          (snap.items || []).map(function (i) {
+            return [i.nome, i.pct, i.classe, i.detalhe || ""];
+          }),
+        ]);
+      }
+      /* Template de fabrica identico ao que esta na tela? Entao nao vale
+         guardar: clicar no proprio modelo de novo traz o mesmo resultado. */
+      function histEhFabrica(snap) {
+        try {
+          var t = snap.template;
+          if (t === "Nova" || t === "Atual") return !snap.items.length;
+          var fab =
+            CTOR_CART === "global"
+              ? GLOBAL_TEMPLATE()
+              : CTOR_VIEW === "classes" && GENERIC_TEMPLATES[t]
+                ? GENERIC_TEMPLATES[t]()
+                : TEMPLATES[t]
+                  ? TEMPLATES[t]()
+                  : null;
+          if (!fab) return false;
+          var chave = function (arr) {
+            return (arr || [])
+              .map(function (i) {
+                return [i.nome, Number(i.pct) || 0, i.classe].join("\u0001");
+              })
+              .join("\u0002");
+          };
+          /* o nome do cliente fica em S.cliente e sobrevive a troca de
+             modelo, entao nao conta: so os ativos dizem se houve trabalho */
+          return chave(serItems(fab)) === chave(snap.items);
+        } catch (_) {
+          return false;
+        }
+      }
+      function histGuardar(motivo) {
+        if (__ctorRestoring) return;
+        var snap;
+        try {
+          snap = histSnap();
+        } catch (_) {
+          return;
+        }
+        if (!snap.items || !snap.items.length) return;
+        if (histEhFabrica(snap)) return;
+        var ass = histAssinatura(snap);
+        var lista = histLer();
+        if (lista.length && lista[0].ass === ass) return;
+        lista = lista.filter(function (e) {
+          return e.ass !== ass;
+        });
+        lista.unshift({
+          id: "h" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+          em: new Date().toISOString(),
+          motivo: motivo || "",
+          ass: ass,
+          snap: snap,
+        });
+        histGravar(lista);
+        renderHistorico();
+      }
+      function histAplicar(snap) {
+        __ctorRestoring = true;
+        try {
+          if (snap.template) S.template = snap.template;
+          S.items = deserItems(snap.items || []);
+          ctorFixIds();
+          S.cliente = typeof snap.cliente === "string" ? snap.cliente : "";
+          if (snap.patrimonio != null && !isNaN(Number(snap.patrimonio)))
+            S.patrimonio = Number(snap.patrimonio);
+          if (snap.cdi != null && !isNaN(Number(snap.cdi))) S.cdi = Number(snap.cdi);
+          if (snap.cdiMult != null && !isNaN(Number(snap.cdiMult)))
+            S.cdiMult = Number(snap.cdiMult);
+          if (snap.clienteCDI != null && !isNaN(Number(snap.clienteCDI)))
+            S.clienteCDI = Number(snap.clienteCDI);
+          if (snap.projAnos != null && !isNaN(Number(snap.projAnos)))
+            S.projAnos = Number(snap.projAnos);
+          if (snap.recomendadaTemplate) S.recomendadaTemplate = snap.recomendadaTemplate;
+          if (typeof snap.usarRetornoAtivo === "boolean")
+            S.usarRetornoAtivo = snap.usarRetornoAtivo;
+          S.posicaoAtual = snap.posicaoAtual && snap.posicaoAtual.comp ? snap.posicaoAtual : null;
+        } finally {
+          __ctorRestoring = false;
+        }
+      }
+      function histReabrir(id) {
+        var e = histLer().filter(function (x) {
+          return x.id === id;
+        })[0];
+        if (!e || !e.snap) return;
+        histGuardar("reabrir"); /* o que esta na tela nao se perde */
+        histAplicar(e.snap);
+        S.editandoTemplate = null;
+        render();
+        try {
+          var alvo = document.getElementById("construtorSub");
+          if (alvo) alvo.scrollIntoView({ behavior: "smooth", block: "start" });
+        } catch (_) {}
+        try {
+          window.showToast(
+            "Carteira reaberta" +
+              (e.snap.cliente ? ": " + e.snap.cliente : "") +
+              ". A que estava na tela foi para o histórico.",
+          );
+        } catch (_) {}
+      }
+      function histEsquecer(id) {
+        histGravar(
+          histLer().filter(function (x) {
+            return x.id !== id;
+          }),
+        );
+        renderHistorico();
+      }
+      function histQuando(iso) {
+        var d = new Date(iso);
+        if (isNaN(d)) return "";
+        var hoje = new Date();
+        var hh =
+          String(d.getHours()).padStart(2, "0") +
+          ":" +
+          String(d.getMinutes()).padStart(2, "0");
+        var mesmoDia = function (a, b) {
+          return (
+            a.getFullYear() === b.getFullYear() &&
+            a.getMonth() === b.getMonth() &&
+            a.getDate() === b.getDate()
+          );
+        };
+        if (mesmoDia(d, hoje)) return "hoje " + hh;
+        var ontem = new Date(hoje);
+        ontem.setDate(hoje.getDate() - 1);
+        if (mesmoDia(d, ontem)) return "ontem " + hh;
+        return (
+          String(d.getDate()).padStart(2, "0") +
+          "/" +
+          String(d.getMonth() + 1).padStart(2, "0") +
+          " " +
+          hh
+        );
+      }
+      function renderHistorico() {
+        var box = document.getElementById("ctorHistLista");
+        if (!box) return;
+        var lista = histLer();
+        /* no topo da tela, caixa vazia e so ruido: aparece com a primeira carteira */
+        var cardHist = document.getElementById("ctorHistorico");
+        if (cardHist) cardHist.hidden = !lista.length;
+        var chave = lista
+          .map(function (e) {
+            return e.id;
+          })
+          .join(",");
+        if (chave === __histUltimaRender && box.childNodes.length) return;
+        __histUltimaRender = chave;
+        if (!lista.length) {
+          box.innerHTML =
+            '<div class="hist-vazio">Nenhuma carteira guardada ainda. Assim que você trocar de modelo ou restaurar um template, a carteira que estava na tela aparece aqui.</div>';
+          return;
+        }
+        box.innerHTML = lista
+          .map(function (e) {
+            var sn = e.snap || {};
+            var itens = sn.items || [];
+            var porClasse = {};
+            var total = 0;
+            itens.forEach(function (i) {
+              var p = Number(i.pct) || 0;
+              porClasse[i.classe] = (porClasse[i.classe] || 0) + p;
+              total += p;
+            });
+            var barra = CLASSES.filter(function (c) {
+              return porClasse[c] > 0;
+            })
+              .map(function (c) {
+                var w = total > 0 ? (porClasse[c] / total) * 100 : 0;
+                return (
+                  '<span title="' +
+                  esc(c) +
+                  " " +
+                  Math.round(porClasse[c]) +
+                  '%" style="width:' +
+                  w.toFixed(1) +
+                  "%;background:" +
+                  (CLASS_COLORS[c] || "#888") +
+                  '"></span>'
+                );
+              })
+              .join("");
+            var nome = sn.cliente ? esc(sn.cliente) : "Sem nome de cliente";
+            var modelo =
+              sn.template === "Nova"
+                ? "Montada do zero"
+                : sn.template === "Atual"
+                  ? "Posição atual"
+                  : "Base " + esc(sn.template || "");
+            return (
+              '<div class="hist-item" data-hist="' +
+              e.id +
+              '">' +
+              '<div class="hist-topo">' +
+              '<div class="hist-nome">' +
+              nome +
+              "</div>" +
+              '<div class="hist-quando">' +
+              histQuando(e.em) +
+              "</div>" +
+              "</div>" +
+              '<div class="hist-meta">' +
+              '<span class="hist-chip">' +
+              modelo +
+              "</span>" +
+              "<span>" +
+              itens.length +
+              (itens.length === 1 ? " ativo" : " ativos") +
+              "</span>" +
+              (sn.patrimonio ? "<span>R$ " + fmtBRL(sn.patrimonio) + "</span>" : "") +
+              "</div>" +
+              '<div class="hist-barra">' +
+              barra +
+              "</div>" +
+              '<div class="hist-acoes">' +
+              '<button type="button" class="hist-abrir" data-histabrir="' +
+              e.id +
+              '">Reabrir</button>' +
+              '<button type="button" class="hist-x" data-histx="' +
+              e.id +
+              '" title="Tirar do histórico">×</button>' +
+              "</div>" +
+              "</div>"
+            );
+          })
+          .join("");
+        box.querySelectorAll("[data-histabrir]").forEach(function (b) {
+          b.onclick = function () {
+            histReabrir(b.getAttribute("data-histabrir"));
+          };
+        });
+        box.querySelectorAll("[data-histx]").forEach(function (b) {
+          b.onclick = function (ev) {
+            ev.stopPropagation();
+            histEsquecer(b.getAttribute("data-histx"));
+          };
+        });
+      }
+      try {
+        window.__ctorHistorico = {
+          guardar: histGuardar,
+          ler: histLer,
+          reabrir: histReabrir,
+        };
+      } catch (_) {}
 
       const GLOSSARY = {
         collar: {
@@ -1253,7 +1582,11 @@
           });
           lista.forEach((a) => {
             if ((a.pct || 0) < 0.01) return;
-            const detalhe = "Posição atual · " + subcatLabel(a);
+            const detalhe =
+              "Posição atual · " +
+              (a.detalhe
+                ? a.detalhe
+                : subcatLabel(a) + (a.taxa ? " · " + a.taxa : ""));
             out.push(
               mk(
                 a.categoria || "Multimercados",
@@ -1409,6 +1742,9 @@
           "PROJEÇÃO DE RENTABILIDADE · " + S.template.toUpperCase();
         publicarCarteira(D);
         ctorPersist(); // Tarefa 2: persiste o estado editado a cada render
+        try {
+          renderHistorico();
+        } catch (_) {}
       }
 
       // Ponte com o Simulador: publica a carteira montada num objeto global
@@ -1621,6 +1957,7 @@
       }
 
       function loadTemplate(t) {
+        histGuardar("template");
         S.template = t;
         S.recomendadaTemplate = t;
         S.items =
@@ -1634,6 +1971,7 @@
         render();
       }
       function loadNova() {
+        histGuardar("nova");
         S.template = "Nova";
         S.recomendadaTemplate = "Moderada";
         S.items = [];
@@ -1644,6 +1982,7 @@
       /* Carrega a carteira ATUAL do cliente (posição importada) na tela do construtor */
       function loadAtual() {
         if (!S.posicaoAtual || !S.posicaoAtual.comp) return;
+        histGuardar("atual");
         S.template = "Atual";
         S.items = itensDaPosicao(S.posicaoAtual);
         if (S.posicaoAtual.patrimonio) S.patrimonio = S.posicaoAtual.patrimonio;
@@ -2874,6 +3213,106 @@
         render();
       };
 
+      /* ---------- importar carteira (Posicao Consolidada xlsx) ----------
+         O construtor nao carrega o SheetJS nem o leitor da posicao por padrao;
+         os dois entram sob demanda, so quando o assessor escolhe um arquivo. */
+      function carregarScript(path) {
+        return new Promise(function (res, rej) {
+          var marca = 'script[data-hub="' + path + '"]';
+          if (document.querySelector(marca)) return res();
+          var sc = document.createElement("script");
+          sc.src = window.__hubAsset(path);
+          sc.dataset.hub = path;
+          sc.onload = res;
+          sc.onerror = function () {
+            rej(new Error("Falha ao carregar " + path));
+          };
+          document.head.appendChild(sc);
+        });
+      }
+      async function importarPosicao(file) {
+        if (!file) return;
+        try {
+          if (!window.XLSX) await carregarScript("./vendor/xlsx-0.18.5.min.js");
+          if (!window.__hubPosicao) await carregarScript("./src/compat/posicao-xlsx.js");
+        } catch (e) {
+          try { window.showToast("Não consegui carregar o leitor de planilhas."); } catch (_) {}
+          return;
+        }
+        var buf;
+        try {
+          buf = await file.arrayBuffer();
+        } catch (e) {
+          try { window.showToast("Não consegui ler o arquivo."); } catch (_) {}
+          return;
+        }
+        var pos;
+        try {
+          var wb = XLSX.read(new Uint8Array(buf), { type: "array" });
+          pos = window.__hubPosicao.parse(wb);
+        } catch (e) {
+          try { window.showToast("Esse arquivo não parece a Posição Consolidada do Hub XP."); } catch (_) {}
+          return;
+        }
+        if (!pos || !pos.ativos || !pos.ativos.length) {
+          try { window.showToast("Não encontrei ativos nessa planilha."); } catch (_) {}
+          return;
+        }
+        var ativos = window.__hubPosicao.consolidar(pos.ativos);
+        var comp = {};
+        var tot = ativos.reduce(function (sum, a) { return sum + (a.valor || 0); }, 0);
+        ativos.forEach(function (a) {
+          comp[a.categoria] = (comp[a.categoria] || 0) + (tot > 0 ? (a.valor / tot) * 100 : 0);
+        });
+
+        histGuardar("importar"); /* o que estava na tela vai para o historico */
+        S.posicaoAtual = {
+          conta: pos.conta,
+          patrimonio: pos.patrimonio || tot,
+          comp: comp,
+          ativos: ativos,
+          atualizadoEm: Date.now(),
+        };
+        S.template = "Atual";
+        S.editandoTemplate = null;
+        S.items = itensDaPosicao(S.posicaoAtual);
+        ctorFixIds();
+        if (pos.patrimonio) S.patrimonio = Math.round(pos.patrimonio);
+        else if (tot) S.patrimonio = Math.round(tot);
+        if (pos.conta && (!S.cliente || /^Conta /.test(S.cliente))) S.cliente = "Conta " + pos.conta;
+        try {
+          var _cli = document.getElementById("cliente");
+          if (_cli) _cli.value = S.cliente || "";
+          fmtPatInput();
+        } catch (_) {}
+        render();
+        var nRF = ativos.filter(function (a) { return a.emissoes && a.emissoes.length > 1; });
+        try {
+          window.showToast(
+            "Carteira importada: " + ativos.length + " ativos" +
+              (pos.conta ? " · conta " + pos.conta : "") +
+              (nRF.length
+                ? " · " + nRF.map(function (a) { return a.emissoes.length + " " + a.name + (a.emissoes.length > 1 ? "s" : ""); }).join(", ") + " agrupados"
+                : "") + ".",
+          );
+        } catch (_) {}
+      }
+      (function ligarImportar() {
+        var b = document.getElementById("btnImportar");
+        var inp = document.getElementById("inpImportar");
+        if (!b || !inp || b.__lig) return;
+        b.__lig = 1;
+        b.onclick = function () {
+          inp.value = "";
+          inp.click();
+        };
+        inp.onchange = function () {
+          var f = inp.files && inp.files[0];
+          if (f) importarPosicao(f);
+        };
+      })();
+      window.__ctorImportarPosicao = importarPosicao;
+
       /* ---------- copiar resumo ---------- */
       document.getElementById("btnCopy").onclick = () => {
         const D = calc();
@@ -3049,7 +3488,7 @@
 
         /* projecao (compacta) */
         const hasProj = !!(projData && projData.length);
-        const projH = hasProj ? 250 : 0;
+        const projH = hasProj ? 440 : 0;
         const projTop = bodyBottom + (hasProj ? 14 : 0);
         const projBottom = projTop + projH;
 
@@ -3435,114 +3874,55 @@
           y += CLASS_GAP;
         });
 
-        /* ---- projecao (compacta) ---- */
+        /* ---- projecao ----
+           Um cartao com o grafico a esquerda (area preenchida, grade,
+           marcadores por ano) e os numeros-chave numa coluna a direita,
+           em vez da faixa de 120px de altura que corria a pagina inteira. */
         if (hasProj) {
-          const py0 = projTop;
+          const PW = W - 2 * MX;
+          const cardX = MX,
+            cardY = projTop,
+            cardH = projH - 14;
+          const padX = 28;
+          const kpiW = 290;
+          const kpiX = cardX + PW - padX - kpiW;
+          const headH = 62;
+
+          ctx.fillStyle = "rgba(255,255,255,.035)";
+          rr(cardX, cardY, PW, cardH, 18);
+          ctx.fill();
+          ctx.strokeStyle = "rgba(120,130,210,.22)";
+          ctx.lineWidth = 1;
+          rr(cardX, cardY, PW, cardH, 18);
+          ctx.stroke();
+
+          /* cabecalho: titulo + subtitulo a esquerda, legenda a direita */
           spaced(
             "PROJEÇÃO DE RENTABILIDADE · " +
               String(template || "").toUpperCase(),
-            MX,
-            py0 + 24,
+            cardX + padX,
+            cardY + 32,
             13,
             "#A9B0D6",
             "700",
             1.5,
             "left",
           );
-          const xL = MX + 80,
-            xR = W - MX,
-            yT = py0 + 44,
-            yB = yT + 120;
-          const yMin = patrimonio * 0.97,
-            yMax = endCarteira * 1.03;
-          const sx = (a) =>
-            xL + (projAnos === 0 ? 0 : a / projAnos) * (xR - xL);
-          const sy = (v) => yB - ((v - yMin) / (yMax - yMin || 1)) * (yB - yT);
-          ctx.textAlign = "right";
-          ctx.textBaseline = "middle";
-          for (let g = 0; g <= 4; g++) {
-            const gv = yMin + (g / 4) * (yMax - yMin);
-            const gy = sy(gv);
-            ctx.strokeStyle = "rgba(120,130,210,.12)";
-            ctx.lineWidth = 1;
-            ctx.beginPath();
-            ctx.moveTo(xL, gy);
-            ctx.lineTo(xR, gy);
-            ctx.stroke();
-            ctx.font = `500 11px ${FF}`;
-            ctx.fillStyle = "#A9B0D6";
-            ctx.fillText(fmtCompact(gv), xL - 10, gy);
-          }
-          ctx.textBaseline = "alphabetic";
-          const step =
-            projAnos <= 6 ? 1 : projAnos <= 12 ? 2 : Math.ceil(projAnos / 8);
-          for (let a = 0; a <= projAnos; a += step)
-            T(
-              a === 0 ? "Hoje" : a + "a",
-              sx(a),
-              yB + 18,
-              11,
-              "#A9B0D6",
-              "500",
-              "center",
-            );
-          if (projAnos % step !== 0)
-            T(
-              projAnos + "a",
-              sx(projAnos),
-              yB + 18,
-              11,
-              "#A9B0D6",
-              "500",
-              "center",
-            );
-          ctx.strokeStyle = "#7C8CFF";
-          ctx.lineWidth = 2;
-          ctx.setLineDash([7, 5]);
-          ctx.beginPath();
-          projData.forEach((d, idx) => {
-            const px = sx(d.ano),
-              py = sy(d.cdi);
-            idx ? ctx.lineTo(px, py) : ctx.moveTo(px, py);
-          });
-          ctx.stroke();
-          ctx.setLineDash([]);
-          /* carteira atual do cliente: mesma linha pontilhada laranja da tela.
-       So aparece quando o assessor preencheu o % do CDI da carteira atual
-       (D.temCliente) -- e e ela que da sentido ao bloco de alfa abaixo. */
-          if (D && D.temCliente) {
-            ctx.strokeStyle = ORANGE;
-            ctx.lineWidth = 2.5;
-            ctx.setLineDash([2, 5]);
-            ctx.lineCap = "round";
-            ctx.beginPath();
-            projData.forEach((d, idx) => {
-              const px = sx(d.ano),
-                py = sy(d.cliente);
-              idx ? ctx.lineTo(px, py) : ctx.moveTo(px, py);
-            });
-            ctx.stroke();
-            ctx.setLineDash([]);
-            ctx.lineCap = "butt";
-          }
-          ctx.strokeStyle = "#2BD9A6";
-          ctx.lineWidth = 3;
-          ctx.beginPath();
-          projData.forEach((d, idx) => {
-            const px = sx(d.ano),
-              py = sy(d.carteira);
-            idx ? ctx.lineTo(px, py) : ctx.moveTo(px, py);
-          });
-          ctx.stroke();
-          projData.forEach((d) => {
-            ctx.beginPath();
-            ctx.arc(sx(d.ano), sy(d.carteira), 3.5, 0, 2 * Math.PI);
-            ctx.fillStyle = "#2BD9A6";
-            ctx.fill();
-          });
-          /* legenda: 2 ou 3 series, desenhada em sequencia medindo cada rotulo.
-       Cabe ate o inicio da primeira caixa de resumo (box1X). */
-          const lgy = yB + 40;
+          T(
+            "Aporte inicial de R$ " +
+              fmtBRL(patrimonio) +
+              " · horizonte de " +
+              projAnos +
+              (projAnos === 1 ? " ano" : " anos") +
+              " · rentabilidade bruta estimada",
+            cardX + padX,
+            cardY + 52,
+            12,
+            "#8089BE",
+            "500",
+            "left",
+          );
+
           const series = [
             {
               lbl: `Carteira ${template} (${fmtPct(retAA)}% a.a.)`,
@@ -3564,7 +3944,13 @@
             w: 2,
             dash: [6, 4],
           });
-          let lgx = MX;
+          ctx.font = `600 12.5px ${FF}`;
+          let legW = 0;
+          series.forEach((sr, i) => {
+            legW += 30 + ctx.measureText(sr.lbl).width + (i ? 26 : 0);
+          });
+          let lgx = cardX + PW - padX - legW;
+          const lgy = cardY + 40;
           series.forEach((sr) => {
             ctx.strokeStyle = sr.cor;
             ctx.lineWidth = sr.w;
@@ -3574,69 +3960,220 @@
             }
             ctx.beginPath();
             ctx.moveTo(lgx, lgy);
-            ctx.lineTo(lgx + 26, lgy);
+            ctx.lineTo(lgx + 22, lgy);
             ctx.stroke();
             ctx.setLineDash([]);
             ctx.lineCap = "butt";
-            T(sr.lbl, lgx + 36, lgy + 4, 12.5, "#cfd4ef", "600", "left");
+            T(sr.lbl, lgx + 30, lgy + 4, 12.5, "#cfd4ef", "600", "left");
             ctx.font = `600 12.5px ${FF}`;
-            lgx += 36 + ctx.measureText(sr.lbl).width + 26;
+            lgx += 30 + ctx.measureText(sr.lbl).width + 26;
           });
-          const boxW = 272,
-            boxH = 52,
-            boxY = lgy - 24,
-            box2X = W - MX - boxW,
-            box1X = box2X - boxW - 14;
-          ctx.fillStyle = "rgba(43,217,166,.08)";
-          rr(box1X, boxY, boxW, boxH, 12);
-          ctx.fill();
-          ctx.strokeStyle = "rgba(43,217,166,.3)";
-          ctx.lineWidth = 1;
-          rr(box1X, boxY, boxW, boxH, 12);
+
+          /* linha fina separando cabecalho do corpo */
+          ctx.strokeStyle = "rgba(120,130,210,.16)";
+          ctx.beginPath();
+          ctx.moveTo(cardX + padX, cardY + headH);
+          ctx.lineTo(cardX + PW - padX, cardY + headH);
           ctx.stroke();
-          T(
-            `Carteira em ${projAnos} anos`,
-            box1X + 16,
-            boxY + 22,
-            11.5,
-            "#A9B0D6",
-            "700",
-            "left",
-          );
-          T(
-            "R$ " + fmtBRL(endCarteira),
-            box1X + 16,
-            boxY + 44,
-            18,
-            "#2BD9A6",
-            "800",
-            "left",
-          );
-          ctx.fillStyle = "rgba(124,140,255,.08)";
-          rr(box2X, boxY, boxW, boxH, 12);
+
+          /* area do grafico */
+          const xL = cardX + padX + 78,
+            xR = kpiX - 40,
+            yT = cardY + headH + 34,
+            yB = cardY + cardH - 50;
+          const yMin = patrimonio * 0.97,
+            yMax = Math.max(endCarteira, endCDI, D && D.temCliente ? (projData[projData.length - 1].cliente || 0) : 0) * 1.04;
+          const sx = (a) =>
+            xL + (projAnos === 0 ? 0 : a / projAnos) * (xR - xL);
+          const sy = (v) => yB - ((v - yMin) / (yMax - yMin || 1)) * (yB - yT);
+
+          /* grade horizontal com rotulos */
+          ctx.textAlign = "right";
+          ctx.textBaseline = "middle";
+          for (let g = 0; g <= 5; g++) {
+            const gv = yMin + (g / 5) * (yMax - yMin);
+            const gy = sy(gv);
+            ctx.strokeStyle = g === 0 ? "rgba(120,130,210,.32)" : "rgba(120,130,210,.13)";
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(xL, gy);
+            ctx.lineTo(xR, gy);
+            ctx.stroke();
+            ctx.font = `500 11.5px ${FF}`;
+            ctx.fillStyle = "#A9B0D6";
+            ctx.fillText(fmtCompact(gv), xL - 12, gy);
+          }
+          ctx.textBaseline = "alphabetic";
+
+          /* marcadores verticais por ano */
+          const step =
+            projAnos <= 6 ? 1 : projAnos <= 12 ? 2 : Math.ceil(projAnos / 8);
+          const rotAno = (a) =>
+            a === 0 ? "Hoje" : projAnos <= 6 ? a + (a === 1 ? " ano" : " anos") : a + "a";
+          const anos = [];
+          for (let a = 0; a <= projAnos; a += step) anos.push(a);
+          if (projAnos % step !== 0) anos.push(projAnos);
+          anos.forEach((a) => {
+            ctx.strokeStyle = "rgba(120,130,210,.10)";
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(sx(a), yT);
+            ctx.lineTo(sx(a), yB);
+            ctx.stroke();
+            T(rotAno(a), sx(a), yB + 22, 11.5, "#A9B0D6", "600", "center");
+          });
+
+          /* area sob a carteira */
+          const areaG = ctx.createLinearGradient(0, yT, 0, yB);
+          areaG.addColorStop(0, "rgba(43,217,166,.26)");
+          areaG.addColorStop(1, "rgba(43,217,166,0)");
+          ctx.beginPath();
+          projData.forEach((d, idx) => {
+            const px = sx(d.ano),
+              py = sy(d.carteira);
+            idx ? ctx.lineTo(px, py) : ctx.moveTo(px, py);
+          });
+          ctx.lineTo(sx(projData[projData.length - 1].ano), yB);
+          ctx.lineTo(sx(projData[0].ano), yB);
+          ctx.closePath();
+          ctx.fillStyle = areaG;
           ctx.fill();
-          ctx.strokeStyle = "rgba(124,140,255,.3)";
-          ctx.lineWidth = 1;
-          rr(box2X, boxY, boxW, boxH, 12);
+
+          /* CDI */
+          ctx.strokeStyle = "#7C8CFF";
+          ctx.lineWidth = 2;
+          ctx.setLineDash([7, 5]);
+          ctx.beginPath();
+          projData.forEach((d, idx) => {
+            const px = sx(d.ano),
+              py = sy(d.cdi);
+            idx ? ctx.lineTo(px, py) : ctx.moveTo(px, py);
+          });
           ctx.stroke();
-          T(
-            `100% do CDI em ${projAnos} anos`,
-            box2X + 16,
-            boxY + 22,
-            11.5,
-            "#A9B0D6",
-            "700",
-            "left",
+          ctx.setLineDash([]);
+          /* carteira atual do cliente, quando o assessor informou o % do CDI */
+          if (D && D.temCliente) {
+            ctx.strokeStyle = ORANGE;
+            ctx.lineWidth = 2.5;
+            ctx.setLineDash([2, 5]);
+            ctx.lineCap = "round";
+            ctx.beginPath();
+            projData.forEach((d, idx) => {
+              const px = sx(d.ano),
+                py = sy(d.cliente);
+              idx ? ctx.lineTo(px, py) : ctx.moveTo(px, py);
+            });
+            ctx.stroke();
+            ctx.setLineDash([]);
+            ctx.lineCap = "butt";
+          }
+          /* carteira proposta */
+          ctx.strokeStyle = "#2BD9A6";
+          ctx.lineWidth = 3.5;
+          ctx.lineJoin = "round";
+          ctx.beginPath();
+          projData.forEach((d, idx) => {
+            const px = sx(d.ano),
+              py = sy(d.carteira);
+            idx ? ctx.lineTo(px, py) : ctx.moveTo(px, py);
+          });
+          ctx.stroke();
+          projData.forEach((d) => {
+            ctx.beginPath();
+            ctx.arc(sx(d.ano), sy(d.carteira), 5, 0, 2 * Math.PI);
+            ctx.fillStyle = "#0A0F38";
+            ctx.fill();
+            ctx.lineWidth = 2.5;
+            ctx.strokeStyle = "#2BD9A6";
+            ctx.stroke();
+          });
+          /* valor no ultimo ponto */
+          {
+            const ult = projData[projData.length - 1];
+            const px = sx(ult.ano),
+              py = sy(ult.carteira);
+            const rot = "R$ " + fmtBRL(ult.carteira);
+            ctx.font = `800 13px ${FF}`;
+            const tw = ctx.measureText(rot).width + 20;
+            const bx = px - tw - 10,
+              by = py - 34;
+            ctx.fillStyle = "rgba(43,217,166,.16)";
+            rr(bx, by, tw, 24, 8);
+            ctx.fill();
+            ctx.strokeStyle = "rgba(43,217,166,.5)";
+            ctx.lineWidth = 1;
+            rr(bx, by, tw, 24, 8);
+            ctx.stroke();
+            T(rot, bx + tw / 2, by + 16.5, 13, "#2BD9A6", "800", "center");
+          }
+
+          /* coluna de numeros-chave */
+          const tiles = [
+            {
+              t: `Carteira em ${projAnos} ${projAnos === 1 ? "ano" : "anos"}`,
+              v: "R$ " + fmtBRL(endCarteira),
+              sub: "+R$ " + fmtBRL(Math.max(0, endCarteira - patrimonio)) + " sobre o aporte",
+              cor: "#2BD9A6",
+              bg: "rgba(43,217,166,.09)",
+              bd: "rgba(43,217,166,.32)",
+            },
+            {
+              t: `100% do CDI em ${projAnos} ${projAnos === 1 ? "ano" : "anos"}`,
+              v: "R$ " + fmtBRL(endCDI),
+              sub: "+R$ " + fmtBRL(Math.max(0, endCDI - patrimonio)) + " sobre o aporte",
+              cor: "#7C8CFF",
+              bg: "rgba(124,140,255,.09)",
+              bd: "rgba(124,140,255,.32)",
+            },
+          ];
+          if (D && D.temCliente) {
+            const endCli = projData[projData.length - 1].cliente || 0;
+            tiles.push({
+              t: `Carteira atual em ${projAnos} ${projAnos === 1 ? "ano" : "anos"}`,
+              v: "R$ " + fmtBRL(endCli),
+              sub: fmtPct(D.retClienteAA) + "% a.a. informado",
+              cor: ORANGE,
+              bg: "rgba(242,101,34,.09)",
+              bd: "rgba(242,101,34,.32)",
+            });
+          }
+          const dif = endCarteira - endCDI;
+          tiles.push({
+            t: "Vantagem sobre o CDI",
+            v: (dif >= 0 ? "+" : "−") + "R$ " + fmtBRL(Math.abs(dif)),
+            sub:
+              endCDI > 0
+                ? (dif >= 0 ? "+" : "−") +
+                  fmtPct(Math.abs((dif / endCDI) * 100)) +
+                  "% sobre o resultado do CDI"
+                : "",
+            cor: dif >= 0 ? "#2BD9A6" : "#FF8A8A",
+            bg: "rgba(255,255,255,.04)",
+            bd: "rgba(120,130,210,.26)",
+          });
+          const tileGap = 12;
+          const tileH = Math.min(
+            92,
+            Math.floor((yB + 8 - (cardY + headH + 18) - tileGap * (tiles.length - 1)) / tiles.length),
           );
-          T(
-            "R$ " + fmtBRL(endCDI),
-            box2X + 16,
-            boxY + 44,
-            18,
-            "#7C8CFF",
-            "800",
-            "left",
-          );
+          let ty = cardY + headH + 18;
+          tiles.forEach((tl) => {
+            ctx.fillStyle = tl.bg;
+            rr(kpiX, ty, kpiW, tileH, 12);
+            ctx.fill();
+            ctx.strokeStyle = tl.bd;
+            ctx.lineWidth = 1;
+            rr(kpiX, ty, kpiW, tileH, 12);
+            ctx.stroke();
+            ctx.fillStyle = tl.cor;
+            rr(kpiX, ty + 14, 3, tileH - 28, 2);
+            ctx.fill();
+            T(tl.t, kpiX + 18, ty + 24, 11.5, "#A9B0D6", "700", "left");
+            T(tl.v, kpiX + 18, ty + (tileH > 70 ? 52 : 46), tileH > 70 ? 22 : 19, tl.cor, "800", "left");
+            if (tl.sub && tileH > 70)
+              T(tl.sub, kpiX + 18, ty + tileH - 14, 11, "#8089BE", "500", "left");
+            ty += tileH + tileGap;
+          });
         }
 
         /* ---- alfa (compacta) ---- */

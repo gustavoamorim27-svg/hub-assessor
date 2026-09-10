@@ -3536,6 +3536,166 @@
   [data-tool="construtor"] .explica {
     margin-top: 28px;
   }
+  /* ---- Carteiras recentes (historico automatico), faixa no topo ---- */
+  [data-tool="construtor"] #ctorHistorico {
+    margin: 0 0 18px;
+    padding: 12px 16px 10px;
+  }
+  [data-tool="construtor"] #ctorHistorico[hidden] {
+    display: none !important;
+  }
+  [data-tool="construtor"] .hist-cab {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+  }
+  [data-tool="construtor"] #ctorHistorico .exp-title {
+    font-size: 14px;
+    margin: 0;
+  }
+  [data-tool="construtor"] #ctorHistorico .exp-sub {
+    font-size: 11.5px;
+    margin: 0;
+  }
+  [data-tool="construtor"] #ctorHistLista {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding-bottom: 4px;
+    scrollbar-width: thin;
+  }
+  [data-tool="construtor"] #ctorHistLista .hist-item {
+    flex: 0 0 auto;
+    width: 250px;
+    padding: 10px 12px 10px;
+    gap: 7px;
+  }
+  [data-tool="construtor"] #ctorHistLista .hist-nome {
+    font-size: 13px;
+  }
+  [data-tool="construtor"] #ctorHistLista .hist-abrir {
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+  [data-tool="construtor"] #ctorHistLista .hist-x {
+    width: 28px;
+    height: 28px;
+  }
+  [data-tool="construtor"] .hist-vazio {
+    font-size: 13px;
+    color: var(--cinza-2);
+    padding: 14px 16px;
+    border: 1px dashed rgba(231, 220, 255, 0.22);
+    border-radius: 12px;
+    grid-column: 1 / -1;
+  }
+  [data-tool="construtor"] .hist-item {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+    padding: 14px 15px 13px;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.045);
+    border: 1px solid rgba(231, 220, 255, 0.16);
+    transition: border-color 0.15s, background 0.15s;
+  }
+  [data-tool="construtor"] .hist-item:hover {
+    background: rgba(255, 255, 255, 0.07);
+    border-color: rgba(255, 98, 29, 0.45);
+  }
+  [data-tool="construtor"] .hist-topo {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 10px;
+  }
+  [data-tool="construtor"] .hist-nome {
+    font-family: "Sora";
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: -0.01em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    min-width: 0;
+  }
+  [data-tool="construtor"] .hist-quando {
+    font-size: 11px;
+    color: var(--cinza-2);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  [data-tool="construtor"] .hist-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 10px;
+    align-items: center;
+    font-size: 12px;
+    color: var(--cinza);
+  }
+  [data-tool="construtor"] .hist-chip {
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    padding: 3px 8px;
+    border-radius: 999px;
+    background: rgba(255, 98, 29, 0.13);
+    border: 1px solid rgba(255, 98, 29, 0.35);
+    color: #ffb490;
+  }
+  [data-tool="construtor"] .hist-barra {
+    display: flex;
+    height: 6px;
+    border-radius: 999px;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.08);
+  }
+  [data-tool="construtor"] .hist-barra span {
+    display: block;
+    height: 100%;
+  }
+  [data-tool="construtor"] .hist-acoes {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin-top: 2px;
+  }
+  [data-tool="construtor"] .hist-abrir {
+    flex: 1;
+    padding: 8px 12px;
+    border-radius: 9px;
+    border: 1px solid rgba(255, 98, 29, 0.5);
+    background: rgba(255, 98, 29, 0.14);
+    color: #fff;
+    font-family: inherit;
+    font-size: 12.5px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  [data-tool="construtor"] .hist-abrir:hover {
+    background: rgba(255, 98, 29, 0.32);
+  }
+  [data-tool="construtor"] .hist-x {
+    width: 32px;
+    height: 32px;
+    border-radius: 9px;
+    border: 1px solid rgba(231, 220, 255, 0.16);
+    background: transparent;
+    color: var(--cinza-2);
+    font-size: 16px;
+    line-height: 1;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  [data-tool="construtor"] .hist-x:hover {
+    color: #ffb0b0;
+    border-color: rgba(255, 86, 86, 0.4);
+  }
   [data-tool="simulador"] .exp-title,
   [data-tool="construtor"] .exp-title {
     font-family: "Sora";
@@ -5613,7 +5773,7 @@
     max-width: 100% !important;
     z-index: auto !important;
     box-shadow: none !important;
-    border: 1px solid transparent !important;
+    border: 0 solid transparent !important;
     border-radius: 16px !important;
     max-height: 0 !important;
     overflow: hidden !important;
@@ -5630,6 +5790,7 @@
     overflow-y: auto !important;
     padding: 22px 22px 28px !important;
     margin: 0 0 14px !important;
+    border-width: 1px !important;
     border-color: rgba(120, 130, 210, 0.28) !important;
   }
   [data-tool="construtor"] #libBackdrop,
@@ -9175,6 +9336,42 @@
   }
   #p-holdingcalc .hk-g .hc-f {
     margin-bottom: 12px;
+  }
+  /* bloco 3: medias de mercado pre-preenchidas */
+  #p-holdingcalc .hk-medias {
+    list-style: none;
+    margin: 10px 0 8px;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  #p-holdingcalc .hk-medias li {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 10px;
+    font-size: 12.5px;
+    color: #c2cbf0;
+    padding: 7px 10px;
+    border-radius: 9px;
+    background: rgba(255, 255, 255, 0.045);
+    border: 1px solid rgba(231, 220, 255, 0.12);
+  }
+  #p-holdingcalc .hk-medias li b {
+    font-family: "Sora", sans-serif;
+    font-size: 13px;
+    color: #fff;
+    white-space: nowrap;
+  }
+  #p-holdingcalc .hk-ajustar {
+    width: 100%;
+    margin: 4px 0 12px;
+    font-size: 12px;
+    padding: 8px 12px;
+  }
+  #p-holdingcalc #hkCustosCampos.hk-off {
+    display: none;
   }
   #p-holdingcalc .hk-g .hc-f label {
     margin-bottom: 5px;

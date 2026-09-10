@@ -4,6 +4,7 @@ import { parse } from 'parse5';
 
 const output = path.resolve('../../outputs/gustavo-amorim.html');
 const publishedOverridesFile = path.resolve('src/published-overrides.html');
+const liveEnhancementsFile = path.resolve('src/live-enhancements.html');
 const assets = {};
 const mime = {'.js':'text/javascript','.css':'text/css','.html':'text/html','.svg':'image/svg+xml','.json':'application/json'};
 const data = (body,type) => `data:${type};base64,${Buffer.from(body).toString('base64')}`;
@@ -57,6 +58,14 @@ try {
   const publishedOverrides = await fs.readFile(publishedOverridesFile, 'utf8');
   if (publishedOverrides.trim()) {
     html = html.replace('</body>', `${publishedOverrides.trim()}\n</body>`);
+  }
+} catch (error) {
+  if (error.code !== 'ENOENT') throw error;
+}
+try {
+  const liveEnhancements = await fs.readFile(liveEnhancementsFile, 'utf8');
+  if (liveEnhancements.trim() && !html.includes('id="scroll-depth-css"')) {
+    html = html.replace('</body>', `${liveEnhancements.trim()}\n</body>`);
   }
 } catch (error) {
   if (error.code !== 'ENOENT') throw error;

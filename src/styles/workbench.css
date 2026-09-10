@@ -34,8 +34,8 @@
 #tool-workspace {
   min-width: 0;
   isolation: isolate;
-  --tool-control: rgba(28, 47, 99, 0.78);
-  --tool-control-hover: rgba(40, 64, 127, 0.85);
+  --tool-control: rgba(255, 255, 255, 0.065);
+  --tool-control-hover: rgba(255, 255, 255, 0.11);
   --input: var(--tool-control);
 }
 #tool-workspace .g-panel,
@@ -316,13 +316,13 @@
 #tool-workspace textarea,
 #tool-workspace :is(.num-input, .qc-inp, .im-valor, .ret-inp) {
   background: var(--tool-control) !important;
-  border-color: rgba(140, 166, 236, 0.34) !important;
-  color: #f5f5ff !important;
+  border-color: rgba(231, 220, 255, 0.2) !important;
+  color: var(--s-text) !important;
 }
 #tool-workspace
   :is(.cmp-tab, .tab, .pill, .seg, .quick button):not(.on):not(.active) {
   background: var(--tool-control) !important;
-  border-color: rgba(140, 166, 236, 0.3) !important;
+  border-color: rgba(231, 220, 255, 0.18) !important;
 }
 #tool-workspace
   :is(.cmp-tab, .tab, .pill, .seg, .quick button):not(.on):not(.active):hover {
