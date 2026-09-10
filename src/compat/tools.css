@@ -3536,6 +3536,98 @@
   [data-tool="construtor"] .explica {
     margin-top: 28px;
   }
+  /* ---- atual x novo x saiu (depois de importar a posicao) ---- */
+  [data-tool="construtor"] .orig-badge {
+    flex-shrink: 0;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    padding: 4px 8px;
+    border-radius: 999px;
+    line-height: 1;
+    border: 1px solid transparent;
+  }
+  [data-tool="construtor"] .orig-atual {
+    color: #aeb6ea;
+    background: rgba(138, 147, 216, 0.16);
+    border-color: rgba(138, 147, 216, 0.35);
+  }
+  [data-tool="construtor"] .orig-novo {
+    color: #5ff0c4;
+    background: rgba(43, 217, 166, 0.14);
+    border-color: rgba(43, 217, 166, 0.4);
+  }
+  [data-tool="construtor"] .saidas-box {
+    margin: 6px 0 18px;
+    padding: 12px 14px 8px;
+    border-radius: 14px;
+    border: 1px dashed rgba(255, 92, 122, 0.45);
+    background: rgba(255, 92, 122, 0.06);
+  }
+  [data-tool="construtor"] .saidas-tit {
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    color: #ff8fa5;
+    margin-bottom: 8px;
+  }
+  [data-tool="construtor"] .saidas-tit span {
+    display: inline-block;
+    min-width: 18px;
+    padding: 2px 6px;
+    margin-left: 6px;
+    border-radius: 999px;
+    text-align: center;
+    background: rgba(255, 92, 122, 0.2);
+  }
+  [data-tool="construtor"] .saida-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 0;
+    border-top: 1px solid rgba(255, 92, 122, 0.14);
+    font-size: 13.5px;
+  }
+  [data-tool="construtor"] .saida-row:first-of-type {
+    border-top: 0;
+  }
+  [data-tool="construtor"] .saida-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 3px;
+    flex-shrink: 0;
+  }
+  [data-tool="construtor"] .saida-nome {
+    flex: 1;
+    color: #b9bfe3;
+    text-decoration: line-through;
+    text-decoration-color: rgba(255, 92, 122, 0.75);
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  [data-tool="construtor"] .saida-pct {
+    color: #ff8fa5;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+  }
+  [data-tool="construtor"] .saida-voltar {
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    color: #cfd4ef;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(120, 130, 210, 0.3);
+    border-radius: 8px;
+    padding: 5px 10px;
+    cursor: pointer;
+  }
+  [data-tool="construtor"] .saida-voltar:hover {
+    background: rgba(255, 255, 255, 0.12);
+  }
   /* ---- Carteiras recentes (historico automatico), faixa no topo ---- */
   [data-tool="construtor"] #ctorHistorico {
     margin: 0 0 18px;

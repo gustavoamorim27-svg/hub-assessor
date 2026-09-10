@@ -12,6 +12,18 @@ export const tools = [
     accent: "orange",
   },
   {
+    id: "institucional",
+    title: "Comparativo institucional",
+    short: "Carteiras XP",
+    eyebrow: "CARTEIRA ATUAL / MODELO XP",
+    icon: "compare",
+    group: "Assessoria",
+    description:
+      "Compare a posição consolidada do cliente com as carteiras institucionais e organize o que manter, retirar e incluir.",
+    tags: "excel xlsx carteira xp institucional manter sair entrar recomendada",
+    accent: "orange",
+  },
+  {
     id: "rv",
     title: "Renda variável",
     short: "Renda variável",

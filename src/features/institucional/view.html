@@ -1,0 +1,121 @@
+<div class="g-panel" id="p-institucional" data-tool="institucional">
+  <style>
+    [data-tool="institucional"] * { box-sizing: border-box; }
+    [data-tool="institucional"] { color: #f7f7fc; font-family: "Manrope", sans-serif; }
+    .inst-shell { max-width: 1480px; margin: 0 auto; padding: 26px 22px 64px; }
+    .inst-workbar { display: flex; align-items: center; justify-content: space-between; gap: 18px; margin-bottom: 18px; }
+    .inst-brand { display: flex; align-items: center; gap: 12px; }
+    .inst-brand-mark { color: #ff6726; font: 800 32px/1 "Sora", sans-serif; letter-spacing: -2px; }
+    .inst-brand-copy strong { display: block; font: 700 15px/1.3 "Sora", sans-serif; }
+    .inst-brand-copy span { display: block; margin-top: 3px; color: #aeb5d6; font-size: 13px; }
+    .inst-back { display: inline-flex; align-items: center; gap: 7px; color: #cfd4ee; text-decoration: none; border: 1px solid rgba(151,160,219,.25); border-radius: 10px; padding: 9px 13px; font-size: 13px; font-weight: 700; }
+    .inst-setup { display: grid; grid-template-columns: minmax(300px,.82fr) minmax(420px,1.18fr); gap: 16px; }
+    .inst-card { background: linear-gradient(155deg, rgba(18,23,65,.88), rgba(11,15,48,.72)); border: 1px solid rgba(154,164,226,.2); border-radius: 18px; box-shadow: 0 18px 44px rgba(2,5,24,.18); }
+    .inst-card-pad { padding: 20px; }
+    .inst-step { color: #ff8b52; font: 700 12px/1 "JetBrains Mono", monospace; letter-spacing: .12em; text-transform: uppercase; }
+    .inst-card h2 { margin: 8px 0 5px; font: 750 20px/1.25 "Sora", sans-serif; }
+    .inst-card p { margin: 0; color: #aeb5d6; font-size: 14px; line-height: 1.55; }
+    .inst-models { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-top: 18px; }
+    .inst-model { border: 1px solid rgba(133,143,210,.24); background: rgba(7,11,38,.46); color: #bec5e4; border-radius: 11px; padding: 11px 8px; font: 700 13px/1.2 inherit; cursor: pointer; }
+    .inst-model:hover { border-color: rgba(255,139,82,.58); }
+    .inst-model.on { color: #fff; border-color: #ff7a36; background: linear-gradient(135deg, rgba(255,92,28,.25), rgba(255,92,28,.08)); box-shadow: inset 0 0 0 1px rgba(255,122,54,.14); }
+    .inst-target-preview { max-height: 280px; overflow: auto; margin-top: 16px; padding-top: 14px; padding-right: 5px; border-top: 1px solid rgba(151,160,219,.16); }
+    .inst-target-line { display: grid; grid-template-columns: 1fr 74px; gap: 12px; align-items: center; padding: 7px 0; font-size: 13px; }
+    .inst-target-line span:first-child { color: #dfe3f5; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .inst-target-line strong { color: #ff9a65; text-align: right; font-family: "JetBrains Mono", monospace; }
+    .inst-drop { min-height: 100%; display: grid; place-items: center; padding: 24px; text-align: center; cursor: pointer; border: 1px dashed rgba(117,136,255,.48); border-radius: 18px; background: radial-gradient(circle at 70% 10%, rgba(78,75,255,.18), transparent 48%), rgba(9,13,48,.6); transition: border-color .2s ease, transform .2s ease, background .2s ease; }
+    .inst-drop:hover, .inst-drop.drag { border-color: #ff8b52; transform: translateY(-1px); background: radial-gradient(circle at 70% 10%, rgba(255,103,38,.18), transparent 52%), rgba(9,13,48,.7); }
+    .inst-upload-icon { width: 48px; height: 48px; margin: 0 auto 13px; display: grid; place-items: center; color: #ff8b52; border-radius: 14px; background: rgba(255,103,38,.12); border: 1px solid rgba(255,139,82,.32); font-size: 23px; }
+    .inst-drop h2 { margin: 0 0 7px; font-size: 21px; }
+    .inst-drop p { max-width: 520px; }
+    .inst-file-btn, .inst-primary, .inst-secondary { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border-radius: 11px; padding: 11px 16px; font: 750 13px/1 inherit; cursor: pointer; }
+    .inst-file-btn, .inst-primary { margin-top: 17px; border: 0; color: #fff; background: linear-gradient(135deg,#ff5b1b,#ff7e3f); box-shadow: 0 8px 22px rgba(255,91,27,.24); }
+    .inst-secondary { border: 1px solid rgba(151,160,219,.28); color: #dce1f6; background: rgba(12,17,54,.74); }
+    .inst-file-meta { min-height: 20px; margin-top: 11px; color: #8ff0cf; font-size: 13px; }
+    .inst-file-meta.err { color: #ff8e92; }
+    .inst-results { margin-top: 18px; }
+    .inst-results[hidden] { display: none; }
+    .inst-summary { display: grid; grid-template-columns: 1.25fr repeat(3,.75fr); gap: 12px; margin-bottom: 14px; }
+    .inst-summary-card { min-height: 106px; padding: 17px; border-radius: 15px; border: 1px solid rgba(151,160,219,.18); background: rgba(12,16,52,.72); }
+    .inst-summary-card.main { background: linear-gradient(135deg, rgba(255,96,30,.22), rgba(45,42,135,.3)); }
+    .inst-summary-card small { display: block; color: #9ea6cc; font: 700 11px/1.3 "JetBrains Mono", monospace; letter-spacing: .08em; text-transform: uppercase; }
+    .inst-summary-card strong { display: block; margin-top: 9px; font: 800 25px/1 "Sora", sans-serif; }
+    .inst-summary-card span { display: block; margin-top: 7px; color: #aeb5d6; font-size: 12px; }
+    .inst-summary-card.keep strong { color: #43dfad; }
+    .inst-summary-card.out strong { color: #ff828a; }
+    .inst-summary-card.in strong { color: #7e9cff; }
+    .inst-report { padding: 20px; }
+    .inst-report-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; padding-bottom: 16px; border-bottom: 1px solid rgba(151,160,219,.17); }
+    .inst-report-head h2 { margin: 0 0 5px; }
+    .inst-report-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+    .inst-columns { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin-top: 17px; }
+    .inst-column { min-width: 0; padding: 15px; border-radius: 15px; background: rgba(5,9,35,.48); border: 1px solid rgba(151,160,219,.16); }
+    .inst-column-title { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 12px; font: 750 15px/1.2 "Sora", sans-serif; }
+    .inst-column-title b { min-width: 26px; padding: 4px 7px; border-radius: 999px; text-align: center; font: 700 11px/1 "JetBrains Mono", monospace; background: rgba(255,255,255,.07); }
+    .inst-column.keep .inst-column-title { color: #43dfad; }
+    .inst-column.out .inst-column-title { color: #ff828a; }
+    .inst-column.in .inst-column-title { color: #7e9cff; }
+    .inst-row { padding: 11px 0; border-top: 1px solid rgba(151,160,219,.12); }
+    .inst-row:first-of-type { border-top: 0; }
+    .inst-row-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+    .inst-row-name { color: #f0f2fb; font-size: 13px; font-weight: 750; line-height: 1.35; }
+    .inst-row-pct { flex: none; font: 700 12px/1.3 "JetBrains Mono", monospace; color: #fff; }
+    .inst-row-meta { margin-top: 5px; display: flex; justify-content: space-between; gap: 8px; color: #969fc7; font-size: 11.5px; line-height: 1.35; }
+    .inst-empty-list { padding: 18px 4px; color: #818aad; font-size: 13px; text-align: center; }
+    .inst-disc { margin-top: 16px; padding: 13px 15px; border-radius: 12px; color: #949dc4; background: rgba(92,78,175,.1); border: 1px solid rgba(151,160,219,.14); font-size: 12px; line-height: 1.55; }
+    @media (max-width: 980px) { .inst-setup, .inst-columns { grid-template-columns: 1fr; } .inst-summary { grid-template-columns: repeat(2,1fr); } }
+    @media (max-width: 620px) { .inst-shell { padding: 18px 12px 48px; } .inst-workbar, .inst-report-head { align-items: stretch; flex-direction: column; } .inst-summary { grid-template-columns: 1fr; } .inst-models { grid-template-columns: 1fr; } .inst-report-actions > * { flex: 1; } }
+  </style>
+  <div class="inst-shell">
+    <div class="inst-workbar">
+      <div class="inst-brand">
+        <div class="inst-brand-mark">rico</div>
+        <div class="inst-brand-copy"><strong>Carteira atual × recomendada</strong><span>Diagnóstico de movimentações por ativo</span></div>
+      </div>
+      <a class="inst-back" href="#/construtor">← Voltar para Montar Carteira</a>
+    </div>
+
+    <div class="inst-setup">
+      <section class="inst-card inst-card-pad" aria-labelledby="inst-model-title">
+        <div class="inst-step">01 · Referência</div>
+        <h2 id="inst-model-title">Escolha a carteira institucional</h2>
+        <p>O comparativo usa os modelos cadastrados no Hub como referência de destino.</p>
+        <div class="inst-models" id="instModels" role="group" aria-label="Carteira institucional">
+          <button class="inst-model" data-model="Conservadora">Conservadora</button>
+          <button class="inst-model on" data-model="Moderada">Moderada</button>
+          <button class="inst-model" data-model="Sofisticada">Sofisticada</button>
+        </div>
+        <div class="inst-target-preview" id="instTargetPreview"></div>
+      </section>
+
+      <section class="inst-card" aria-labelledby="inst-upload-title">
+        <input id="instFile" type="file" accept=".xlsx,.xls" hidden />
+        <div class="inst-drop" id="instDrop" tabindex="0" role="button" aria-controls="instFile">
+          <div>
+            <div class="inst-upload-icon">⇧</div>
+            <div class="inst-step">02 · Carteira do cliente</div>
+            <h2 id="inst-upload-title">Envie a Posição Consolidada</h2>
+            <p>Use o Excel exportado do Hub XP. O arquivo é processado neste navegador e não é enviado para servidores.</p>
+            <button class="inst-file-btn" id="instPick" type="button">Selecionar Excel</button>
+            <div class="inst-file-meta" id="instStatus" role="status"></div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <section class="inst-results" id="instResults" hidden aria-live="polite">
+      <div class="inst-summary" id="instSummary"></div>
+      <div class="inst-card inst-report" id="instReport">
+        <div class="inst-report-head">
+          <div><div class="inst-step">03 · Plano de ajuste</div><h2 id="instReportTitle">Relatório de movimentações</h2><p id="instReportMeta"></p></div>
+          <div class="inst-report-actions" data-html2canvas-ignore="true">
+            <button class="inst-secondary" id="instCopy" type="button">Copiar resumo</button>
+            <button class="inst-primary" id="instPdf" type="button">Gerar PDF</button>
+          </div>
+        </div>
+        <div class="inst-columns" id="instColumns"></div>
+        <div class="inst-disc">Comparação indicativa entre a posição importada e o modelo selecionado. Correspondências são feitas pelo nome ou código do ativo. Valide equivalências, disponibilidade, preço, tributação, liquidez, suitability e a edição institucional vigente antes de qualquer movimentação.</div>
+      </div>
+    </section>
+  </div>
+</div>

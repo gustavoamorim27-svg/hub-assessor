@@ -127,6 +127,13 @@ export function loadTool(id) {
       await loadTool("construtor");
       init("construtor");
     }
+    if (id === "institucional") {
+      await loadTool("construtor");
+      init("construtor");
+      await view(id);
+      await featureScripts(id, ["engine"]);
+      return;
+    }
     if (id === "construtor") {
       await Promise.all([
         loadTool("aderencia"),
