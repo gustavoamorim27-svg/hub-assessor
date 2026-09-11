@@ -96,6 +96,44 @@ test("every tool supports direct entry and repeat activation", async () => {
           window.document.getElementById("construtorRv").style.display,
           "block",
         );
+      if (tool.id === "institucional") {
+        window.__institutionalPlanner.load(
+          {
+            conta: "123",
+            patrimonio: 100000,
+            totalAtivos: 100000,
+            ativos: [
+              {
+                name: "LTN",
+                categoria: "Renda Fixa",
+                pct: 20,
+                valor: 20000,
+              },
+              {
+                name: "Fundo fora do modelo",
+                categoria: "Multimercados",
+                pct: 80,
+                valor: 80000,
+              },
+            ],
+          },
+          "cliente.xlsx",
+        );
+        const first = window.__institutionalPlanner.snapshot();
+        assert.ok(first.keep.length, "institutional plan keeps matching assets");
+        assert.ok(first.exit.length, "institutional plan identifies exits");
+        assert.ok(first.enter.length, "institutional plan identifies entries");
+        window.__institutionalPlanner.move(first.exit[0].id, "keep");
+        const adjusted = window.__institutionalPlanner.snapshot();
+        assert.ok(
+          adjusted.keep.some((row) => row.id === first.exit[0].id),
+          "institutional plan allows manual destination changes",
+        );
+        assert.ok(
+          window.document.querySelectorAll(".inst-class-group").length,
+          "institutional plan groups assets by class",
+        );
+      }
       console.log(`Direct-entry integration: ${tool.id}`);
     } finally {
       await window.happyDOM.abort();

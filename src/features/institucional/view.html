@@ -48,6 +48,40 @@
     .inst-report-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; padding-bottom: 16px; border-bottom: 1px solid rgba(151,160,219,.17); }
     .inst-report-head h2 { margin: 0 0 5px; }
     .inst-report-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+    .inst-drawers { display: grid; grid-template-columns: .9fr 1.1fr; gap: 12px; margin-top: 17px; }
+    .inst-drawer { min-width: 0; border: 1px solid rgba(151,160,219,.18); border-radius: 14px; background: rgba(6,10,37,.46); overflow: hidden; }
+    .inst-drawer summary { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 13px 15px; cursor: pointer; color: #e7eafa; font-size: 14px; font-weight: 750; list-style: none; }
+    .inst-drawer summary::-webkit-details-marker { display: none; }
+    .inst-drawer summary::after { content: "+"; color: #ff8b52; font-size: 18px; }
+    .inst-drawer[open] summary::after { content: "−"; }
+    .inst-drawer-body { padding: 0 14px 14px; border-top: 1px solid rgba(151,160,219,.12); }
+    .inst-drawer-help { margin: 10px 0; color: #8f98bf; font-size: 12px; line-height: 1.45; }
+    .inst-lib-tools { display: flex; gap: 8px; margin: 10px 0; }
+    .inst-lib-search { width: 100%; min-width: 0; border: 1px solid rgba(151,160,219,.2); border-radius: 10px; padding: 9px 11px; background: rgba(9,13,43,.8); color: #fff; font: 600 13px/1.2 inherit; outline: none; }
+    .inst-lib-search:focus { border-color: #ff8b52; }
+    .inst-class-filters { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 8px; }
+    .inst-class-chip { flex: none; border: 1px solid rgba(151,160,219,.2); border-radius: 999px; padding: 6px 9px; background: transparent; color: #aeb5d6; font: 700 11px/1 inherit; cursor: pointer; }
+    .inst-class-chip.on { border-color: rgba(255,139,82,.65); color: #fff; background: rgba(255,103,38,.14); }
+    .inst-drawer-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 7px; max-height: 230px; overflow: auto; padding-right: 4px; }
+    .inst-drawer-asset { min-width: 0; display: grid; grid-template-columns: 8px minmax(0,1fr) auto; align-items: center; gap: 8px; border: 1px solid rgba(151,160,219,.15); border-radius: 10px; padding: 9px; background: rgba(17,22,62,.68); }
+    .inst-drawer-dot { width: 7px; height: 7px; border-radius: 50%; }
+    .inst-drawer-copy { min-width: 0; }
+    .inst-drawer-copy strong { display: block; overflow: hidden; color: #e8ebf8; font-size: 12px; white-space: nowrap; text-overflow: ellipsis; }
+    .inst-drawer-copy span { display: block; margin-top: 2px; overflow: hidden; color: #7f89b4; font-size: 10.5px; white-space: nowrap; text-overflow: ellipsis; }
+    .inst-drawer-actions { display: flex; gap: 4px; }
+    .inst-drawer-add { border: 1px solid rgba(126,156,255,.38); border-radius: 7px; padding: 5px 7px; background: rgba(76,105,219,.13); color: #aebeff; font: 800 10px/1 inherit; cursor: pointer; }
+    .inst-drawer-add.keep { border-color: rgba(67,223,173,.36); color: #6ce8bf; background: rgba(43,185,142,.1); }
+    .inst-allocation { margin-top: 14px; padding: 15px; border: 1px solid rgba(151,160,219,.16); border-radius: 14px; background: rgba(7,11,39,.42); }
+    .inst-allocation-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 9px; }
+    .inst-allocation-head strong { font: 750 15px/1.2 "Sora", sans-serif; }
+    .inst-total-alert { color: #ffbe78; font: 700 11px/1 "JetBrains Mono", monospace; }
+    .inst-allocation-row { display: grid; grid-template-columns: minmax(140px,1fr) repeat(3,92px); gap: 8px; align-items: center; padding: 8px 0; border-top: 1px solid rgba(151,160,219,.1); font-size: 12px; }
+    .inst-allocation-row.head { color: #7f89b4; font: 700 10px/1.2 "JetBrains Mono", monospace; letter-spacing: .04em; text-transform: uppercase; border-top: 0; }
+    .inst-allocation-name { display: flex; align-items: center; gap: 7px; color: #dde1f4; font-weight: 700; }
+    .inst-allocation-val { text-align: right; font-family: "JetBrains Mono", monospace; }
+    .inst-allocation-val.target { color: #9aa9f8; }
+    .inst-allocation-val.pos { color: #65e2bb; }
+    .inst-allocation-val.neg { color: #ff9298; }
     .inst-columns { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin-top: 17px; }
     .inst-column { min-width: 0; padding: 15px; border-radius: 15px; background: rgba(5,9,35,.48); border: 1px solid rgba(151,160,219,.16); }
     .inst-column-title { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 12px; font: 750 15px/1.2 "Sora", sans-serif; }
@@ -61,9 +95,22 @@
     .inst-row-name { color: #f0f2fb; font-size: 13px; font-weight: 750; line-height: 1.35; }
     .inst-row-pct { flex: none; font: 700 12px/1.3 "JetBrains Mono", monospace; color: #fff; }
     .inst-row-meta { margin-top: 5px; display: flex; justify-content: space-between; gap: 8px; color: #969fc7; font-size: 11.5px; line-height: 1.35; }
+    .inst-class-group + .inst-class-group { margin-top: 15px; }
+    .inst-class-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 7px 0 8px; color: #aeb5d6; font: 750 11px/1.2 "JetBrains Mono", monospace; letter-spacing: .05em; text-transform: uppercase; }
+    .inst-class-head span:first-child { display: flex; align-items: center; gap: 7px; }
+    .inst-class-head i { width: 7px; height: 7px; border-radius: 50%; }
+    .inst-row[draggable="true"] { cursor: grab; }
+    .inst-row.dragging { opacity: .38; }
+    .inst-column.drop { border-color: #ff8b52; box-shadow: inset 0 0 0 1px rgba(255,139,82,.35); }
+    .inst-row-controls { display: grid; grid-template-columns: 92px minmax(92px,1fr) 72px 32px; gap: 6px; margin-top: 8px; }
+    .inst-row-select, .inst-row-input, .inst-row-remove { min-width: 0; border: 1px solid rgba(151,160,219,.2); border-radius: 8px; background: rgba(10,14,45,.78); color: #cfd4ee; font: 700 11px/1 inherit; }
+    .inst-row-select { padding: 7px 8px; }
+    .inst-row-input { padding: 7px 6px; text-align: right; }
+    .inst-row-remove { color: #ff9298; cursor: pointer; }
     .inst-empty-list { padding: 18px 4px; color: #818aad; font-size: 13px; text-align: center; }
     .inst-disc { margin-top: 16px; padding: 13px 15px; border-radius: 12px; color: #949dc4; background: rgba(92,78,175,.1); border: 1px solid rgba(151,160,219,.14); font-size: 12px; line-height: 1.55; }
-    @media (max-width: 980px) { .inst-setup, .inst-columns { grid-template-columns: 1fr; } .inst-summary { grid-template-columns: repeat(2,1fr); } }
+    @media (max-width: 980px) { .inst-setup, .inst-columns, .inst-drawers { grid-template-columns: 1fr; } .inst-summary { grid-template-columns: repeat(2,1fr); } }
+    @media (max-width: 720px) { .inst-allocation-row { grid-template-columns: minmax(120px,1fr) repeat(3,66px); } .inst-drawer-grid { grid-template-columns: 1fr; } }
     @media (max-width: 620px) { .inst-shell { padding: 18px 12px 48px; } .inst-workbar, .inst-report-head { align-items: stretch; flex-direction: column; } .inst-summary { grid-template-columns: 1fr; } .inst-models { grid-template-columns: 1fr; } .inst-report-actions > * { flex: 1; } }
   </style>
   <div class="inst-shell">
@@ -113,6 +160,24 @@
             <button class="inst-primary" id="instPdf" type="button">Gerar PDF</button>
           </div>
         </div>
+        <div class="inst-drawers" data-html2canvas-ignore="true">
+          <details class="inst-drawer" open>
+            <summary>Gaveta da carteira atual</summary>
+            <div class="inst-drawer-body">
+              <div class="inst-drawer-help">Reposicione rapidamente os ativos importados em Manter ou Sair.</div>
+              <div class="inst-drawer-grid" id="instCurrentDrawer"></div>
+            </div>
+          </details>
+          <details class="inst-drawer" open>
+            <summary>Gaveta de ativos</summary>
+            <div class="inst-drawer-body">
+              <div class="inst-lib-tools"><input class="inst-lib-search" id="instLibSearch" placeholder="Buscar ativo para incluir…" /></div>
+              <div class="inst-class-filters" id="instClassFilters"></div>
+              <div class="inst-drawer-grid" id="instLibraryDrawer"></div>
+            </div>
+          </details>
+        </div>
+        <div class="inst-allocation" id="instAllocation"></div>
         <div class="inst-columns" id="instColumns"></div>
         <div class="inst-disc">Comparação indicativa entre a posição importada e o modelo selecionado. Correspondências são feitas pelo nome ou código do ativo. Valide equivalências, disponibilidade, preço, tributação, liquidez, suitability e a edição institucional vigente antes de qualquer movimentação.</div>
       </div>
