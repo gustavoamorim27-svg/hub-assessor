@@ -1,85 +1,85 @@
 {
-  "updated": "27/09/2026 22:40",
+  "updated": "28/09/2026 09:11",
   "items": [
     {
       "region": "nacional",
-      "title": "Ibovespa fecha em queda e tem a segunda semana negativa em sequência; dólar cai",
-      "resumo": "Índice recua 0,27% a 183.476 pontos na sexta e acumula perda de 0,95% na semana; dólar cede 0,23% a R$ 5,18.",
+      "title": "Ibovespa hoje: Focus, contas externas e última semana antes do 1º turno movem a B3",
+      "resumo": "Bolsa abre a segunda de olho no Boletim Focus, no saldo em conta corrente de agosto e no empate técnico entre Lula e Flávio Bolsonaro.",
+      "source": "InfoMoney",
+      "date": "28 set 2026",
+      "url": "https://www.infomoney.com.br/mercados/ibovespa-hoje-bolsa-de-valores-ao-vivo-28092026/"
+    },
+    {
+      "region": "nacional",
+      "title": "Focus: mercado eleva IPCA de 2026 para 4,92% e mantém Selic em 13,50% no fim do ano",
+      "resumo": "Projeção do PIB recua para 1,88% e dólar segue estimado em R$ 5,20; para 2027, IPCA em 4,30% e Selic em 12%.",
+      "source": "Exame",
+      "date": "28 set 2026",
+      "url": "https://exame.com/brasil/boletim-focus-mercado-eleva-projecao-de-inflacao-e-reduz-do-pib-e-selic-em-2026/"
+    },
+    {
+      "region": "nacional",
+      "title": "Selic a 13,75%: Copom corta juros, mas ata defende manter política restritiva",
+      "resumo": "Após deflação de 0,32% no IPCA de agosto, BC ainda elevou projeções de inflação para 2026 e 2027 e IPCA-15 acima do esperado dificulta novos cortes.",
+      "source": "The Rio Times",
+      "date": "28 set 2026",
+      "url": "https://www.riotimesonline.com/brazils-financial-morning-call-for-monday-september-28-2026/"
+    },
+    {
+      "region": "nacional",
+      "title": "Ibovespa fecha em queda pela 3ª sessão e tem segunda semana negativa; dólar cai",
+      "resumo": "Índice cede 0,27% aos 183.476 pontos com Petrobras pressionada pelo petróleo; ganho no ano segue em 13,9%.",
       "source": "InfoMoney",
       "date": "25 set 2026",
       "url": "https://www.infomoney.com.br/mercados/ibovespa-hoje-bolsa-de-valores-ao-vivo-25092026/"
     },
     {
       "region": "nacional",
-      "title": "Ibovespa recua pela 3ª sessão e fecha semana em baixa de 1%; dólar vai a R$ 5,18",
-      "resumo": "Bolsa descola de Nova York em pregão volátil, pressionada por cenário eleitoral e juros longos no exterior.",
-      "source": "Exame",
+      "title": "Dólar fecha a R$ 5,18 com eleição, exterior e IPCA-15 no radar",
+      "resumo": "Moeda recua 0,22% na sexta; câmbio entra na semana pré-eleitoral com volatilidade e Ormuz praticamente fechado pesando sobre petróleo e inflação.",
+      "source": "InfoMoney",
       "date": "25 set 2026",
-      "url": "https://exame.com/invest/mercados/ibovespa-ibov-fechamento-25-09-2026/"
-    },
-    {
-      "region": "nacional",
-      "title": "IPCA-15 de setembro sobe 0,70% e surpreende o mercado",
-      "resumo": "Prévia da inflação vem quase o dobro do esperado (0,53%), puxada por alimentos e energia, e desafia apostas de Selic a 13,25% no fim do ano.",
-      "source": "Hoje em Dia",
-      "date": "25 set 2026",
-      "url": "https://www.hojeemdia.com.br/opiniao/dinheiro-em-jogo/ipca-15-desafia-ata-do-copom-e-a-aposta-na-selic-a-13-25-no-fim-do-ano-1.1134597"
-    },
-    {
-      "region": "nacional",
-      "title": "Ata do Copom reconhece moderação gradual da atividade após corte da Selic a 13,75%",
-      "resumo": "Documento detalha a quinta redução consecutiva do ciclo e mantém a porta aberta para novos cortes, condicionados à inflação.",
-      "source": "Gazeta Mercantil",
-      "date": "22 set 2026",
-      "url": "https://gazetamercantil.com/semana-macro-ata-copom-relatorio-bc-ipca15-selic-1375"
-    },
-    {
-      "region": "nacional",
-      "title": "Focus eleva projeção do IPCA e reduz Selic para 13,50% no fim de 2026",
-      "resumo": "Boletim do BC mostra IPCA 2026 em 4,92% e mercado passa a projetar juros básicos mais baixos no encerramento do ano.",
-      "source": "BM&C News",
-      "date": "21 set 2026",
-      "url": "https://bmcnews.com.br/economia/focus-eleva-ipca-reduz-selic-e-abre-semana-de-ata-do-copom-e-ipca-15/"
+      "url": "https://www.infomoney.com.br/mercados/dolar-hoje-abertura-fechamento-comercial-turismo-25092026/"
     },
     {
       "region": "internacional",
-      "title": "Dow sobe mais de 470 pontos e Wall Street fecha semana em alta apesar do salto dos Treasuries",
-      "resumo": "S&P 500 e Nasdaq encerram a semana no positivo com força das ações de IA, mesmo com juros longos em máximas de duas décadas.",
+      "title": "Petróleo salta 4% após Trump rejeitar proposta de paz do Irã; Brent supera US$ 108",
+      "resumo": "Teerã ofereceu reabrir o Estreito de Ormuz em sete dias mediante fim do bloqueio naval e descongelamento de ativos; WTI vai a US$ 96.",
       "source": "CNBC",
-      "date": "25 set 2026",
-      "url": "https://www.cnbc.com/2026/09/24/stock-market-today-live-updates.html"
+      "date": "28 set 2026",
+      "url": "https://www.cnbc.com/2026/09/28/oil-price-today-wti-brent-trump-iran.html"
     },
     {
       "region": "internacional",
-      "title": "Treasury de 30 anos toca 5,47%, maior nível em 22 anos, e petróleo oscila com Irã",
-      "resumo": "Juros americanos disparam com petróleo chegando a US$ 108; WTI recua na semana após sinais de negociação entre EUA e Irã no Golfo Pérsico.",
-      "source": "NBC News",
-      "date": "24 set 2026",
-      "url": "https://www.nbcnews.com/business/markets/bond-yields-oil-treasury-buyback-bessent-rcna599604"
+      "title": "Bolsas dos EUA e Treasuries caem com alta do petróleo; yield de 10 anos passa de 5,2%",
+      "resumo": "Futuros do S&P 500 recuam 0,5% e do Nasdaq 100 cerca de 1%; juro de 2 anos sobe a 4,90% e de 30 anos supera 5,5%.",
+      "source": "FinancialJuice",
+      "date": "28 set 2026",
+      "url": "https://features.financialjuice.com/2026/09/28/us-stocks-and-treasuries-fall-as-oil-pushes-higher-europe-market-wrap/"
     },
     {
       "region": "internacional",
-      "title": "Wall Street resiliente enquanto choque do Fed redesenha o cenário global",
-      "resumo": "Dow avança 0,93% a 51.829 pontos e yield de 10 anos recua a 5,17% com alívio no petróleo e expectativa pelo PCE de 30 de setembro.",
+      "title": "Mercado precifica cerca de 70% de chance de alta de juros do Fed em outubro",
+      "resumo": "Probabilidade sobe de 65% na sexta com o choque do petróleo reacendendo temores inflacionários; Bowman e Barkin falam nesta segunda.",
+      "source": "Bloomberg",
+      "date": "28 set 2026",
+      "url": "https://www.bloomberg.com/news/articles/2026-09-27/stock-market-today-dow-s-p-live-updates"
+    },
+    {
+      "region": "internacional",
+      "title": "Ásia fecha em queda: Kospi cai 2,7%, CSI 300 recua 2,2% e Nikkei perde 0,7%",
+      "resumo": "Aversão a risco global após fracasso da negociação EUA-Irã; S&P 500 havia subido 0,51% na sexta aos 7.743 pontos.",
+      "source": "CNBC",
+      "date": "28 set 2026",
+      "url": "https://www.cnbc.com/2026/09/27/stock-market-today-live-updates.html"
+    },
+    {
+      "region": "internacional",
+      "title": "Agenda global da semana: discursos do Fed, Dallas Fed e dados de atividade nos EUA",
+      "resumo": "Investidores acompanham sinais de política monetária com juro básico americano em 3,50%-3,75% e petróleo no maior nível desde 15 de setembro.",
       "source": "The Rio Times",
-      "date": "26 set 2026",
-      "url": "https://www.riotimesonline.com/global-economy-briefing-september-26-2026/"
-    },
-    {
-      "region": "internacional",
-      "title": "S&P 500, Nasdaq e Dow: divisão em Wall Street se amplia rumo ao fim do mês",
-      "resumo": "Análise técnica aponta setores descolados e investidores atentos a juros e dados de inflação para definir a direção de outubro.",
-      "source": "FOREX.com",
-      "date": "26 set 2026",
-      "url": "https://www.forex.com/en-us/news-and-analysis/sandp-500-nasdaq-dow-forecast-wall-street-split-widens-into-month-end-9-26-2026/"
-    },
-    {
-      "region": "internacional",
-      "title": "Resumo semanal dos mercados globais: juros em alta e petróleo pressionam bolsas",
-      "resumo": "Yields de 30 anos nos EUA, Japão e Alemanha atingem máximas de décadas, enquanto ações de tecnologia sustentam os índices americanos.",
-      "source": "T. Rowe Price",
-      "date": "25 set 2026",
-      "url": "https://www.troweprice.com/personal-investing/resources/insights/global-markets-weekly-update.html"
+      "date": "28 set 2026",
+      "url": "https://www.riotimesonline.com/global-economy-briefing-september-28-2026/"
     }
   ]
 }
