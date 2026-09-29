@@ -1,85 +1,85 @@
 {
-  "updated": "28/09/2026 15:09",
+  "updated": "29/09/2026 09:07",
   "items": [
     {
       "region": "nacional",
-      "title": "Ibovespa oscila com exterior e reta final das eleições no radar",
-      "resumo": "Bolsa abre em baixa perto de 182,5 mil pontos com salto do petróleo após impasse entre EUA e Irã.",
+      "title": "Ibovespa fecha com leve queda e dólar sobe a R$ 5,22",
+      "resumo": "Exterior e bancos pesaram na bolsa; moeda americana avançou no fechamento de segunda.",
       "source": "InfoMoney",
       "date": "28 set 2026",
       "url": "https://www.infomoney.com.br/mercados/ibovespa-hoje-bolsa-de-valores-ao-vivo-28092026/"
     },
     {
       "region": "nacional",
-      "title": "Focus: mercado eleva projeção do IPCA 2026 para 4,99%",
-      "resumo": "Segunda alta seguida na estimativa de inflação; PIB de 2026 sobe para 1,90% e câmbio esperado vai a R$ 5,20.",
-      "source": "Mercado Hoje",
+      "title": "Ibovespa cai com pesquisas eleitorais e Treasuries",
+      "resumo": "Dólar avança a R$ 5,21 com cenário eleitoral e juros americanos no radar.",
+      "source": "CNN Brasil",
       "date": "28 set 2026",
-      "url": "https://mercadohoje.uai.com.br/2026/09/28/mercado-hoje-28-09-2026-saiba-as-principais-noticias/"
+      "url": "https://www.cnnbrasil.com.br/economia/money/mercado/mercado-financeiro-ibovespa-dolar-28-setembro-2026/"
     },
     {
       "region": "nacional",
-      "title": "Dólar sobe a R$ 5,20 com Focus e dívida pública em foco",
-      "resumo": "Moeda abre em alta de 0,39% e juros futuros avançam com petróleo e cenário externo mais hawkish.",
-      "source": "SpaceMoney",
+      "title": "Dólar sobe 0,83% a R$ 5,22 com eleição no radar",
+      "resumo": "Ibovespa fecha estável enquanto investidores acompanham as pesquisas eleitorais.",
+      "source": "Forbes Brasil",
       "date": "28 set 2026",
-      "url": "https://www.spacemoney.com.br/economia/dolar-hoje/dolar-focus-divida-publica-agenda/"
+      "url": "https://forbes.com.br/forbes-money/2026/09/ibovespa-fecha-estavel-dolar-alta-pesquisas-eleitorais/"
     },
     {
       "region": "nacional",
-      "title": "IPCA-15 sobe 0,70% em setembro e reforça cautela do Copom",
-      "resumo": "Prévia da inflação vem acima da meta; Selic segue em 14% e corte de 25 pontos em novembro é o cenário predominante.",
-      "source": "Nova Futura",
-      "date": "25 set 2026",
-      "url": "https://blog.novafutura.com.br/call-diario-25/9/2026-ipca15-selic-treasury-nova-futura"
+      "title": "Empate na Quaest e alta da inflação no Focus movem o mercado",
+      "resumo": "Dólar sobe e Ibovespa recua com pesquisa eleitoral e projeções de inflação maiores.",
+      "source": "Gazeta Brasil",
+      "date": "28 set 2026",
+      "url": "https://gazetabrasil.com.br/economia/2026/09/28/dolar-sobe-e-ibovespa-recua-com-mercado-de-olho-em-empate-na-quaest-e-alta-da-inflacao-no-focus/"
     },
     {
       "region": "nacional",
-      "title": "Ibovespa fecha em queda e tem segunda semana negativa seguida",
-      "resumo": "Índice encerra sexta-feira em 183,4 mil pontos pressionado por eleições e exterior; dólar recua no dia.",
+      "title": "Ibovespa tem nova queda e dólar sobe com eleição e exterior",
+      "resumo": "Vale perde 1% em pregão pressionado por cenário eleitoral e mercados externos.",
       "source": "InfoMoney",
-      "date": "25 set 2026",
-      "url": "https://www.infomoney.com.br/mercados/ibovespa-hoje-bolsa-de-valores-ao-vivo-25092026/"
+      "date": "24 set 2026",
+      "url": "https://www.infomoney.com.br/mercados/ibovespa-hoje-bolsa-de-valores-ao-vivo-24092026/"
     },
     {
       "region": "internacional",
-      "title": "Wall Street cai com tensões EUA-Irã e salto dos Treasuries",
-      "resumo": "Dow, S&P 500 e Nasdaq recuam enquanto o petróleo dispara e o yield do Treasury de 10 anos passa de 5,2%.",
+      "title": "Nasdaq e S&P 500 caem após Trump rejeitar acordo de paz com o Irã",
+      "resumo": "Petróleo sobe com a rejeição e pressiona as bolsas em Nova York.",
+      "source": "TheStreet",
+      "date": "28 set 2026",
+      "url": "https://www.thestreet.com/stock-market-today/stock-market-today-dow-jones-sp-500-nasdaq-updates-sept-28-2026"
+    },
+    {
+      "region": "internacional",
+      "title": "Dow, S&P 500 e Nasdaq caem com avanço dos yields dos Treasuries",
+      "resumo": "Alta contínua dos juros americanos pesa sobre as ações em Wall Street.",
       "source": "Yahoo Finance",
       "date": "28 set 2026",
       "url": "https://finance.yahoo.com/markets/live/stock-market-today-monday-september-28-dow-sp-500-nasdaq-080420627.html"
     },
     {
       "region": "internacional",
-      "title": "Brent supera US$ 106 após Trump rejeitar acordo com o Irã",
-      "resumo": "Impasse sobre o Estreito de Ormuz e ataques houthis à infraestrutura saudita elevam temores de oferta.",
-      "source": "Bloomberg",
+      "title": "Futuros de Nova York mistos após sessão negativa com yields em alta",
+      "resumo": "Juros mais altos levaram a pregão de perdas; futuros oscilam na abertura.",
+      "source": "CNBC",
       "date": "28 set 2026",
-      "url": "https://www.bloomberg.com/news/articles/2026-09-27/stock-market-today-dow-s-p-live-updates"
+      "url": "https://www.cnbc.com/2026/09/28/stock-market-today-live-updates.html"
     },
     {
       "region": "internacional",
-      "title": "Dólar firme na máxima de dois meses com apostas em alta do Fed",
-      "resumo": "Mercado precifica cerca de 65% de chance de nova alta de 25 pontos em outubro, segundo o CME FedWatch.",
-      "source": "Reuters via Yahoo Finance",
-      "date": "28 set 2026",
-      "url": "https://finance.yahoo.com/markets/currencies/articles/dollar-firms-us-iran-tensions-013542829.html"
-    },
-    {
-      "region": "internacional",
-      "title": "Bolsas americanas iniciam semana cheia de dados no vermelho",
-      "resumo": "Investidores acompanham inflação e petróleo em busca de pistas sobre o rumo dos juros do Fed.",
+      "title": "Dow perde mais de 300 pontos com pressão dos yields dos Treasuries",
+      "resumo": "Juros longos americanos voltam a limitar o apetite por risco no início da semana.",
       "source": "CNBC",
       "date": "27 set 2026",
       "url": "https://www.cnbc.com/2026/09/27/stock-market-today-live-updates.html"
     },
     {
       "region": "internacional",
-      "title": "Yields do Treasury em máxima de quase duas décadas pesam nos mercados",
-      "resumo": "Título de 30 anos ultrapassa 5,5% com temor de que energia cara alimente inflação e novos apertos do Fed.",
-      "source": "Investrade",
-      "date": "28 set 2026",
-      "url": "https://investrade.com/morning-preview-september-28-2026/"
+      "title": "Wall Street: acompanhe Dow e S&P 500 ao vivo nesta terça",
+      "resumo": "Cobertura em tempo real do pregão americano após semana de yields e petróleo em foco.",
+      "source": "Bloomberg",
+      "date": "29 set 2026",
+      "url": "https://www.bloomberg.com/news/articles/2026-09-28/stock-market-today-dow-s-p-live-updates"
     }
   ]
 }
