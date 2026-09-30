@@ -1,85 +1,85 @@
 {
-  "updated": "30/09/2026 11:42",
+  "updated": "30/09/2026 15:09",
   "items": [
     {
       "region": "nacional",
-      "title": "Ibovespa fecha estável e dólar sobe 0,83%, a R$ 5,22",
-      "resumo": "Bolsa termina de lado enquanto pesquisas eleitorais pressionam o câmbio.",
-      "source": "Forbes Brasil",
-      "date": "29 set 2026",
-      "url": "https://forbes.com.br/forbes-money/2026/09/ibovespa-fecha-estavel-dolar-alta-pesquisas-eleitorais/"
-    },
-    {
-      "region": "nacional",
-      "title": "Ibovespa sobe após dados de inflação",
-      "resumo": "Acompanhamento ao vivo do pregão de 30/09 com bolsa em alta após dados de inflação.",
+      "title": "Bolsa sobe após dados de inflação dos EUA abaixo do esperado",
+      "resumo": "Ibovespa acompanha no pregão de 30/09 o alívio externo com o PCE americano mais fraco que o previsto.",
       "source": "InfoMoney",
       "date": "30 set 2026",
       "url": "https://www.infomoney.com.br/mercados/ibovespa-hoje-bolsa-de-valores-ao-vivo-30092026/"
     },
     {
       "region": "nacional",
-      "title": "Ibovespa fecha com leve queda; dólar sobe",
-      "resumo": "Exterior e bancos pesam no pregão de 28/09 e o dólar avança.",
+      "title": "Ibovespa sobe e dólar cai no último pregão de setembro",
+      "resumo": "Bolsa avança e moeda americana recua na sessão que encerra o mês.",
+      "source": "Investidor10",
+      "date": "30 set 2026",
+      "url": "https://investidor10.com.br/noticias/ibovespa-sobe-e-dolar-cai-no-ultimo-pregao-de-setembro-122923"
+    },
+    {
+      "region": "nacional",
+      "title": "Ibovespa encerra sequência de quatro quedas em 183.828 pontos antes da eleição",
+      "resumo": "Índice interrompe série negativa na semana que antecede as eleições.",
+      "source": "Rio Times",
+      "date": "29 set 2026",
+      "url": "https://www.riotimesonline.com/brazil-ibovespa-election-week-markets-2026"
+    },
+    {
+      "region": "nacional",
+      "title": "Ibovespa fecha com leve queda e dólar sobe a R$ 5,22",
+      "resumo": "Exterior e bancos pesam no desempenho da bolsa no pregão de 28/09.",
       "source": "InfoMoney",
       "date": "28 set 2026",
       "url": "https://www.infomoney.com.br/mercados/ibovespa-hoje-bolsa-de-valores-ao-vivo-28092026/"
     },
     {
       "region": "nacional",
-      "title": "Ibovespa e real: panorama de 30 de setembro",
-      "resumo": "Resumo do dia para bolsa e câmbio brasileiros.",
-      "source": "Rio Times",
-      "date": "30 set 2026",
-      "url": "https://www.riotimesonline.com/brazil-markets-ibovespa-real-wednesday-september-30-2026/"
-    },
-    {
-      "region": "nacional",
-      "title": "Ibovespa tem nova queda e dólar, mais uma alta",
-      "resumo": "Eleição segue no radar e mantém o câmbio pressionado no pregão de 24/09.",
-      "source": "InfoMoney",
-      "date": "24 set 2026",
-      "url": "https://www.infomoney.com.br/mercados/ibovespa-hoje-bolsa-de-valores-ao-vivo-24092026/"
+      "title": "Mercado repercute corte na Selic e pesquisas eleitorais acirradas",
+      "resumo": "Decisão do Copom e cenário eleitoral apertado dominam o pregão de 17/09.",
+      "source": "Exame",
+      "date": "17 set 2026",
+      "url": "https://exame.com/invest/mercados/ibovespa-ibov-hoje-17-09-2026/"
     },
     {
       "region": "internacional",
-      "title": "Futuros do S&P 500 sobem à espera do PCE",
-      "resumo": "Wall Street abre a quarta-feira com futuros em alta antes do dado de inflação PCE.",
-      "source": "TheStreet",
+      "title": "Futuros do S&P 500 sobem com PCE abaixo do esperado",
+      "resumo": "Inflação PCE mais branda nos EUA anima os futuros de Wall Street em 30/09.",
+      "source": "Yahoo Finance",
       "date": "30 set 2026",
-      "url": "https://www.thestreet.com/stock-market-today/stock-market-today-dow-jones-sp-500-nasdaq-updates-sept-30-2026"
+      "url": "https://finance.yahoo.com/markets/stocks/articles/stock-market-today-sept-30-134209395.html"
     },
     {
       "region": "internacional",
-      "title": "Futuros de Dow, S&P e Nasdaq oscilam antes de dados",
-      "resumo": "Índices futuros recuam levemente na manhã de 30/09.",
+      "title": "Dow cai, mas S&P 500 e Nasdaq sobem com PCE mais fraco e tecnologia",
+      "resumo": "Arrefecimento da inflação impulsiona ações de tecnologia em Nova York.",
       "source": "Yahoo Finance",
       "date": "30 set 2026",
       "url": "https://finance.yahoo.com/markets/live/stock-market-today-wednesday-september-30-dow-sp-500-nasdaq-080339262.html"
     },
     {
       "region": "internacional",
-      "title": "Bolsas oscilam com Treasury de 30 anos no foco",
-      "resumo": "Dow, S&P 500 e Nasdaq sem direção definida em meio ao movimento dos juros longos.",
-      "source": "Yahoo Finance",
-      "date": "29 set 2026",
-      "url": "https://finance.yahoo.com/markets/live/stock-market-today-tuesday-september-29-dow-sp-500-nasdaq-080526442.html"
-    },
-    {
-      "region": "internacional",
-      "title": "Mercado americano hoje: acompanhamento ao vivo",
-      "resumo": "Cobertura ao vivo do pregão em Wall Street em 29/09.",
-      "source": "CNBC",
-      "date": "29 set 2026",
-      "url": "https://www.cnbc.com/2026/09/29/stock-market-today-live-updates.html"
-    },
-    {
-      "region": "internacional",
-      "title": "Prévia da manhã de 30 de setembro",
-      "resumo": "Resumo de abertura dos mercados globais com foco em dados e juros.",
-      "source": "Investrade",
+      "title": "Ações sobem com petróleo e yields, a caminho de ganho semanal",
+      "resumo": "Bolsas americanas avançam acompanhando energia e juros dos Treasuries.",
+      "source": "Charles Schwab",
       "date": "30 set 2026",
-      "url": "https://investrade.com/morning-preview-september-30-2026/"
+      "url": "https://www.schwab.com/learn/story/stock-market-update-open"
+    },
+    {
+      "region": "internacional",
+      "title": "Tecnologia e energia lideram rali em meio à alta do petróleo",
+      "resumo": "Setores de tecnologia e energia puxam o mercado com o petróleo em forte alta.",
+      "source": "MarketWatch",
+      "date": "30 set 2026",
+      "url": "https://stockmarketwatch.com/live/stock-market-today"
+    },
+    {
+      "region": "internacional",
+      "title": "Wall Street ao vivo: acompanhe Dow e S&P 500",
+      "resumo": "Cobertura em tempo real dos principais índices americanos.",
+      "source": "Bloomberg",
+      "date": "29 set 2026",
+      "url": "https://www.bloomberg.com/news/articles/2026-09-29/stock-market-today-dow-s-p-live-updates"
     }
   ]
 }
