@@ -1,85 +1,85 @@
 {
-  "updated": "04/10/2026 09:10",
+  "updated": "04/10/2026 15:09",
   "items": [
     {
       "region": "nacional",
-      "title": "Ibovespa salta 2,63% e fecha em 192 mil pontos na véspera da eleição",
-      "resumo": "Maior nível desde 22 de abril, com Bradesco, Petrobras e Vale entre as maiores altas.",
+      "title": "Ibovespa salta 2,63% e volta ao nível de abril",
+      "resumo": "Índice fechou aos 192.114,55 pontos na sexta-feira, no maior patamar desde abril.",
+      "source": "Misto Brasil",
+      "date": "02 out 2026",
+      "url": "https://mistobrasil.com/2026/10/02/ibovespa-salta-263-nesta-sexta-feira-e-volta-ao-nivel-de-abril/"
+    },
+    {
+      "region": "nacional",
+      "title": "Ibovespa vence volatilidade e fecha com forte alta",
+      "resumo": "Bolsa encerra o pregão no maior patamar desde abril, segundo cobertura ao vivo do InfoMoney.",
       "source": "InfoMoney",
       "date": "02 out 2026",
       "url": "https://www.infomoney.com.br/mercados/ibovespa-hoje-bolsa-de-valores-ao-vivo-02102026/"
     },
     {
       "region": "nacional",
-      "title": "Dólar fecha a R$ 5,216 e acumula alta de 0,65% na semana",
-      "resumo": "Moeda recuou 0,08% no dia, com investidores cautelosos antes do primeiro turno.",
-      "source": "InfoMoney",
+      "title": "Dólar comercial cai para R$ 5,2165",
+      "resumo": "Moeda americana recua no dia em que o Ibovespa subiu 2,63%.",
+      "source": "Canal Rural",
       "date": "02 out 2026",
-      "url": "https://www.infomoney.com.br/mercados/ibovespa-hoje-bolsa-de-valores-ao-vivo-02102026/"
+      "url": "https://www.canalrural.com.br/economia/ibovespa-fecha-em-alta-de-263-e-dolar-comercial-cai-para-r-52165/"
     },
     {
       "region": "nacional",
-      "title": "Produção industrial recua 0,6% em agosto, abaixo do esperado",
-      "resumo": "Na comparação anual a queda foi de 1,2%, sinalizando desaceleração da atividade.",
-      "source": "Rio Times",
+      "title": "Ibovespa acumula alta de 4,71% na semana",
+      "resumo": "Índice fecha a semana em forte valorização, com ganho de 2,63% na sexta-feira.",
+      "source": "Finance News",
       "date": "02 out 2026",
-      "url": "https://riotimesonline.com/brazil-markets-ibovespa-real-saturday-october-3-2026"
+      "url": "https://financenews.com.br/2026/10/ibovespa-fecha-em-263-na-semana-acumulou-alta-de-471/"
     },
     {
       "region": "nacional",
-      "title": "Inflação em São Paulo acelera a 0,51% em setembro",
-      "resumo": "Resultado superou a projeção de 0,3% e levou o acumulado em 12 meses a 3,42%.",
-      "source": "Rio Times",
+      "title": "Ibovespa acelera no fim do pregão e fecha acima de 190 mil pontos",
+      "resumo": "Movimento de alta se intensificou nas últimas horas de negociação.",
+      "source": "Forbes Brasil",
       "date": "02 out 2026",
-      "url": "https://riotimesonline.com/brazil-markets-ibovespa-real-saturday-october-3-2026"
+      "url": "https://forbes.com.br/forbes-money/2026/10/ibovespa-acelera-no-final-do-pregao-e-fecha-acima-de-190-mil-pontos/"
     },
     {
-      "region": "nacional",
-      "title": "Juros futuros fecham em queda com dados fracos dos EUA e eleição no radar",
-      "resumo": "DI para janeiro de 2027 recuou a 13,51%; Datafolha mostra vantagem apertada do atual presidente no segundo turno.",
-      "source": "InfoMoney",
+      "region": "internacional",
+      "title": "Dow sobe após relatório-chave de emprego nos EUA",
+      "resumo": "Bolsas americanas reagem ao payroll de setembro divulgado na sexta-feira.",
+      "source": "TheStreet",
       "date": "02 out 2026",
-      "url": "https://www.infomoney.com.br/mercados/ibovespa-hoje-bolsa-de-valores-ao-vivo-02102026/"
+      "url": "https://www.thestreet.com/stock-market-today/stock-market-today-dow-jones-sp-500-nasdaq-updates-oct-02-2026"
     },
     {
       "region": "internacional",
-      "title": "Wall Street sobe com payroll fraco: S&P 500 avança 0,73% a 7.723 pontos",
-      "resumo": "Criação de 29 mil vagas em setembro, contra 90 mil esperadas, reforça aposta de manutenção dos juros pelo Fed.",
-      "source": "Rio Times",
-      "date": "03 out 2026",
-      "url": "https://riotimesonline.com/global-economy-briefing-october-3-2026"
+      "title": "Wall Street sobe com perda de força nas apostas de alta de juros do Fed",
+      "resumo": "Dow, S&P 500 e Nasdaq avançam, com ganhos no setor de tecnologia.",
+      "source": "Yahoo Finance",
+      "date": "02 out 2026",
+      "url": "https://finance.yahoo.com/markets/live/stock-market-today-friday-october-2-dow-sp-500-nasdaq-september-jobs-report-080623878.html"
     },
     {
       "region": "internacional",
-      "title": "Nasdaq lidera ganhos com alta de 1,19% e VIX cai a 15,3",
-      "resumo": "Tecnologia se beneficia da expectativa de menor pressão de aperto monetário.",
-      "source": "Rio Times",
-      "date": "03 out 2026",
-      "url": "https://riotimesonline.com/global-economy-briefing-october-3-2026"
+      "title": "Emprego fraco impulsiona ações e reduz apostas de aperto do Fed",
+      "resumo": "Nasdaq e Dow sobem depois de dados de payroll mais fracos que o esperado.",
+      "source": "Eurasia Business News",
+      "date": "02 out 2026",
+      "url": "https://eurasiabusinessnews.com/2026/10/02/stock-market-today-weak-jobs-report-lifts-stocks-as-fed-rate-hike-bets-fade-nasdaq-and-dow-rally/"
     },
     {
       "region": "internacional",
-      "title": "Treasuries recuam de máximas de vários anos, mas yield de 10 anos segue acima de 5,2%",
-      "resumo": "Mercado de títulos segue no foco dos investidores no início de outubro.",
-      "source": "CNBC",
-      "date": "30 set 2026",
-      "url": "https://www.cnbc.com/2026/09/30/stock-market-today-live-updates.html"
+      "title": "Futuros do Dow disparam após dados fracos de emprego de setembro",
+      "resumo": "Contratos futuros sobem antes da abertura com o relatório de emprego mais brando.",
+      "source": "Yahoo Finance",
+      "date": "02 out 2026",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/wall-street-futures-climb-ahead-112547114.html"
     },
     {
       "region": "internacional",
-      "title": "Inflação na zona do euro sobe a 3,8% em setembro, maior nível desde 2023",
-      "resumo": "Preços de energia avançaram 18,8%, complicando a política do BCE.",
-      "source": "Rio Times",
-      "date": "03 out 2026",
-      "url": "https://riotimesonline.com/global-economy-briefing-october-3-2026"
-    },
-    {
-      "region": "internacional",
-      "title": "Rali do petróleo pressiona bolsas asiáticas e mantém títulos no radar",
-      "resumo": "Alta do petróleo e mercado de títulos dominam o início de outubro nos mercados globais.",
-      "source": "Bloomberg",
+      "title": "Ações dos EUA reagem com queda dos yields do Tesouro e alta de chips",
+      "resumo": "Dow, S&P 500 e Nasdaq se recuperam na quinta-feira com juros futuros em queda.",
+      "source": "Yahoo Finance",
       "date": "01 out 2026",
-      "url": "https://www.bloomberg.com/news/articles/2026-10-01/asian-stocks-to-fall-on-oil-rally-bonds-in-focus-markets-wrap"
+      "url": "https://finance.yahoo.com/markets/live/stock-market-today-thursday-oct-1-dow-sp-500-nasdaq-080602402.html"
     }
   ]
 }
