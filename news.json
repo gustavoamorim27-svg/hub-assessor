@@ -1,1 +1,85 @@
-{"updated": "05/10/2026 09:15", "items": [{"region": "nacional", "title": "Ibovespa salta 2,63% e fecha acima de 192 mil pontos", "resumo": "Melhor desempenho desde abril na véspera do primeiro turno; dólar recuou 0,13% com emprego fraco nos EUA.", "source": "CNN Brasil", "date": "02 out 2026", "url": "https://www.cnnbrasil.com.br/economia/money/mercado/mercado-financeiro-ibovespa-dolar-2-outubro-2026/"}, {"region": "nacional", "title": "Ibovespa acumula alta de 4,71% na semana", "resumo": "Bolsa encerra a semana em forte valorização e dólar comercial cai para R$ 5,2165.", "source": "Finance News", "date": "02 out 2026", "url": "https://financenews.com.br/2026/10/ibovespa-fecha-em-263-na-semana-acumulou-alta-de-471/"}, {"region": "nacional", "title": "Focus mantém Selic em 13,50% para o fim de 2026", "resumo": "Projeção para 2027 segue em 12,00% há 16 semanas; BC acumula corte de 1,25 p.p. desde março.", "source": "O Povo", "date": "05 out 2026", "url": "https://opovo.com.br/noticias/economia/2026/10/05/mediana-das-expectativas-para-selic-no-fim-de-2026-segue-em-1350-no-focus-do-bc.html"}, {"region": "nacional", "title": "Copom corta Selic para 13,75% ao ano com cautela", "resumo": "Decisão unânime de 16 de setembro; BC diz que a magnitude do ciclo dependerá de novas informações.", "source": "Melhor Investimento", "date": "16 set 2026", "url": "https://melhorinvestimento.net/noticias/copom-decisao-selic-setembro-2026"}, {"region": "nacional", "title": "Liderança de Flávio no 1º turno pode alimentar rali", "resumo": "Cenário eleitoral, petróleo e sinais do Fed seguem como principais vetores para a bolsa e o câmbio.", "source": "Bloomberg Línea", "date": "05 out 2026", "url": "https://www.bloomberglinea.com.br/mercados/ibov:ind/"}, {"region": "internacional", "title": "Payroll dos EUA surpreende para baixo com 29 mil vagas", "resumo": "Desemprego sobe a 4,2% e mercado vê 77% de chance de manutenção de juros pelo Fed em outubro.", "source": "Babypips", "date": "02 out 2026", "url": "https://babypips.com/news/headline-us-jobs-report-september-2026-payrolls-miss-fed-hike-odds"}, {"region": "internacional", "title": "Yields dos Treasuries oscilam após relatório de emprego", "resumo": "Dados de payroll de setembro movimentam a curva de juros americana, com a T-note de 10 anos acima de 5%.", "source": "CNBC", "date": "02 out 2026", "url": "https://www.cnbc.com/2026/10/02/treasury-yields-bonds-nonfarm-payrolls.html"}, {"region": "internacional", "title": "Petróleo cai com exportações do Oriente Médio e estoques do G7", "resumo": "Brent recua cerca de 0,7%, perto de US$ 101, com aumento das exportações da região.", "source": "CNBC", "date": "05 out 2026", "url": "https://cnbc.com/2026/10/05/oil-slips-as-middle-east-crude-exports-rise-g7-to-release-stocks.html"}, {"region": "internacional", "title": "G7 liberará 100 milhões de barris de petróleo e diesel", "resumo": "Medida busca conter preços em meio às tensões no Oriente Médio; analistas questionam o efeito.", "source": "Al Jazeera", "date": "03 out 2026", "url": "https://www.aljazeera.com/news/2026/10/3/g7-to-release-100-million-barrels-of-oil-and-diesel-will-it-curb-prices"}, {"region": "internacional", "title": "Wall Street sobe com dados fracos de emprego", "resumo": "S&P 500 avançou 0,7% e Nasdaq 1,2% na sexta; ouro ficou perto de US$ 4.131 por onça.", "source": "ABC News (Austrália)", "date": "05 out 2026", "url": "https://abc.net.au/news/2026-10-05/asx-markets-business-live-news/107227606"}]}
+{
+  "updated": "05/10/2026 15:09",
+  "items": [
+    {
+      "region": "nacional",
+      "title": "Ibovespa sobe forte e chega pela 1ª vez aos 209 mil pontos",
+      "resumo": "Bolsa brasileira atinge novo patamar histórico no pregão desta segunda-feira.",
+      "source": "InfoMoney",
+      "date": "05 out 2026",
+      "url": "https://infomoney.com.br/mercados/ibovespa-hoje-bolsa-de-valores-ao-vivo-05102026"
+    },
+    {
+      "region": "nacional",
+      "title": "Focus: mercado reduz PIB de 2026 para 1,85% e eleva IPCA a 5,01%",
+      "resumo": "Boletim Focus traz projeção de crescimento menor e inflação mais alta para 2026.",
+      "source": "WSCOM",
+      "date": "05 out 2026",
+      "url": "https://wscom.com.br/economia/2026/10/05/mercado-reduz-projecao-do-pib-de-2026-para-185-e-eleva-ipca-a-501-aponta-boletim-focus"
+    },
+    {
+      "region": "nacional",
+      "title": "Mercado reduz projeção para PIB e eleva estimativa de inflação em 2026",
+      "resumo": "Analistas revisam cenário macro: atividade mais fraca e IPCA em alta.",
+      "source": "Correio Braziliense",
+      "date": "05 out 2026",
+      "url": "https://correiobraziliense.com.br/economia/2026/10/7514772-mercado-reduz-projecao-para-pib-e-eleva-estimativa-de-inflacao-em-2026.html"
+    },
+    {
+      "region": "nacional",
+      "title": "Ibovespa consegue 11ª vitória e vai ao maior patamar desde maio; dólar recua",
+      "resumo": "Sequência de altas da bolsa em setembro, com alívio no câmbio.",
+      "source": "InfoMoney",
+      "date": "02 set 2026",
+      "url": "https://www.infomoney.com.br/mercados/ibovespa-hoje-bolsa-de-valores-ao-vivo-02092026/"
+    },
+    {
+      "region": "nacional",
+      "title": "Bolsa sobe 1,3% e atinge maior nível em quase quatro meses",
+      "resumo": "Ibovespa avança e renova máxima em quase quatro meses.",
+      "source": "Agência Brasil",
+      "date": "set 2026",
+      "url": "https://agenciabrasil.ebc.com.br/economia/noticia/2026-09/bolsa-sobe-13-e-atinge-maior-nivel-em-quase-quatro-meses"
+    },
+    {
+      "region": "internacional",
+      "title": "S&P 500 sobe e yields avançam após dados do ISM",
+      "resumo": "Wall Street fecha em alta enquanto os juros dos Treasuries sobem após indicador industrial.",
+      "source": "TheStreet",
+      "date": "05 out 2026",
+      "url": "https://thestreet.com/stock-market-today/stock-market-today-dow-jones-sp-500-nasdaq-updates-oct-05-2026"
+    },
+    {
+      "region": "internacional",
+      "title": "Nasdaq renova recorde puxada por tecnologia; petróleo e yields no radar",
+      "resumo": "Investidores acompanham o petróleo e os juros dos Treasuries.",
+      "source": "CNBC",
+      "date": "04 out 2026",
+      "url": "https://www.cnbc.com/2026/10/04/stock-market-today-live-updates.html"
+    },
+    {
+      "region": "internacional",
+      "title": "Futuros sobem após payroll fraco; mercado aguarda ata do Fed",
+      "resumo": "Dados mais fracos de emprego aliviam yields e animam os futuros de Wall Street.",
+      "source": "Stocktwits",
+      "date": "out 2026",
+      "url": "https://stocktwits.com/news-articles/markets/equity/dow-s-and-p-500-nasdaq-futures-rise-after-soft-jobs-report-as-markets-await-fed-minutes-ibrx-smci-vst-sofi-stocks-in-focus/cZDpSv6RBSP"
+    },
+    {
+      "region": "internacional",
+      "title": "S&P 500 fecha em alta e yields recuam de máximas de vários anos",
+      "resumo": "Início de outubro positivo em Wall Street com alívio nos Treasuries.",
+      "source": "CNBC",
+      "date": "30 set 2026",
+      "url": "https://www.cnbc.com/2026/09/30/stock-market-today-live-updates.html"
+    },
+    {
+      "region": "internacional",
+      "title": "Bolsas asiáticas sob pressão com alta do petróleo; títulos em foco",
+      "resumo": "Rali do petróleo e movimento dos bonds dominam o radar dos mercados.",
+      "source": "Bloomberg",
+      "date": "01 out 2026",
+      "url": "https://www.bloomberg.com/news/articles/2026-10-01/asian-stocks-to-fall-on-oil-rally-bonds-in-focus-markets-wrap"
+    }
+  ]
+}
