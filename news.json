@@ -1,85 +1,85 @@
 {
-  "updated": "05/10/2026 15:09",
+  "updated": "06/10/2026 09:10",
   "items": [
     {
       "region": "nacional",
-      "title": "Ibovespa sobe forte e chega pela 1ª vez aos 209 mil pontos",
-      "resumo": "Bolsa brasileira atinge novo patamar histórico no pregão desta segunda-feira.",
+      "title": "Ibovespa dispara 7,7% e fecha acima de 206 mil pontos",
+      "resumo": "Índice renova máxima histórica após resultado do 1º turno das eleições presidenciais.",
+      "source": "CNN Brasil",
+      "date": "05 out 2026",
+      "url": "https://www.cnnbrasil.com.br/economia/money/mercado/mercado-hoje-5-outubro-2026/"
+    },
+    {
+      "region": "nacional",
+      "title": "Dólar despenca 4,12% e fecha a R$ 5,00",
+      "resumo": "Real se valoriza com euforia eleitoral; moeda chegou a operar abaixo de R$ 5 no pregão.",
+      "source": "CNN Brasil",
+      "date": "05 out 2026",
+      "url": "https://www.cnnbrasil.com.br/economia/money/mercado/mercado-hoje-5-outubro-2026/"
+    },
+    {
+      "region": "nacional",
+      "title": "Juros futuros desabam mais de 130 pontos-base no longo prazo",
+      "resumo": "DI para janeiro de 2035 cai a 12,8%; mercado vê cerca de 15% de chance de corte maior da Selic em novembro.",
+      "source": "CNN Brasil",
+      "date": "05 out 2026",
+      "url": "https://www.cnnbrasil.com.br/economia/money/mercado/mercado-hoje-5-outubro-2026/"
+    },
+    {
+      "region": "nacional",
+      "title": "Bancos e varejo lideram a alta da bolsa",
+      "resumo": "BTG Pactual sobe 22,5%, Magazine Luiza 24,2%, Bradesco 13,6%, Itaú 10,4% e Petrobras 8,2%.",
+      "source": "CNN Brasil",
+      "date": "05 out 2026",
+      "url": "https://www.cnnbrasil.com.br/economia/money/mercado/mercado-hoje-5-outubro-2026/"
+    },
+    {
+      "region": "nacional",
+      "title": "Indústria recua 0,6% em agosto; Datafolha mostra disputa apertada",
+      "resumo": "Na sexta, Ibovespa subiu 2,63% a 192 mil pontos, com Petrobras impulsionada por nova descoberta na Foz do Amazonas.",
       "source": "InfoMoney",
-      "date": "05 out 2026",
-      "url": "https://infomoney.com.br/mercados/ibovespa-hoje-bolsa-de-valores-ao-vivo-05102026"
-    },
-    {
-      "region": "nacional",
-      "title": "Focus: mercado reduz PIB de 2026 para 1,85% e eleva IPCA a 5,01%",
-      "resumo": "Boletim Focus traz projeção de crescimento menor e inflação mais alta para 2026.",
-      "source": "WSCOM",
-      "date": "05 out 2026",
-      "url": "https://wscom.com.br/economia/2026/10/05/mercado-reduz-projecao-do-pib-de-2026-para-185-e-eleva-ipca-a-501-aponta-boletim-focus"
-    },
-    {
-      "region": "nacional",
-      "title": "Mercado reduz projeção para PIB e eleva estimativa de inflação em 2026",
-      "resumo": "Analistas revisam cenário macro: atividade mais fraca e IPCA em alta.",
-      "source": "Correio Braziliense",
-      "date": "05 out 2026",
-      "url": "https://correiobraziliense.com.br/economia/2026/10/7514772-mercado-reduz-projecao-para-pib-e-eleva-estimativa-de-inflacao-em-2026.html"
-    },
-    {
-      "region": "nacional",
-      "title": "Ibovespa consegue 11ª vitória e vai ao maior patamar desde maio; dólar recua",
-      "resumo": "Sequência de altas da bolsa em setembro, com alívio no câmbio.",
-      "source": "InfoMoney",
-      "date": "02 set 2026",
-      "url": "https://www.infomoney.com.br/mercados/ibovespa-hoje-bolsa-de-valores-ao-vivo-02092026/"
-    },
-    {
-      "region": "nacional",
-      "title": "Bolsa sobe 1,3% e atinge maior nível em quase quatro meses",
-      "resumo": "Ibovespa avança e renova máxima em quase quatro meses.",
-      "source": "Agência Brasil",
-      "date": "set 2026",
-      "url": "https://agenciabrasil.ebc.com.br/economia/noticia/2026-09/bolsa-sobe-13-e-atinge-maior-nivel-em-quase-quatro-meses"
+      "date": "02 out 2026",
+      "url": "https://www.infomoney.com.br/mercados/ibovespa-hoje-bolsa-de-valores-ao-vivo-02102026/"
     },
     {
       "region": "internacional",
-      "title": "S&P 500 sobe e yields avançam após dados do ISM",
-      "resumo": "Wall Street fecha em alta enquanto os juros dos Treasuries sobem após indicador industrial.",
+      "title": "Nasdaq renova recorde e S&P 500 sobe 0,66%",
+      "resumo": "Big techs e fusões e aquisições sustentam Wall Street; S&P 500 fecha perto de 7.774 pontos.",
       "source": "TheStreet",
       "date": "05 out 2026",
-      "url": "https://thestreet.com/stock-market-today/stock-market-today-dow-jones-sp-500-nasdaq-updates-oct-05-2026"
+      "url": "https://www.thestreet.com/stock-market-today/stock-market-today-dow-jones-sp-500-nasdaq-updates-oct-05-2026"
     },
     {
       "region": "internacional",
-      "title": "Nasdaq renova recorde puxada por tecnologia; petróleo e yields no radar",
-      "resumo": "Investidores acompanham o petróleo e os juros dos Treasuries.",
-      "source": "CNBC",
-      "date": "04 out 2026",
-      "url": "https://www.cnbc.com/2026/10/04/stock-market-today-live-updates.html"
+      "title": "Treasury de 10 anos vai a 5,3%, máxima em 52 semanas",
+      "resumo": "Juros longos seguem pressionados nos EUA mesmo após payroll fraco e curva ficou mais inclinada.",
+      "source": "TheStreet",
+      "date": "05 out 2026",
+      "url": "https://www.thestreet.com/stock-market-today/stock-market-today-dow-jones-sp-500-nasdaq-updates-oct-05-2026"
     },
     {
       "region": "internacional",
-      "title": "Futuros sobem após payroll fraco; mercado aguarda ata do Fed",
-      "resumo": "Dados mais fracos de emprego aliviam yields e animam os futuros de Wall Street.",
-      "source": "Stocktwits",
-      "date": "out 2026",
-      "url": "https://stocktwits.com/news-articles/markets/equity/dow-s-and-p-500-nasdaq-futures-rise-after-soft-jobs-report-as-markets-await-fed-minutes-ibrx-smci-vst-sofi-stocks-in-focus/cZDpSv6RBSP"
+      "title": "Apostas em alta de juros do Fed em outubro caem para 20%",
+      "resumo": "Após payroll de apenas 29 mil vagas, mercado ainda vê 84% de chance de aperto até o fim do ano; ata do Fed sai na quarta.",
+      "source": "Charles Schwab",
+      "date": "05 out 2026",
+      "url": "https://www.schwab.com/learn/story/stock-market-update-open"
     },
     {
       "region": "internacional",
-      "title": "S&P 500 fecha em alta e yields recuam de máximas de vários anos",
-      "resumo": "Início de outubro positivo em Wall Street com alívio nos Treasuries.",
-      "source": "CNBC",
-      "date": "30 set 2026",
-      "url": "https://www.cnbc.com/2026/09/30/stock-market-today-live-updates.html"
+      "title": "Petróleo cai a cerca de US$ 90 com liberação de estoques de diesel",
+      "resumo": "Europa libera cerca de 100 milhões de barris e exportações do Oriente Médio aumentam.",
+      "source": "Charles Schwab",
+      "date": "05 out 2026",
+      "url": "https://www.schwab.com/learn/story/stock-market-update-open"
     },
     {
       "region": "internacional",
-      "title": "Bolsas asiáticas sob pressão com alta do petróleo; títulos em foco",
-      "resumo": "Rali do petróleo e movimento dos bonds dominam o radar dos mercados.",
-      "source": "Bloomberg",
-      "date": "01 out 2026",
-      "url": "https://www.bloomberg.com/news/articles/2026-10-01/asian-stocks-to-fall-on-oil-rally-bonds-in-focus-markets-wrap"
+      "title": "Schneider Electric compra PTC por US$ 22,6 bilhões",
+      "resumo": "Acordo em dinheiro faz ações da PTC saltarem quase 35%; euro toca mínima em 17 meses.",
+      "source": "TheStreet",
+      "date": "05 out 2026",
+      "url": "https://www.thestreet.com/stock-market-today/stock-market-today-dow-jones-sp-500-nasdaq-updates-oct-05-2026"
     }
   ]
 }
