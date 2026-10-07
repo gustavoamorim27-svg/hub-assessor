@@ -1,1 +1,85 @@
-{"updated":"07/10/2026 09:10","items":[{"region":"nacional","title":"Ibovespa recua 0,52% e realiza lucros após máxima histórica","resumo":"Índice fechou em 205.835 pontos após tocar 209.522 na véspera, com euforia do 1º turno dando lugar a realização.","source":"CNN Brasil","date":"06 out 2026","url":"https://www.cnnbrasil.com.br/economia/money/mercado/mercado-financeiro-ibovespa-dolar-6-outubro-2026/"},{"region":"nacional","title":"Dólar fecha a R$ 4,97, menor valor em cerca de cinco meses","resumo":"Moeda caiu 0,55% e acumula queda de 9,37% no ano, com entrada de capital estrangeiro.","source":"Forbes Brasil","date":"06 out 2026","url":"https://forbes.com.br/forbes-money/2026/10/ibovespa-cai-dolar-recua-abaixo-de-5-reais-eleicao/"},{"region":"nacional","title":"Trade Flávio sustenta Ibovespa futuro após 1º turno","resumo":"Disputa Flávio Bolsonaro x Lula no 2º turno reforça expectativa de ajuste fiscal; INDFUT subia 0,29% pela manhã.","source":"Money Times","date":"06 out 2026","url":"https://www.moneytimes.com.br/ibovespa-futuro-6-10-26-lils/"},{"region":"nacional","title":"Juros futuros recuam com alívio nos Treasuries","resumo":"DI janeiro 2028 em 12,61% e DI janeiro 2035 em 12,725%, com quedas de 5 e 7 pontos-base.","source":"CNN Brasil","date":"06 out 2026","url":"https://www.cnnbrasil.com.br/economia/money/mercado/mercado-financeiro-ibovespa-dolar-6-outubro-2026/"},{"region":"nacional","title":"Itaú BBA vê Ibovespa em 220 mil pontos no curto prazo","resumo":"Banco projeta 245 mil no médio prazo; analistas veem virada de Lula no 2º turno (25/10) como pouco provável.","source":"CNN Brasil","date":"06 out 2026","url":"https://www.cnnbrasil.com.br/economia/money/mercado/mercado-financeiro-ibovespa-dolar-6-outubro-2026/"},{"region":"internacional","title":"S&P 500 renova recorde e Nasdaq segue em máxima","resumo":"S&P 500 fechou em 7.818,93 (+0,58%) e Nasdaq em 27.599,79 (+0,45%), puxados por tecnologia.","source":"TheStreet","date":"06 out 2026","url":"https://www.thestreet.com/stock-market-today/stock-market-today-dow-jones-sp-500-nasdaq-updates-oct-06-2026"},{"region":"internacional","title":"Treasury de 10 anos recua para 5,275%, perto de máxima desde 2002","resumo":"Yield de 30 anos fechou em 5,647%; alívio nos juros ajudou as bolsas dos EUA.","source":"Yahoo Finance","date":"06 out 2026","url":"https://finance.yahoo.com/markets/stocks/articles/stock-market-today-oct-6-134418919.html"},{"region":"internacional","title":"Petróleo cai com liberação de reservas do G7","resumo":"G7 anunciou liberação de 100 milhões de barris em quatro meses; Brent fechou a US$ 98,67 (-1,64%).","source":"TheStreet","date":"06 out 2026","url":"https://www.thestreet.com/stock-market-today/stock-market-today-dow-jones-sp-500-nasdaq-updates-oct-06-2026"},{"region":"internacional","title":"Irã intensifica ataques a petroleiros perto de Ormuz","resumo":"Quase 20 navios comerciais foram alvo no último mês, mantendo prêmio de risco geopolítico.","source":"TheStreet","date":"06 out 2026","url":"https://www.thestreet.com/stock-market-today/stock-market-today-dow-jones-sp-500-nasdaq-updates-oct-06-2026"},{"region":"internacional","title":"Spreads de crédito sobem nos EUA com yields elevados","resumo":"Três dirigentes do Fed falam no dia; GDPNow do Atlanta Fed estima PIB do 3º tri em 3,7%.","source":"Charles Schwab","date":"06 out 2026","url":"https://www.schwab.com/learn/story/stock-market-update-open"}]}
+{
+  "updated": "07/10/2026 15:09",
+  "items": [
+    {
+      "region": "nacional",
+      "title": "Ibovespa recua 0,52% e realiza lucros após recorde",
+      "resumo": "Índice fechou a 205.835 pontos após máxima histórica na véspera; Itaú BBA projeta 220 mil no curto prazo.",
+      "source": "CNN Brasil",
+      "date": "06 out 2026",
+      "url": "https://www.cnnbrasil.com.br/economia/money/mercado/mercado-financeiro-ibovespa-dolar-6-outubro-2026/"
+    },
+    {
+      "region": "nacional",
+      "title": "Dólar cai a R$ 4,97, menor nível em quase cinco meses",
+      "resumo": "Moeda recua 0,55% após queda de 4,12% na segunda, maior baixa diária em mais de 8 anos, com eleição no radar.",
+      "source": "Forbes Brasil",
+      "date": "06 out 2026",
+      "url": "https://forbes.com.br/forbes-money/2026/10/ibovespa-cai-dolar-recua-abaixo-de-5-reais-eleicao/"
+    },
+    {
+      "region": "nacional",
+      "title": "Primeiro turno impulsiona mercado e dólar fecha abaixo de R$ 5",
+      "resumo": "Flávio Bolsonaro à frente de Lula no 1º turno aumenta apostas em ajuste fiscal; 2º turno em 25 de outubro.",
+      "source": "CNN Brasil",
+      "date": "05 out 2026",
+      "url": "https://www.cnnbrasil.com.br/economia/money/mercado/mercado-hoje-5-outubro-2026/"
+    },
+    {
+      "region": "nacional",
+      "title": "Juros futuros aliviam, mas seguem perto de máximas de vários anos",
+      "resumo": "DI para janeiro de 2028 em 12,61% e DI 2035 em 12,725% diante de preocupações fiscais e de inflação.",
+      "source": "CNN Brasil",
+      "date": "06 out 2026",
+      "url": "https://www.cnnbrasil.com.br/economia/money/mercado/mercado-financeiro-ibovespa-dolar-6-outubro-2026/"
+    },
+    {
+      "region": "nacional",
+      "title": "Banco do Brasil cai 6,4% após rebaixamento do JP Morgan",
+      "resumo": "Banco foi rebaixado a underweight; Bradesco subiu 4,4% e Petrobras recuou 2,8% no dia.",
+      "source": "Bora Investir (B3)",
+      "date": "06 out 2026",
+      "url": "https://borainvestir.b3.com.br/noticias/mercado/ibovespa-b3-cede-052-com-realizacao-de-lucros-apos-recorde-dolar-cai-a-r-497/"
+    },
+    {
+      "region": "internacional",
+      "title": "Bolsas dos EUA recuam após recordes de S&P 500 e Nasdaq",
+      "resumo": "S&P 500 cedia cerca de 0,2% e Russell 2000 caía 1,4% em meio à alta dos juros longos.",
+      "source": "TheStreet",
+      "date": "07 out 2026",
+      "url": "https://www.thestreet.com/stock-market-today/stock-market-today-dow-jones-sp-500-nasdaq-updates-oct-07-2026"
+    },
+    {
+      "region": "internacional",
+      "title": "Yield do Treasury de 10 anos chega a 5,35%, maior nível desde 2002",
+      "resumo": "Título de 30 anos tocou 5,72% e pressiona ativos de risco no mercado americano.",
+      "source": "TheStreet",
+      "date": "07 out 2026",
+      "url": "https://www.thestreet.com/stock-market-today/stock-market-today-dow-jones-sp-500-nasdaq-updates-oct-07-2026"
+    },
+    {
+      "region": "internacional",
+      "title": "Ata do Fed no radar; mercado vê 20% de chance de nova alta",
+      "resumo": "Ata da reunião de setembro, em que o Fed elevou juros por unanimidade, sai às 15h (Brasília).",
+      "source": "TheStreet",
+      "date": "07 out 2026",
+      "url": "https://www.thestreet.com/stock-market-today/stock-market-today-dow-jones-sp-500-nasdaq-updates-oct-07-2026"
+    },
+    {
+      "region": "internacional",
+      "title": "Petróleo sobe com tensão no Oriente Médio: Brent a US$ 102",
+      "resumo": "WTI avança a US$ 90,12 com temor de furacão no Golfo do México e conflito na região.",
+      "source": "TheStreet",
+      "date": "07 out 2026",
+      "url": "https://www.thestreet.com/stock-market-today/stock-market-today-dow-jones-sp-500-nasdaq-updates-oct-07-2026"
+    },
+    {
+      "region": "internacional",
+      "title": "Houthis atacam aeroportos sauditas; Vance cobra recuo nuclear do Irã",
+      "resumo": "Escalada geopolítica no Golfo e guerra com o Irã, em curso há sete meses, seguem pesando no mercado.",
+      "source": "TheStreet",
+      "date": "07 out 2026",
+      "url": "https://www.thestreet.com/stock-market-today/stock-market-today-dow-jones-sp-500-nasdaq-updates-oct-07-2026"
+    }
+  ]
+}
