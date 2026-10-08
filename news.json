@@ -1,169 +1,85 @@
 {
-  "updated": "08/10/2026 09:09",
+  "updated": "08/10/2026 15:10",
   "items": [
     {
       "region": "nacional",
-      "title": "Ibovespa cai 0,74% e fecha em 204,3 mil pontos",
-      "resumo": "Índice devolve parte do rali pós-primeiro turno com petróleo acima de US$ 100 e realização de lucros; no ano, dólar acumula queda de 8,6%.",
-      "source": "Forbes Brasil",
-      "date": "07 out 2026",
-      "url": "https://forbes.com.br/forbes-money/2026/10/ibovespa-fecha-em-queda-com-exterior-e-eleicoes-no-foco/"
-    },
-    {
-      "region": "nacional",
-      "title": "Dólar volta a subir e fecha a R$ 5,0156",
-      "resumo": "Moeda avança 0,83% e retorna ao patamar acima de R$ 5 depois de tocar a menor cotação em quase cinco meses.",
-      "source": "Forbes Brasil",
-      "date": "07 out 2026",
-      "url": "https://forbes.com.br/forbes-money/2026/10/ibovespa-fecha-em-queda-com-exterior-e-eleicoes-no-foco/"
-    },
-    {
-      "region": "nacional",
-      "title": "Bancos pressionam a B3: Bradesco cai 3,7% e Itaú 2,7%",
-      "resumo": "Setor financeiro lidera as perdas do Ibovespa; Vale recua 2,3% e Magazine Luiza sobe 5,1%.",
-      "source": "Forbes Brasil",
-      "date": "07 out 2026",
-      "url": "https://forbes.com.br/forbes-money/2026/10/ibovespa-fecha-em-queda-com-exterior-e-eleicoes-no-foco/"
-    },
-    {
-      "region": "nacional",
-      "title": "Eleições: Flávio Bolsonaro recebe apoio de Novo, União e PP no 2º turno",
-      "resumo": "Definição de alianças e pesquisas seguem no radar e devem manter a volatilidade elevada nos ativos locais.",
-      "source": "Forbes Brasil",
-      "date": "07 out 2026",
-      "url": "https://forbes.com.br/forbes-money/2026/10/ibovespa-fecha-em-queda-com-exterior-e-eleicoes-no-foco/"
-    },
-    {
-      "region": "nacional",
-      "title": "BC vende 50 mil swaps cambiais; GPA sobe após homologação de plano",
-      "resumo": "Leilão rola o vencimento de 3 de novembro; GPA avança 4,2% com recuperação extrajudicial homologada.",
-      "source": "Forbes Brasil",
-      "date": "07 out 2026",
-      "url": "https://forbes.com.br/forbes-money/2026/10/ibovespa-fecha-em-queda-com-exterior-e-eleicoes-no-foco/"
-    },
-    {
-      "region": "internacional",
-      "title": "Futuros de Nova York caem com petróleo em alta e temor de inflação",
-      "resumo": "Dow futuro cai cerca de 0,9% e S&P 500 0,5% após recordes na quarta; VIX sobe a 15,78.",
-      "source": "Yahoo Finance",
-      "date": "08 out 2026",
-      "url": "https://finance.yahoo.com/markets/live/stock-market-today-thursday-october-8-dow-sp-500-nasdaq-080537884.html"
-    },
-    {
-      "region": "internacional",
-      "title": "Petróleo salta 4,6% a US$ 92,35 com ataques no Golfo e em Ormuz",
-      "resumo": "Conflito EUA-Israel com o Irã entra no oitavo mês e reacende temores de oferta.",
-      "source": "Yahoo Finance",
-      "date": "08 out 2026",
-      "url": "https://finance.yahoo.com/markets/live/stock-market-today-thursday-october-8-dow-sp-500-nasdaq-080537884.html"
-    },
-    {
-      "region": "internacional",
-      "title": "Treasuries seguem perto de máximas de décadas: 10 anos a 5,28%",
-      "resumo": "Venda global de títulos mantém o 30 anos em 5,66%; Waller, do Fed, fala hoje na Turquia.",
-      "source": "Yahoo Finance",
-      "date": "08 out 2026",
-      "url": "https://finance.yahoo.com/markets/live/stock-market-today-thursday-october-8-dow-sp-500-nasdaq-080537884.html"
-    },
-    {
-      "region": "internacional",
-      "title": "Lucros do S&P 500 no 3º tri devem crescer 29,5%, diz FactSet",
-      "resumo": "Seria o terceiro trimestre seguido com alta acima de 25%, sustentando as bolsas perto de recordes.",
-      "source": "Yahoo Finance",
-      "date": "08 out 2026",
-      "url": "https://finance.yahoo.com/markets/live/stock-market-today-thursday-october-8-dow-sp-500-nasdaq-080537884.html"
-    },
-    {
-      "region": "internacional",
-      "title": "PepsiCo supera lucro do 3º tri, mas reduz projeção de crescimento",
-      "resumo": "Receita sobe 5,6% a US$ 25,27 bi e LPA ajustado de US$ 2,34 bate o consenso; guidance cai para 2,5% a 3%.",
-      "source": "Yahoo Finance",
-      "date": "08 out 2026",
-      "url": "https://finance.yahoo.com/markets/live/stock-market-today-thursday-october-8-dow-sp-500-nasdaq-080537884.html"
-    }
-  ]
-}{
-  "updated": "07/10/2026 15:09",
-  "items": [
-    {
-      "region": "nacional",
-      "title": "Ibovespa recua 0,52% e realiza lucros após recorde",
-      "resumo": "Índice fechou a 205.835 pontos após máxima histórica na véspera; Itaú BBA projeta 220 mil no curto prazo.",
+      "title": "Ibovespa sobe 0,55% e vai a 204 mil pontos",
+      "resumo": "Bolsa avança à espera da nova pesquisa Datafolha sobre o segundo turno.",
       "source": "CNN Brasil",
-      "date": "06 out 2026",
-      "url": "https://www.cnnbrasil.com.br/economia/money/mercado/mercado-financeiro-ibovespa-dolar-6-outubro-2026/"
+      "date": "08 out 2026",
+      "url": "https://www.cnnbrasil.com.br/economia/money/mercado/mercado-financeiro-ibovespa-dolar-8-outubro-2026/"
     },
     {
       "region": "nacional",
-      "title": "Dólar cai a R$ 4,97, menor nível em quase cinco meses",
-      "resumo": "Moeda recua 0,55% após queda de 4,12% na segunda, maior baixa diária em mais de 8 anos, com eleição no radar.",
-      "source": "Forbes Brasil",
-      "date": "06 out 2026",
-      "url": "https://forbes.com.br/forbes-money/2026/10/ibovespa-cai-dolar-recua-abaixo-de-5-reais-eleicao/"
-    },
-    {
-      "region": "nacional",
-      "title": "Primeiro turno impulsiona mercado e dólar fecha abaixo de R$ 5",
-      "resumo": "Flávio Bolsonaro à frente de Lula no 1º turno aumenta apostas em ajuste fiscal; 2º turno em 25 de outubro.",
+      "title": "Dólar recua a R$ 5,00 e segue perto do patamar desde o primeiro turno",
+      "resumo": "Moeda cai 0,20% após alta de 0,83% na véspera, cotada a R$ 5,0071 às 13h.",
       "source": "CNN Brasil",
-      "date": "05 out 2026",
-      "url": "https://www.cnnbrasil.com.br/economia/money/mercado/mercado-hoje-5-outubro-2026/"
+      "date": "08 out 2026",
+      "url": "https://www.cnnbrasil.com.br/economia/money/mercado/mercado-financeiro-ibovespa-dolar-8-outubro-2026/"
     },
     {
       "region": "nacional",
-      "title": "Juros futuros aliviam, mas seguem perto de máximas de vários anos",
-      "resumo": "DI para janeiro de 2028 em 12,61% e DI 2035 em 12,725% diante de preocupações fiscais e de inflação.",
+      "title": "Juros futuros recuam: DI 2035 cai 16 pontos-base, a 12,62%",
+      "resumo": "DI para janeiro de 2028 está em 12,55%, queda de 4 pontos-base.",
       "source": "CNN Brasil",
-      "date": "06 out 2026",
-      "url": "https://www.cnnbrasil.com.br/economia/money/mercado/mercado-financeiro-ibovespa-dolar-6-outubro-2026/"
+      "date": "08 out 2026",
+      "url": "https://www.cnnbrasil.com.br/economia/money/mercado/mercado-financeiro-ibovespa-dolar-8-outubro-2026/"
     },
     {
       "region": "nacional",
-      "title": "Banco do Brasil cai 6,4% após rebaixamento do JP Morgan",
-      "resumo": "Banco foi rebaixado a underweight; Bradesco subiu 4,4% e Petrobras recuou 2,8% no dia.",
-      "source": "Bora Investir (B3)",
-      "date": "06 out 2026",
-      "url": "https://borainvestir.b3.com.br/noticias/mercado/ibovespa-b3-cede-052-com-realizacao-de-lucros-apos-recorde-dolar-cai-a-r-497/"
+      "title": "Ibovespa fecha em queda de 0,74% aos 204.302 pontos",
+      "resumo": "Na quarta-feira, bolsa recuou com Wall Street fraca e dólar em alta.",
+      "source": "Finance News",
+      "date": "07 out 2026",
+      "url": "https://financenews.com.br/2026/10/ibovespa-fecha-em-074-dolar-sobe-a-r-501/"
+    },
+    {
+      "region": "nacional",
+      "title": "Dólar sobe 0,83% e fecha a R$ 5,015 na quarta",
+      "resumo": "Moeda avançou no mercado à vista em dia de aversão a risco no exterior.",
+      "source": "Finance News",
+      "date": "07 out 2026",
+      "url": "https://financenews.com.br/2026/10/ibovespa-fecha-em-074-dolar-sobe-a-r-501/"
     },
     {
       "region": "internacional",
-      "title": "Bolsas dos EUA recuam após recordes de S&P 500 e Nasdaq",
-      "resumo": "S&P 500 cedia cerca de 0,2% e Russell 2000 caía 1,4% em meio à alta dos juros longos.",
-      "source": "TheStreet",
-      "date": "07 out 2026",
-      "url": "https://www.thestreet.com/stock-market-today/stock-market-today-dow-jones-sp-500-nasdaq-updates-oct-07-2026"
+      "title": "Petróleo salta mais de 5% com ataques a navios em Ormuz",
+      "resumo": "Brent e WTI sobem com novos ataques e corte de produção nos EUA por furacão; Brent acima de US$ 104.",
+      "source": "CNN Brasil",
+      "date": "08 out 2026",
+      "url": "https://www.cnnbrasil.com.br/economia/money/mercado/mercado-financeiro-ibovespa-dolar-8-outubro-2026/"
     },
     {
       "region": "internacional",
-      "title": "Yield do Treasury de 10 anos chega a 5,35%, maior nível desde 2002",
-      "resumo": "Título de 30 anos tocou 5,72% e pressiona ativos de risco no mercado americano.",
-      "source": "TheStreet",
+      "title": "Treasury de 10 anos sobe a 5,32%, perto da máxima desde 2002",
+      "resumo": "Rendimentos avançam por temores de inflação e pressionam as bolsas.",
+      "source": "Motley Fool",
       "date": "07 out 2026",
-      "url": "https://www.thestreet.com/stock-market-today/stock-market-today-dow-jones-sp-500-nasdaq-updates-oct-07-2026"
+      "url": "https://www.fool.com/coverage/stock-market-today/2026/10/07/stock-market-midday-oct-7-rising-treasury-yields-pressure-stocks-caterpillar-tumbles-over-6/"
     },
     {
       "region": "internacional",
-      "title": "Ata do Fed no radar; mercado vê 20% de chance de nova alta",
-      "resumo": "Ata da reunião de setembro, em que o Fed elevou juros por unanimidade, sai às 15h (Brasília).",
-      "source": "TheStreet",
+      "title": "Wall Street recua de recordes com juros longos em alta",
+      "resumo": "Dow, S&P 500 e Nasdaq caem na quarta, após máximas históricas, em meio a receio com títulos.",
+      "source": "Yahoo Finance",
       "date": "07 out 2026",
-      "url": "https://www.thestreet.com/stock-market-today/stock-market-today-dow-jones-sp-500-nasdaq-updates-oct-07-2026"
+      "url": "https://finance.yahoo.com/markets/live/stock-market-today-wednesday-october-7-dow-sp-500-nasdaq-080241833.html"
     },
     {
       "region": "internacional",
-      "title": "Petróleo sobe com tensão no Oriente Médio: Brent a US$ 102",
-      "resumo": "WTI avança a US$ 90,12 com temor de furacão no Golfo do México e conflito na região.",
-      "source": "TheStreet",
+      "title": "Ata do Fed é aguardada em busca de sinais de novas altas de juros",
+      "resumo": "Investidores miram a ata da reunião de setembro para pistas sobre aperto adicional.",
+      "source": "Motley Fool",
       "date": "07 out 2026",
-      "url": "https://www.thestreet.com/stock-market-today/stock-market-today-dow-jones-sp-500-nasdaq-updates-oct-07-2026"
+      "url": "https://www.fool.com/coverage/stock-market-today/2026/10/07/stock-market-midday-oct-7-rising-treasury-yields-pressure-stocks-caterpillar-tumbles-over-6/"
     },
     {
       "region": "internacional",
-      "title": "Houthis atacam aeroportos sauditas; Vance cobra recuo nuclear do Irã",
-      "resumo": "Escalada geopolítica no Golfo e guerra com o Irã, em curso há sete meses, seguem pesando no mercado.",
-      "source": "TheStreet",
+      "title": "Caterpillar despenca mais de 6% após rebaixamento",
+      "resumo": "Ação cai com revisão de analista e preocupações com inteligência artificial.",
+      "source": "Motley Fool",
       "date": "07 out 2026",
-      "url": "https://www.thestreet.com/stock-market-today/stock-market-today-dow-jones-sp-500-nasdaq-updates-oct-07-2026"
+      "url": "https://www.fool.com/coverage/stock-market-today/2026/10/07/stock-market-midday-oct-7-rising-treasury-yields-pressure-stocks-caterpillar-tumbles-over-6/"
     }
   ]
 }
