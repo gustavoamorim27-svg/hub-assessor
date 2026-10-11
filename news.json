@@ -1,85 +1,85 @@
 {
-  "updated": "11/10/2026 09:10",
+  "updated": "11/10/2026 15:12",
   "items": [
     {
       "region": "nacional",
-      "title": "Ibovespa fecha em novo recorde e dólar cai a R$ 4,98",
-      "resumo": "Bolsa renova máxima histórica e o câmbio recua para perto de R$ 4,98.",
-      "source": "Brasil em Folhas",
+      "title": "Dólar cai a R$ 4,98 e acumula queda de 4,44% na semana",
+      "resumo": "Moeda americana recua com apetite por risco e segue em trajetória de baixa frente ao real.",
+      "source": "Agência Brasil",
       "date": "09 out 2026",
-      "url": "https://brasilemfolhas.com.br/2026/10/ibovespa-fecha-em-novo-recorde-e-dolar-cai-a-r-4-98"
+      "url": "https://agenciabrasil.ebc.com.br/economia/noticia/2026-10/dolar-cai-r-498-e-acumula-perda-de-444-na-semana"
     },
     {
       "region": "nacional",
-      "title": "Ibovespa avança 1,38% e fecha a 209.066 pontos, maior nível da história",
-      "resumo": "Índice alcança o maior patamar de fechamento da série histórica.",
-      "source": "Divulgar Dinheiro",
+      "title": "Inflação oficial de setembro fica em 0,82%, mostra IBGE",
+      "resumo": "IPCA do mês é divulgado pelo IBGE e segue no radar para as decisões de juros do Copom.",
+      "source": "Agência Brasil",
       "date": "09 out 2026",
-      "url": "https://divulgardinheiro.com/ibovespa-tem-nova-alta-forte-e-renova-maxima-historica-dolar-cai-a-r-498/"
+      "url": "https://agenciabrasil.ebc.com.br/economia/noticia/2026-10/inflacao-oficial-de-setembro-fica-em-082-mostra-ibge"
     },
     {
       "region": "nacional",
-      "title": "PTAX fecha em R$ 4,9892; mercado avalia IPCA, eleições e petróleo",
-      "resumo": "Dólar oficial encerra o dia perto de R$ 4,99 com foco em inflação e cenário eleitoral.",
-      "source": "Boca",
+      "title": "INPC, inflação que corrige salários, acumula 4,29% em 12 meses",
+      "resumo": "Índice usado em reajustes salariais mostra desaceleração no acumulado de 12 meses.",
+      "source": "Agência Brasil",
       "date": "09 out 2026",
-      "url": "https://boca.com.br/economia/dolar/cotacao-dolar-09-10-2026"
+      "url": "https://agenciabrasil.ebc.com.br/economia/noticia/2026-10/inpc-inflacao-que-corrige-salarios-acumula-429-em-12-meses"
     },
     {
       "region": "nacional",
-      "title": "Dólar e Bolsa têm recordes semanais pós-1º turno desde 1994",
-      "resumo": "Movimentos semanais após o primeiro turno são os maiores desde 1994.",
-      "source": "Poder360",
-      "date": "09 out 2026",
-      "url": "https://www.poder360.com.br/poder-economia/dolar-e-bolsa-tem-recordes-semanais-pos-1o-turno-desde-1994/"
+      "title": "Real ganha 10,9% ante o dólar em 2026, maior avanço desde 2025",
+      "resumo": "Valorização da moeda brasileira no ano é a mais forte desde 2025.",
+      "source": "InfoMoney",
+      "date": "10 out 2026",
+      "url": "https://www.infomoney.com.br/mercados/real-ganha-109-ante-o-dolar-em-2026-em-maior-avanco-desde-2025/"
     },
     {
       "region": "nacional",
-      "title": "Ibovespa fecha em alta e dólar fica estável com ata do Copom e cenário eleitoral",
-      "resumo": "Mercado digere a ata do Copom e o quadro eleitoral.",
-      "source": "Forbes Brasil",
-      "date": "set 2026",
-      "url": "https://forbes.com.br/geral/2026/09/ibovespa-fecha-em-alta-e-dolar-fica-estavel-com-ata-do-copom-e-cenario-eleitoral/"
+      "title": "Queda da Selic e ações baratas criam momento raro na Bolsa, diz gestor",
+      "resumo": "Gestor vê janela incomum para a Bolsa com juros em queda e preços atrativos.",
+      "source": "InfoMoney",
+      "date": "10 out 2026",
+      "url": "https://www.infomoney.com.br/mercados/queda-da-selic-e-preco-atrativo-das-acoes-criam-momento-raro-na-bolsa-diz-gestor/"
     },
     {
       "region": "internacional",
-      "title": "Wall Street recua de recordes e bolsas caem pelo mundo",
-      "resumo": "Ações recuam em meio a petróleo e ata do Fed.",
-      "source": "Press Democrat (AP)",
-      "date": "07 out 2026",
-      "url": "https://www.pressdemocrat.com/2026/10/07/financial-markets-oil-prices-fed-minutes/"
-    },
-    {
-      "region": "internacional",
-      "title": "Dow sobe 400 pontos e Wall Street fecha semana de ganhos",
-      "resumo": "Índices americanos encerram a semana no azul.",
-      "source": "CNBC",
-      "date": "09 out 2026",
-      "url": "https://cnbc.com/2026/10/08/stock-market-today-live-updates.html"
-    },
-    {
-      "region": "internacional",
-      "title": "S&P 500 e Nasdaq caem pelo segundo dia com tombo no trade de IA",
-      "resumo": "Tecnologia pressiona os índices após recordes recentes.",
-      "source": "Yahoo Finance",
+      "title": "Wall Street recua e S&P 500 fecha em 7.801 pontos, saindo da máxima histórica",
+      "resumo": "Dow caiu 0,66% e encerrou sequência de cinco altas; Nasdaq Composite recuou 0,22%.",
+      "source": "Investrade",
       "date": "08 out 2026",
-      "url": "https://finance.yahoo.com/markets/live/stock-market-today-thursday-october-8-dow-sp-500-nasdaq-080537884.html"
+      "url": "https://investrade.com/?p=1604"
     },
     {
       "region": "internacional",
-      "title": "Mercado enfrenta correção após recordes de S&P 500 e Nasdaq",
-      "resumo": "Realização de lucros após máximas históricas dos índices.",
-      "source": "Yahoo Finance",
-      "date": "07 out 2026",
-      "url": "https://finance.yahoo.com/markets/stocks/articles/stock-market-today-oct-7-133458375.html"
-    },
-    {
-      "region": "internacional",
-      "title": "Nasdaq e Russell 2000 sofrem com petróleo e Treasuries em alta",
-      "resumo": "Petróleo e yields mais altos pesam sobre ações.",
-      "source": "TheStreet",
+      "title": "Petróleo salta mais de 5% com Brent acima de US$ 105",
+      "resumo": "WTI perto de US$ 92,75 com receio de retomada de operações militares no Oriente Médio.",
+      "source": "Investrade",
       "date": "08 out 2026",
-      "url": "https://thestreet.com/stock-market-today/stock-market-today-dow-jones-sp-500-nasdaq-updates-oct-08-2026"
+      "url": "https://investrade.com/?p=1604"
+    },
+    {
+      "region": "internacional",
+      "title": "Juro do Treasury de 10 anos chega perto de 5,35%, maior nível desde 2002",
+      "resumo": "Temor de inflação pressiona títulos; leilão de 30 anos de US$ 22 bi no radar.",
+      "source": "Investrade",
+      "date": "08 out 2026",
+      "url": "https://investrade.com/?p=1604"
+    },
+    {
+      "region": "internacional",
+      "title": "Esperança de acordo EUA-Irã diminui e eleva tensão geopolítica",
+      "resumo": "Pentágono teria orientado o Comando Central a se preparar para possível retomada de combates.",
+      "source": "Investrade",
+      "date": "08 out 2026",
+      "url": "https://investrade.com/?p=1604"
+    },
+    {
+      "region": "internacional",
+      "title": "Bolsas da Ásia e Europa caem; Nikkei perde 993 pontos",
+      "resumo": "Hang Seng recua 344 pontos e DAX cai cerca de 300; ouro cede para US$ 4.135.",
+      "source": "Investrade",
+      "date": "08 out 2026",
+      "url": "https://investrade.com/?p=1604"
     }
   ]
 }
