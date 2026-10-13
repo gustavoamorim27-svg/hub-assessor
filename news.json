@@ -1,85 +1,85 @@
 {
-  "updated": "13/10/2026 09:10",
+  "updated": "13/10/2026 15:20",
   "items": [
     {
       "region": "nacional",
-      "title": "Ibovespa fecha em recorde aos 209 mil pontos",
-      "resumo": "Índice subiu 1,38% e encerrou a última sessão em 209.066,90 pontos, o maior fechamento da história.",
-      "source": "InfoMoney",
+      "title": "Ibovespa futuro abre em queda e dólar sobe a R$ 5,02",
+      "resumo": "Às 9h40, o futuro do Ibovespa recuava 0,96%, aos 207 mil pontos, e o dólar avançava 0,64%, com Brent em queda e minério mais fraco.",
+      "source": "Finance News",
       "date": "13 out 2026",
-      "url": "https://www.infomoney.com.br/mercados/mercados-day-trade-hoje-analistas-13102026/"
+      "url": "https://financenews.com.br/2026/10/ibovespa-futuro-dolar-previa-operacional-da-movida-e-outros-destaques-corporativos/"
     },
     {
       "region": "nacional",
-      "title": "Dólar abre em alta perto de R$ 5,00",
-      "resumo": "Moeda subia 0,30% na abertura da terça, cotada a R$ 5,000 na venda.",
-      "source": "InfoMoney",
+      "title": "Mercado vive semana histórica com euforia eleitoral",
+      "resumo": "Avanço de Flávio Bolsonaro na eleição impulsiona ativos brasileiros em semana de movimentos fortes na B3.",
+      "source": "Bloomberg Línea",
       "date": "13 out 2026",
-      "url": "https://www.infomoney.com.br/mercados/ibovespa-hoje-bolsa-de-valores-ao-vivo-13102026/"
+      "url": "https://www.bloomberglinea.com.br/mercados/mercado-vive-semana-historica-com-euforia-apos-avanco-de-flavio-bolsonaro-na-eleicao/"
     },
     {
       "region": "nacional",
-      "title": "Juros futuros recuam em toda a curva",
-      "resumo": "DI1F29 fechou a 12,220%, queda de 0,100 ponto percentual na segunda-feira.",
-      "source": "InfoMoney",
+      "title": "Índice small caps salta mais de 20% em semana histórica",
+      "resumo": "O índice teve a melhor semana de sua história, embalado pelo resultado das eleições.",
+      "source": "Bloomberg Línea",
       "date": "13 out 2026",
-      "url": "https://www.infomoney.com.br/mercados/ibovespa-hoje-bolsa-de-valores-ao-vivo-13102026/"
+      "url": "https://www.bloomberglinea.com.br/mercados/indice-small-caps-salta-mais-de-20-e-tem-a-melhor-semana-da-historia-com-as-eleicoes/"
     },
     {
       "region": "nacional",
-      "title": "Focus reduz projeção da Selic para 13,25%",
-      "resumo": "Mediana para a Selic de 2026 caiu de 13,50% para 13,25% no Boletim Focus.",
-      "source": "InfoMoney",
+      "title": "Fator zera posição em juros e vê eleição já no preço",
+      "resumo": "A gestora avalia que a eleição de Flávio Bolsonaro já está precificada nos ativos e zerou posição em juros.",
+      "source": "Bloomberg Línea",
       "date": "13 out 2026",
-      "url": "https://www.infomoney.com.br/mercados/ibovespa-hoje-bolsa-de-valores-ao-vivo-13102026/"
+      "url": "https://www.bloomberglinea.com.br/mercados/fator-zera-posicao-em-juros-e-ve-eleicao-de-flavio-bolsonaro-ja-no-preco-dos-ativos/"
     },
     {
       "region": "nacional",
-      "title": "Focus eleva projeção de inflação para 5,22%",
-      "resumo": "IPCA de 2026 passou de 5,01% para 5,22%; projeção do dólar caiu para R$ 5,15.",
-      "source": "InfoMoney",
+      "title": "Bolsa tem entrada estrangeira recorde de R$ 10 bilhões",
+      "resumo": "Maior volume diário da série da Bloomberg desde 2008, após o resultado do primeiro turno.",
+      "source": "Bloomberg Línea",
       "date": "13 out 2026",
-      "url": "https://www.infomoney.com.br/economia/boletim-focus-eleva-projecao-de-inflacao-para-522-em-2026-e-reduz-cambio/"
+      "url": "https://www.bloomberglinea.com.br/mercados/bolsa-tem-entrada-estrangeira-recorde-de-r-10-bilhoes-apos-resultado-do-primeiro-turno/"
     },
     {
       "region": "internacional",
-      "title": "Wall Street fecha mista com Dow em alta",
-      "resumo": "Dow subiu 0,38%, S&P 500 recuou 0,06% a 7.807 pontos e Nasdaq caiu 0,44%.",
-      "source": "CNBC",
-      "date": "12 out 2026",
-      "url": "https://www.cnbc.com/2026/10/11/stock-market-today-live-updates.html"
-    },
-    {
-      "region": "internacional",
-      "title": "Petróleo sobe com tensões no Oriente Médio",
-      "resumo": "WTI avançou cerca de 1,5% a US$ 93 e Brent passou de US$ 106 após ataques houthis.",
+      "title": "Nasdaq recua com balanços de bancos e pressão sobre chips",
+      "resumo": "Na abertura, S&P 500 caiu 0,07%, Dow subiu 0,62% e Nasdaq cedeu 0,31%, com bancos divulgando resultados.",
       "source": "TheStreet",
-      "date": "12 out 2026",
-      "url": "https://www.thestreet.com/stock-market-today/stock-market-today-oct-12-2026-dow-futures-climb-as-wall-street-gears-up-for-busy-week"
+      "date": "13 out 2026",
+      "url": "https://www.thestreet.com/stock-market-today/stock-market-today-dow-jones-sp-500-nasdaq-updates-oct-13-2026"
     },
     {
       "region": "internacional",
-      "title": "Euro cai à mínima de 2026 e dólar se fortalece",
-      "resumo": "EURUSD recuou 0,41% a 1,1155 e o dólar subiu contra as sete principais moedas.",
-      "source": "investingLive",
-      "date": "12 out 2026",
-      "url": "https://investinglive.com/news/investinglive-americas-fx-news-wrap-12-oct-usd-climbs-eurusd-hits-a-2026-low-as-oil-rises-and-stocks-finish-mixed/"
-    },
-    {
-      "region": "internacional",
-      "title": "Hammack, do Fed, defende mais aperto monetário",
-      "resumo": "Dirigente do Fed de Cleveland alertou para expectativas de inflação menos ancoradas.",
-      "source": "investingLive",
-      "date": "12 out 2026",
-      "url": "https://investinglive.com/news/investinglive-americas-fx-news-wrap-12-oct-usd-climbs-eurusd-hits-a-2026-low-as-oil-rises-and-stocks-finish-mixed/"
-    },
-    {
-      "region": "internacional",
-      "title": "Bancos abrem temporada de balanços; CPI na quarta",
-      "resumo": "JPMorgan, Goldman e Citi reportam na terça; CPI de setembro sai na quarta e PPI na quinta.",
+      "title": "Goldman supera estimativas; JPMorgan fica abaixo no lucro por ação",
+      "resumo": "Goldman lucrou US$ 17,01 por ação (estimativa US$ 13,02); JPMorgan fez US$ 5,57, abaixo dos US$ 5,90 esperados.",
       "source": "TheStreet",
-      "date": "12 out 2026",
-      "url": "https://www.thestreet.com/stock-market-today/stock-market-today-oct-12-2026-dow-futures-climb-as-wall-street-gears-up-for-busy-week"
+      "date": "13 out 2026",
+      "url": "https://www.thestreet.com/stock-market-today/stock-market-today-dow-jones-sp-500-nasdaq-updates-oct-13-2026"
+    },
+    {
+      "region": "internacional",
+      "title": "Petróleo cai 2% com alívio em restrições ao diesel russo",
+      "resumo": "WTI a US$ 91,78 e Brent a US$ 104,40 após os EUA flexibilizarem temporariamente restrições ao diesel da Rússia.",
+      "source": "TheStreet",
+      "date": "13 out 2026",
+      "url": "https://www.thestreet.com/stock-market-today/stock-market-today-dow-jones-sp-500-nasdaq-updates-oct-13-2026"
+    },
+    {
+      "region": "internacional",
+      "title": "Waller: juros longos nos EUA ajudam a conter a demanda",
+      "resumo": "Dirigente do Fed diz que a alta dos juros longos reforça a política monetária do banco central americano.",
+      "source": "Bloomberg Línea",
+      "date": "13 out 2026",
+      "url": "https://www.bloomberglinea.com.br/mercados/juros-longos-nos-eua-ajudam-a-conter-demanda-e-reforcam-politica-do-fed-diz-waller/"
+    },
+    {
+      "region": "internacional",
+      "title": "Bolsas globais recuam com pressão sobre chips",
+      "resumo": "Samsung caiu 7,4% e SK Hynix 4,3% em meio a temores sobre avanço da chinesa CXMT em memórias DRAM.",
+      "source": "Bloomberg Línea",
+      "date": "13 out 2026",
+      "url": "https://www.bloomberglinea.com.br/mercados/bolsas-globais-recuam-com-pressao-sobre-chips-e-expectativa-por-balancos-de-wall-st/"
     }
   ]
 }
