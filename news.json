@@ -1,85 +1,85 @@
 {
-  "updated": "13/10/2026 15:20",
+  "updated": "20/10/2026 09:10",
   "items": [
     {
       "region": "nacional",
-      "title": "Ibovespa futuro abre em queda e dólar sobe a R$ 5,02",
-      "resumo": "Às 9h40, o futuro do Ibovespa recuava 0,96%, aos 207 mil pontos, e o dólar avançava 0,64%, com Brent em queda e minério mais fraco.",
-      "source": "Finance News",
-      "date": "13 out 2026",
-      "url": "https://financenews.com.br/2026/10/ibovespa-futuro-dolar-previa-operacional-da-movida-e-outros-destaques-corporativos/"
+      "title": "Ibovespa fecha em leve queda de 0,17% aos 205 mil pontos",
+      "resumo": "Pressão de Petrobras (-2,8%) e bancos pesou; mercado cauteloso com o segundo turno das eleições.",
+      "source": "InfoMoney",
+      "date": "19 out 2026",
+      "url": "https://www.infomoney.com.br/mercados/ibovespa-hoje-bolsa-de-valores-ao-vivo-19102026/"
     },
     {
       "region": "nacional",
-      "title": "Mercado vive semana histórica com euforia eleitoral",
-      "resumo": "Avanço de Flávio Bolsonaro na eleição impulsiona ativos brasileiros em semana de movimentos fortes na B3.",
-      "source": "Bloomberg Línea",
-      "date": "13 out 2026",
-      "url": "https://www.bloomberglinea.com.br/mercados/mercado-vive-semana-historica-com-euforia-apos-avanco-de-flavio-bolsonaro-na-eleicao/"
+      "title": "Dólar recua a R$ 5,048 com atuação do Banco Central",
+      "resumo": "Moeda cai 0,49% após BC vender 75 mil contratos de swap cambial (US$ 3,75 bi).",
+      "source": "Investing.com Brasil",
+      "date": "19 out 2026",
+      "url": "https://br.investing.com/news/stock-market-news/ibovespa-e-dolar-hoje-eleicao-apertada-pacote-fiscal-de-r20-bi-provocam-cautela-2095735"
     },
     {
       "region": "nacional",
-      "title": "Índice small caps salta mais de 20% em semana histórica",
-      "resumo": "O índice teve a melhor semana de sua história, embalado pelo resultado das eleições.",
-      "source": "Bloomberg Línea",
-      "date": "13 out 2026",
-      "url": "https://www.bloomberglinea.com.br/mercados/indice-small-caps-salta-mais-de-20-e-tem-a-melhor-semana-da-historia-com-as-eleicoes/"
+      "title": "Pacote fiscal exige remanejar R$ 20 bi no Orçamento de 2027",
+      "resumo": "Reajuste de 15,04% no Bolsa Família e Desenrola 3.0 pressionam o teto de gastos, segundo o Planejamento.",
+      "source": "Investing.com Brasil",
+      "date": "19 out 2026",
+      "url": "https://br.investing.com/news/stock-market-news/ibovespa-e-dolar-hoje-eleicao-apertada-pacote-fiscal-de-r20-bi-provocam-cautela-2095735"
     },
     {
       "region": "nacional",
-      "title": "Fator zera posição em juros e vê eleição já no preço",
-      "resumo": "A gestora avalia que a eleição de Flávio Bolsonaro já está precificada nos ativos e zerou posição em juros.",
-      "source": "Bloomberg Línea",
-      "date": "13 out 2026",
-      "url": "https://www.bloomberglinea.com.br/mercados/fator-zera-posicao-em-juros-e-ve-eleicao-de-flavio-bolsonaro-ja-no-preco-dos-ativos/"
+      "title": "Focus projeta Selic a 13,25% e IPCA de 5,22% em 2026",
+      "resumo": "DI1F27 fechou a 13,479%; juros futuros com predomínio de alta nos vencimentos longos.",
+      "source": "InfoMoney",
+      "date": "19 out 2026",
+      "url": "https://www.infomoney.com.br/mercados/ibovespa-hoje-bolsa-de-valores-ao-vivo-19102026/"
     },
     {
       "region": "nacional",
-      "title": "Bolsa tem entrada estrangeira recorde de R$ 10 bilhões",
-      "resumo": "Maior volume diário da série da Bloomberg desde 2008, após o resultado do primeiro turno.",
-      "source": "Bloomberg Línea",
-      "date": "13 out 2026",
-      "url": "https://www.bloomberglinea.com.br/mercados/bolsa-tem-entrada-estrangeira-recorde-de-r-10-bilhoes-apos-resultado-do-primeiro-turno/"
+      "title": "Azzas dispara 13% e varejo sobe; agenda tem Quaest e IPCA-15",
+      "resumo": "Citi eleva Azzas a compra; semana traz pesquisas Quaest (21/10), Datafolha (22/10) e IPCA-15 (23/10).",
+      "source": "Suno",
+      "date": "19 out 2026",
+      "url": "https://www.suno.com.br/noticias/ibovespa-hoje-19-outubro-petr4-azza3-mglu3-mt/"
     },
     {
       "region": "internacional",
-      "title": "Nasdaq recua com balanços de bancos e pressão sobre chips",
-      "resumo": "Na abertura, S&P 500 caiu 0,07%, Dow subiu 0,62% e Nasdaq cedeu 0,31%, com bancos divulgando resultados.",
-      "source": "TheStreet",
-      "date": "13 out 2026",
-      "url": "https://www.thestreet.com/stock-market-today/stock-market-today-dow-jones-sp-500-nasdaq-updates-oct-13-2026"
+      "title": "S&P 500 sobe 0,41% e Nasdaq avança 1,11% puxados por IA",
+      "resumo": "Dow Jones fecha praticamente estável (-0,07%) em Wall Street na segunda-feira.",
+      "source": "Investing.com Brasil",
+      "date": "19 out 2026",
+      "url": "https://br.investing.com/news/stock-market-news/ibovespa-e-dolar-hoje-eleicao-apertada-pacote-fiscal-de-r20-bi-provocam-cautela-2095735"
     },
     {
       "region": "internacional",
-      "title": "Goldman supera estimativas; JPMorgan fica abaixo no lucro por ação",
-      "resumo": "Goldman lucrou US$ 17,01 por ação (estimativa US$ 13,02); JPMorgan fez US$ 5,57, abaixo dos US$ 5,90 esperados.",
-      "source": "TheStreet",
-      "date": "13 out 2026",
-      "url": "https://www.thestreet.com/stock-market-today/stock-market-today-dow-jones-sp-500-nasdaq-updates-oct-13-2026"
+      "title": "Petróleo segue acima de US$ 98 com tensão no Oriente Médio",
+      "resumo": "Brent fecha a US$ 109,55 e WTI a US$ 98,54 após forte volatilidade ligada a conflitos no Oriente Médio e Ucrânia.",
+      "source": "Investing.com Brasil",
+      "date": "19 out 2026",
+      "url": "https://br.investing.com/news/stock-market-news/ibovespa-e-dolar-hoje-eleicao-apertada-pacote-fiscal-de-r20-bi-provocam-cautela-2095735"
     },
     {
       "region": "internacional",
-      "title": "Petróleo cai 2% com alívio em restrições ao diesel russo",
-      "resumo": "WTI a US$ 91,78 e Brent a US$ 104,40 após os EUA flexibilizarem temporariamente restrições ao diesel da Rússia.",
-      "source": "TheStreet",
-      "date": "13 out 2026",
-      "url": "https://www.thestreet.com/stock-market-today/stock-market-today-dow-jones-sp-500-nasdaq-updates-oct-13-2026"
+      "title": "Aprovação de Trump cai a 31% em pesquisa Reuters/Ipsos",
+      "resumo": "Índice de popularidade do presidente americano recua e entra no radar dos investidores.",
+      "source": "Investing.com Brasil",
+      "date": "19 out 2026",
+      "url": "https://br.investing.com/news/stock-market-news/ibovespa-e-dolar-hoje-eleicao-apertada-pacote-fiscal-de-r20-bi-provocam-cautela-2095735"
     },
     {
       "region": "internacional",
-      "title": "Waller: juros longos nos EUA ajudam a conter a demanda",
-      "resumo": "Dirigente do Fed diz que a alta dos juros longos reforça a política monetária do banco central americano.",
-      "source": "Bloomberg Línea",
-      "date": "13 out 2026",
-      "url": "https://www.bloomberglinea.com.br/mercados/juros-longos-nos-eua-ajudam-a-conter-demanda-e-reforcam-politica-do-fed-diz-waller/"
+      "title": "Temporada de balanços esquenta com Netflix, GM, 3M e United",
+      "resumo": "Resultados corporativos nos EUA começam a ditar o tom dos mercados nesta semana.",
+      "source": "Investing.com Brasil",
+      "date": "19 out 2026",
+      "url": "https://br.investing.com/news/stock-market-news/ibovespa-e-dolar-hoje-eleicao-apertada-pacote-fiscal-de-r20-bi-provocam-cautela-2095735"
     },
     {
       "region": "internacional",
-      "title": "Bolsas globais recuam com pressão sobre chips",
-      "resumo": "Samsung caiu 7,4% e SK Hynix 4,3% em meio a temores sobre avanço da chinesa CXMT em memórias DRAM.",
-      "source": "Bloomberg Línea",
-      "date": "13 out 2026",
-      "url": "https://www.bloomberglinea.com.br/mercados/bolsas-globais-recuam-com-pressao-sobre-chips-e-expectativa-por-balancos-de-wall-st/"
+      "title": "Nasdaq teve a pior semana desde junho com venda de ativos de IA",
+      "resumo": "Queda de 2% em um dia, pressionada por realização em tecnologia e alta do petróleo.",
+      "source": "CNBC",
+      "date": "15 out 2026",
+      "url": "https://www.cnbc.com/2026/10/15/stock-market-today-live-updates.html"
     }
   ]
 }
